@@ -1,2 +1,41 @@
+/* NAVBAR */
 
-  
+.Nav {
+  background: #15171c;
+  height: 80px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.NavIcon {
+  margin-left: 2rem;
+  font-size: 2rem;
+  height: 80px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.SidebarNav {
+  background: rgba(42, 67, 97, 1);
+  width: 250px;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: -100%;
+  transition: left 350ms ease;
+  z-index: 10;
+}
+
+.SidebarNav.active {
+  left: 0;
+}
+
+.SidebarWrap {
+  width: 100%;
+}
+
+/* FIM NAVBAR */

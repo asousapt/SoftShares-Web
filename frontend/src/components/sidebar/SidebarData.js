@@ -3,85 +3,122 @@ import * as FaIcons from "react-icons/fa";
 import * as AiIcons from "react-icons/ai";
 import * as IoIcons from "react-icons/io";
 import * as RiIcons from "react-icons/ri";
+import * as FrIcons from "react-icons/gr";
+import * as MdIcons from "react-icons/md";
+import * as LuIcons from "react-icons/lu";
  
 const sidebarData = [
     {
-        title: "About Us",
+        title: "Dashboard",
         path: "/",
         icon: <AiIcons.AiFillHome />,
-        iconClosed: <RiIcons.RiArrowDownSFill />,
-        iconOpened: <RiIcons.RiArrowUpSFill />,
- 
-        subNav: [
-            {
-                title: "Our Aim",
-                path: "/",
-                icon: <IoIcons.IoIosPaper />,
-            },
-            {
-                title: "Our Vision",
-                path: "/",
-                icon: <IoIcons.IoIosPaper />,
-            },
-        ],
     },
     {
-        title: "Services",
+        title: "Estatísticas",
         path: "/",
-        icon: <IoIcons.IoIosPaper />,
+        icon: <FaIcons.FaChartBar />,
         iconClosed: <RiIcons.RiArrowDownSFill />,
         iconOpened: <RiIcons.RiArrowUpSFill />,
- 
         subNav: [
             {
-                title: "Service 1",
+                title: "Utilizadores",
                 path: "/",
                 icon: <IoIcons.IoIosPaper />,
                 cName: "sub-nav",
             },
             {
-                title: "Service 2",
+                title: "Denúncias",
                 path: "/",
                 icon: <IoIcons.IoIosPaper />,
                 cName: "sub-nav",
+            }
+        ],
+    },
+    {
+        title: "Listagem",
+        path: "/",
+        icon: <FaIcons.FaClipboardList />,
+        iconClosed: <RiIcons.RiArrowDownSFill />,
+        iconOpened: <RiIcons.RiArrowUpSFill />,
+ 
+        subNav: [
+            {
+                title: "Eventos",
+                path: "/",
+                icon: <IoIcons.IoIosPaper />,
             },
             {
-                title: "Service 3",
+                title: "Pontos de Interesse",
+                path: "/",
+                icon: <IoIcons.IoIosPaper />,
+            },
+            {
+                title: "Publicações",
                 path: "/",
                 icon: <IoIcons.IoIosPaper />,
             },
         ],
     },
     {
-        title: "Contact",
+        title: "Moderação",
         path: "/",
-        icon: <FaIcons.FaPhone />,
+        icon: <LuIcons.LuShieldAlert/>,
+        iconClosed: <RiIcons.RiArrowDownSFill />,
+        iconOpened: <RiIcons.RiArrowUpSFill />,
+ 
+        subNav: [
+            {
+                title: "Aprovações",
+                path: "/",
+                icon: <IoIcons.IoIosPaper />,
+            },
+            {
+                title: "Denúncias",
+                path: "/",
+                icon: <IoIcons.IoIosPaper />,
+            },
+        ],
     },
     {
-        title: "Events",
+        title: "Configuração",
         path: "/",
-        icon: <FaIcons.FaEnvelopeOpenText />,
+        icon: <FrIcons.GrConfigure/>,
  
         iconClosed: <RiIcons.RiArrowDownSFill />,
         iconOpened: <RiIcons.RiArrowUpSFill />,
  
         subNav: [
             {
-                title: "Event 1",
+                title: "Polos",
                 path: "/",
                 icon: <IoIcons.IoIosPaper />,
             },
             {
-                title: "Event 2",
+                title: "Formulários",
+                path: "/",
+                icon: <IoIcons.IoIosPaper />,
+            },
+            {
+                title: "Utilizadores",
+                path: "/",
+                icon: <MdIcons.MdOutlineManageAccounts  />,
+            },
+            {
+                title: "Categorias",
+                path: "/",
+                icon: <IoIcons.IoIosPaper />,
+            },
+            {
+                title: "Subcategorias",
+                path: "/",
+                icon: <IoIcons.IoIosPaper />,
+            },
+            {
+                title: "Alertas",
                 path: "/",
                 icon: <IoIcons.IoIosPaper />,
             },
         ],
-    },
-    {
-        title: "Support",
-        path: "/",
-        icon: <IoIcons.IoMdHelpCircle />,
     },
 ];
 

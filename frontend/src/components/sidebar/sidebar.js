@@ -1,23 +1,23 @@
 import React, { useState } from "react";
-import styled from "styled-components";
-import { Link } from "react-router-dom";
-import * as FaIcons from "react-icons/fa";
-import * as AiIcons from "react-icons/ai";
 import SubMenu from "./subMenu";
 import SidebarData from "./SidebarData";
 import { IconContext } from "react-icons/lib";
 import './sidebar.css';
- 
+
 const Sidebar = () => {
     return (
         <>
             <IconContext.Provider value={{ color: "#fff" }}>
-                <nav className="SidebarNav active">
+                <nav className="SidebarNav">
                     <div className="SidebarWrap">
-                        <div>
-                            <p>sadas</p>
-                            <p>sadas</p>
-                            <p>sadas</p>
+                        <div className="regiao">
+                            Viseu
+                        </div>
+                        <div className="bemvindo">
+                            Bem-vindo
+                        </div>
+                        <div className="User">
+                            @user
                         </div>
                         {SidebarData.map((item, index) => {
                             return (

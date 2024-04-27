@@ -24,9 +24,9 @@
   display: flex;
   justify-content: center;
   position: fixed;
-  top: 0;
   transition: left 350ms ease;
-  z-index: 10;
+  overflow-y: auto;
+  scrollbar-width: none;
 }
 
 .SidebarWrap {
@@ -36,7 +36,6 @@
 .sidebar-link-open {
   border-left: 4px solid rgba(77, 156, 250, 1);
 }
-
 /* FIM NAVBAR */
 
 /* SUBNAV */
@@ -45,9 +44,8 @@
     color: #e1e9fc;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
+    padding: 18px 25px;
     list-style: none;
-    height: 35px;
     text-decoration: none;
     font-size: 18px;
 }
@@ -62,7 +60,7 @@
 .dropdown-link {
     background: rgba(42, 67, 97, 1);
     height: 60px;
-    padding-left: 3rem;
+    padding-left: 50px; 
     display: flex;
     align-items: center;
     text-decoration: none;
@@ -78,10 +76,6 @@
 .sidebar-label {
   margin-left: 12px;
 }
-
-/* .selected-submenu-link {
-  background-color: #898989;
-} */
 
 .submenu-open {
   color: rgba(77, 156, 250, 1);
@@ -108,7 +102,7 @@
   text-align: center;
   font-size: 18px;
   padding-top: 2px;
-  padding-bottom: 20px;
+  padding-bottom: 15px;
   color: white;
 }
 

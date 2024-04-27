@@ -18,7 +18,7 @@ const Sidebar = () => {
                         </div>
                         <div className="User">
                             @user
-                        </div>x
+                        </div>
                         {SidebarData.map((item, index) => {
                             return (
                                 <SubMenu

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import SubMenu from "./subMenu";
 import SidebarData from "./SidebarData";
 import { IconContext } from "react-icons/lib";
@@ -7,7 +7,7 @@ import './sidebar.css';
 const Sidebar = () => {
     return (
         <>
-            <IconContext.Provider value={{ color: "#fff" }}>
+            <IconContext.Provider value={{ color: "#ffffff" }}>
                 <nav className="SidebarNav">
                     <div className="SidebarWrap">
                         <div className="regiao">

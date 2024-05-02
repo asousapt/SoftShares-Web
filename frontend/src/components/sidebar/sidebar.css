@@ -1,7 +1,7 @@
 /* NAVBAR */
 
 .Nav {
-  background: rgba(42, 67, 97, 1);
+  background-color: rgba(42, 67, 97, 1);
   height: 80px;
   display: flex;
   justify-content: flex-start;
@@ -17,8 +17,13 @@
   align-items: center;
 }
 
+.SidebarNav .pro-sidebar-inner {
+  background-color: cadetblue;
+  box-shadow: 0.5px 0.866px 2px 0px rgba(0, 0, 0, 0.15);
+}
+
 .SidebarNav {
-  background: rgba(42, 67, 97, 1);
+  background-color: rgba(42, 67, 97, 1);
   width: 250px;
   height: 100vh;
   display: flex;
@@ -30,6 +35,7 @@
 }
 
 .SidebarWrap {
+  background-color: transparent;
   width: 100%;
 }
 

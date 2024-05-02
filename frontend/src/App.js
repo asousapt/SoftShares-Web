@@ -1,5 +1,6 @@
 import "./App.css";
-import Sidebar from "./components/sidebar/sidebar";
+// import Sidebar from "./components/sidebar/sidebar";
+import SidebarTeste from "./components/sidebar-teste";
 import Table from "./components/table/table";
 import {
     BrowserRouter as Router,
@@ -10,7 +11,7 @@ function App() {
         <Router>
             <div className="app-container">
                 <div className="sidebar-container">
-                    <Sidebar />
+                    <SidebarTeste />
                 </div>
                 <div className="table-container">
                     <Table />

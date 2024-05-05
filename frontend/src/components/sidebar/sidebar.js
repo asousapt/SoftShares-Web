@@ -41,7 +41,7 @@ const Sidebar = () => {
   };
 
   return (
-    <IconContext.Provider value={{ color: "#ffffff" }}>
+    <IconContext.Provider value={{ color: "rgba(42, 67, 97, 1)" }}>
         <Drawer variant="permanent">
             <List style={{width: '250px', backgroundColor: 'rgba(42, 67, 97, 1)', height: '100%'}}>
                 <div className="regiao">

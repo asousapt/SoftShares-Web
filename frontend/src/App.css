@@ -39,13 +39,21 @@
 
 .app-container {
   display: flex;
+  height: 100vh;
+  background-color: #1765E0;
 }
 
 .sidebar-container {
-  flex: 0 0 250px;
+  position: 'absolute'; 
+  top: 0; 
+  left: 0; 
+  bottom: 0;
 }
 
-.table-container {
-  flex: 1;
+.content-container {
+  flex: 1; 
+  margin-right: 1%;
+  margin-left: 250px;
 }
+
 

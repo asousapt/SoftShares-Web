@@ -1,21 +1,20 @@
 import "./App.css";
-// import Sidebar from "./components/sidebar/sidebar";
-import SidebarTeste from "./components/sidebar-teste";
-import Table from "./components/table/table";
-import {
-    BrowserRouter as Router,
-} from "react-router-dom";
+import Sidebar from "./components/sidebar/sidebar";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 
 function App() {
     return (
         <Router>
             <div className="app-container">
                 <div className="sidebar-container">
-                    <SidebarTeste />
+                    <Sidebar />
                 </div>
-                <div className="table-container">
-                    <Table />
-                </div>
+
+                <Routes>
+                    {/* <Route path="/" element={<Navigate replace to="/dashboard" />} />
+                    <Route path="/lojas" element={<ListLojas />} />
+                    <Route path="/produtos" element={<ListProdutos />} /> */}
+                </Routes>
             </div>
         </Router> 
     );

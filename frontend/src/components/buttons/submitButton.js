@@ -1,16 +1,17 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
-import EditIcon from '@mui/icons-material/EditOutlined';
+import { IoSaveOutline } from "react-icons/io5";
 
-export default function EditButton({caption, onclick}) {
+export default function SubmitButton({caption, onclick}) {
     return (
         <Button 
             variant="contained" 
-            startIcon={<EditIcon />} 
+            endIcon={<IoSaveOutline color='white'/>} 
             onClick={onclick} 
             style={{
                 borderRadius: '24px', 
-                backgroundColor: '#1765E0'
+                backgroundColor: '#0465D9', 
+                color: 'white'
             }}
         > {caption} </Button>
     );

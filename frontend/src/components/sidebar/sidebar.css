@@ -21,6 +21,18 @@
 }
 /* FIM NAVBAR */
 
+::-webkit-scrollbar {
+  width: 0;  /* Remove scrollbar width */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;  /* Transparent background */
+}
+
+::-webkit-scrollbar-thumb {
+  background: transparent;  /* Transparent scrollbar thumb */
+}
+
 .regiao {
   text-align: center;
   font-size: 18px;

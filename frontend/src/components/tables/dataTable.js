@@ -29,17 +29,18 @@ import { DataGrid } from '@mui/x-data-grid';
 
 export default function DataTable({ columns, rows }) {
     return (
-        <div style={{ height: 'auto', width: '100%' , backgroundColor: 'white'}}>
-            <DataGrid
-                rows={rows}
-                columns={columns}
-                initialState={{
-                    pagination: {
-                        paginationModel: { page: 0, pageSize: 50 },
-                    },
-                }}
-                pageSizeOptions={[50]}
-            />
-        </div>
+        <DataGrid
+            rows={rows}
+            columns={columns}
+            initialState={{
+                pagination: {
+                    paginationModel: { page: 0, pageSize: 25 },
+                },
+            }}
+            // sx={{
+            //     border: '0.5px solid black',
+            // }}
+            pageSizeOptions={[25]}
+        />
     );
 }

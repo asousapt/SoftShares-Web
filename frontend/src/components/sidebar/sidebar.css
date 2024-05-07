@@ -22,15 +22,15 @@
 /* FIM NAVBAR */
 
 ::-webkit-scrollbar {
-  width: 0;  /* Remove scrollbar width */
+  width: 0; 
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;  /* Transparent background */
+  background: transparent;  
 }
 
 ::-webkit-scrollbar-thumb {
-  background: transparent;  /* Transparent scrollbar thumb */
+  background: transparent; 
 }
 
 .regiao {

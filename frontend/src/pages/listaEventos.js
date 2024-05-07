@@ -88,7 +88,7 @@ export default function ListaEventos() {
                     <AddButton caption='Adicionar' onclick={handleOpenNewModal} />
                     <Search onchange={handleTextFilter} />
                 </div>
-                <div style={{ height: '70vh', width: '99%', overflowY: 'auto'}}>
+                <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px'}}>
                     <DataTable rows={tableRows || []} columns={tableColumns}/>
                 </div>
             </div>

@@ -38,7 +38,7 @@
 }
 
 body{
-  background-color: #1765E0;
+  background-color: #1765E0 !important; 
 }
 
 .app-container {

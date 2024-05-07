@@ -8,6 +8,11 @@
   align-items: center;
 }
 
+.drawer-paper {
+  box-shadow: none;
+  border-Right: none;
+}
+
 .SidebarNav {
   background-color: rgba(42, 67, 97, 1);
   width: 250px;

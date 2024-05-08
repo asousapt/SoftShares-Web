@@ -23,7 +23,16 @@ const Sidebar = () => {
   const [openL, setOpenListagem] = useState(false);
   const [openM, setOpenModeracao] = useState(false);
   const [openC, setOpenConfiguracao] = useState(false);
+  const [isHovered, setIsHovered] = React.useState(false);
 
+  const handleMouseOver = () => {
+      setIsHovered(true);
+  };
+
+  const handleMouseOut = () => {
+      setIsHovered(false);
+  };
+  
   const handleClickE = () => {
     setOpenEstatisticas(!openE);
   };
@@ -54,17 +63,19 @@ const Sidebar = () => {
             </div>
 
             {/* Dashboard */}
-            <ListItem component={Link} to="/dashboard" style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '5px', width: '240px', color: 'black'}}>
+            <ListItem component={Link} to="/dashboard" style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '5px', width: '240px', color: isHovered ? 'rgba(77, 156, 250, 1)' : 'black'}}onMouseOver={handleMouseOver}
+            onMouseOut={handleMouseOut}>
                 <ListItemIcon>
-                    <AiIcons.AiFillHome color='black'/>
+                    <AiIcons.AiFillHome style={{color: isHovered ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}/>
                 </ListItemIcon>
                 <ListItemText primary="Dashboard" />
             </ListItem>
             
             {/* Estatisticas */}
-            <ListItem onClick={handleClickE} style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '5px', width: '240px', color: 'black'}}>
+            <ListItem onClick={handleClickE} style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '5px', width: '240px', color: isHovered ? 'rgba(77, 156, 250, 1)' : 'black'}}onMouseOver={handleMouseOver}
+            onMouseOut={handleMouseOut}>
                 <ListItemIcon>
-                    <FaIcons.FaChartBar color='black'/>
+                    <FaIcons.FaChartBar style={{color: isHovered ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}/>
                 </ListItemIcon>
                 <ListItemText primary="Estatísticas" />
                 {openE ? <ExpandLess /> : <ExpandMore />}
@@ -73,13 +84,13 @@ const Sidebar = () => {
                 <List component="div" disablePadding>
                     <ListItem component={Link} to="/estatisticas/utilizadores" style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: 'black'}}>
                         <ListItemIcon>
-                            <IoIcons.IoIosPaper color='black'/>
+                            <IoIcons.IoIosPaper style={{color: isHovered ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}/>
                         </ListItemIcon>
                         <ListItemText primary="Utilizadores" />
                     </ListItem>
                     <ListItem component={Link} to="/estatisticas/denuncias" style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: 'black'}}>
                         <ListItemIcon>
-                            <IoIcons.IoIosPaper color='black'/>
+                            <IoIcons.IoIosPaper style={{color: isHovered ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}/>
                         </ListItemIcon>
                         <ListItemText primary="Denúncias" />
                     </ListItem>
@@ -89,7 +100,7 @@ const Sidebar = () => {
             {/* Listagem */}
             <ListItem onClick={handleClickL} style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '5px', width: '240px', color: 'black'}}>
                 <ListItemIcon>
-                    <FaIcons.FaClipboardList color='black'/>
+                    <FaIcons.FaClipboardList style={{color: isHovered ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}/>
                 </ListItemIcon>
                 <ListItemText primary="Listagem" />
                 {openL ? <ExpandLess /> : <ExpandMore />}
@@ -98,19 +109,19 @@ const Sidebar = () => {
                 <List component="div" disablePadding>
                     <ListItem component={Link} to="/lista/eventos" style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: 'black'}}>
                         <ListItemIcon>
-                            <IoIcons.IoIosPaper color='black'/>
+                            <IoIcons.IoIosPaper style={{color: isHovered ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}/>
                         </ListItemIcon>
                         <ListItemText primary="Eventos" />
                     </ListItem>
                     <ListItem component={Link} to="/lista/pontosinteresse" style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: 'black'}}>
                         <ListItemIcon>
-                            <IoIcons.IoIosPaper color='black'/>
+                            <IoIcons.IoIosPaper style={{color: isHovered ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}/>
                         </ListItemIcon>
                         <ListItemText primary="Pontos de Interesse" />
                     </ListItem>
                     <ListItem component={Link} to="/lista/publicacoes" style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: 'black'}}>
                         <ListItemIcon>
-                            <IoIcons.IoIosPaper color='black'/>
+                            <IoIcons.IoIosPaper style={{color: isHovered ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}/>
                         </ListItemIcon>
                         <ListItemText primary="Publicações" />
                     </ListItem>
@@ -120,7 +131,7 @@ const Sidebar = () => {
             {/* Moderação */}
             <ListItem onClick={handleClickM} style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '5px', width: '240px', color: 'black'}}>
                 <ListItemIcon>
-                    <FaIcons.FaClipboardList color='black'/>
+                    <FaIcons.FaClipboardList style={{color: isHovered ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}/>
                 </ListItemIcon>
                 <ListItemText primary="Moderação" />
                 {openM ? <ExpandLess /> : <ExpandMore />}
@@ -129,13 +140,13 @@ const Sidebar = () => {
                 <List component="div" disablePadding>
                     <ListItem component={Link} to="/moderacao/aprovacoes" style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: 'black'}}>
                         <ListItemIcon>
-                            <IoIcons.IoIosPaper color='black'/>
+                            <IoIcons.IoIosPaper style={{color: isHovered ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}/>
                         </ListItemIcon>
                         <ListItemText primary="Aprovações" />
                     </ListItem>
                     <ListItem component={Link} to="/moderacao/denuncias" style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: 'black'}}>
                         <ListItemIcon>
-                            <IoIcons.IoIosPaper color='black'/>
+                            <IoIcons.IoIosPaper style={{color: isHovered ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}/>
                         </ListItemIcon>
                         <ListItemText primary="Denúncias" />
                     </ListItem>
@@ -145,7 +156,7 @@ const Sidebar = () => {
             {/* Configuração */}
             <ListItem onClick={handleClickC} style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '5px', width: '240px', color: 'black'}}>
                 <ListItemIcon>
-                    <FaIcons.FaClipboardList color='black'/>
+                    <FaIcons.FaClipboardList style={{color: isHovered ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}/>
                 </ListItemIcon>
                 <ListItemText primary="Configuração" />
                 {openC ? <ExpandLess /> : <ExpandMore />}
@@ -154,37 +165,37 @@ const Sidebar = () => {
                 <List component="div" disablePadding>
                     <ListItem component={Link} to="/config/polos" style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: 'black'}}>
                         <ListItemIcon>
-                            <IoIcons.IoIosPaper color='black'/>
+                            <IoIcons.IoIosPaper style={{color: isHovered ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}/>
                         </ListItemIcon>
                         <ListItemText primary="Polos" />
                     </ListItem>
                     <ListItem component={Link} to="/config/forms" style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: 'black'}}>
                         <ListItemIcon>
-                            <IoIcons.IoIosPaper color='black'/>
+                            <IoIcons.IoIosPaper style={{color: isHovered ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}/>
                         </ListItemIcon>
                         <ListItemText primary="Formulários" />
                     </ListItem>
                     <ListItem component={Link} to="/config/utilizadores" style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: 'black'}}>
                         <ListItemIcon>
-                            <MdIcons.MdOutlineManageAccounts color='black'/>
+                            <MdIcons.MdOutlineManageAccounts style={{color: isHovered ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}/>
                         </ListItemIcon>
                         <ListItemText primary="Utilizadores" />
                     </ListItem>
                     <ListItem component={Link} to="/config/categorias" style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: 'black'}}>
                         <ListItemIcon>
-                            <IoIcons.IoIosPaper color='black'/>
+                            <IoIcons.IoIosPaper style={{color: isHovered ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}/>
                         </ListItemIcon>
                         <ListItemText primary="Categorias" />
                     </ListItem>
                     <ListItem component={Link} to="/config/subcategorias" style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: 'black'}}>
                         <ListItemIcon>
-                            <IoIcons.IoIosPaper color='black'/>
+                            <IoIcons.IoIosPaper style={{color: isHovered ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}/>
                         </ListItemIcon>
                         <ListItemText primary="Subcategorias" />
                     </ListItem>
                     <ListItem component={Link} to="/config/alertas" style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: 'black'}}>
                         <ListItemIcon>
-                            <IoIcons.IoIosPaper color='black'/>
+                            <IoIcons.IoIosPaper style={{color: isHovered ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}/>
                         </ListItemIcon>
                         <ListItemText primary="Alertas" />
                     </ListItem>

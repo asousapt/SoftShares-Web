@@ -3,8 +3,8 @@ import './page.css';
 /* COMPONENTES */
 import DataTable from '../components/tables/dataTable';
 import EditButton from '../components/buttons/editButton';
-import AprovButton from '../components/buttons/aprovButton';
-import RejButton from '../components/buttons/rejButton';
+import AprovButton from '../components/buttons/aproveButton';
+import RejButton from '../components/buttons/rejectButton';
 import Header from '../components/header/header';
 import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';

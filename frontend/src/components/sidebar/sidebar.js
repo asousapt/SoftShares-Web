@@ -102,7 +102,7 @@ const Sidebar = () => {
                         </ListItemIcon>
                         <ListItemText primary="Eventos" />
                     </ListItem>
-                    <ListItem component={Link} to="/lista/poi" style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: 'black'}}>
+                    <ListItem component={Link} to="/lista/pontosinteresse" style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: 'black'}}>
                         <ListItemIcon>
                             <IoIcons.IoIosPaper color='black'/>
                         </ListItemIcon>

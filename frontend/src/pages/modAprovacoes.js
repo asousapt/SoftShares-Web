@@ -4,6 +4,7 @@ import './page.css';
 import DataTable from '../components/tables/dataTable';
 import EditButton from '../components/buttons/editButton';
 import AprovButton from '../components/buttons/aproveButton';
+import DetailButton from '../components/buttons/detailButton';
 import RejButton from '../components/buttons/rejectButton';
 import Header from '../components/header/header';
 import AddButton from '../components/buttons/addButton';
@@ -20,9 +21,9 @@ export default function ModAprov() {
         { field: 'tipo', headerName: 'Tipo', flex: 1, headerAlign: 'left' },
         { field: 'titulo', headerName: 'Título', flex: 2, headerAlign: 'left' },
         { field: 'criadoPor', headerName: 'Criado Por', flex: 1, headerAlign: 'left' },
-        { field: 'permitir', headerName: 'Permitir', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <AprovButton /*onclick={} id={row.id}*/ />)},
-        { field: 'remover', headerName: 'Remover', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <RejButton caption=' ' /*onclick={} id={row.id}*/ />)},
-        { field: 'ver', headerName: 'Ver', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
+        { field: 'permitir', headerName: 'Permitir', width: 85, headerAlign: 'left', sortable: false , renderCell: (row) => ( <AprovButton /*onclick={} id={row.id}*/ />)},
+        { field: 'remover', headerName: 'Remover', width: 85, headerAlign: 'left', sortable: false , renderCell: (row) => ( <RejButton /*onclick={} id={row.id}*/ />)},
+        { field: 'ver', headerName: 'Ver', width: 85, headerAlign: 'left', sortable: false , renderCell: (row) => ( <DetailButton /*onclick={} id={row.id}*/ />)},
     ];
 
     const tableRows = [

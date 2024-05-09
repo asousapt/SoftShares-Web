@@ -18,9 +18,9 @@ export default function ConfigCategorias() {
 
     const tableColumns = [
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
-        { field: 'categoria', headerName: 'Categoria', flex: 0.5, headerAlign: 'left' },
+        { field: 'categoria', headerName: 'Categoria', flex: 1, headerAlign: 'left' },
         { field: 'dataHora', headerName: 'Data e Hora de Começo', type: 'dateTime', width: 300, headerAlign: 'left' },
-        { field: 'criadoPor', headerName: 'Criado por', flex: 1, headerAlign: 'left' },
+        { field: 'criadoPor', headerName: 'Criado por', flex: 0.5, headerAlign: 'left' },
         { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => ( <StateChanger status={row.value} />) },
         { field: 'ver', headerName: 'Ver', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
     ];

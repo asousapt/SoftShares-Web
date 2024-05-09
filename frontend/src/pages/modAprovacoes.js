@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import './page.css';
 /* COMPONENTES */
 import DataTable from '../components/tables/dataTable';
-import EditButton from '../components/buttons/editButton';
 import AprovButton from '../components/buttons/aproveButton';
 import DetailButton from '../components/buttons/detailButton';
 import RejButton from '../components/buttons/rejectButton';

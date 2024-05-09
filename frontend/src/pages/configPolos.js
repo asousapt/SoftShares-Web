@@ -8,6 +8,7 @@ import RejButton from '../components/buttons/rejectButton';
 import Header from '../components/header/header';
 import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
+import StateChanger from '../components/stateChanger/stateChanger';
 /* FIM COMPONENTES */
 import NovoEvento from '../modals/novoEvento';
 
@@ -16,47 +17,45 @@ export default function ConfigPolos() {
     const [filtroText, setFiltroText] = useState('');
 
     const tableColumns = [
-        { field: 'id', headerName: 'ID', width: 50, headerAlign: 'center' },
-        { field: 'motivo', headerName: 'Motivo', flex: 0.5, headerAlign: 'left' },
-        { field: 'dataHora', headerName: 'Data e Hora de Começo', type: 'dateTime', width: 300, headerAlign: 'left' },
-        { field: 'criadoPor', headerName: 'Criado por', flex: 1, headerAlign: 'left' },
-        { field: 'denunciadopor', headerName: 'Denunciado Por', flex: 1, headerAlign: 'left' },
-        { field: 'permitir', headerName: 'Permitir', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <AprovButton caption=' ' /*onclick={} id={row.id}*/ />)},
-        { field: 'remover', headerName: 'Remover', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <RejButton caption=' ' /*onclick={} id={row.id}*/ />)},
-        { field: 'ver', headerName: 'Ver', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
+        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
+        { field: 'descricao', headerName: 'Descrição', flex: 0.5, headerAlign: 'left' },
+        { field: 'numerousers', headerName: 'Utilizadores', flex: 0.5, headerAlign: 'left' },
+        { field: 'localidade', headerName: 'Localidade', flex: 0.5, headerAlign: 'left' },
+        { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => ( <StateChanger status={row.value} />) },
+        { field: 'status', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
     ];
 
     const tableRows = [
-        { id: 1, motivo: 'teste1', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo1',  denunciadopor: 'algo1' },
-        { id: 2, motivo: 'teste2', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo2', denunciadopor: 'algo2' },
-        { id: 3, motivo: 'teste3', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo3', denunciadopor: 'algo3' },
-        { id: 4, motivo: 'teste4', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo4', denunciadopor: 'algo4' },
-        { id: 5, motivo: 'teste5', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo5', denunciadopor: 'algo5' },
-        { id: 6, motivo: 'teste6', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo6', denunciadopor: 'algo6' },
-        { id: 7, motivo: 'teste7', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo7', denunciadopor: 'algo7' },
-        { id: 8, motivo: 'teste8', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo8', denunciadopor: 'algo8' },
-        { id: 9, motivo: 'teste9', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo9', denunciadopor: 'algo9' },
-        { id: 10, motivo: 'teste10', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo10', denunciadopor: 'algo10' },
-        { id: 11, motivo: 'teste11', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo11', denunciadopor: 'algo11' },
-        { id: 12, motivo: 'teste12', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo12', denunciadopor: 'algo12' },
-        { id: 13, motivo: 'teste13', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo13', denunciadopor: 'algo13' },
-        { id: 14, motivo: 'teste14', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo14', denunciadopor: 'algo14' },
-        { id: 15, motivo: 'teste15', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo15', denunciadopor: 'algo15' },
-        { id: 16, motivo: 'teste16', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo16', denunciadopor: 'algo16' },
-        { id: 17, motivo: 'teste17', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo17', denunciadopor: 'algo17' },
-        { id: 18, motivo: 'teste18', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo18', denunciadopor: 'algo18' },
-        { id: 19, motivo: 'teste19', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo19', denunciadopor: 'algo19' },
-        { id: 20, motivo: 'teste20', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo20', denunciadopor: 'algo20' },
-        { id: 21, motivo: 'teste21', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo21', denunciadopor: 'algo21' },
-        { id: 22, motivo: 'teste22', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo22', denunciadopor: 'algo22' },
-        { id: 23, motivo: 'teste23', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo23', denunciadopor: 'algo23' },
-        { id: 24, motivo: 'teste24', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo24', denunciadopor: 'algo24' },
-        { id: 25, motivo: 'teste25', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo25', denunciadopor: 'algo25' },
-        { id: 26, motivo: 'teste26', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo26', denunciadopor: 'algo26' },
-        { id: 27, motivo: 'teste27', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo27', denunciadopor: 'algo27' },
-        { id: 28, motivo: 'teste28', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo28', denunciadopor: 'algo28' },
-        { id: 29, motivo: 'teste29', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo29', denunciadopor: 'algo29' },
-        { id: 30, motivo: 'teste30', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo30', denunciadopor: 'algo30' },
+        { id: 1, descricao: 'Campo de Viseu', numerousers: '2375', localidade: 'Viseu', estado: 'Ativo' },
+        { id: 2, descricao: 'Campo de Coimbroes', numerousers: '235', localidade: 'Coimbroes', estado: 'Desativo' },
+        { id: 3, descricao: 'Campo de Lisboa', numerousers: '1341', localidade: 'Lisboa', estado: 'Ativo' },
+        { id: 4, descricao: 'Campo de Porto', numerousers: '123', localidade: 'Porto', estado: 'Ativo' },
+        { id: 5, descricao: 'Campo de Aveiro', numerousers: '456', localidade: 'Aveiro', estado: 'Desativo' },
+        { id: 6, descricao: 'Campo de Braga', numerousers: '789', localidade: 'Braga', estado: 'Ativo' },
+        { id: 7, descricao: 'Campo de Faro', numerousers: '1011', localidade: 'Faro', estado: 'Ativo' },
+        { id: 8, descricao: 'Campo de Leiria', numerousers: '1213', localidade: 'Leiria', estado: 'Desativo' },
+        { id: 9, descricao: 'Campo de Setubal', numerousers: '1415', localidade: 'Setubal', estado: 'Desativo' },
+        { id: 10, descricao: 'Campo de Viana', numerousers: '1617', localidade: 'Viana', estado: 'Desativo' },
+        { id: 11, descricao: 'Campo de Guarda', numerousers: '1819', localidade: 'Guarda', estado: 'Ativo' },
+        { id: 12, descricao: 'Campo de Santarem', numerousers: '2021', localidade: 'Santarem', estado: 'Ativo' },
+        { id: 13, descricao: 'Campo de Beja', numerousers: '2223', localidade: 'Beja', estado: 'Ativo' },
+        { id: 14, descricao: 'Campo de Evora', numerousers: '2425', localidade: 'Evora', estado: 'Ativo' },
+        { id: 15, descricao: 'Campo de Portalegre', numerousers: '2627', localidade: 'Portalegre', estado: 'Desativo' },
+        { id: 16, descricao: 'Campo de Braganca', numerousers: '2829', localidade: 'Braganca', estado: 'Desativo' },
+        { id: 17, descricao: 'Campo de Castelo Branco', numerousers: '3031', localidade: 'Castelo Branco', estado: 'Ativo' },
+        { id: 18, descricao: 'Campo de Vila Real', numerousers: '3233', localidade: 'Vila Real', estado: 'Desativo' },
+        { id: 19, descricao: 'Campo de Viseu', numerousers: '3435', localidade: 'Viseu', estado: 'Ativo' },
+        { id: 20, descricao: 'Campo de Coimbroes', numerousers: '3637', localidade: 'Coimbroes', estado: 'Desativo' },
+        { id: 21, descricao: 'Campo de Lisboa', numerousers: '3839', localidade: 'Lisboa', estado: 'Ativo' },
+        { id: 22, descricao: 'Campo de Porto', numerousers: '4041', localidade: 'Porto', estado: 'Ativo' },
+        { id: 23, descricao: 'Campo de Aveiro', numerousers: '4243', localidade: 'Aveiro', estado: 'Ativo' },
+        { id: 24, descricao: 'Campo de Braga', numerousers: '4445', localidade: 'Braga', estado: 'Ativo' },
+        { id: 25, descricao: 'Campo de Faro', numerousers: '4647', localidade: 'Faro', estado: 'Ativo' },
+        { id: 26, descricao: 'Campo de Leiria', numerousers: '4849', localidade: 'Leiria', estado: 'Desativo' },
+        { id: 27, descricao: 'Campo de Setubal', numerousers: '5051', localidade: 'Setubal', estado: 'Ativo' },
+        { id: 28, descricao: 'Campo de Viana', numerousers: '5253', localidade: 'Viana', estado: 'Ativo' },
+        { id: 29, descricao: 'Campo de Guarda', numerousers: '5455', localidade: 'Guarda', estado: 'Ativo' },
+        { id: 30, descricao: 'Campo de Santarem', numerousers: '5657', localidade: 'Santarem', estado: 'Ativo' },
     ];
 
     const handleOpenNewModal = () => {

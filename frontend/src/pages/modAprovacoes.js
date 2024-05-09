@@ -17,7 +17,7 @@ export default function ModAprov() {
     const [filtroText, setFiltroText] = useState('');
 
     const tableColumns = [
-        { field: 'id', headerName: 'ID', width: 50, headerAlign: 'center' },
+        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
         { field: 'tipo', headerName: 'Tipo', flex: 1, headerAlign: 'left' },
         { field: 'titulo', headerName: 'Título', flex: 2, headerAlign: 'left' },
         { field: 'criadoPor', headerName: 'Criado Por', flex: 1, headerAlign: 'left' },

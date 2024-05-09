@@ -16,7 +16,7 @@ export default function StatsDenuncias() {
     const [filtroText, setFiltroText] = useState('');
 
     const tableColumns = [
-        { field: 'id', headerName: 'ID', width: 50, headerAlign: 'center' },
+        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
         { field: 'titulo', headerName: 'Título', flex: 2, headerAlign: 'center' },
         { field: 'nParticipantes', headerName: '# Participantes', flex: 0.5, headerAlign: 'center' },
         { field: 'dataHora', headerName: 'Data e Hora de Começo', type: 'dateTime', width: 200, headerAlign: 'center' },

@@ -15,17 +15,33 @@ export default function ListaPublicacoes() {
     const [filtroText, setFiltroText] = useState('');
 
     const tableColumns = [
-        { field: 'id', headerName: 'ID', width: 50, headerAlign: 'center' },
-        { field: 'titulo', headerName: 'Título', flex: 2, headerAlign: 'center' },
-        { field: 'dataHora', headerName: 'Data e Hora de Criação', type: 'dateTime', width: 200, headerAlign: 'center' },
-        { field: 'criadoPor', headerName: 'Criado por', flex: 1, headerAlign: 'center' },
-        { field: 'estado', headerName: 'Estado', flex: 0.5, headerAlign: 'center', renderCell: (row) => ( <StateChanger status={row.value} />) },
-        { field: 'edit', headerName: ' ', width: 90, headerAlign: 'center', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
+        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
+        { field: 'titulo', headerName: 'Título', flex: 1, headerAlign: 'left' },
+        { field: 'dataHora', headerName: 'Data e Hora de Criação', type: 'dateTime', width: 300, headerAlign: 'left' },
+        { field: 'criadoPor', headerName: 'Criado por', flex: 1, headerAlign: 'left' },
+        { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'left', renderCell: (row) => ( <StateChanger status={row.value} />) },
+        { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
     ];
     
     const tableRows = [
         { id: 1, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Ativo' },
         { id: 2, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Inativo' },
+        { id: 3, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Ativo' },
+        { id: 4, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Inativo' },
+        { id: 5, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Ativo' },
+        { id: 6, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Inativo' },
+        { id: 7, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Ativo' },
+        { id: 8, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Inativo' },
+        { id: 9, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Ativo' },
+        { id: 10, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Inativo' },
+        { id: 11, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Ativo' },
+        { id: 12, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Inativo' },
+        { id: 13, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Ativo' },
+        { id: 14, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Inativo' },
+        { id: 15, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Ativo' },
+        { id: 16, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Inativo' },
+        { id: 17, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Ativo' },
+        { id: 18, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Inativo' },
     ];
 
     const handleOpenNewModal = () => {

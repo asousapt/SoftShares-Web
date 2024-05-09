@@ -16,7 +16,7 @@ export default function ModDen() {
     const [filtroText, setFiltroText] = useState('');
 
     const tableColumns = [
-        { field: 'id', headerName: 'ID', width: 50, headerAlign: 'center' },
+        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
         { field: 'motivo', headerName: 'Motivo', flex: 0.5, headerAlign: 'left' },
         { field: 'dataHora', headerName: 'Data e Hora de Começo', type: 'dateTime', width: 300, headerAlign: 'left' },
         { field: 'criadoPor', headerName: 'Criado por', flex: 1, headerAlign: 'left' },

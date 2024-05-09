@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-
 export default function State({ status }) {
     return (
         <div>
@@ -14,7 +13,8 @@ export default function State({ status }) {
                         height: 40,
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center'
+                        justifyContent: 'center',
+                        fontWeight: '600',
                     }}
                 >
                     Ativo
@@ -29,7 +29,8 @@ export default function State({ status }) {
                         height: 40,
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center'
+                        justifyContent: 'center',
+                        fontWeight: '600'
                     }}
                 >
                     Inativo

@@ -11,7 +11,7 @@ import Search from '../components/textFields/search';
 /* FIM COMPONENTES */
 import NovoEvento from '../modals/novoEvento';
 
-export default function ListaAlertas() {
+export default function ConfigAlertas() {
     const [isNewModalOpen, setNewModalOpen] = useState(false);
     const [filtroText, setFiltroText] = useState('');
 

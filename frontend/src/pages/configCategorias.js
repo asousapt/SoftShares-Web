@@ -11,7 +11,7 @@ import Search from '../components/textFields/search';
 /* FIM COMPONENTES */
 import NovoEvento from '../modals/novoEvento';
 
-export default function ListaSubcategorias() {
+export default function ConfigCategorias() {
     const [isNewModalOpen, setNewModalOpen] = useState(false);
     const [filtroText, setFiltroText] = useState('');
 
@@ -73,7 +73,7 @@ export default function ListaSubcategorias() {
 
     return(
         <div className="page-container">
-            <Header caption='Subcategorias' />
+            <Header caption='Categorias' />
             <div className="data-container">
                 <div style={{marginBottom:'20px', paddingTop: '20px'}}>
                     <AddButton caption='Adicionar' onclick={handleOpenNewModal} />

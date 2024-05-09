@@ -8,8 +8,8 @@ export default function Header({caption}){
     <div className="header">
         <h1 className="title">{caption}</h1>
         <div className="user-options">
-            <NotificationsIcon /* onClick={handleNotificationsClick} */ />
-            <AccountCircleIcon /* onClick={handleAccountClick} */ />
+            <NotificationsIcon /* onClick={handleNotificationsClick} */ style={{color: 'white'}} />
+            <AccountCircleIcon /* onClick={handleAccountClick} */ style={{color: 'white'}} />
         </div>
     </div>
     );

@@ -22,7 +22,7 @@ export default function Configtilizadores() {
         { field: 'tipo', headerName: 'Tipo', flex: 0.5, headerAlign: 'left' },
         { field: 'dataHora', headerName: 'Data de Criação', type: 'dateTime', width: 300, headerAlign: 'left' },
         { field: 'departamento', headerName: 'Departamento', flex: 0.5 , headerAlign: 'left' },
-        { field: 'funcao', headerName: 'Função', flex: 1 , headerAlign: 'left', color: 'blue'},
+        { field: 'funcao', headerName: 'Função', flex: 1 , headerAlign: 'left'},
         { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => ( <StateChanger status={row.value} />) },
         { field: 'status', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
     ];

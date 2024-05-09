@@ -15,11 +15,11 @@ export default function StatsUtilizador() {
 
     const tableColumns = [
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
-        { field: 'titulo', headerName: 'Título', flex: 2, headerAlign: 'center' },
-        { field: 'nParticipantes', headerName: '# Participantes', flex: 0.5, headerAlign: 'center' },
-        { field: 'dataHora', headerName: 'Data e Hora de Começo', type: 'dateTime', width: 200, headerAlign: 'center' },
-        { field: 'localizacao', headerName: 'Localização', flex: 1, headerAlign: 'center' },
-        { field: 'edit', headerName: ' ', width: 90, headerAlign: 'center', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
+        { field: 'titulo', headerName: 'Título', flex: 2, headerAlign: 'left' },
+        { field: 'nParticipantes', headerName: '# Participantes', flex: 0.5, headerAlign: 'left' },
+        { field: 'dataHora', headerName: 'Data e Hora de Começo', type: 'dateTime', width: 200, headerAlign: 'left' },
+        { field: 'localizacao', headerName: 'Localização', flex: 1, headerAlign: 'left' },
+        { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
     ];
 
     const tableRows = [

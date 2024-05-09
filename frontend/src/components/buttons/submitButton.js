@@ -11,7 +11,8 @@ export default function SubmitButton({caption, onclick}) {
             style={{
                 borderRadius: '24px', 
                 backgroundColor: '#0465D9', 
-                color: 'white'
+                color: 'white',
+                textTransform: 'none'
             }}
         > {caption} </Button>
     );

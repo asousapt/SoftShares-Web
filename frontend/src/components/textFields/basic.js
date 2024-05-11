@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { TextField } from '@mui/material';
+import { TextField, InputAdornment, IconButton, InputLabel } from '@mui/material';
 
-export default function BasicTextField({caption, valor, onchange, fullwidth}) {
+export default function BasicTextField({caption, valor, onchange, fullwidth, multiline}) {
     return (
-        <TextField id="standard-basic" label={caption} value={valor} onChange={onchange} variant="standard" fullWidth={fullwidth} />
+        <TextField id="standard-basic" label={caption} value={valor} onChange={onchange} variant="outlined" fullWidth={fullwidth} multiline={multiline} rows={9} maxRows={10} 
+        InputLabelProps={{ shrink: true }} InputProps={{startAdornment: (<InputLabel shrink>{caption}</InputLabel>)}}/>
     );
 }

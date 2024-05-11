@@ -16,6 +16,7 @@ const AddEventModal = ({ open, onClose }) => {
     const [localizacao, setLocalizacao] = useState('');
     const [description, setDescription] = useState('');
     const [numParticipantes, setNumParticipantes] = useState('');
+    const [numConvidados, setNumConvidados] = useState('');
     const [subcategoria, setSubcategoria] = useState('');
 
     const handleAddEvent = () => {
@@ -36,8 +37,8 @@ const AddEventModal = ({ open, onClose }) => {
                         <BasicTextField caption='Descrição' valor={description} onchange={(e) => setDescription(e.target.value)} fullwidth={true} />
                         <div style={{marginBottom: 20}}></div>
                         <div style={{display: 'flex', gap: '10px'}}>
-                            <BasicTextField caption='Nº Participantes Máximo' valor={numParticipantes} onchange={(e) => setNumParticipantes(e.target.value)} />
-                            <BasicTextField caption='Nº Convidados Máximo' valor={numParticipantes} onchange={(e) => setNumParticipantes(e.target.value)} />
+                            <BasicTextField caption='Nº Participantes Máximo' type='number' valor={numParticipantes} onchange={(e) => setNumParticipantes(e.target.value)} />
+                            <BasicTextField caption='Nº Convidados Máximo' type='number' valor={numConvidados} onchange={(e) => setNumConvidados(e.target.value)} />
                             <DataHora />
                             <div style={{width: '25%'}}>
                                 <ComboBox caption='Subcategoria' options={opcoes} value={subcategoria} handleChange={(e) => setSubcategoria(e.target.value)} />

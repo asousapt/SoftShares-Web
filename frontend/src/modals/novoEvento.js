@@ -15,6 +15,7 @@ const opcoes = [
 const imgs = [
     {src: 'https://i1.sndcdn.com/artworks-000537542583-dr2w2s-t500x500.jpg', alt: 'testas'},
     {src: 'https://i1.sndcdn.com/artworks-000537542583-dr2w2s-t500x500.jpg', alt: 'testas'},
+    {src: 'https://i1.sndcdn.com/artworks-000537542583-dr2w2s-t500x500.jpg', alt: 'testas'},
 ];
 
 const AddEventModal = ({ open, onClose }) => {
@@ -42,11 +43,15 @@ const AddEventModal = ({ open, onClose }) => {
                         <div style={{marginBottom: 20}}></div>
                         <BasicTextField caption='Descrição' valor={description} onchange={(e) => setDescription(e.target.value)} fullwidth={true} />
                         <div style={{marginBottom: 20}}></div>
-                        <div style={{display: 'flex', gap: '10px'}}>
-                            <BasicTextField caption='Nº Participantes Máximo' type='number' valor={numParticipantes} onchange={(e) => setNumParticipantes(e.target.value)} />
-                            <BasicTextField caption='Nº Convidados Máximo' type='number' valor={numConvidados} onchange={(e) => setNumConvidados(e.target.value)} />
+                        <div style={{display: 'flex', gap: 5}}>
+                            <div style={{width: '20%'}}>
+                                <BasicTextField caption='Nº Participantes Máximo' type='number' valor={numParticipantes} onchange={(e) => setNumParticipantes(e.target.value)} />
+                            </div>
+                            <div style={{width: '20%'}}>
+                                <BasicTextField caption='Nº Convidados Máximo' type='number' valor={numConvidados} onchange={(e) => setNumConvidados(e.target.value)} />
+                            </div>
                             <DataHora caption="Data e Hora" />
-                            <div style={{width: '30%'}}>
+                            <div style={{width: '40%'}}>
                                 <ComboBox caption='Subcategoria' options={opcoes} value={subcategoria} handleChange={(e) => setSubcategoria(e.target.value)} />
                             </div>
                         </div>

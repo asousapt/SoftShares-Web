@@ -9,7 +9,7 @@ import Search from '../components/textFields/search';
 import StateChanger from '../components/stateChanger/stateChanger';
 import ComboFilter from '../components/combobox/comboFilter';
 /* FIM COMPONENTES */
-import NovoEvento from '../modals/novoEvento';
+import NovoPolo from '../modals/novoPolo';
 
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},
@@ -64,32 +64,20 @@ export default function ConfigPolos() {
         { id: 30, descricao: 'Campo de Santarem', numerousers: '5657', localidade: 'Santarem', estado: 'Ativo' },
     ];
 
-    const handleOpenNewModal = () => {
-        setNewModalOpen(true);
-    };
-
-    const handleCloseNewModal = () => {
-        setNewModalOpen(false);
-    };
-
-    const handleTextFilter = (e) => {
-        setFiltroText(e.target.value);
-    };
-
     return(
         <div className="page-container">
             <Header caption='Polos' />
             <div className="data-container">
                 <div style={{ marginBottom:'20px', paddingTop: '20px'}}>
-                    <AddButton caption='Adicionar' onclick={handleOpenNewModal} />
-                    <Search onchange={handleTextFilter} />
+                    <AddButton caption='Adicionar' onclick={() => setNewModalOpen(true)} />
+                    <Search onchange={(e) => setFiltroText(e.target.value)} />
                     <ComboFilter options={opcoesFiltro} value={filtroCombo} handleChange={(e) => setFiltroCombo(e.target.value)} />
                 </div>
                 <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px',border: 'none', boxShadow: 'none'}}>
                     <DataTable rows={tableRows || []} columns={tableColumns}/>
                 </div>
             </div>
-            <NovoEvento open={isNewModalOpen} onClose={handleCloseNewModal}/>
+            <NovoPolo open={isNewModalOpen} onClose={() => setNewModalOpen(false)}/>
         </div>
     )
 }

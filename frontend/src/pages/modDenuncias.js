@@ -6,10 +6,10 @@ import DetailButton from '../components/buttons/detailButton';
 import AprovButton from '../components/buttons/aproveButton';
 import RejButton from '../components/buttons/rejectButton';
 import Header from '../components/header/header';
-import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
 /* FIM COMPONENTES */
 import NovoEvento from '../modals/novoEvento';
+
 
 export default function ModDen() {
     const [isNewModalOpen, setNewModalOpen] = useState(false);
@@ -76,7 +76,6 @@ export default function ModDen() {
             <Header caption='Denúncias' />
             <div className="data-container">
                 <div style={{marginBottom:'20px', paddingTop: '20px'}}>
-                    <AddButton caption='Adicionar' onclick={handleOpenNewModal} />
                     <Search onchange={handleTextFilter} />
                 </div>
                 <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px',border: 'none', boxShadow: 'none'}}>

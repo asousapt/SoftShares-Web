@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TextField, InputAdornment, IconButton, InputLabel } from '@mui/material';
+import { TextField, InputLabel } from '@mui/material';
 
 export default function BasicTextField({caption, valor, onchange, fullwidth, multiline, type, style}) {
     return (

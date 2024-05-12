@@ -42,8 +42,12 @@ const AddPubModal = ({ open, onClose }) => {
                             <ComboBox caption='Subcategoria' options={opcoes} value={subcategoria} handleChange={(e) => setSubcategoria(e.target.value)}/>
                             </div>
                         </div>
+<<<<<<< HEAD
                         <div style={{marginBottom: 20}}></div>
                         <BasicTextField caption='Sub-Título' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} />
+=======
+                        {/* <BasicTextField caption='Sub-Título' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} /> */}
+>>>>>>> 8d87ca48cbb0a494698dad08d2c2e4ad6c58219f
                         <div style={{marginBottom: 20}}></div>
                         <BasicTextField multiline={true} caption='Descrição' valor={description} onchange={(e) => setDescription(e.target.value)} fullwidth={true}/>
                         <div style={{marginBottom: 20}}></div>

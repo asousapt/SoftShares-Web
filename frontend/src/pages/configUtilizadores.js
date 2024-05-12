@@ -9,7 +9,7 @@ import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
 import StateChanger from '../components/stateChanger/stateChanger';
 /* FIM COMPONENTES */
-import NovoEvento from '../modals/novoEvento';
+import NovoUser from '../modals/novoUtilizador';
 
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},
@@ -91,7 +91,7 @@ export default function Configtilizadores() {
                     <DataTable rows={tableRows || []} columns={tableColumns}/>
                 </div>
             </div>
-            <NovoEvento open={isNewModalOpen} onClose={handleCloseNewModal}/>
+            <NovoUser open={isNewModalOpen} onClose={handleCloseNewModal}/>
         </div>
     )
 }

@@ -6,12 +6,27 @@ import EditButton from '../components/buttons/editButton';
 import Header from '../components/header/header';
 import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
+import ComboFilter from '../components/combobox/comboFilter';
 /* FIM COMPONENTES */
 import NovoEvento from '../modals/novoEvento';
+
+const opcoesFiltroEstado = [
+    { value:'Todos', label: 'Todos'},
+    { value:'Ativos', label: 'Apenas Ativos'},
+    { value:'inativos', label: 'Apenas Inativos'}
+];
+
+const opcoesFiltroCat = [
+    { value:'Todos', label: 'Todos'},
+    { value:'Ativos', label: 'Apenas Ativos'},
+    { value:'inativos', label: 'Apenas Inativos'}
+];
 
 export default function ListaEventos() {
     const [isNewModalOpen, setNewModalOpen] = useState(false);
     const [filtroText, setFiltroText] = useState('');
+    const [filtroEstado, setFiltroEstado] = useState('Todos');
+    const [filtroCategoria, setFiltroCategoria] = useState('Todos');
 
     const tableColumns = [
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
@@ -87,6 +102,8 @@ export default function ListaEventos() {
                 <div style={{marginBottom:'20px', paddingTop: '20px'}}>
                     <AddButton caption='Adicionar' onclick={handleOpenNewModal} />
                     <Search onchange={handleTextFilter} />
+                    <ComboFilter options={opcoesFiltroEstado} value={filtroEstado} handleChange={(e) => setFiltroEstado(e.target.value)} />
+                    <ComboFilter options={opcoesFiltroCat} value={filtroCategoria} handleChange={(e) => setFiltroCategoria(e.target.value)} />
                 </div>
                 <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px', border: 'none', boxShadow: 'none'}}>
                     <DataTable rows={tableRows || []} columns={tableColumns}/>

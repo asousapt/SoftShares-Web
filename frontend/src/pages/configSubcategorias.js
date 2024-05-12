@@ -9,7 +9,7 @@ import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
 import StateChanger from '../components/stateChanger/stateChanger';
 /* FIM COMPONENTES */
-import NovoEvento from '../modals/novoEvento';
+import NovaSubcategoria from '../modals/novaSubcategoria';
 
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},
@@ -65,32 +65,20 @@ export default function ConfigSubcategorias() {
         { id: 30, subcategoria: 'teste30', categoria: 'teste1', dataHora: new Date('2023-12-19T20:00:00'), criadoPor: 'algo30', estado: 'Ativo' },
     ];
 
-    const handleOpenNewModal = () => {
-        setNewModalOpen(true);
-    };
-
-    const handleCloseNewModal = () => {
-        setNewModalOpen(false);
-    };
-
-    const handleTextFilter = (e) => {
-        setFiltroText(e.target.value);
-    };
-
     return(
         <div className="page-container">
             <Header caption='Subcategorias' />
             <div className="data-container">
                 <div style={{marginBottom:'20px', paddingTop: '20px'}}>
-                    <AddButton caption='Adicionar' onclick={handleOpenNewModal} />
-                    <Search onchange={handleTextFilter} />
+                    <AddButton caption='Adicionar' onclick={() => setNewModalOpen(true)} />
+                    <Search onchange={(e) => setFiltroText(e.target.value)} />
                     <ComboFilter options={opcoesFiltro} value={filtroCombo} handleChange={(e) => setFiltroCombo(e.target.value)} />
                 </div>
                 <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px',border: 'none', boxShadow: 'none'}}>
                     <DataTable rows={tableRows || []} columns={tableColumns}/>
                 </div>
             </div>
-            <NovoEvento open={isNewModalOpen} onClose={handleCloseNewModal}/>
+            <NovaSubcategoria open={isNewModalOpen} onClose={() => setNewModalOpen(false)}/>
         </div>
     )
 }

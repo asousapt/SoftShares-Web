@@ -16,7 +16,7 @@
 .user-options {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 5px;
     margin-right: 0;
     padding-right: 0;
 }

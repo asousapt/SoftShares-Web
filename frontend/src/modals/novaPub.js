@@ -29,7 +29,7 @@ const AddPubModal = ({ open, onClose }) => {
                                 <BasicTextField caption='Subcategoria da Publicação' valor={subcategoria} onchange={(e) => setSubcategoria(e.target.value)} />
                             </div>
                         </div>
-                        <BasicTextField caption='Sub-Título' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} />
+                        {/* <BasicTextField caption='Sub-Título' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} /> */}
                         <div style={{marginBottom: 20}}></div>
                         <BasicTextField multiline={true} caption='Descrição' valor={description} onchange={(e) => setDescription(e.target.value)} fullwidth={true}/>
                     </div>

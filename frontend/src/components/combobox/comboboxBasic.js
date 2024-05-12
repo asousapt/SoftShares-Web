@@ -7,8 +7,8 @@ import Select from '@mui/material/Select';
 export default function comboBasic({caption, value, handleChange, options, fullwidth = false, mostraOpcaoVazia = false}) {
     return (
         <FormControl variant="standard" fullWidth={fullwidth} sx={{marginTop: 0, width: '100%'}}>
-            <InputLabel id="demo-simple-select-standard-label">{caption}</InputLabel>
-            <Select value={value} onChange={handleChange} label={caption}>
+            <InputLabel id="demo-simple-select-standard-label" shrink='true' >{caption}</InputLabel>
+            <Select value={value} onChange={handleChange} label={caption} >
                 {mostraOpcaoVazia && (
                     <MenuItem value=""> </MenuItem>
                 )}

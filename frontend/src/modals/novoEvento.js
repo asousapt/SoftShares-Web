@@ -45,7 +45,7 @@ const AddEventModal = ({ open, onClose }) => {
                         <div style={{display: 'flex', gap: '10px'}}>
                             <BasicTextField caption='Nº Participantes Máximo' type='number' valor={numParticipantes} onchange={(e) => setNumParticipantes(e.target.value)} />
                             <BasicTextField caption='Nº Convidados Máximo' type='number' valor={numConvidados} onchange={(e) => setNumConvidados(e.target.value)} />
-                            <DataHora />
+                            <DataHora caption="Data e Hora" />
                             <div style={{width: '25%'}}>
                                 <ComboBox caption='Subcategoria' options={opcoes} value={subcategoria} handleChange={(e) => setSubcategoria(e.target.value)} />
                             </div>

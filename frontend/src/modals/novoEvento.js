@@ -13,7 +13,7 @@ const opcoes = [
 ];
 
 const imgs = [
-    {src: 'https://blogs.sapo.pt/cloud/thumb/6416b670f92d625dec1de880371d4b4e/coisasdavida/2018/Argentina.jpg?size=xl', alt: 'teste'},
+    {src: 'https://i1.sndcdn.com/artworks-000537542583-dr2w2s-t500x500.jpg', alt: 'testas'},
     {src: 'https://i1.sndcdn.com/artworks-000537542583-dr2w2s-t500x500.jpg', alt: 'testas'},
 ];
 

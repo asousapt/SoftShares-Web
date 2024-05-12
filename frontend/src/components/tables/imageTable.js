@@ -2,10 +2,9 @@ import React from 'react';
 import { IconButton } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
-const ImageTable = ({ images, header, onAddImage }) => {
+const ImageTable = ({ images, onAddImage, styleProp }) => {
     return (
-        <div style={{paddingBottom: 10}}>
-            <h3>{header}</h3>
+        <div style={styleProp}>
             <div style={{ overflowX: 'auto', display: 'flex', whiteSpace: 'nowrap' }}>
                 {images.map((image, index) => (
                     <img key={index} src={image.src} alt={image.alt} style={{ width: 'auto', height: '200px', marginRight: '10px' }} />

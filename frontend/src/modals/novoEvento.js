@@ -5,10 +5,16 @@ import ComboBox from '../components/combobox/comboboxBasic';
 import DataHora from '../components/textFields/dataHora';
 import SubmitButton from '../components/buttons/submitButton';
 import CancelButton from '../components/buttons/cancelButton';
+import ImageTable from '../components/tables/imageTable';
 
 const opcoes = [
     {value: '1', label: 'teste'},
     {value: '2', label: 'teste2'},
+];
+
+const imgs = [
+    {src: 'https://blogs.sapo.pt/cloud/thumb/6416b670f92d625dec1de880371d4b4e/coisasdavida/2018/Argentina.jpg?size=xl', alt: 'teste'},
+    {src: 'https://i1.sndcdn.com/artworks-000537542583-dr2w2s-t500x500.jpg', alt: 'testas'},
 ];
 
 const AddEventModal = ({ open, onClose }) => {
@@ -44,7 +50,7 @@ const AddEventModal = ({ open, onClose }) => {
                                 <ComboBox caption='Subcategoria' options={opcoes} value={subcategoria} handleChange={(e) => setSubcategoria(e.target.value)} />
                             </div>
                         </div>
-                        {/* imagelist */}
+                        <ImageTable images={imgs} styleProp={{paddingTop: 10}} />
                     </div>
                     <div style={{display: 'flex', justifyContent: 'center', gap: '20px'}}>
                         <CancelButton onclick={() => { onClose(); }} caption='Cancelar' />

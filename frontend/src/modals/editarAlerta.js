@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Modal from '@mui/material/Modal';
 import BasicTextField from '../components/textFields/basic';
 import ComboBox from '../components/combobox/comboboxBasic';
+import Switch from '../components/checkbox/switch';
 import SubmitButton from '../components/buttons/submitButton';
 import CancelButton from '../components/buttons/cancelButton';
 
@@ -13,6 +14,7 @@ const opcoes = [
 const EditarAlerta = ({ open, onClose, id }) => {
     const [descricao, setDescricao] = useState('');
     const [polo, setPolo] = useState('');
+    const [inativo, setInativo] = useState(false);
 
     const handleAddEvent = () => {
         console.log('Evento Adicionado');
@@ -25,10 +27,15 @@ const EditarAlerta = ({ open, onClose, id }) => {
                 <h2 style={{marginTop: 0, color: 'white'}}>Novo Alerta</h2>
                 <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 20, borderRadius: 12 }}>
                     <div style={{ marginBottom: 15 }}>
-                        <BasicTextField caption='Descrição' valor={descricao} onchange={(e) => setDescricao(e.target.value)} fullwidth={true} />
-                        <div style={{marginTop: 20, width: '50%'}}>
-                        <ComboBox caption='Subcategoria' options={opcoes} value={polo} handleChange={(e) => setPolo(e.target.value)} />
+                        <div style={{display:'flex', marginBottom: 20}}>
+                            <div style={{width: '75%'}}>
+                                <ComboBox caption='Polo' options={opcoes} value={polo} handleChange={(e) => setPolo(e.target.value)} />
+                            </div>
+                            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+                                <Switch caption='Inativo' value={inativo} onchange={(e)=>setInativo(e.target.checked)} />
+                            </div>
                         </div>
+                        <BasicTextField caption='Descrição' valor={descricao} onchange={(e) => setDescricao(e.target.value)} fullwidth={true} />
                     </div>
                     <div style={{display: 'flex', justifyContent: 'center', gap: '20px'}}>
                         <CancelButton onclick={() => { onClose(); }} caption='Cancelar' />

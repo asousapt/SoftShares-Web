@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './page.css';
+import Forms from '../components/forms/forms';
+
 /* COMPONENTES */
 import DataTable from '../components/tables/dataTable';
 import EditButton from '../components/buttons/editButton';
@@ -13,13 +15,12 @@ export default function StatsUtilizador() {
 
     return(
         <div className="page-container">
-            <Header caption='Painel de Controlo' />
+            <Header caption='Forms' />
             <div className="data-container">
                 <div style={{ marginBottom: '40px'}}>
-                <h2 style={{ marginBottom: '20px', textAlign: 'center'}} >Registos por Aprovar</h2>
                 </div>
                 <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px', border: 'none', boxShadow: 'none' }}>
-        
+                <Forms></Forms>
                 </div>
             </div>
         </div>

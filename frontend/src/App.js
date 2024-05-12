@@ -15,6 +15,7 @@ import ConfigAlertas from './pages/configAlertas'
 import Dashboard from './pages/dashboard'
 import StatsUtilizador from './pages/estatisticasUtilizadores'
 import StatsDenuncias from './pages/estatisticasDenuncias'
+import Forms from './pages/forms'
 
 function App() {
     return (
@@ -40,6 +41,7 @@ function App() {
                         <Route path="/config/categorias" element={<ConfigCategorias />} />
                         <Route path="/config/subcategorias" element={<ConfigSubcategorias />} />
                         <Route path="/config/alertas" element={<ConfigAlertas />} />
+                        <Route path="/forms" element={<Forms />} />
                     </Routes>
                 </div>
             </div>

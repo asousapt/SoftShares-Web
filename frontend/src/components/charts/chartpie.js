@@ -41,9 +41,10 @@ function PieCenterLabel({ children }) {
 
 export default function PieChartWithCenterLabel() {
   return (
-    <PieChart series={[{ data, innerRadius: 80 }]} {...size}>
+    <PieChart series={[{ data, innerRadius: 80 }]} {...size} >
       <PieCenterLabel>Utilizadores</PieCenterLabel>
       <SecondLineText x={size.width / 2.6} y={size.height / 1.7 }>871</SecondLineText>
+      
     </PieChart>
   );
 }

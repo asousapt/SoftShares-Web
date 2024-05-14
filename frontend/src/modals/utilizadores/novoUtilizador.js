@@ -43,31 +43,47 @@ const AddUserModal = ({ open, onClose }) => {
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <div style={{ flex: '65%', paddingRight: 15 }}>
                             <div style={{ marginBottom: 15 }}>
-                                <div style={{ display: 'flex', marginTop: 20, gap: 20 }}>
-                                    <BasicTextField caption='Nome' valor={title} onchange={(e) => setTitle(e.target.value)} style={{ width: "450px" }}/>
-                                    <BasicTextField caption='Idade' valor={idade} onchange={(e) => setIdade(e.target.value)} style={{ width: "200px" }}/>
+                                <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
+                                    <div style={{ width: "60%" }} >
+                                        <BasicTextField caption='Nome' valor={title} onchange={(e) => setTitle(e.target.value)} fullwidth={true}/>
+                                    </div>
+                                    <div style={{ width: "40%" }} >
+                                        <BasicTextField caption='Data Nascimento' valor={idade} onchange={(e) => setIdade(e.target.value)} fullwidth={true} />
+                                    </div>
                                 </div>
-                                <div style={{ display: 'flex', marginTop: 20, gap: 20 }}>
-                                    <BasicTextField caption='Morada' valor={morada} onchange={(e) => setMorada(e.target.value)} style={{ width: "670px" }} />
+                                <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
+                                    <BasicTextField caption='Morada' valor={morada} onchange={(e) => setMorada(e.target.value)} fullwidth={true} />
                                 </div>
-                                <div style={{ display: 'flex', marginTop: 20, gap: 20 }}>
-                                    <BasicTextField caption='Contacto' valor={contacto} onchange={(e) => setContacto(e.target.value)} style={{ width: "215px" }}  />
-                                    <BasicTextField caption='Função' valor={funcao} onchange={(e) => setFuncao(e.target.value)} style={{ width: "215px" }} />
-                                    <BasicTextField caption='Departamento' valor={departamento} onchange={(e) => setDepartamento(e.target.value)} style={{ width: "200px" }} />
+                                <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
+                                    <div style={{ width: "80%" }} >
+                                        <BasicTextField caption='Contacto' valor={contacto} onchange={(e) => setContacto(e.target.value)} fullwidth={true} />
+                                    </div>
+                                    <div style={{ width: "65%" }} >
+                                        <ComboBox caption='Função' options={opcoes} value={subcategoria} handleChange={(e) => setSubcategoria(e.target.value)} />
+                                    </div>
+                                    <div style={{ width: "65%" }} >
+                                        <ComboBox caption='Departamento' options={opcoes} value={subcategoria} handleChange={(e) => setSubcategoria(e.target.value)} />
+                                    </div>
                                 </div>
-                                <div style={{ display: 'flex', marginTop: 20, gap: 20 }}>
-                                    <BasicTextField caption='Email' valor={email} onchange={(e) => setEmail(e.target.value)} style={{ width: "450px" }}  />
-                                    <ComboBox caption='Polo' options={opcoes} value={subcategoria} handleChange={(e) => setSubcategoria(e.target.value)}/>
+                                <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
+                                    <div style={{ width: "95%" }} >
+                                        <BasicTextField caption='Email' valor={email} onchange={(e) => setEmail(e.target.value)} fullwidth={true} />
+                                    </div>
+                                    <div style={{ width: "42%" }} >
+                                        <ComboBox caption='Polo' options={opcoes} value={subcategoria} handleChange={(e) => setSubcategoria(e.target.value)} />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div style={{ flex: '35%' }}>
+                        <div style={{ display: 'flex'}}>
                             <div style={{ padding: '20px' }}>
-                                <div style={{ paddingLeft: '20px' }}>
+                                <div style={{ paddingLeft: '5%' }}>
                                     <InputImage image={image} />
                                 </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                 <FormControlLabel labelPlacement="start" control={<Switch defaultChecked />} label="Inativo" sx={{ marginTop: '10px' }} />
-                                <FormControlLabel labelPlacement="start" control={<Switch defaultChecked />} label="Adminstrador" sx={{ marginTop: '10px', marginBottom: '15px' }} />
+                                <FormControlLabel labelPlacement="start" control={<Switch defaultChecked />} label="Adminstrador" sx={{ marginTop: '10px'}} />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -79,7 +95,7 @@ const AddUserModal = ({ open, onClose }) => {
             </div>
         </Modal>
     );
-    
+
 }
 
 export default AddUserModal;

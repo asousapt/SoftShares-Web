@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import Modal from '@mui/material/Modal';
-import BasicTextField from '../components/textFields/basic';
-import ComboBox from '../components/combobox/comboboxBasic';
-import SubmitButton from '../components/buttons/submitButton';
-import CancelButton from '../components/buttons/cancelButton';
+import BasicTextField from '../../components/textFields/basic';
+import ComboBox from '../../components/combobox/comboboxBasic';
+import Switch from '../../components/checkbox/switch';
+import SubmitButton from '../../components/buttons/submitButton';
+import CancelButton from '../../components/buttons/cancelButton';
 
 const opcoes = [
     {value: '1', label: 'teste'},
     {value: '2', label: 'teste2'},
 ];
 
-const NovoAlerta = ({ open, onClose }) => {
+const EditarAlerta = ({ open, onClose, id }) => {
     const [descricao, setDescricao] = useState('');
-    const [polo, setPolo] = useState('');
+    const [categoria, setCategoria] = useState('');
+    const [inativo, setInativo] = useState(false);
 
     const handleAddEvent = () => {
         console.log('Evento Adicionado');
@@ -27,7 +29,10 @@ const NovoAlerta = ({ open, onClose }) => {
                     <div style={{ marginBottom: 15 }}>
                         <div style={{display:'flex', marginBottom: 20}}>
                             <div style={{width: '75%'}}>
-                                <ComboBox caption='Polo' options={opcoes} value={polo} handleChange={(e) => setPolo(e.target.value)} />
+                                <ComboBox caption='Categoria' options={opcoes} value={categoria} handleChange={(e) => setCategoria(e.target.value)} />
+                            </div>
+                            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+                                <Switch caption='Inativo' value={inativo} onchange={(e)=>setInativo(e.target.checked)} />
                             </div>
                         </div>
                         <BasicTextField caption='Descrição' valor={descricao} onchange={(e) => setDescricao(e.target.value)} fullwidth={true} />
@@ -40,6 +45,7 @@ const NovoAlerta = ({ open, onClose }) => {
             </div>
         </Modal>
     );
+    
 }
 
-export default NovoAlerta;
+export default EditarAlerta;

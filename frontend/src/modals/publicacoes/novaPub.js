@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import Modal from '@mui/material/Modal';
-import BasicTextField from '../components/textFields/basic';
-import SubmitButton from '../components/buttons/submitButton';
-import CancelButton from '../components/buttons/cancelButton';
-import ImageTable from '../components/tables/imageTable';
-import ComboBox from '../components/combobox/comboboxBasic';
+import BasicTextField from '../../components/textFields/basic';
+import SubmitButton from '../../components/buttons/submitButton';
+import CancelButton from '../../components/buttons/cancelButton';
+import ImageTable from '../../components/tables/imageTable';
+import ComboBox from '../../components/combobox/comboboxBasic';
 
 const AddPubModal = ({ open, onClose }) => {
     const [title, setTitle] = useState('');

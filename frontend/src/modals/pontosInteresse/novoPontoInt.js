@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import Modal from '@mui/material/Modal';
-import BasicTextField from '../components/textFields/basic';
-import ComboBox from '../components/combobox/comboboxBasic';
-import DataHora from '../components/textFields/dataHora';
-import SubmitButton from '../components/buttons/submitButton';
-import CancelButton from '../components/buttons/cancelButton';
-import ImageTable from '../components/tables/imageTable';
+import BasicTextField from '../../components/textFields/basic';
+import ComboBox from '../../components/combobox/comboboxBasic';
+import DataHora from '../../components/textFields/dataHora';
+import SubmitButton from '../../components/buttons/submitButton';
+import CancelButton from '../../components/buttons/cancelButton';
+import ImageTable from '../../components/tables/imageTable';
 
 const opcoes = [
     {value: '1', label: 'teste'},

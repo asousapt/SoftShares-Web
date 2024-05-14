@@ -9,7 +9,7 @@ import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
 import StateChanger from '../components/stateChanger/stateChanger';
 /* FIM COMPONENTES */
-import NovoAlerta from '../modals/novoAlerta';
+import NovoAlerta from '../modals/alertas/novoAlerta';
 
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},

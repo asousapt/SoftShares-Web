@@ -9,7 +9,7 @@ import Search from '../components/textFields/search';
 import StateChanger from '../components/stateChanger/stateChanger';
 import ComboFilter from '../components/combobox/comboFilter';
 /* FIM COMPONENTES */
-import NovoPolo from '../modals/novoPolo';
+import NovoPolo from '../modals/polos/novoPolo';
 
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},

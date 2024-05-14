@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import Modal from '@mui/material/Modal';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import BasicTextField from '../components/textFields/basic';
-import ComboBox from '../components/combobox/comboboxBasic';
-import SubmitButton from '../components/buttons/submitButton';
-import CancelButton from '../components/buttons/cancelButton';
-import InputImage from '../components/image/imageInput';
+import BasicTextField from '../../components/textFields/basic';
+import ComboBox from '../../components/combobox/comboboxBasic';
+import SubmitButton from '../../components/buttons/submitButton';
+import CancelButton from '../../components/buttons/cancelButton';
+import InputImage from '../../components/image/imageInput';
 
 const opcoes = [
     { value: '1', label: 'teste' },

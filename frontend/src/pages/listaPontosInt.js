@@ -8,7 +8,7 @@ import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
 import ComboFilter from '../components/combobox/comboFilter';
 /* FIM COMPONENTES */
-import NovoPontoInt from '../modals/novoPontoInt';
+import NovoPontoInt from '../modals/pontosInteresse/novoPontoInt';
 
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},

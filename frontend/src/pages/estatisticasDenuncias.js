@@ -7,7 +7,7 @@ import Header from '../components/header/header';
 import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
 /* FIM COMPONENTES */
-import NovoEvento from '../modals/novoEvento';
+import NovoEvento from '../modals/eventos/novoEvento';
 import ChartPieDen from '../components/charts/chartpieDenuncias';
 import { Grid } from '@mui/material';
 

@@ -8,7 +8,7 @@ import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
 import ComboFilter from '../components/combobox/comboFilter';
 /* FIM COMPONENTES */
-import NovoEvento from '../modals/novoEvento';
+import NovoEvento from '../modals/eventos/novoEvento';
 
 const opcoesFiltroEstado = [
     { value:'Todos', label: 'Todos'},

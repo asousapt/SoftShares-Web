@@ -8,7 +8,9 @@ import ModAprov from './pages/modAprovacoes'
 import ModDen from './pages/modDenuncias'
 import ConfigPolos from './pages/configPolos'
 import ConfigForms from './pages/configForms'
-import Configtilizadores from './pages/configUtilizadores'
+import ConfigUtilizadores from './pages/configUtilizadores'
+import ConfigDepartamentos from './pages/configDepartamentos'
+import ConfigFuncoes from './pages/configFuncoes'
 import ConfigCategorias from './pages/configCategorias'
 import ConfigSubcategorias from './pages/configSubcategorias'
 import ConfigAlertas from './pages/configAlertas'
@@ -37,7 +39,9 @@ function App() {
                         <Route path="/moderacao/denuncias" element={<ModDen />} />
                         <Route path="/config/polos" element={<ConfigPolos />} />
                         <Route path="/config/forms" element={<ConfigForms />} />
-                        <Route path="/config/utilizadores" element={<Configtilizadores />} />
+                        <Route path="/config/utilizadores" element={<ConfigUtilizadores />} />
+                        <Route path="/config/departamentos" element={<ConfigDepartamentos />} />
+                        <Route path="/config/funcoes" element={<ConfigFuncoes />} />
                         <Route path="/config/categorias" element={<ConfigCategorias />} />
                         <Route path="/config/subcategorias" element={<ConfigSubcategorias />} />
                         <Route path="/config/alertas" element={<ConfigAlertas />} />

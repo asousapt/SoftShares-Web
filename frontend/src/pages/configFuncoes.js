@@ -9,7 +9,7 @@ import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
 import StateChanger from '../components/stateChanger/stateChanger';
 /* FIM COMPONENTES */
-import NovoDepartamento from '../modals/departamentos/novoDepartamento';
+import NovaFuncao from '../modals/funcoes/novaFuncao';
 
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},
@@ -30,14 +30,14 @@ export default function Configtilizadores() {
     ];
 
     const tableRows = [
-        { id: 1, descricao: 'Informático', estado: 'Ativo' },
-        { id: 1, descricao: 'Informático', estado: 'Ativo' },
-        { id: 1, descricao: 'Informático', estado: 'Ativo' },
-        { id: 1, descricao: 'Informático', estado: 'Ativo' },
-        { id: 1, descricao: 'Informático', estado: 'Ativo' },
-        { id: 1, descricao: 'Informático', estado: 'Ativo' },
-        { id: 1, descricao: 'Informático', estado: 'Ativo' },
-        { id: 1, descricao: 'Informático', estado: 'Ativo' },
+        { id: 1, descricao: 'Developer', estado: 'Ativo' },
+        { id: 1, descricao: 'Developer', estado: 'Ativo' },
+        { id: 1, descricao: 'Developer', estado: 'Ativo' },
+        { id: 1, descricao: 'Developer', estado: 'Ativo' },
+        { id: 1, descricao: 'Developer', estado: 'Ativo' },
+        { id: 1, descricao: 'Developer', estado: 'Ativo' },
+        { id: 1, descricao: 'Developer', estado: 'Ativo' },
+        { id: 1, descricao: 'Developer', estado: 'Ativo' },
     ];
 
     const handleOpenNewModal = () => {
@@ -54,7 +54,7 @@ export default function Configtilizadores() {
 
     return(
         <div className="page-container">
-            <Header caption='Departamentos' />
+            <Header caption='Funções' />
             <div className="data-container">
                 <div style={{marginBottom:'20px', paddingTop: '20px'}}>
                     <AddButton caption='Adicionar' onclick={handleOpenNewModal} />
@@ -65,7 +65,7 @@ export default function Configtilizadores() {
                     <DataTable rows={tableRows || []} columns={tableColumns}/>
                 </div>
             </div>
-            <NovoDepartamento open={isNewModalOpen} onClose={handleCloseNewModal}/>
+            <NovaFuncao open={isNewModalOpen} onClose={handleCloseNewModal}/>
         </div>
     )
 }

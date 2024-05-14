@@ -38,6 +38,8 @@ const Sidebar = () => {
     const [isHoveredCP, setIsHoveredCP] = useState(false);
     const [isHoveredCF, setIsHoveredCF] = useState(false);
     const [isHoveredCU, setIsHoveredCU] = useState(false);
+    const [isHoveredCD, setIsHoveredCD] = useState(false);
+    const [isHoveredCFUN, setIsHoveredCFUN] = useState(false);
     const [isHoveredCC, setIsHoveredCC] = useState(false);
     const [isHoveredCS, setIsHoveredCS] = useState(false);
     const [isHoveredCA, setIsHoveredCA] = useState(false);
@@ -187,6 +189,18 @@ const Sidebar = () => {
                             <MdIcons.MdOutlineManageAccounts style={{color: isHoveredCU ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={() => {setIsHoveredCU(true)}} onMouseOut={() => {setIsHoveredCU(false)}}/>
                         </ListItemIcon>
                         <ListItemText primary="Utilizadores" />
+                    </ListItem>
+                    <ListItem component={Link} to="/config/departamentos" style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredCD ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={() => {setIsHoveredCD(true)}} onMouseOut={() => {setIsHoveredCD(false)}}>
+                        <ListItemIcon>
+                            <MdIcons.MdOutlineManageAccounts style={{color: isHoveredCD ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={() => {setIsHoveredCD(true)}} onMouseOut={() => {setIsHoveredCD(false)}}/>
+                        </ListItemIcon>
+                        <ListItemText primary="Departamentos" />
+                    </ListItem>
+                    <ListItem component={Link} to="/config/funcoes" style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredCFUN ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={() => {setIsHoveredCFUN(true)}} onMouseOut={() => {setIsHoveredCFUN(false)}}>
+                        <ListItemIcon>
+                            <MdIcons.MdOutlineManageAccounts style={{color: isHoveredCFUN ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={() => {setIsHoveredCFUN(true)}} onMouseOut={() => {setIsHoveredCFUN(false)}}/>
+                        </ListItemIcon>
+                        <ListItemText primary="Funções" />
                     </ListItem>
                     <ListItem component={Link} to="/config/categorias" style={{backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredCC ? 'rgba(77, 156, 250, 1)' : 'black'}} onMouseOver={() => {setIsHoveredCC(true)}} onMouseOut={() => {setIsHoveredCC(false)}}>
                         <ListItemIcon>

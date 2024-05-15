@@ -1,20 +1,24 @@
 // Import necessary modules
 const express = require('express');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 const app = express();
 
-// // Import route files
-// const indexRouter = require('./routes/index');
-
 // Use CORS middleware
-app.use(cors({
-    origin: '*' 
-}));
+app.use(cors());
+app.options('*', cors());
+
+//Use bodyParser middleware
+app.use(bodyParser.json());
+
+// Import route files
+const eventosRoutes = require('./routes/eventos');
 
 // // Use route files
-// app.use('/', indexRouter);
+ app.use('/evento', eventosRoutes);
 
-// Start the server on port 3000
-app.listen(8000, () => {
-    console.log('Server is running on port 8000');
+// Start server
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => {
+  console.log('Server is listening on port '+PORT);
 });

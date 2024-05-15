@@ -1,81 +1,125 @@
-const Evento = require('../models/eventos');
+const { Sequelize, Op } = require('sequelize');
+const initModels = require('../models/init-models');
+const sequelizeConn = require('../bdConexao');
+const evento = require('../models/evento');
+const models = initModels(sequelizeConn);
 
 const controladorEventos = {
-    // criarTabela: (req, res) => {
-    //     Evento.criarTabela((err, results) => {
-    //         if (err) {
-    //             res.status(500).json({ error: 'Erro ao criar a tabela EVENTO' });
-    //         } else {
-    //             res.status(200).json({ message: 'Tabela EVENTO criada com sucesso' });
-    //         }
-    //     });
-    // },
-
-    adicionarEvento: (req, res) => {
+    adicionarEvento: async (req, res) => {
         const { titulo, descricao, dataInicio, dataFim, dataLimInscricao, nmrMaxParticipantes, localizacao, latitude, longitude, cidadeID, utilizadorCriou } = req.body;
-        Evento.adicionar(titulo, descricao, dataInicio, dataFim, dataLimInscricao, nmrMaxParticipantes, localizacao, latitude, longitude, cidadeID, utilizadorCriou, (err, results) => {
-            if (err) {
-                res.status(500).json({ error: 'Erro ao adicionar evento' });
-            } else {
-                res.status(200).json({ message: 'Evento adicionado com sucesso' });
-            }
-        });
+
+        try {
+            await models.evento.create({
+                titulo: titulo,
+                descricao: descricao,
+                dataInicio: dataInicio,
+                dataFim: dataFim,
+                dataLimInscricao: dataLimInscricao,
+                nmrMaxParticipantes: nmrMaxParticipantes,
+                localizacao: localizacao,
+                latitude: latitude,
+                longitude: longitude,
+                cidadeID: cidadeID,
+                utilizadorCriou: utilizadorCriou
+            });
+            
+            res.status(201).json({ message: 'Evento adicionado com sucesso' });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao adicionar evento' });
+        }
     },
 
-    atualizarEvento: (req, res) => {
+    atualizarEvento: async (req, res) => {
         const { idEvento } = req.params;
         const { titulo, descricao, dataInicio, dataFim, dataLimInscricao, nmrMaxParticipantes, localizacao, latitude, longitude, cidadeID } = req.body;
-        Evento.atualizar(idEvento, titulo, descricao, dataInicio, dataFim, dataLimInscricao, nmrMaxParticipantes, localizacao, latitude, longitude, cidadeID, (err, results) => {
-            if (err) {
-                res.status(500).json({ error: 'Erro ao atualizar evento' });
-            } else {
-                res.status(200).json({ message: 'Evento atualizado com sucesso' });
-            }
-        });
+
+        try {
+            await models.evento.update({
+                titulo: titulo,
+                descricao: descricao,
+                dataInicio: dataInicio,
+                dataFim: dataFim,
+                dataLimInscricao: dataLimInscricao,
+                nmrMaxParticipantes: nmrMaxParticipantes,
+                localizacao: localizacao,
+                latitude: latitude,
+                longitude: longitude,
+                cidadeID: cidadeID
+            }, {
+                where: {
+                    eventoid: idEvento
+                }
+            });
+
+            res.status(200).json({ message: 'Evento atualizado com sucesso' });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao atualizar evento' });
+        }
     },
 
-    aprovarEvento: (req, res) => {
+    aprovarEvento: async (req, res) => {
         const { idEvento, idUser } = req.params;
-        Evento.aprovar(idEvento, idUser, (err, results) => {
-            if (err) {
-                res.status(500).json({ error: 'Erro ao aprovar o evento' });
-            } else {
-                res.status(200).json({ message: 'Evento aprovado com sucesso' });
-            }
-        });
+
+        try {
+            await models.evento.update({
+                aprovado: 1,
+                utilizadoraprovou: idUser,
+                dataaprovacao: Sequelize.literal('CURRENT_DATE')
+            }, {
+                where: {
+                    eventoid: idEvento
+                }
+            });
+            res.status(200).json({ message: 'Evento aprovado com sucesso' });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao aprovar o evento' });
+        }
     },
 
-    cancelarEvento: (req, res) => {
+    cancelarEvento: async (req, res) => {
         const { idEvento } = req.params;
-        Evento.cancelar(idEvento, (err, results) => {
-            if (err) {
-                res.status(500).json({ error: 'Erro ao cancelar o evento' });
-            } else {
-                res.status(200).json({ message: 'Evento cancelado com sucesso' });
-            }
-        });
+
+        try {
+            await models.evento.update({
+                cancelado: 1
+            }, {
+                where: {
+                    eventoid: idEvento
+                }
+            });
+            res.status(200).json({ message: 'Evento cancelado com sucesso' });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao cancelar o evento' });
+        }
     },
 
-    consultarEventoPorID: (req, res) => {
+    consultarEventoPorID: async (req, res) => {
         const { idEvento } = req.params;
-        Evento.consultarPorID(idEvento, (err, results) => {
-            if (err) {
-                res.status(500).json({ error: 'Erro ao consultar o evento' });
-            } else {
-                res.status(200).json({ message: 'Consulta realizada com sucesso', data: results });
-            }
-        });
+
+        try {
+            const evento = await models.evento.findByPk(idEvento);
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: evento });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar o evento' });
+        }
     },
 
-    consultarEventosEntreDatas: (req, res) => {
+    consultarEventosEntreDatas: async (req, res) => {
         const { poloID, data1, data2 } = req.params;
-        Evento.consultaEntreDatas(data1, data2, poloID, (err, results) => {
-            if (err) {
-                res.status(500).json({ error: 'Erro ao consultar os eventos' });
-            } else {
-                res.status(200).json({ message: 'Consulta realizada com sucesso', data: results });
-            }
-        });
+
+        try {
+            const eventos = await models.evento.findAll({
+                where: {
+                    [Op.and]: [
+                        {dataInicio: {[Op.between]: [data1, data2]}},
+                        Sequelize.literal(`cidadeID IN (SELECT CIDADEID FROM POLO WHERE POLOID = ${poloID})`)
+                    ]
+                }
+            })
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: eventos });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar os eventos' });
+        }
     }
 };
 

@@ -29,7 +29,8 @@ module.exports = function(sequelize, DataTypes) {
     },
     cancelado: {
       type: DataTypes.BOOLEAN,
-      allowNull: true
+      allowNull: true,
+      defaultValue: false
     },
     nmrmaxparticipantes: {
       type: DataTypes.INTEGER,

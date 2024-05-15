@@ -3,13 +3,18 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/app.js"
+    "dev": "cross-env NODE_ENV=development nodemon src/app.js",
+    "prod": "cross-env NODE_ENV=production nodemon src/app.js"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "nodemon": "^3.1.0"
+    "nodemon": "^3.1.0",
+    "pg": "^8.11.5"
   }
 }

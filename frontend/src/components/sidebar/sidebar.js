@@ -64,7 +64,7 @@ const Sidebar = () => {
         setOpenConfiguracao(!openC);
         setSelectedItem('configuracao');
     };
-
+    
     return (
         <Drawer variant="permanent" sx={{ "& .MuiPaper-root": { borderRight: "none", } }}>
             <List style={{ width: '250px', backgroundColor: 'rgba(42, 67, 97, 1)', height: '100%', overflowY: 'scroll' }}>
@@ -108,23 +108,16 @@ const Sidebar = () => {
 
                 <Collapse in={openE} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
-                        <ListItem component={Link} to="/estatisticas/utilizadores" style={{
-                                backgroundColor: selectedItem === 'Utilizadores' ? 'rgba(128, 128, 128, 0.3)' : "white",
-                                borderRadius: '12px',
-                                marginBottom: '5px',
-                                marginLeft: '30px',
-                                width: '215px',
-                                color: selectedItem === 'Utilizadores' || isHoveredEU ? 'rgba(77, 156, 250, 1)' : 'black' }}
+                        <ListItem component={Link} to="/estatisticas/utilizadores" style={{ backgroundColor: selectedItem === 'Utilizadores' ? 'rgba(128, 128, 128, 0.3)' : "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: selectedItem === 'Utilizadores' ? 'white' : (isHoveredEU ? 'rgba(77, 156, 250, 1)' : 'black') }}
                             onMouseOver={() => setIsHoveredEU(true)}
                             onMouseOut={() => setIsHoveredEU(false)}
                             onClick={() => setSelectedItem('Utilizadores')} >
                             <ListItemIcon>
-                                <IoIcons.IoIosPaper style={{ 
-                                        color: selectedItem === 'Utilizadores' || isHoveredEU ? 'rgba(77, 156, 250, 1)' : 'black' }}
+                                <IoIcons.IoIosPaper style={{ color: selectedItem === 'Utilizadores' ? 'white' : (isHoveredEU ? 'rgba(77, 156, 250, 1)' : 'black') }}
                                     onMouseOver={() => setIsHoveredEU(true)}
                                     onMouseOut={() => setIsHoveredEU(false)} />
                             </ListItemIcon>
-                            <ListItemText primary="Utilizadores" style={{ color: selectedItem === 'Utilizadores' || isHoveredEU ? 'rgba(77, 156, 250, 1)' : 'black' }} />
+                            <ListItemText primary="Utilizadores" style={{ color: selectedItem === 'Utilizadores' ? 'white' : (isHoveredEU ? 'rgba(77, 156, 250, 1)' : 'black') }} />
                         </ListItem>
 
                         <ListItem component={Link} to="/estatisticas/denuncias" style={{ backgroundColor: selectedItem === 'Denúncias' ? 'rgba(128, 128, 128, 0.3)' : "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px' }}
@@ -132,11 +125,11 @@ const Sidebar = () => {
                             onMouseOut={() => setIsHoveredED(false)}
                             onClick={() => setSelectedItem('Denúncias')} >
                             <ListItemIcon>
-                                <IoIcons.IoIosPaper style={{ color: selectedItem === 'Denúncias' || isHoveredED ? 'rgba(77, 156, 250, 1)' : 'black' }}
+                                <IoIcons.IoIosPaper style={{ color: selectedItem === 'Denúncias' ? 'white' :  (isHoveredED ? 'rgba(77, 156, 250, 1)' : 'black') }}
                                     onMouseOver={() => setIsHoveredED(true)}
                                     onMouseOut={() => setIsHoveredED(false)} />
                             </ListItemIcon>
-                            <ListItemText primary="Denúncias" style={{ color: selectedItem === 'Denúncias' || isHoveredED ? 'rgba(77, 156, 250, 1)' : 'black' }}/>
+                            <ListItemText primary="Denúncias" style={{ color: selectedItem === 'Denúncias' ? 'white' : (isHoveredED ? 'rgba(77, 156, 250, 1)' : 'black') }} />
                         </ListItem>
                     </List>
                 </Collapse>
@@ -144,31 +137,43 @@ const Sidebar = () => {
                 {/* Listagem */}
                 <ListItem onClick={handleClickL} style={{ backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '5px', width: '240px', color: isHoveredL ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredL(true) }} onMouseOut={() => { setIsHoveredL(false) }} >
                     <ListItemIcon>
-                        <FaIcons.FaClipboardList style={{ color: isHoveredL ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredL(true) }} onMouseOut={() => { setIsHoveredL(false) }} />
+                        <FaIcons.FaClipboardList style={{ color: isHoveredL ? 'rgba(77, 156, 250, 1)' : 'black' }} 
+                        onMouseOver={() => { setIsHoveredL(true) }} 
+                        onMouseOut={() => { setIsHoveredL(false) }} />
                     </ListItemIcon>
                     <ListItemText primary="Listagem" />
                     {openL ? <ExpandLess /> : <ExpandMore />}
                 </ListItem>
                 <Collapse in={openL} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
-                        <ListItem component={Link} to="/lista/eventos" style={{ backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredLE ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredLE(true) }} onMouseOut={() => { setIsHoveredLE(false) }}>
+                        <ListItem component={Link} to="/lista/eventos" style={{ backgroundColor: selectedItem === 'Eventos' ? 'rgba(128, 128, 128, 0.3)' : "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredLE ? 'rgba(77, 156, 250, 1)' : 'black' }} 
+                        onMouseOver={() => { setIsHoveredLE(true) }} 
+                        onMouseOut={() => { setIsHoveredLE(false) }}
+                        onClick={() => setSelectedItem('Eventos')} >
                             <ListItemIcon>
-                                <IoIcons.IoIosPaper style={{ color: isHoveredLE ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredLE(true) }} onMouseOut={() => { setIsHoveredLE(false) }} />
+                                <IoIcons.IoIosPaper style={{ color: selectedItem === 'Eventos' ? 'white' :  (isHoveredLE ? 'rgba(77, 156, 250, 1)' : 'black') }}
+                                onMouseOver={() => { setIsHoveredLE(true) }} 
+                                onMouseOut={() => { setIsHoveredLE(false) }} />
                             </ListItemIcon>
-                            <ListItemText primary="Eventos" />
+                            <ListItemText primary="Eventos" style={{ color: selectedItem === 'Eventos' ? 'white' : (isHoveredLE ? 'rgba(77, 156, 250, 1)' : 'black') }}/>
                         </ListItem>
-                        <ListItem component={Link} to="/lista/pontosinteresse" style={{ backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredLPI ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredLPI(true) }} onMouseOut={() => { setIsHoveredLPI(false) }}>
+                        
+                        <ListItem component={Link} to="/lista/pontosinteresse" style={{ backgroundColor: selectedItem === 'Pontos de Interesse' ? 'rgba(128, 128, 128, 0.3)' : "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredLPI ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredLPI(true) }} onMouseOut={() => { setIsHoveredLPI(false) }}  onClick={() => setSelectedItem('Pontos de Interesse')}>
                             <ListItemIcon>
-                                <IoIcons.IoIosPaper style={{ color: isHoveredLPI ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredLPI(true) }} onMouseOut={() => { setIsHoveredLPI(false) }} />
+                                <IoIcons.IoIosPaper style={{ color: selectedItem === 'Pontos de Interesse' ? 'white' :  (isHoveredLPI ? 'rgba(77, 156, 250, 1)' : 'black') }} 
+                                onMouseOver={() => { setIsHoveredLPI(true) }} 
+                                onMouseOut={() => { setIsHoveredLPI(false) }} />
                             </ListItemIcon>
-                            <ListItemText primary="Pontos de Interesse" />
+                            <ListItemText primary="Pontos de Interesse" style={{ color: selectedItem === 'Pontos de Interesse' ? 'white' : (isHoveredLPI ? 'rgba(77, 156, 250, 1)' : 'black') }}/>
                         </ListItem>
-                        <ListItem component={Link} to="/lista/publicacoes" style={{ backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredLP ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredLP(true) }} onMouseOut={() => { setIsHoveredLP(false) }}>
+
+                        <ListItem component={Link} to="/lista/publicacoes" style={{ backgroundColor: selectedItem === 'Publicações' ? 'rgba(128, 128, 128, 0.3)' : "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredLP ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredLP(true) }} onMouseOut={() => { setIsHoveredLP(false) }} onClick={() => setSelectedItem('Publicações')}>
                             <ListItemIcon>
-                                <IoIcons.IoIosPaper style={{ color: isHoveredLP ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredLP(true) }} onMouseOut={() => { setIsHoveredLP(false) }} />
+                                <IoIcons.IoIosPaper style={{ color: selectedItem === 'Publicações' ? 'white' :  (isHoveredLP? 'rgba(77, 156, 250, 1)' : 'black') }}  onMouseOver={() => { setIsHoveredLP(true) }} onMouseOut={() => { setIsHoveredLP(false) }} />
                             </ListItemIcon>
-                            <ListItemText primary="Publicações" />
+                            <ListItemText primary="Publicações" style={{ color: selectedItem === 'Publicações' ? 'white' : (isHoveredLP ? 'rgba(77, 156, 250, 1)' : 'black') }}  />
                         </ListItem>
+
                     </List>
                 </Collapse>
 
@@ -182,17 +187,18 @@ const Sidebar = () => {
                 </ListItem>
                 <Collapse in={openM} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
-                        <ListItem component={Link} to="/moderacao/aprovacoes" style={{ backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredMA ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredMA(true) }} onMouseOut={() => { setIsHoveredMA(false) }}>
+                        <ListItem component={Link} to="/moderacao/aprovacoes" style={{ backgroundColor: selectedItem === 'Aprovações' ? 'rgba(128, 128, 128, 0.3)' : "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredMA ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredMA(true) }} onMouseOut={() => { setIsHoveredMA(false) }} onClick={() => setSelectedItem('Aprovações')}>
                             <ListItemIcon>
-                                <IoIcons.IoIosPaper style={{ color: isHoveredMA ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredMA(true) }} onMouseOut={() => { setIsHoveredMA(false) }} />
+                                <IoIcons.IoIosPaper style={{ color: selectedItem === 'Aprovações' ? 'white' :  (isHoveredMA? 'rgba(77, 156, 250, 1)' : 'black') }} onMouseOver={() => { setIsHoveredMA(true) }} onMouseOut={() => { setIsHoveredMA(false) }} />
                             </ListItemIcon>
-                            <ListItemText primary="Aprovações" />
+                            <ListItemText primary="Aprovações" style={{ color: selectedItem === 'Aprovações' ? 'white' : (isHoveredMA ? 'rgba(77, 156, 250, 1)' : 'black') }} />
                         </ListItem>
-                        <ListItem component={Link} to="/moderacao/denuncias" style={{ backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredMD ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredMD(true) }} onMouseOut={() => { setIsHoveredMD(false) }}>
+
+                        <ListItem component={Link} to="/moderacao/denuncias" style={{ backgroundColor: selectedItem === 'Denúncias' ? 'rgba(128, 128, 128, 0.3)' : "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredMD ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredMD(true) }} onMouseOut={() => { setIsHoveredMD(false) }} onClick={() => setSelectedItem('Denúncias')}>
                             <ListItemIcon>
-                                <IoIcons.IoIosPaper style={{ color: isHoveredMD ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredMD(true) }} onMouseOut={() => { setIsHoveredMD(false) }} />
+                                <IoIcons.IoIosPaper style={{ color: selectedItem === 'Denúncias' ? 'white' :  (isHoveredMD? 'rgba(77, 156, 250, 1)' : 'black') }} onMouseOver={() => { setIsHoveredMD(true) }} onMouseOut={() => { setIsHoveredMD(false) }} />
                             </ListItemIcon>
-                            <ListItemText primary="Denúncias" />
+                            <ListItemText primary="Denúncias" style={{ color: selectedItem === 'Denúncias' ? 'white' : (isHoveredMD ? 'rgba(77, 156, 250, 1)' : 'black') }} />
                         </ListItem>
                     </List>
                 </Collapse>
@@ -207,54 +213,63 @@ const Sidebar = () => {
                 </ListItem>
                 <Collapse in={openC} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
-                        <ListItem component={Link} to="/config/polos" style={{ backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredCP ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCP(true) }} onMouseOut={() => { setIsHoveredCP(false) }}>
+
+                        <ListItem component={Link} to="/config/polos" style={{ backgroundColor: selectedItem === 'Polos' ? 'rgba(128, 128, 128, 0.3)' : "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredCP ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCP(true) }} onMouseOut={() => { setIsHoveredCP(false) }} onClick={() => setSelectedItem('Polos')}>
                             <ListItemIcon>
-                                <IoIcons.IoIosPaper style={{ color: isHoveredCP ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCP(true) }} onMouseOut={() => { setIsHoveredCP(false) }} />
+                                <IoIcons.IoIosPaper style={{ color: selectedItem === 'Polos' ? 'white' :  (isHoveredCP? 'rgba(77, 156, 250, 1)' : 'black') }} onMouseOver={() => { setIsHoveredCP(true) }} onMouseOut={() => { setIsHoveredCP(false) }} />
                             </ListItemIcon>
-                            <ListItemText primary="Polos" />
+                            <ListItemText primary="Polos" style={{ color: selectedItem === 'Polos' ? 'white' : (isHoveredCP ? 'rgba(77, 156, 250, 1)' : 'black') }} />
                         </ListItem>
-                        <ListItem component={Link} to="/config/forms" style={{ backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredCF ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCF(true) }} onMouseOut={() => { setIsHoveredCF(false) }}>
+
+                        <ListItem component={Link} to="/config/forms" style={{ backgroundColor: selectedItem === 'Formulários' ? 'rgba(128, 128, 128, 0.3)' : "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredCF ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCF(true) }} onMouseOut={() => { setIsHoveredCF(false) }} onClick={() => setSelectedItem('Formulários')} >
                             <ListItemIcon>
-                                <IoIcons.IoIosPaper style={{ color: isHoveredCF ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCF(true) }} onMouseOut={() => { setIsHoveredCF(false) }} />
+                                <IoIcons.IoIosPaper style={{ color: selectedItem === 'Formulários' ? 'white' :  (isHoveredCF? 'rgba(77, 156, 250, 1)' : 'black') }} onMouseOver={() => { setIsHoveredCF(true) }} onMouseOut={() => { setIsHoveredCF(false) }} />
                             </ListItemIcon>
-                            <ListItemText primary="Formulários" />
+                            <ListItemText primary="Formulários" style={{ color: selectedItem === 'Formulários' ? 'white' : (isHoveredCF ? 'rgba(77, 156, 250, 1)' : 'black') }}/>
                         </ListItem>
-                        <ListItem component={Link} to="/config/utilizadores" style={{ backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredCU ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCU(true) }} onMouseOut={() => { setIsHoveredCU(false) }}>
+
+                        <ListItem component={Link} to="/config/utilizadores" style={{ backgroundColor: selectedItem === 'Utilizadores' ? 'rgba(128, 128, 128, 0.3)' : "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredCU ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCU(true) }} onMouseOut={() => { setIsHoveredCU(false) }} onClick={() => setSelectedItem('Utilizadores')} >
                             <ListItemIcon>
-                                <MdIcons.MdOutlineManageAccounts style={{ color: isHoveredCU ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCU(true) }} onMouseOut={() => { setIsHoveredCU(false) }} />
+                                <MdIcons.MdOutlineManageAccounts style={{ color: selectedItem === 'Utilizadores' ? 'white' :  (isHoveredCU? 'rgba(77, 156, 250, 1)' : 'black') }} onMouseOver={() => { setIsHoveredCU(true) }} onMouseOut={() => { setIsHoveredCU(false) }} />
                             </ListItemIcon>
-                            <ListItemText primary="Utilizadores" />
+                            <ListItemText primary="Utilizadores" style={{ color: selectedItem === 'Utilizadores' ? 'white' : (isHoveredCU ? 'rgba(77, 156, 250, 1)' : 'black') }}/>
                         </ListItem>
-                        <ListItem component={Link} to="/config/departamentos" style={{ backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredCD ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCD(true) }} onMouseOut={() => { setIsHoveredCD(false) }}>
+
+                        <ListItem component={Link} to="/config/departamentos" style={{ backgroundColor: selectedItem === 'Departamentos' ? 'rgba(128, 128, 128, 0.3)' : "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredCD ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCD(true) }} onMouseOut={() => { setIsHoveredCD(false) }} onClick={() => setSelectedItem('Departamentos')} >
                             <ListItemIcon>
-                                <MdIcons.MdOutlineManageAccounts style={{ color: isHoveredCD ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCD(true) }} onMouseOut={() => { setIsHoveredCD(false) }} />
+                                <MdIcons.MdOutlineManageAccounts style={{ color: selectedItem === 'Departamentos' ? 'white' :  (isHoveredCD? 'rgba(77, 156, 250, 1)' : 'black') }} onMouseOver={() => { setIsHoveredCD(true) }} onMouseOut={() => { setIsHoveredCD(false) }} />
                             </ListItemIcon>
-                            <ListItemText primary="Departamentos" />
+                            <ListItemText primary="Departamentos" style={{ color: selectedItem === 'Departamentos' ? 'white' : (isHoveredCD ? 'rgba(77, 156, 250, 1)' : 'black') }} />
                         </ListItem>
-                        <ListItem component={Link} to="/config/funcoes" style={{ backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredCFUN ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCFUN(true) }} onMouseOut={() => { setIsHoveredCFUN(false) }}>
+
+                        <ListItem component={Link} to="/config/funcoes" style={{ backgroundColor: selectedItem === 'Funções' ? 'rgba(128, 128, 128, 0.3)' : "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredCFUN ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCFUN(true) }} onMouseOut={() => { setIsHoveredCFUN(false) }} onClick={() => setSelectedItem('Funções')} >
                             <ListItemIcon>
-                                <MdIcons.MdOutlineManageAccounts style={{ color: isHoveredCFUN ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCFUN(true) }} onMouseOut={() => { setIsHoveredCFUN(false) }} />
+                                <MdIcons.MdOutlineManageAccounts style={{ color: selectedItem === 'Funções' ? 'white' :  (isHoveredCFUN? 'rgba(77, 156, 250, 1)' : 'black') }} onMouseOver={() => { setIsHoveredCFUN(true) }} onMouseOut={() => { setIsHoveredCFUN(false) }} />
                             </ListItemIcon>
-                            <ListItemText primary="Funções" />
+                            <ListItemText primary="Funções" style={{ color: selectedItem === 'Funções' ? 'white' : (isHoveredCFUN ? 'rgba(77, 156, 250, 1)' : 'black') }} />
                         </ListItem>
-                        <ListItem component={Link} to="/config/categorias" style={{ backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredCC ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCC(true) }} onMouseOut={() => { setIsHoveredCC(false) }}>
+
+                        <ListItem component={Link} to="/config/categorias" style={{ backgroundColor: selectedItem === 'Categorias' ? 'rgba(128, 128, 128, 0.3)' : "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredCC ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCC(true) }} onMouseOut={() => { setIsHoveredCC(false) }} onClick={() => setSelectedItem('Categorias')} >
                             <ListItemIcon>
-                                <IoIcons.IoIosPaper style={{ color: isHoveredCC ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCC(true) }} onMouseOut={() => { setIsHoveredCC(false) }} />
+                                <IoIcons.IoIosPaper style={{ color: selectedItem === 'Categorias' ? 'white' :  (isHoveredCC? 'rgba(77, 156, 250, 1)' : 'black') }} onMouseOver={() => { setIsHoveredCC(true) }} onMouseOut={() => { setIsHoveredCC(false) }} />
                             </ListItemIcon>
-                            <ListItemText primary="Categorias" />
+                            <ListItemText primary="Categorias" style={{ color: selectedItem === 'Categorias' ? 'white' : (isHoveredCC ? 'rgba(77, 156, 250, 1)' : 'black') }} />
                         </ListItem>
-                        <ListItem component={Link} to="/config/subcategorias" style={{ backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredCS ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCS(true) }} onMouseOut={() => { setIsHoveredCS(false) }}>
+
+                        <ListItem component={Link} to="/config/subcategorias" style={{ backgroundColor: selectedItem === 'Subcategorias' ? 'rgba(128, 128, 128, 0.3)' : "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredCS ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCS(true) }} onMouseOut={() => { setIsHoveredCS(false) }} onClick={() => setSelectedItem('Subcategorias')} >
                             <ListItemIcon>
-                                <IoIcons.IoIosPaper style={{ color: isHoveredCS ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCS(true) }} onMouseOut={() => { setIsHoveredCS(false) }} />
+                                <IoIcons.IoIosPaper style={{ color: selectedItem === 'Subcategorias' ? 'white' :  (isHoveredCS? 'rgba(77, 156, 250, 1)' : 'black') }} onMouseOver={() => { setIsHoveredCS(true) }} onMouseOut={() => { setIsHoveredCS(false) }} />
                             </ListItemIcon>
-                            <ListItemText primary="Subcategorias" />
+                            <ListItemText primary="Subcategorias" style={{ color: selectedItem === 'Subcategorias' ? 'white' : (isHoveredCS ? 'rgba(77, 156, 250, 1)' : 'black') }} />
                         </ListItem>
-                        <ListItem component={Link} to="/config/alertas" style={{ backgroundColor: "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredCA ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCA(true) }} onMouseOut={() => { setIsHoveredCA(false) }}>
+
+                        <ListItem component={Link} to="/config/alertas" style={{ backgroundColor: selectedItem === 'Alertas' ? 'rgba(128, 128, 128, 0.3)' : "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px', color: isHoveredCA ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCA(true) }} onMouseOut={() => { setIsHoveredCA(false) }} onClick={() => setSelectedItem('Alertas')} >
                             <ListItemIcon>
-                                <IoIcons.IoIosPaper style={{ color: isHoveredCA ? 'rgba(77, 156, 250, 1)' : 'black' }} onMouseOver={() => { setIsHoveredCA(true) }} onMouseOut={() => { setIsHoveredCA(false) }} />
+                                <IoIcons.IoIosPaper style={{ color: selectedItem === 'Alertas' ? 'white' :  (isHoveredCA? 'rgba(77, 156, 250, 1)' : 'black') }} onMouseOver={() => { setIsHoveredCA(true) }} onMouseOut={() => { setIsHoveredCA(false) }} />
                             </ListItemIcon>
-                            <ListItemText primary="Alertas" />
+                            <ListItemText primary="Alertas" style={{ color: selectedItem === 'Alertas' ? 'white' : (isHoveredCA ? 'rgba(77, 156, 250, 1)' : 'black') }} />
                         </ListItem>
+
                     </List>
                 </Collapse>
             </List>

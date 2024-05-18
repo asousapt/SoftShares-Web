@@ -56,7 +56,7 @@ export default function ChartPieUsers() {
     >
       <Box
         sx={{
-          transform: 'translateX(40px)', // Move o gráfico 20px para a direita
+          transform: 'translateX(50px)', // Move o gráfico 20px para a direita
         }}
       >
       

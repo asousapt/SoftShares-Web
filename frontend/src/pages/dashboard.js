@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import './page.css';
 /* COMPONENTES */
 import Header from '../components/header/header';
-import ChartPie from '../components/charts/chartpie';
-import ChartPie1 from '../components/charts/chartpie1';
-import ChartPie2 from '../components/charts/chartpie2';
+import ChartPieUsers from '../components/charts/chartpieUsers';
+import ChartpieRegistos from '../components/charts/chartpieRegistos';
+import ChartpieRegistos2 from '../components/charts/chartpieRegistos2';
 /* FIM COMPONENTES */
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ForumIcon from '@mui/icons-material/Forum';
@@ -51,7 +51,17 @@ export default function Dashboard() {
 
                 <div style={{ height: '40vh', width: '99%', overflowY: 'auto', paddingBottom: '40px', border: 'none', boxShadow: 'none' }}>
                     
-                <ChartPie />
+                <Grid container spacing={3}>
+                    <Grid item xs={12} md={4}>
+                        <ChartPieUsers />
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                        <ChartpieRegistos  />
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                        <ChartpieRegistos2  />
+                    </Grid>
+                </Grid>
                 </div>
             </div>
         </div>

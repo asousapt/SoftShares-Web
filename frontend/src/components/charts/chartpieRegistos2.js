@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { useDrawingArea } from '@mui/x-charts/hooks';
 import { styled } from '@mui/material/styles';
@@ -12,8 +12,8 @@ const data = [
 ];
 
 const chartSize = {
-  width: 340,  
-  height: 300, 
+  width: 340,
+  height: 300,
 };
 
 const StyledText = styled('text')(({ theme }) => ({
@@ -42,52 +42,58 @@ function PieCenterLabel({ children }) {
 
 export default function ChartPieUsers() {
   return (
-    <Box 
-      display="flex" 
-      flexDirection="column" 
-      alignItems="center" 
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
       p={2}
-      border={1} 
-      borderRadius={2} 
+      border={1}
+      borderRadius={2}
       borderColor="#ccc"
-      width={340}  // Tamanho da Box ajustado para acomodar o gráfico
-      height={430}  // Mantém a altura da Box constante
+      width={340} // Tamanho da Box ajustado para acomodar o gráfico
+      height={530} // Mantém a altura da Box constante
     >
       <Box
         sx={{
           transform: 'translateX(40px)', // Move o gráfico 20px para a direita
         }}
       >
-      
-      <PieChart
-        series={[{ data, innerRadius: 80, outerRadius: 120, colors: data.map(d => d.color) }]}
-        width={chartSize.width}
-        height={chartSize.height}
-        slotProps={{
-          legend: {
-            hidden: true,
-          },
-        }}
-      >
-        <PieCenterLabel>Registos</PieCenterLabel>
-        <SecondLineText x={chartSize.width / 2.8} y={chartSize.height / 1.8}>121</SecondLineText>
-      </PieChart>
+        <PieChart
+          series={[{ data, innerRadius: 80, outerRadius: 120, colors: data.map((d) => d.color) }]}
+          width={chartSize.width}
+          height={chartSize.height}
+          slotProps={{
+            legend: {
+              hidden: true,
+            },
+          }}
+        >
+          <PieCenterLabel>Registos</PieCenterLabel>
+          <SecondLineText x={chartSize.width / 2.8} y={chartSize.height / 1.8}>
+            121
+          </SecondLineText>
+        </PieChart>
       </Box>
-      <Box mt={2} width={chartSize.width} textAlign="left">
-        {data.map((item) => (
-          <Box key={item.label} display="flex" justifyContent="space-between" alignItems="center" mb={0.5}>
-            <Box display="flex" alignItems="center">
-              <Box
-                width={12}
-                height={12}
-                bgcolor={item.color}
-                borderRadius="50%"
-                mr={1}
-              />
-              <Typography variant="body1" mr={2}>{item.label}</Typography> 
+      <Box mt={5} width={chartSize.width} textAlign="left">
+        {data.map((item, index) => (
+          <React.Fragment key={item.label}>
+            <Box key={item.label} display="flex" justifyContent="space-between" alignItems="center" mb={1.5}>
+              <Box display="flex" alignItems="center">
+                <Box width={12} height={12} bgcolor={item.color} borderRadius="50%" mr={1} />
+                <Typography variant="body1" mr={2}>
+                  {item.label}
+                </Typography>
+              </Box>
+              <Typography variant="body1">{item.value}%</Typography>
             </Box>
-            <Typography variant="body1">{item.value}%</Typography>
-          </Box>
+            {index < data.length - 1 && ( // Adiciona a linha entre os itens, exceto para o último item
+              <Box
+                height={0.01}
+                bgcolor={`#ccc`} // 80 significa 50% de opacidade
+                mb={2}
+              />
+            )}
+          </React.Fragment>
         ))}
       </Box>
     </Box>

@@ -22,7 +22,7 @@ export default function Dashboard() {
             <div className="data-container">
                 <div style={{ display: 'flex', textAlign: 'center', alignItems: 'center', flexDirection: 'column', paddingBottom: 20 }}>
                     <h3>Registo por Aprovar</h3>
-                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '50%', marginRight: '5%'}}>
+                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '50%', marginRight: '5%' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             <div style={{ display: 'flex' }}>
                                 <LocationOnIcon />
@@ -48,20 +48,18 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </div>
-
-                <div style={{ height: '40vh', width: '99%', overflowY: 'auto', paddingBottom: '40px', border: 'none', boxShadow: 'none' }}>
-                    
-                <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
-                        <ChartPieUsers />
+                <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px', border: 'none', boxShadow: 'none' }}>
+                    <Grid container spacing={1} wrap="wrap">
+                        <Grid item xs={12} md={4} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
+                            <ChartPieUsers style={{ maxWidth: '100%' }} />
+                        </Grid>
+                        <Grid item xs={12} md={4} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
+                            <ChartpieRegistos style={{ maxWidth: '100%' }} />
+                        </Grid>
+                        <Grid item xs={12} md={4} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
+                            <ChartpieRegistos2 style={{ maxWidth: '100%' }} />
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12} md={4}>
-                        <ChartpieRegistos  />
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                        <ChartpieRegistos2  />
-                    </Grid>
-                </Grid>
                 </div>
             </div>
         </div>

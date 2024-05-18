@@ -52,7 +52,7 @@ export default function ChartPieUsers() {
       borderRadius={2} 
       borderColor="#ccc"
       width={340}  // Tamanho da Box ajustado para acomodar o gráfico
-      height={430}  // Mantém a altura da Box constante
+      height={530}  // Mantém a altura da Box constante
     >
       <Box
         sx={{
@@ -74,21 +74,26 @@ export default function ChartPieUsers() {
         <SecondLineText x={chartSize.width / 2.8} y={chartSize.height / 1.8}>452</SecondLineText>
       </PieChart>
       </Box>
-      <Box mt={2} width={chartSize.width} textAlign="left">
-        {data.map((item) => (
-          <Box key={item.label} display="flex" justifyContent="space-between" alignItems="center" mb={0.5}>
-            <Box display="flex" alignItems="center">
-              <Box
-                width={12}
-                height={12}
-                bgcolor={item.color}
-                borderRadius="50%"
-                mr={1}
-              />
-              <Typography variant="body1" mr={2}>{item.label}</Typography> 
+      <Box mt={5} width={chartSize.width} textAlign="left">
+        {data.map((item, index) => (
+          <React.Fragment key={item.label}>
+            <Box key={item.label} display="flex" justifyContent="space-between" alignItems="center" mb={1.5}>
+              <Box display="flex" alignItems="center">
+                <Box width={12} height={12} bgcolor={item.color} borderRadius="50%" mr={1} />
+                <Typography variant="body1" mr={2}>
+                  {item.label}
+                </Typography>
+              </Box>
+              <Typography variant="body1">{item.value}%</Typography>
             </Box>
-            <Typography variant="body1">{item.value}%</Typography>
-          </Box>
+            {index < data.length - 1 && ( // Adiciona a linha entre os itens, exceto para o último item
+              <Box
+                height={0.01}
+                bgcolor={`#ccc`} // 80 significa 50% de opacidade
+                mb={2}
+              />
+            )}
+          </React.Fragment>
         ))}
       </Box>
     </Box>

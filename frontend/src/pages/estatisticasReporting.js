@@ -17,6 +17,7 @@ export default function StatsReporting() {
             <Header caption='Reporting' />
             <div className="data-container">
                 <div style={{ height: '80vh', width: '99%', overflowY: 'auto', paddingBottom: '40px', border: 'none', boxShadow: 'none' }}>
+                <div style={{marginBottom: 25}}></div>
                 <FormBuilder />
                 </div>
             </div>

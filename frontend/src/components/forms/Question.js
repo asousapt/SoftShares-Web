@@ -1,19 +1,14 @@
 import React from 'react';
 import {
   TextField,
-  Typography,
   IconButton,
   Button,
-  FormControlLabel,
   Radio,
-  RadioGroup,
   Checkbox,
-  MenuItem,
-  Select
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const Question = ({ question, handleTextChange, handleOptionChange, addOption, removeOption }) => {
+const Question = ({ question, handleTextChange, handleOptionChange, addOption, removeOption, handleRemoveQuestion }) => {
   const renderOptions = () => {
     return question.options.map((opt, idx) => (
       <div key={idx} style={{ display: 'flex', alignItems: 'center' }}>
@@ -79,7 +74,6 @@ const Question = ({ question, handleTextChange, handleOptionChange, addOption, r
             </Button>
           </>
         );
-      // Adicione mais casos conforme necessário
       default:
         return null;
     }
@@ -88,6 +82,15 @@ const Question = ({ question, handleTextChange, handleOptionChange, addOption, r
   return (
     <div>
       {renderQuestionInput()}
+      <Button
+        variant="contained"
+        color="secondary"
+        startIcon={<DeleteIcon />}
+        onClick={() => handleRemoveQuestion(question.id)}
+        style={{ marginTop: '10px' }}
+      >
+        Remover Pergunta
+      </Button>
     </div>
   );
 };

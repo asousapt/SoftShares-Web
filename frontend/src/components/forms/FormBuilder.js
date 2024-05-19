@@ -3,8 +3,6 @@ import {
   Container,
   Typography,
   Paper,
-  Switch,
-  FormControlLabel,
   Button,
   Box
 } from '@mui/material';
@@ -20,7 +18,7 @@ const FormBuilder = () => {
       id: questions.length + 1,
       type,
       text: '',
-      options: type === 'multipleChoice' ? ['Opção 1'] : [],
+      options: type === 'multipleChoice' || type === 'checkboxes' ? ['Opção 1'] : [],
       required: false,
     };
     setQuestions([...questions, newQuestion]);
@@ -54,6 +52,10 @@ const FormBuilder = () => {
     }));
   };
 
+  const handleRemoveQuestion = (id) => {
+    setQuestions(questions.filter(q => q.id !== id));
+  };
+
   const generateJSON = () => {
     const data = questions.map(q => ({
       id: q.id,
@@ -79,15 +81,7 @@ const FormBuilder = () => {
               handleOptionChange={handleOptionChange}
               addOption={addOption}
               removeOption={removeOption}
-            />
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={q.required}
-                  onChange={() => setQuestions(questions.map(quest => quest.id === q.id ? { ...quest, required: !quest.required } : quest))}
-                />
-              }
-              label="Obrigatório"
+              handleRemoveQuestion={handleRemoveQuestion}
             />
           </Paper>
         ))}

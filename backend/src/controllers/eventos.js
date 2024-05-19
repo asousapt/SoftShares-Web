@@ -11,20 +11,20 @@ const controladorEventos = {
             await models.evento.create({
                 titulo: titulo,
                 descricao: descricao,
-                dataInicio: dataInicio,
-                dataFim: dataFim,
-                dataLimInscricao: dataLimInscricao,
-                nmrMaxParticipantes: nmrMaxParticipantes,
+                datainicio: dataInicio,
+                datafim: dataFim,
+                dataliminscricao: dataLimInscricao,
+                nmrmaxparticipantes: nmrMaxParticipantes,
                 localizacao: localizacao,
                 latitude: latitude,
                 longitude: longitude,
-                cidadeID: cidadeID,
-                utilizadorCriou: utilizadorCriou
+                cidadeid: cidadeID,
+                utilizadorcriou: utilizadorCriou
             });
-            
+
             res.status(201).json({ message: 'Evento adicionado com sucesso' });
         } catch (error) {
-            res.status(500).json({ error: 'Erro ao adicionar evento' });
+            res.status(500).json({ error: 'Erro ao adicionar evento', details: error.message });
         }
     },
 
@@ -40,7 +40,7 @@ const controladorEventos = {
             
             res.status(201).json({ message: 'Evento adicionado com sucesso' });
         } catch (error) {
-            res.status(500).json({ error: 'Erro ao adicionar evento' });
+            res.status(500).json({ error: 'Erro ao adicionar evento', error });
         }
     },
 
@@ -52,10 +52,10 @@ const controladorEventos = {
             await models.evento.update({
                 titulo: titulo,
                 descricao: descricao,
-                dataInicio: dataInicio,
-                dataFim: dataFim,
-                dataLimInscricao: dataLimInscricao,
-                nmrMaxParticipantes: nmrMaxParticipantes,
+                datainicio: dataInicio,
+                datafim: dataFim,
+                dataliminscricao: dataLimInscricao,
+                nmrmaxparticipantes: nmrMaxParticipantes,
                 localizacao: localizacao,
                 latitude: latitude,
                 longitude: longitude,

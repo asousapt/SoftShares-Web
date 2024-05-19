@@ -17,6 +17,7 @@ import ConfigAlertas from './pages/configAlertas'
 import Dashboard from './pages/dashboard'
 import StatsUtilizador from './pages/estatisticasUtilizadores'
 import StatsDenuncias from './pages/estatisticasDenuncias'
+import StatsReporting from './pages/estatisticasReporting'
 import Forms from './pages/forms'
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/estatisticas/utilizadores" element={<StatsUtilizador />} />
                         <Route path="/estatisticas/denuncias" element={<StatsDenuncias />} />
+                        <Route path="/estatisticas/reporting" element={<StatsReporting />} />
                         <Route path="/lista/eventos" element={<ListaEventos />} />
                         <Route path="/lista/pontosinteresse" element={<ListaPontosInt />} />
                         <Route path="/lista/publicacoes" element={<ListaPublicacoes />} />

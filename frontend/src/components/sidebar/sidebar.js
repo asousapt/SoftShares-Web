@@ -27,6 +27,7 @@ const Sidebar = () => {
     const [isHoveredE, setIsHoveredE] = useState(false);
     const [isHoveredEU, setIsHoveredEU] = useState(false);
     const [isHoveredED, setIsHoveredED] = useState(false);
+    const [isHoveredER, setIsHoveredER] = useState(false);
     const [isHoveredL, setIsHoveredL] = useState(false);
     const [isHoveredLE, setIsHoveredLE] = useState(false);
     const [isHoveredLPI, setIsHoveredLPI] = useState(false);
@@ -131,6 +132,19 @@ const Sidebar = () => {
                             </ListItemIcon>
                             <ListItemText primary="Denúncias" style={{ color: selectedItem === 'Denúncias' ? 'white' : (isHoveredED ? 'rgba(77, 156, 250, 1)' : 'black') }} />
                         </ListItem>
+
+                        <ListItem component={Link} to="/estatisticas/reporting" style={{ backgroundColor: selectedItem === 'Reporting' ? 'rgba(128, 128, 128, 0.3)' : "white", borderRadius: '12px', marginBottom: '5px', marginLeft: '30px', width: '215px' }}
+                            onMouseOver={() => setIsHoveredER(true)}
+                            onMouseOut={() => setIsHoveredER(false)}
+                            onClick={() => setSelectedItem('Reporting')} >
+                            <ListItemIcon>
+                                <IoIcons.IoIosPaper style={{ color: selectedItem === 'Reporting' ? 'white' :  (isHoveredER ? 'rgba(77, 156, 250, 1)' : 'black') }}
+                                    onMouseOver={() => setIsHoveredER(true)}
+                                    onMouseOut={() => setIsHoveredER(false)} />
+                            </ListItemIcon>
+                            <ListItemText primary="Reporting" style={{ color: selectedItem === 'Reporting' ? 'white' : (isHoveredER ? 'rgba(77, 156, 250, 1)' : 'black') }} />
+                        </ListItem>
+
                     </List>
                 </Collapse>
 

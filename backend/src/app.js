@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 const eventosRoutes = require('./routes/eventos');
 
 // // Use route files
- app.use('/evento', eventosRoutes);
+app.use('/evento', eventosRoutes);
 
 // Start server
 const PORT = process.env.PORT || 8000;

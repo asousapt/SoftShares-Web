@@ -26,7 +26,6 @@ function getConfig(env) {
 
 const env = process.env.NODE_ENV === 'production' ? 'PROD' : 'DEV';
 const config = getConfig(env);
-console.log('Database Config:', getConfig(env));
 
 const sequelize = new Sequelize(config.database, config.username, config.password, config);
 

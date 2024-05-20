@@ -2,6 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const distritos = require('./controllers/distritos');
 const app = express();
 
 // Use CORS middleware
@@ -10,6 +11,9 @@ app.options('*', cors());
 
 //Use bodyParser middleware
 app.use(bodyParser.json());
+
+//Init Data
+distritos.init();
 
 // Import route files
 const eventosRoutes = require('./routes/eventos');

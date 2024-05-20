@@ -13,9 +13,11 @@ app.use(bodyParser.json());
 
 // Import route files
 const eventosRoutes = require('./routes/eventos');
+const polosRoutes = require('./routes/polos');
 
 // // Use route files
 app.use('/evento', eventosRoutes);
+app.use('/polo', polosRoutes);
 
 // Start server
 const PORT = process.env.PORT || 8000;

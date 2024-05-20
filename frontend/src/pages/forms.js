@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './page.css';
 import ReactDOM from 'react-dom';
-import { ReactFormBuilder } from 'react-form-builder2';
-import 'react-form-builder2/dist/app.css';
 
 /* COMPONENTES */
 import DataTable from '../components/tables/dataTable';
@@ -22,7 +20,7 @@ export default function StatsUtilizador() {
                 <div style={{ marginBottom: '40px'}}>
                 </div>
                 <div style={{ height: '65vh', width: '98%', overflowY: 'auto', paddingBottom: '40px', border: 'none', boxShadow: 'none' }}>
-                    <ReactFormBuilder />,
+
                 </div>
             </div>
         </div>

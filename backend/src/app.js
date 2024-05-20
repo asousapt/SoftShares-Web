@@ -24,12 +24,14 @@ const eventosRoutes = require('./routes/eventos');
 const polosRoutes = require('./routes/polos');
 //const categoriasRoutes = require('./routes/categorias');
 const usersRoutes = require('./routes/utilizadores');
+const departamentoRoutes = require('./routes/departamentos');
 
 // // Use route files
 app.use('/evento', eventosRoutes);
 app.use('/polo', polosRoutes);
 //app.use('/categoria', categoriasRoutes);
 app.use('/utilizadores', usersRoutes);
+app.use('/departamento', departamentoRoutes);
 
 // Start server
 const PORT = process.env.PORT || 8000;

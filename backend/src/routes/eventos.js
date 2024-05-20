@@ -17,7 +17,6 @@ router.put('/aprovar/:idEvento/:idUser', eventoControlador.aprovarEvento);
 router.put('/utilizador/update/:idEvento/:idUser', eventoControlador.atualizarConvidados);
 
 //ROUTES DELETE
-
 router.delete('/utilizador/delete/:idEvento/:idUser', eventoControlador.atualizarConvidados);
 
 //ROUTES GET

@@ -1,4 +1,4 @@
-const { Sequelize, Op } = require('sequelize');
+const { Sequelize, QueryTypes } = require('sequelize');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
@@ -166,14 +166,20 @@ const controladorCategorias = {
 
     consultarTudo: async (req, res) => {
         try {
-            const categorias = await models.categoria.findAll({
-                include: [{
-                    model: models.chave,
-                    include: [{
-                        model: models.traducao
-                    }]
-                }]
-            });
+            const categorias = await sequelizeConn.query(
+                `SELECT 
+                    c.*, 
+                    (SELECT valor from traducao WHERE ch.chaveid = traducao.chaveid AND idiomaID = 1) as ValorPT, 
+                    (SELECT valor from traducao WHERE ch.chaveid = traducao.chaveid AND idiomaID = 2) as ValorEN, 
+                    (SELECT valor from traducao WHERE ch.chaveid = traducao.chaveid AND idiomaID = 3) as ValorES 
+                FROM 
+                    categoria c 
+                INNER JOIN 
+                    chave ch ON c.categoriaid = ch.registoid AND ch.entidade = 'CATEGORIA' `,
+                {
+                    type: QueryTypes.SELECT
+                }
+            );
             
             res.status(200).json(categorias);
         } catch (error) {

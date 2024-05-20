@@ -18,10 +18,12 @@ distritos.init();
 // Import route files
 const eventosRoutes = require('./routes/eventos');
 const polosRoutes = require('./routes/polos');
+const usersRoutes = require('./routes/utilizadores');
 
 // // Use route files
 app.use('/evento', eventosRoutes);
 app.use('/polo', polosRoutes);
+app.use('/utilizadores', usersRoutes);
 
 // Start server
 const PORT = process.env.PORT || 8000;

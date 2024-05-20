@@ -9,9 +9,9 @@ router.post('/add', poloControlador.adicionarPolo);
 router.put('/update/:idPolo', poloControlador.atualizarPolo);
 
 //ROUTES DELETE
-router.delete('/polos/delete/:idPolo', poloControlador.atualizarPolo);
+router.delete('/delete/:idPolo', poloControlador.atualizarPolo);
 
 //ROUTES GET
-router.get('/polos/lista', poloControlador.consultarPolo);
+router.get('/', poloControlador.consultarPolo);
 
 module.exports = router;

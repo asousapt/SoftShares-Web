@@ -4,6 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const distritos = require('./controllers/distritos');
 const idioma = require('./controllers/idioma');
+const perfil = require('./controllers/perfis');
 const app = express();
 
 // Use CORS middleware
@@ -16,17 +17,18 @@ app.use(bodyParser.json());
 //Init Data
 distritos.init();
 idioma.init();
+perfil.init();
 
 // Import route files
 const eventosRoutes = require('./routes/eventos');
 const polosRoutes = require('./routes/polos');
-const categoriasRoutes = require('./routes/categorias');
+//const categoriasRoutes = require('./routes/categorias');
 const usersRoutes = require('./routes/utilizadores');
 
 // // Use route files
 app.use('/evento', eventosRoutes);
 app.use('/polo', polosRoutes);
-app.use('/categoria', categoriasRoutes);
+//app.use('/categoria', categoriasRoutes);
 app.use('/utilizadores', usersRoutes);
 
 // Start server

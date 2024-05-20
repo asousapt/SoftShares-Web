@@ -4,6 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const distritos = require('./controllers/distritos');
 const idioma = require('./controllers/idioma');
+const categorias = require('./controllers/categorias');
 const app = express();
 
 // Use CORS middleware
@@ -16,6 +17,7 @@ app.use(bodyParser.json());
 //Init Data
 distritos.init();
 idioma.init();
+categorias.init();
 
 // Import route files
 const eventosRoutes = require('./routes/eventos');

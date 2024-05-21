@@ -12,11 +12,11 @@ const controladorCategorias = {
                 const defaultCategorias = [
                     { descricaoPT: 'Gastronomia', descricaoEN: 'Gastronomy', descricaoES: 'Gastronomía', icone: 'garfo', cor: 'FF4500' },
                     { descricaoPT: 'Desporto', descricaoEN: 'Sport', descricaoES: 'Deporte', icone: 'futebol', cor: '1E90FF' },
-                    { descricaoPT: 'Atividade Ar Livre', descricaoEN: 'Outdoor Activity', descricaoES: 'Actividad al aire libre', icone: 'arvore', cor: '228B22' },
+                    { descricaoPT: 'Lazer', descricaoEN: 'Leisure', descricaoES: 'Ocio', icone: 'arvore', cor: '228B22' },
                     { descricaoPT: 'Alojamento', descricaoEN: 'Accommodation', descricaoES: 'Alojamiento', icone: 'casa', cor: '8A2BE2' },
                     { descricaoPT: 'Saúde', descricaoEN: 'Health', descricaoES: 'Salud', icone: 'cruz', cor: 'FF6347' },
-                    { descricaoPT: 'Educação', descricaoEN: 'Education', descricaoES: 'Educación', icone: 'escola', cor: 'FFA500' },
-                    { descricaoPT: 'Infraestruturas', descricaoEN: 'Infrastructures', descricaoES: 'Infraestructuras', icone: 'infra', cor: '2F4F4F' }
+                    { descricaoPT: 'Formação', descricaoEN: 'Education', descricaoES: 'Formación', icone: 'escola', cor: 'FFA500' },
+                    { descricaoPT: 'Transporte', descricaoEN: 'Transport', descricaoES: 'Transporte', icone: 'infra', cor: '2F4F4F' }
                 ];
 
                 for (const categoria of defaultCategorias) {

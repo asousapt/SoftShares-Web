@@ -9,6 +9,28 @@ const controladorCategorias = {
             const count = await models.categoria.count();
 
             if (count < 1){
+                const idiomaPT = await models.idioma.findOne({
+                    where: { 
+                        icone: 'pt'
+                    }
+                });
+                const idiomaEN = await models.idioma.findOne({
+                    where: { 
+                        icone: 'en'
+                    }
+                });
+                const idiomaES = await models.idioma.findOne({
+                    where: { 
+                        icone: 'es'
+                    }
+                });
+
+                const idiomas = {
+                    pt: idiomaPT.idiomaid,
+                    en: idiomaEN.idiomaid,
+                    es: idiomaES.idiomaid,
+                };
+
                 const defaultCategorias = [
                     { descricaoPT: 'Gastronomia', descricaoEN: 'Gastronomy', descricaoES: 'Gastronomía', icone: 'garfo', cor: 'FF4500' },
                     { descricaoPT: 'Desporto', descricaoEN: 'Sport', descricaoES: 'Deporte', icone: 'futebol', cor: '1E90FF' },
@@ -32,9 +54,9 @@ const controladorCategorias = {
                     });
                     
                     const traducoes = [
-                        { chaveid: chave.chaveid, idiomaid: 1, valor: categoria.descricaoPT },
-                        { chaveid: chave.chaveid, idiomaid: 2, valor: categoria.descricaoEN },
-                        { chaveid: chave.chaveid, idiomaid: 3, valor: categoria.descricaoES }
+                        { chaveid: chave.chaveid, idiomaid: idiomas.pt, valor: categoria.descricaoPT },
+                        { chaveid: chave.chaveid, idiomaid: idiomas.en, valor: categoria.descricaoEN },
+                        { chaveid: chave.chaveid, idiomaid: idiomas.es, valor: categoria.descricaoES }
                     ];
                     await Promise.all(traducoes.map(traducao => models.traducao.create(traducao)));
                 }
@@ -48,6 +70,28 @@ const controladorCategorias = {
         const { descricaoPT, descricaoEN, descricaoES } = req.body;
 
         try {
+            const idiomaPT = await models.idioma.findOne({
+                where: { 
+                    icone: 'pt'
+                }
+            });
+            const idiomaEN = await models.idioma.findOne({
+                where: { 
+                    icone: 'en'
+                }
+            });
+            const idiomaES = await models.idioma.findOne({
+                where: { 
+                    icone: 'es'
+                }
+            });
+
+            const idiomas = {
+                pt: idiomaPT.idiomaid,
+                en: idiomaEN.idiomaid,
+                es: idiomaES.idiomaid,
+            };
+
             const categoria = await models.categoria.create({
                 cor: '',
                 icone: ''
@@ -59,9 +103,9 @@ const controladorCategorias = {
             })
 
             const traducoes = [
-                { chaveid: chave.chaveid, idiomaid: 1, valor: descricaoPT },
-                { chaveid: chave.chaveid, idiomaid: 2, valor: descricaoEN },
-                { chaveid: chave.chaveid, idiomaid: 3, valor: descricaoES }
+                { chaveid: chave.chaveid, idiomaid: idiomas.pt, valor: descricaoPT },
+                { chaveid: chave.chaveid, idiomaid: idiomas.en, valor: descricaoEN },
+                { chaveid: chave.chaveid, idiomaid: idiomas.es, valor: descricaoES }
             ];
             await Promise.all(traducoes.map(traducao => models.traducao.create(traducao)));
 
@@ -76,6 +120,28 @@ const controladorCategorias = {
         const { descricaoPT, descricaoEN, descricaoES, inativo } = req.body;
 
         try {
+            const idiomaPT = await models.idioma.findOne({
+                where: { 
+                    icone: 'pt'
+                }
+            });
+            const idiomaEN = await models.idioma.findOne({
+                where: { 
+                    icone: 'en'
+                }
+            });
+            const idiomaES = await models.idioma.findOne({
+                where: { 
+                    icone: 'es'
+                }
+            });
+
+            const idiomas = {
+                pt: idiomaPT.idiomaid,
+                en: idiomaEN.idiomaid,
+                es: idiomaES.idiomaid,
+            };
+
             const categoria = await models.categoria.findByPk(idCat);
             if (!categoria) {
                 return res.status(404).json({ error: 'Categoria não encontrada' });
@@ -100,9 +166,9 @@ const controladorCategorias = {
             }
 
             const traducoes = [
-                { chaveid: chave.chaveid, idiomaid: 1, valor: descricaoPT },
-                { chaveid: chave.chaveid, idiomaid: 2, valor: descricaoEN },
-                { chaveid: chave.chaveid, idiomaid: 3, valor: descricaoES }
+                { chaveid: chave.chaveid, idiomaid: idiomas.pt, valor: descricaoPT },
+                { chaveid: chave.chaveid, idiomaid: idiomas.en, valor: descricaoEN },
+                { chaveid: chave.chaveid, idiomaid: idiomas.es, valor: descricaoES }
             ];
             await Promise.all(traducoes.map(async traducao => {
                 await models.traducao.update(

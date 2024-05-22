@@ -35,6 +35,7 @@ const subcategoriasRoutes = require('./routes/subcategorias');
 const usersRoutes = require('./routes/utilizadores');
 const departamentoRoutes = require('./routes/departamentos');
 const funcoesRoutes = require('./routes/funcoes');
+const alertasRoutes = require('./routes/alertas');
 
 // Use route files
 app.use('/evento', eventosRoutes);
@@ -44,6 +45,7 @@ app.use('/subcategoria', subcategoriasRoutes);
 app.use('/utilizadores', usersRoutes);
 app.use('/departamento', departamentoRoutes);
 app.use('/funcao', funcoesRoutes);
+app.use('/alerta', alertasRoutes);
 
 // Start server
 const PORT = process.env.PORT || 8000;

@@ -1,18 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const poloControlador = require('../controllers/polos');
+const { authenticate } = require('../tokenUtils');
 
 //ROUTES POST
-router.post('/add', poloControlador.adicionarPolo);
+router.post('/add', authenticate, poloControlador.adicionarPolo);
 
 //ROUTES PUT
-router.put('/update/:idPolo', poloControlador.atualizarPolo);
+router.put('/update/:idPolo', authenticate, poloControlador.atualizarPolo);
 
 //ROUTES DELETE
-router.delete('/delete/:idPolo', poloControlador.apagarPolo);
+router.delete('/delete/:idPolo', authenticate, poloControlador.apagarPolo);
 
 //ROUTES GET
-router.get('/', poloControlador.consultarTodos);
-router.get('/:idPolo', poloControlador.consultarPoloPorID);
+router.get('/', authenticate, poloControlador.consultarTodos);
+router.get('/:idPolo', authenticate, poloControlador.consultarPoloPorID);
 
 module.exports = router;

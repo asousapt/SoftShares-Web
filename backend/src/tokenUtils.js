@@ -30,7 +30,7 @@ const authenticate = (req, res, next) => {
     const token = req.headers['authorization'];
 
     if (!token) {
-        return res.status(403).json({ error: 'No token provided' });
+        return res.status(403).json({ error: 'Sem permissão' });
     }
     
     if (isFixedToken(token)) {
@@ -45,7 +45,7 @@ const authenticate = (req, res, next) => {
     const decoded = verifyToken(token);
 
     if (!decoded) {
-        return res.status(401).json({ error: 'Invalid token' });
+        return res.status(401).json({ error: 'Sem permissão' });
     }
 
     req.user = decoded;

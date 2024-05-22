@@ -1,35 +1,36 @@
 const express = require('express');
 const router = express.Router();
 const eventoControlador = require('../controllers/eventos');
+const { authenticate } = require('../tokenUtils');
 
 //ROUTES POST
-router.post('/add', eventoControlador.adicionarEvento);
+router.post('/add', authenticate, eventoControlador.adicionarEvento);
 
-router.post('/utilizador/add', eventoControlador.adicionarParticipante);
+router.post('/utilizador/add', authenticate, eventoControlador.adicionarParticipante);
 
 //ROUTES PUT
-router.put('/update/:idEvento', eventoControlador.atualizarEvento);
+router.put('/update/:idEvento', authenticate, eventoControlador.atualizarEvento);
 
-router.put('/cancelar/:idEvento', eventoControlador.cancelarEvento);
+router.put('/cancelar/:idEvento', authenticate, eventoControlador.cancelarEvento);
 
-router.put('/aprovar/:idEvento/:idUser', eventoControlador.aprovarEvento);
+router.put('/aprovar/:idEvento/:idUser', authenticate, eventoControlador.aprovarEvento);
 
-router.put('/utilizador/update/:idEvento/:idUser', eventoControlador.atualizarConvidados);
+router.put('/utilizador/update/:idEvento/:idUser', authenticate, eventoControlador.atualizarConvidados);
 
 //ROUTES DELETE
-router.delete('/utilizador/delete/:idEvento/:idUser', eventoControlador.atualizarConvidados);
+router.delete('/utilizador/delete/:idEvento/:idUser', authenticate, eventoControlador.atualizarConvidados);
 
 //ROUTES GET
-router.get('/', eventoControlador.consultarTodos);
+router.get('/', authenticate, eventoControlador.consultarTodos);
 
-router.get('/:idPolo/data/range/:data1/:data2', eventoControlador.consultarEventosEntreDatas);
+router.get('/:idPolo/data/range/:data1/:data2', authenticate, eventoControlador.consultarEventosEntreDatas);
 
-router.get('/utilizador/lista/:idEvento', eventoControlador.consultarUtilizadoresEvento);
+router.get('/utilizador/lista/:idEvento', authenticate, eventoControlador.consultarUtilizadoresEvento);
 
-router.get('/utilizador/:idUser', eventoControlador.consultarEventoInscritos);
+router.get('/utilizador/:idUser', authenticate, eventoControlador.consultarEventoInscritos);
 
-router.get('/:idPolo/futuro/:numTop', eventoControlador.consultarEventosFuturos);
+router.get('/:idPolo/futuro/:numTop', authenticate, eventoControlador.consultarEventosFuturos);
 
-router.get('/:idEvento', eventoControlador.consultarEventoPorID);
+router.get('/:idEvento', authenticate, eventoControlador.consultarEventoPorID);
 
 module.exports = router;

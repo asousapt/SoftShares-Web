@@ -1,24 +1,25 @@
 import "./App.css";
 import Sidebar from "./components/sidebar/sidebar";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
-import ListaEventos from './pages/listaEventos'
-import ListaPontosInt from './pages/listaPontosInt'
-import ListaPublicacoes from './pages/listaPublicacoes'
-import ModAprov from './pages/modAprovacoes'
-import ModDen from './pages/modDenuncias'
-import ConfigPolos from './pages/configPolos'
-import ConfigForms from './pages/configForms'
-import ConfigUtilizadores from './pages/configUtilizadores'
-import ConfigDepartamentos from './pages/configDepartamentos'
-import ConfigFuncoes from './pages/configFuncoes'
-import ConfigCategorias from './pages/configCategorias'
-import ConfigSubcategorias from './pages/configSubcategorias'
-import ConfigAlertas from './pages/configAlertas'
-import Dashboard from './pages/dashboard'
-import StatsUtilizador from './pages/estatisticasUtilizadores'
-import StatsDenuncias from './pages/estatisticasDenuncias'
-import StatsReporting from './pages/estatisticasReporting'
-import Forms from './pages/forms'
+import ListaEventos from './pages/listaEventos';
+import ListaPontosInt from './pages/listaPontosInt';
+import ListaPublicacoes from './pages/listaPublicacoes';
+import ModAprov from './pages/modAprovacoes';
+import ModDen from './pages/modDenuncias';
+import ConfigPolos from './pages/configPolos';
+import ConfigForms from './pages/configForms';
+import ConfigUtilizadores from './pages/configUtilizadores';
+import ConfigDepartamentos from './pages/configDepartamentos';
+import ConfigFuncoes from './pages/configFuncoes';
+import ConfigCategorias from './pages/configCategorias';
+import ConfigSubcategorias from './pages/configSubcategorias';
+import ConfigAlertas from './pages/configAlertas';
+import Dashboard from './pages/dashboard';
+import StatsUtilizador from './pages/estatisticasUtilizadores';
+import StatsDenuncias from './pages/estatisticasDenuncias';
+import StatsReporting from './pages/estatisticasReporting';
+import Forms from './pages/forms';
+import LandingPage from './pages/landingPage';
 
 function App() {
     return (
@@ -29,7 +30,8 @@ function App() {
                 </div>
                 <div className="content-container">
                     <Routes>
-                        <Route path="/" element={<Navigate replace to="/dashboard" />} />
+                        <Route path="/" element={<Navigate replace to="/landingpage" />} />
+                        <Route path="/landingpage" element={<LandingPage />} />
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/estatisticas/utilizadores" element={<StatsUtilizador />} />
                         <Route path="/estatisticas/denuncias" element={<StatsDenuncias />} />
@@ -51,7 +53,7 @@ function App() {
                     </Routes>
                 </div>
             </div>
-        </Router> 
+        </Router>
     );
 }
 

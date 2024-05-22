@@ -282,7 +282,79 @@ const controladorSubcategorias = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar as subcategorias', details: error.message });
         }
+    },
+
+    adicionarSubcategoriaFav: async (req, res) => {
+        const { subcategoriaid, utilizadorid } = req.body;
+
+        try {
+            await models.subcategoria_fav_util.create({
+                subcategoriaid: subcategoriaid,
+                utilizadorid: utilizadorid
+            });
+
+            res.status(201).json({ message: 'Subcategoria favorita adicionada com sucesso' });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao adicionar subcategoria favorita', details: error.message });
+        }
+    },
+
+    atualizarSubcategoriaFav: async (req, res) => {
+        const { id } = req.params;
+        const { subcategoriaid, utilizadorid } = req.body;
+
+        try {
+            await models.subcategoria_fav_util.update({
+                subcategoriaid: subcategoriaid,
+                utilizadorid: utilizadorid
+            }, {
+                where: {
+                    subcategoria_fav_utilid: id
+                }
+            });
+
+            res.status(200).json({ message: 'Subcategoria favorita atualizada com sucesso' });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao atualizar subcategoria favorita', details: error.message });
+        }
+    },
+
+    removerSubcategoriaFav: async (req, res) => {
+        const { id } = req.params;
+
+        try {
+            await models.subcategoria_fav_util.destroy({
+                where: {
+                    subcategoria_fav_utilid: id
+                }
+            });
+
+            res.status(200).json({ message: 'Subcategoria favorita removida com sucesso' });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao remover subcategoria favorita', details: error.message });
+        }
+    },
+
+    consultarSubcategoriaFavPorID: async (req, res) => {
+        const { id } = req.params;
+
+        try {
+            const subcategoriaFav = await models.subcategoria_fav_util.findByPk(id);
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: subcategoriaFav });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar subcategoria favorita', details: error.message });
+        }
+    },
+
+    consultarTodasSubcategoriasFav: async (req, res) => {
+        try {
+            const subcategoriasFav = await models.subcategoria_fav_util.findAll();
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: subcategoriasFav });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar subcategorias favoritas', details: error.message });
+        }
     }
+
 };
 
 module.exports = controladorSubcategorias;

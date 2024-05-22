@@ -7,6 +7,7 @@ const idioma = require('./controllers/idioma');
 const categorias = require('./controllers/categorias');
 const subcategorias = require('./controllers/subcategorias');
 const perfil = require('./controllers/perfis');
+const departamento = require('./controllers/departamentos');
 const app = express();
 
 // Use CORS middleware
@@ -22,6 +23,7 @@ idioma.init();
 categorias.init();
 subcategorias.init();
 perfil.init();
+departamento.init();
 
 // Import route files
 const eventosRoutes = require('./routes/eventos');
@@ -31,7 +33,7 @@ const subcategoriasRoutes = require('./routes/subcategorias');
 const usersRoutes = require('./routes/utilizadores');
 const departamentoRoutes = require('./routes/departamentos');
 
-// // Use route files
+// Use route files
 app.use('/evento', eventosRoutes);
 app.use('/polo', polosRoutes);
 app.use('/categoria', categoriasRoutes);

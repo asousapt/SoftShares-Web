@@ -2,16 +2,17 @@ const express = require('express');
 const router = express.Router();
 const departamentoController = require('../controllers/departamentos');
 
-//ROUTES POST
-router.post('/add', departamentoController.adicionarDepartamento);
+// POST routes
+router.post('/add', departamentoController.adicionar);
 
-//ROUTES PUT
-router.put('/update/:idDepartamento', departamentoController.atualizarDepartamento);
+// PUT routes
+router.put('/update/:idDepartamento', departamentoController.atualizar);
 
-//ROUTES DELETE
-router.delete('/delete/:idDepartamento', departamentoController.excluirDepartamento);
+// DELETE routes
+router.delete('/delete/:idDepartamento', departamentoController.remover);
 
-//ROUTES GET
-router.get('/:idDepartamento', departamentoController.consultarDepartamentoPorID);
+// GET routes
+router.get('/:idDepartamento', departamentoController.consultarPorID);
+router.get('/', departamentoController.consultarTudo);
 
 module.exports = router;

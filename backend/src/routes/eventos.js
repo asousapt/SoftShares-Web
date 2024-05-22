@@ -20,6 +20,8 @@ router.put('/utilizador/update/:idEvento/:idUser', eventoControlador.atualizarCo
 router.delete('/utilizador/delete/:idEvento/:idUser', eventoControlador.atualizarConvidados);
 
 //ROUTES GET
+router.get('/', eventoControlador.consultarTodos);
+
 router.get('/:idPolo/data/range/:data1/:data2', eventoControlador.consultarEventosEntreDatas);
 
 router.get('/utilizador/lista/:idEvento', eventoControlador.consultarUtilizadoresEvento);

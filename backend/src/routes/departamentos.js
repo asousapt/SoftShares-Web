@@ -12,7 +12,7 @@ router.put('/update/:idDepartamento', departamentoController.atualizar);
 router.delete('/delete/:idDepartamento', departamentoController.remover);
 
 // GET routes
-router.get('/:idDepartamento', departamentoController.consultarPorID);
 router.get('/', departamentoController.consultarTudo);
+router.get('/:idDepartamento', departamentoController.consultarPorID);
 
 module.exports = router;

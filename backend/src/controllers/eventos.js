@@ -224,7 +224,16 @@ const controladorEventos = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar os participantes' });
         }
-    }
+    },
+
+    consultarTodos: async (req, res) => {
+        try {
+            const evento = await models.evento.findAll();
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: evento });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar utilizador', details: error.message });
+        }
+    },
 };
 
 module.exports = controladorEventos;

@@ -108,7 +108,15 @@ const controladorUtilizadores = {
         }
     },
 
-    // Adicione mais métodos de consulta conforme necessário
+    consultarTodos: async (req, res) => {
+        try {
+            const utilizador = await models.utilizador.findAll();
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: utilizador });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar utilizador', details: error.message });
+        }
+    },
+
 };
 
 module.exports = controladorUtilizadores;

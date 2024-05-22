@@ -12,6 +12,7 @@ router.put('/update/:idUtilizador', utilizadorControlador.atualizar);
 router.delete('/delete/:idUtilizador', utilizadorControlador.remover);
 
 // ROUTES GET
+router.get('/', utilizadorControlador.consultarTodos);
 router.get('/:idUtilizador', utilizadorControlador.consultarUtilizador);
 
 module.exports = router;

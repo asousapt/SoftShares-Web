@@ -47,7 +47,7 @@ const controladorPolos = {
         }
     },
 
-    cancelarPolo: async (req, res) => {
+    apagarPolo: async (req, res) => {
         const { idPolo } = req.params;
 
         try {
@@ -74,16 +74,15 @@ const controladorPolos = {
         }
     },
 
-    consultarPolo: async (req, res) => {
-        const { idPolo } = req.params;
-
+    consultarTodos: async (req, res) => {
         try {
-            const polo = await models.polo.findByPk(idPolo);
+            const polo = await models.polo.findAll();
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: polo });
         } catch (error) {
-            res.status(500).json({ error: 'Erro ao consultar o polo' });
+            res.status(500).json({ error: 'Erro ao consultar polo', details: error.message });
         }
-    }
+    },
+
 };
 
 module.exports = controladorPolos;

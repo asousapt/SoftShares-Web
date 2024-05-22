@@ -13,7 +13,9 @@ router.put('/update/:idEvento', authenticate, eventoControlador.atualizarEvento)
 
 router.put('/cancelar/:idEvento', authenticate, eventoControlador.cancelarEvento);
 
-router.put('/aprovar/:idEvento/:idUser', authenticate, eventoControlador.aprovarEvento);
+router.put('/aprovar/:idEvento', authenticate, eventoControlador.aprovarEvento);
+
+router.put('/rejeitar/:idEvento', authenticate, eventoControlador.rejeitarEvento);
 
 router.put('/utilizador/update/:idEvento/:idUser', authenticate, eventoControlador.atualizarConvidados);
 

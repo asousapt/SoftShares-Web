@@ -38,6 +38,7 @@ const departamentoRoutes = require('./routes/departamentos');
 const funcoesRoutes = require('./routes/funcoes');
 const alertasRoutes = require('./routes/alertas');
 const grupoRoutes = require('./routes/grupo');
+const pontosInteresseRoutes = require('./routes/pontosInteresse');
 
 // Use route files
 app.use('/evento', eventosRoutes);
@@ -49,6 +50,7 @@ app.use('/departamento', departamentoRoutes);
 app.use('/funcao', funcoesRoutes);
 app.use('/alerta', alertasRoutes);
 app.use('/grupo', grupoRoutes);
+app.use('/pontoInteresse', pontosInteresseRoutes);
 
 // Start server
 const PORT = process.env.PORT || 8000;

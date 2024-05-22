@@ -300,7 +300,7 @@ const controladorSubcategorias = {
     },
 
     atualizarSubcategoriaFav: async (req, res) => {
-        const { id } = req.params;
+        const { idSubCatFav } = req.params;
         const { subcategoriaid, utilizadorid } = req.body;
 
         try {
@@ -309,7 +309,7 @@ const controladorSubcategorias = {
                 utilizadorid: utilizadorid
             }, {
                 where: {
-                    subcategoria_fav_utilid: id
+                    subcategoria_fav_utilid: idSubCatFav
                 }
             });
 
@@ -320,12 +320,12 @@ const controladorSubcategorias = {
     },
 
     removerSubcategoriaFav: async (req, res) => {
-        const { id } = req.params;
+        const { idSubCatFav } = req.params;
 
         try {
             await models.subcategoria_fav_util.destroy({
                 where: {
-                    subcategoria_fav_utilid: id
+                    subcategoria_fav_utilid: idSubCatFav
                 }
             });
 
@@ -334,27 +334,6 @@ const controladorSubcategorias = {
             res.status(500).json({ error: 'Erro ao remover subcategoria favorita', details: error.message });
         }
     },
-
-    consultarSubcategoriaFavPorID: async (req, res) => {
-        const { id } = req.params;
-
-        try {
-            const subcategoriaFav = await models.subcategoria_fav_util.findByPk(id);
-            res.status(200).json({ message: 'Consulta realizada com sucesso', data: subcategoriaFav });
-        } catch (error) {
-            res.status(500).json({ error: 'Erro ao consultar subcategoria favorita', details: error.message });
-        }
-    },
-
-    consultarTodasSubcategoriasFav: async (req, res) => {
-        try {
-            const subcategoriasFav = await models.subcategoria_fav_util.findAll();
-            res.status(200).json({ message: 'Consulta realizada com sucesso', data: subcategoriasFav });
-        } catch (error) {
-            res.status(500).json({ error: 'Erro ao consultar subcategorias favoritas', details: error.message });
-        }
-    }
-
 };
 
 module.exports = controladorSubcategorias;

@@ -110,12 +110,12 @@ const controladorEventos = {
     },
 
     aprovarEvento: async (req, res) => {
-        const { idEvento, idUser } = req.params;
-
+        const { idEvento } = req.params;
+        const { userAprovacao } = req.body;
         try {
             await models.evento.update({
-                aprovado: 1,
-                utilizadoraprovou: idUser,
+                aprovado: true,
+                utilizadoraprovou: userAprovacao,
                 dataaprovacao: Sequelize.literal('CURRENT_DATE')
             }, {
                 where: {
@@ -125,6 +125,22 @@ const controladorEventos = {
             res.status(200).json({ message: 'Evento aprovado com sucesso' });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao aprovar o evento' });
+        }
+    },
+
+    rejeitarEvento: async (req, res) => {
+        const { idEvento } = req.params;
+        try {
+            await models.evento.update({
+                aprovado: false
+            }, {
+                where: {
+                    eventoid: idEvento
+                }
+            });
+            res.status(200).json({ message: 'Evento rejeitado com sucesso' });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao rejeitado o evento' });
         }
     },
 

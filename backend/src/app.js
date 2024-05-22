@@ -8,6 +8,7 @@ const categorias = require('./controllers/categorias');
 const subcategorias = require('./controllers/subcategorias');
 const perfil = require('./controllers/perfis');
 const departamento = require('./controllers/departamentos');
+const funcoes = require('./controllers/funcoes');
 const app = express();
 
 // Use CORS middleware
@@ -24,6 +25,7 @@ categorias.init();
 subcategorias.init();
 perfil.init();
 departamento.init();
+funcoes.init();
 
 // Import route files
 const eventosRoutes = require('./routes/eventos');
@@ -32,6 +34,7 @@ const categoriasRoutes = require('./routes/categorias');
 const subcategoriasRoutes = require('./routes/subcategorias');
 const usersRoutes = require('./routes/utilizadores');
 const departamentoRoutes = require('./routes/departamentos');
+const funcoesRoutes = require('./routes/funcoes');
 
 // Use route files
 app.use('/evento', eventosRoutes);
@@ -40,6 +43,7 @@ app.use('/categoria', categoriasRoutes);
 app.use('/subcategoria', subcategoriasRoutes);
 app.use('/utilizadores', usersRoutes);
 app.use('/departamento', departamentoRoutes);
+app.use('/funcao', funcoesRoutes);
 
 // Start server
 const PORT = process.env.PORT || 8000;

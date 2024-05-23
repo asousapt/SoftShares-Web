@@ -40,6 +40,7 @@ const alertasRoutes = require('./routes/alertas');
 const grupoRoutes = require('./routes/grupo');
 const pontosInteresseRoutes = require('./routes/pontosInteresse');
 const administradorPoloRoutes = require('./routes/administrador_polo');
+const utilizadorGrupoRoutes = require('./routes/utilizador_grupo');
 
 // Use route files
 app.use('/evento', eventosRoutes);
@@ -53,6 +54,7 @@ app.use('/alerta', alertasRoutes);
 app.use('/grupo', grupoRoutes);
 app.use('/pontoInteresse', pontosInteresseRoutes);
 app.use('/administradorpolo', administradorPoloRoutes);
+app.use('/utilizadorgrupo', utilizadorGrupoRoutes);
 
 // Start server
 const PORT = process.env.PORT || 8000;

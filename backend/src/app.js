@@ -44,6 +44,7 @@ const utilizadorGrupoRoutes = require('./routes/utilizador_grupo');
 const threadRoutes = require('./routes/thread');
 const itemAvaliacaoRoutes = require('./routes/itemavaliacao');
 const avaliacaoRoutes = require('./routes/avaliacao');
+const sessaoRoutes = require('./routes/sessao');
 
 // Use route files
 app.use('/evento', eventosRoutes);
@@ -61,6 +62,7 @@ app.use('/utilizadorgrupo', utilizadorGrupoRoutes);
 app.use('/thread', threadRoutes);
 app.use('/itemavaliacao', itemAvaliacaoRoutes);
 app.use('/avaliacao', avaliacaoRoutes);
+app.use('/sessao', sessaoRoutes);
 
 // Start server
 const PORT = process.env.PORT || 8000;

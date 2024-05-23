@@ -48,11 +48,5 @@ INSERT into ALBUM (OBJECTOID, UTILIZADORID, DESCRICAO) VALUES (1, 3, 'Album da m
 /*INSERT TABELA DE FICHEIRO */
 INSERT into FICHEIRO (ALBUMID, CAMINHO, nome, EXTENSAO, TAMANHO) VALUES (1, 'https://example.com/teste.jpg', 'teste', 'jpg', 1500);
 
-/*INSERT TABELA DE ITEMCOMENTARIO */
-INSERT into  ITEMCOMENTARIO (registoid, TIPO) VALUES (1, 'POI'); 
-
-/*INSERT TABELA DE COMENTARIO */
-INSERT into  COMENTARIO (ITEMCOMENTARIOID, UTILIZADORID, COMENTARIO) values (1,4,'Estive lá o fim de semana passado a jogar futebol com os meus amigos e o espaço é muito bom');
-
 /*INSERT TABELA DE DENUNCIA */
 INSERT INTO DENUNCIA (COMENTARIOID, utilizadorCriou, TEXTO) VALUES (1,2,'O utilizador nao esteve la'); 

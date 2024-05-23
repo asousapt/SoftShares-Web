@@ -41,6 +41,7 @@ const grupoRoutes = require('./routes/grupo');
 const pontosInteresseRoutes = require('./routes/pontosInteresse');
 const administradorPoloRoutes = require('./routes/administrador_polo');
 const utilizadorGrupoRoutes = require('./routes/utilizador_grupo');
+const threadRoutes = require('./routes/thread');
 
 // Use route files
 app.use('/evento', eventosRoutes);
@@ -55,9 +56,10 @@ app.use('/grupo', grupoRoutes);
 app.use('/pontoInteresse', pontosInteresseRoutes);
 app.use('/administradorpolo', administradorPoloRoutes);
 app.use('/utilizadorgrupo', utilizadorGrupoRoutes);
+app.use('/thread', threadRoutes);
 
 // Start server
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
-  console.log('Server is listening on port '+PORT);
+console.log('Server is listening on port '+PORT);
 });

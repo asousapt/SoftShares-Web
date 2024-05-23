@@ -77,6 +77,81 @@ const comentarioController = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar comentários por item de comentário', details: error.message });
         }
+    },
+
+    adicionarItemComentario: async (req, res) => {
+        const { registoid, tipo } = req.body;
+
+        try {
+            await models.itemcomentario.create({
+                registoid: registoid,
+                tipo: tipo
+            });
+
+            res.status(201).json({ message: 'Item de comentário adicionado com sucesso' });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao adicionar item de comentário', details: error.message });
+        }
+    },
+
+    atualizarItemComentario: async (req, res) => {
+        const { idItemComentario } = req.params;
+        const { registoid, tipo } = req.body;
+
+        try {
+            await models.itemcomentario.update({
+                registoid: registoid,
+                tipo: tipo
+            }, {
+                where: {
+                    itemcomentarioid: idItemComentario
+                }
+            });
+
+            res.status(200).json({ message: 'Item de comentário atualizado com sucesso' });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao atualizar item de comentário', details: error.message });
+        }
+    },
+
+    removerItemComentario: async (req, res) => {
+        const { idItemComentario } = req.params;
+
+        try {
+            await models.itemcomentario.destroy({
+                where: {
+                    itemcomentarioid: idItemComentario
+                }
+            });
+
+            res.status(200).json({ message: 'Item de comentário removido com sucesso' });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao remover item de comentário', details: error.message });
+        }
+    },
+
+    consultarTudoItemComentario: async (req, res) => {
+        try {
+            const itensComentario = await models.itemcomentario.findAll();
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: itensComentario });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar itens de comentário', details: error.message });
+        }
+    },
+
+    consultarPorItemComentario: async (req, res) => {
+        const { idRegistro } = req.params;
+
+        try {
+            const itensComentario = await models.itemcomentario.findAll({
+                where: {
+                    registoid: idRegistro
+                }
+            });
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: itensComentario });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar itens de comentário por registro', details: error.message });
+        }
     }
 };
 

@@ -5,15 +5,20 @@ const { authenticate } = require('../tokenUtils');
 
 // Rotas POST
 router.post('/add', authenticate, comentarioController.adicionar);
+router.post('/itemcomentario/add', authenticate, comentarioController.adicionarItemComentario);
 
 // Rotas PUT
 router.put('/update/:idComentario', authenticate, comentarioController.atualizar);
+router.put('/update/itemcomentario/:idItemComentario', authenticate, comentarioController.atualizarItemComentario);
 
 // Rotas DELETE
 router.delete('/delete/:idComentario', authenticate, comentarioController.remover);
+router.delete('/delete/itemcomentario/:idItemComentario', authenticate, comentarioController.removerItemComentario);
 
 // Rotas GET
 router.get('/', authenticate, comentarioController.consultarTudo);
-router.get('/itemComentario/:idItemComentario', authenticate, comentarioController.consultarComentario);
+router.get('/itemcomentario/:idItemComentario', authenticate, comentarioController.consultarPorItemComentario);
+router.get('/comentario/:idComentario', authenticate, comentarioController.consultarComentario);
+router.get('/itemcomentario', authenticate, comentarioController.consultarTudoItemComentario);
 
 module.exports = router;

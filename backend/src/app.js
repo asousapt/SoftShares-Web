@@ -42,9 +42,7 @@ const pontosInteresseRoutes = require('./routes/pontosInteresse');
 const administradorPoloRoutes = require('./routes/administrador_polo');
 const utilizadorGrupoRoutes = require('./routes/utilizador_grupo');
 const threadRoutes = require('./routes/thread');
-const itemAvaliacaoRoutes = require('./routes/itemavaliacao');
 const avaliacaoRoutes = require('./routes/avaliacao');
-const itemComentarioRoutes = require('./routes/itemcomentario');
 const comentarioRoutes = require('./routes/comentario');
 const sessaoRoutes = require('./routes/sessao');
 
@@ -62,9 +60,7 @@ app.use('/pontoInteresse', pontosInteresseRoutes);
 app.use('/administradorpolo', administradorPoloRoutes);
 app.use('/utilizadorgrupo', utilizadorGrupoRoutes);
 app.use('/thread', threadRoutes);
-app.use('/itemavaliacao', itemAvaliacaoRoutes);
 app.use('/avaliacao', avaliacaoRoutes);
-app.use('/itemcomentario', itemComentarioRoutes);
 app.use('/comentario', comentarioRoutes);
 app.use('/sessao', sessaoRoutes);
 

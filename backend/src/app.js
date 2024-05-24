@@ -45,6 +45,7 @@ const threadRoutes = require('./routes/thread');
 const avaliacaoRoutes = require('./routes/avaliacao');
 const comentarioRoutes = require('./routes/comentario');
 const sessaoRoutes = require('./routes/sessao');
+const denunciaRoutes = require('./routes/denuncia');
 
 // Use route files
 app.use('/evento', eventosRoutes);
@@ -63,6 +64,7 @@ app.use('/thread', threadRoutes);
 app.use('/avaliacao', avaliacaoRoutes);
 app.use('/comentario', comentarioRoutes);
 app.use('/sessao', sessaoRoutes);
+app.use('/denuncia', denunciaRoutes);
 
 // Start server
 const PORT = process.env.PORT || 8000;

@@ -30,7 +30,7 @@ const controladorPerfil = {
                 });
             }
         } catch (error) {
-            console.error('Ocorreu um erro ao criar os idiomas:', error);
+            console.error('Ocorreu um erro ao criar os Utilizadores', error);
         }
     }
 }

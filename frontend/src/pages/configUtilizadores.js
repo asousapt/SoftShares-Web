@@ -30,10 +30,10 @@ export default function Configtilizadores() {
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left'},
         { field: 'nome', headerName: 'Nome', flex: 1, headerAlign: 'left' },
         { field: 'tipo', headerName: 'Tipo', flex: 0.5, headerAlign: 'left' },
-        { field: 'dataHora', headerName: 'Data de Criação', type: 'dateTime', width: 300, headerAlign: 'left' },
-        { field: 'departamento', headerName: 'Departamento', flex: 0.5 , headerAlign: 'left' },
+        { field: 'dataHora', headerName: 'Data de Criação', type: 'dateTime', width: 220, headerAlign: 'left' },
+        { field: 'departamento', headerName: 'Departamento', flex: 1 , headerAlign: 'left' },
         { field: 'funcao', headerName: 'Função', flex: 1 , headerAlign: 'left'},
-        { field: 'idioma', headerName: 'Idioma', flex: 1 , headerAlign: 'left'},
+        { field: 'polo', headerName: 'Polo', flex: 1 , headerAlign: 'left'},
         { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => ( <StateChanger status={row.value} />) },
         { field: 'status', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
     ];
@@ -42,22 +42,22 @@ export default function Configtilizadores() {
         const fetchData = async () => {
             try {
                 const token = 'tokenFixo';
-                const response = await axios.get('http://localhost:8000/utilizadores', {
-                    headers: {
-                        Authorization: `${token}`
-                    }
+                const utilizadoresResponse = await axios.get('http://localhost:8000/utilizadores', {
+                    headers: { Authorization: `${token}` }
                 });
-                const utilizadores = response.data.data;
+                const utilizadores = utilizadoresResponse.data.data;
+                console.log(utilizadores);
+
                 setTableRows(
                     utilizadores.map((utilizador, index) => ({
                         key: utilizador.utilizadorid,
                         id: utilizador.utilizadorid,
                         nome: utilizador.pnome + ' ' + utilizador.unome,
-                        tipo: utilizador.perfil.descricao,
+                        tipo: utilizador.descricao_perfil,
                         dataHora: new Date(utilizador.datacriacao),
-                        departamento: utilizador.departamentoid,
-                        funcao: utilizador.funcaoid,
-                        idioma: utilizador.idiomaid,
+                        departamento: utilizador.descricao_departamento,
+                        funcao: utilizador.descricao_funcao,
+                        polo: utilizador.descricao_polo,
                         estado: utilizador.inactivo ? 'Inativo' : 'Ativo',
                         status: utilizador.estado
                     }))

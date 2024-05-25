@@ -113,7 +113,18 @@ const controladorUtilizadores = {
         const { idUtilizador } = req.params;
 
         try {
-            const utilizador = await models.utilizador.findByPk(idUtilizador);
+            const utilizador = await models.utilizador.findByPk(idUtilizador, {
+                include: {
+                    model: models.perfil,
+                    as: 'perfil',
+                    attributes: ['descricao']
+                }
+            });
+
+            if (!utilizador) {
+                return res.status(404).json({ error: 'Utilizador não encontrado' });
+            }
+
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: utilizador });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar utilizador', details: error.message });
@@ -122,13 +133,21 @@ const controladorUtilizadores = {
 
     consultarTodos: async (req, res) => {
         try {
-            const utilizador = await models.utilizador.findAll();
-            res.status(200).json({ message: 'Consulta realizada com sucesso', data: utilizador });
+            const utilizadors = await models.utilizador.findAll({
+                include: [
+                    {
+                        model: models.perfil,
+                        as: 'perfil',
+                        attributes: ['descricao']
+                    },
+                ]
+            });
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: utilizadors });
         } catch (error) {
-            res.status(500).json({ error: 'Erro ao consultar utilizador', details: error.message });
+            res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
         }
     },
-
 };
 
 module.exports = controladorUtilizadores;

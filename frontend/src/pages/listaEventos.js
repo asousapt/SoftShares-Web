@@ -9,7 +9,7 @@ import Search from '../components/textFields/search';
 import ComboFilter from '../components/combobox/comboFilter';
 /* FIM COMPONENTES */
 import NovoEvento from '../modals/eventos/novoEvento';
-import axios from 'axios'; // Adicionado para fazer requisições HTTP
+import axios from 'axios'; 
 
 const opcoesFiltroEstado = [
     { value: 'Todos', label: 'Todos' },

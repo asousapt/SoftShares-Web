@@ -20,7 +20,7 @@ const controladorUtilizadores = {
         } = req.body;
 
         try {
-            await models.utilizador.create({
+            const user = await models.utilizador.create({
                 poloid,
                 perfilid,
                 pnome,
@@ -32,6 +32,11 @@ const controladorUtilizadores = {
                 departamentoid,
                 funcaoid,
                 sobre
+            });
+
+            await models.destinatario.create({
+                itemdestinatario: user.utilizadorid,
+                tipo: 'UT'
             });
 
             res.status(201).json({ message: 'Utilizador adicionado com sucesso' });
@@ -85,6 +90,13 @@ const controladorUtilizadores = {
         const { idUtilizador } = req.params;
 
         try {
+            await models.destinatario.destroy({
+                where: {
+                    itemdestinatario: idUtilizador,
+                    tipo: 'UT'
+                }
+            });
+
             await models.utilizador.destroy({
                 where: {
                     utilizadorid: idUtilizador

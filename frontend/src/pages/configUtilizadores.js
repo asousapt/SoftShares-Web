@@ -29,7 +29,7 @@ export default function Configtilizadores() {
     const tableColumns = [
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left'},
         { field: 'nome', headerName: 'Nome', flex: 1, headerAlign: 'left' },
-        { field: 'tipo', headerName: 'Tipo', flex: 0.5, headerAlign: 'left' },
+        { field: 'tipo', headerName: 'Tipo', flex: 0.7, headerAlign: 'left' },
         { field: 'dataHora', headerName: 'Data de Criação', type: 'dateTime', width: 220, headerAlign: 'left' },
         { field: 'departamento', headerName: 'Departamento', flex: 1 , headerAlign: 'left' },
         { field: 'funcao', headerName: 'Função', flex: 1 , headerAlign: 'left'},

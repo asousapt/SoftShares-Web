@@ -7,7 +7,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 
 export default function Notificacoes({ anchorEl, open, handleClose, rows }) {
-    return(
+    return (
         <Menu
             anchorEl={anchorEl}
             id="account-menu"
@@ -43,13 +43,13 @@ export default function Notificacoes({ anchorEl, open, handleClose, rows }) {
             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
-            <MenuItem onClick={handleClose} style={{display: 'flex', flexDirection: 'column'}}>
-                <Typography variant="subtitle" component="div" style={{fontWeight: 'bold'}}>
+            <MenuItem onClick={handleClose} style={{ display: 'flex', flexDirection: 'column' }}>
+                <Typography variant="subtitle" component="div" style={{ fontWeight: 'bold' }}>
                     As suas notificações
                 </Typography>
-                <List style={{ minWidth: '100%', maxHeight: 100, overflowX: 'auto', width: 'auto', border: '1px solid', borderColor: '#545F71', borderRadius: 4}}>
-                    {rows.map((row) => (
-                        <ListItem>
+                <List style={{ minWidth: '100%', maxHeight: 100, overflowX: 'auto', width: 'auto', border: '1px solid', borderColor: '#545F71', borderRadius: 4 }}>
+                    {rows.map((row, index) => (
+                        <ListItem key={index}>
                             <ListItemText primary={row.value} />
                         </ListItem>
                     ))}

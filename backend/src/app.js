@@ -48,6 +48,7 @@ const sessaoRoutes = require('./routes/sessao');
 const denunciaRoutes = require('./routes/denuncia');
 const formularioRoutes = require('./routes/formularios');
 const mensagemRoutes = require('./routes/mensagens');
+const notificacoesRoutes = require('./routes/notificacoes');
 
 // Use route files
 app.use('/evento', eventosRoutes);
@@ -69,6 +70,7 @@ app.use('/sessao', sessaoRoutes);
 app.use('/denuncia', denunciaRoutes);
 app.use('/formulario', formularioRoutes);
 app.use('/mensagens', mensagemRoutes);
+app.use('/notificacao', notificacoesRoutes);
 
 // Start server
 const PORT = process.env.PORT || 8000;

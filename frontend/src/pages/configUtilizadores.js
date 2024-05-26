@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './page.css';
 /* COMPONENTES */
 import DataTable from '../components/tables/dataTable';
@@ -10,8 +11,6 @@ import Search from '../components/textFields/search';
 import StateChanger from '../components/stateChanger/stateChanger';
 /* FIM COMPONENTES */
 import NovoUser from '../modals/utilizadores/novoUtilizador';
-import axios from 'axios';
-
 
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},
@@ -38,36 +37,43 @@ export default function Configtilizadores() {
         { field: 'status', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
     ];
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const token = 'tokenFixo';
-                const utilizadoresResponse = await axios.get('http://localhost:8000/utilizadores', {
-                    headers: { Authorization: `${token}` }
-                });
-                const utilizadores = utilizadoresResponse.data.data;
-                console.log(utilizadores);
+    const fetchData = async () => {
+        try {
+            const token = 'tokenFixo';
+            const utilizadoresResponse = await axios.get('http://localhost:8000/utilizadores', {
+                headers: { Authorization: `${token}` }
+            });
+            const utilizadores = utilizadoresResponse.data.data;
+            console.log(utilizadores);
 
-                setTableRows(
-                    utilizadores.map((utilizador, index) => ({
-                        key: utilizador.utilizadorid,
-                        id: utilizador.utilizadorid,
-                        nome: utilizador.pnome + ' ' + utilizador.unome,
-                        tipo: utilizador.descricao_perfil,
-                        dataHora: new Date(utilizador.datacriacao),
-                        departamento: utilizador.descricao_departamento,
-                        funcao: utilizador.descricao_funcao,
-                        polo: utilizador.descricao_polo,
-                        estado: utilizador.inactivo ? 'Inativo' : 'Ativo',
-                        status: utilizador.estado
-                    }))
-                );
-            } catch (error) {
-                setError(error);
-            }
-        };
+            setTableRows(
+                utilizadores.map((utilizador, index) => ({
+                    key: utilizador.utilizadorid,
+                    id: utilizador.utilizadorid,
+                    nome: utilizador.pnome + ' ' + utilizador.unome,
+                    tipo: utilizador.descricao_perfil,
+                    dataHora: new Date(utilizador.datacriacao),
+                    departamento: utilizador.descricao_departamento,
+                    funcao: utilizador.descricao_funcao,
+                    polo: utilizador.descricao_polo,
+                    estado: utilizador.inactivo ? 'Inativo' : 'Ativo',
+                    status: utilizador.estado
+                }))
+            );
+        } catch (error) {
+            setError(error);
+        }
+    };
+
+    useEffect(() => {
         fetchData();
     }, []);
+
+    useEffect(() => {
+        if (!isNewModalOpen){
+            fetchData();
+        }
+    }, [isNewModalOpen]);
 
     const handleOpenNewModal = () => {
         setNewModalOpen(true);

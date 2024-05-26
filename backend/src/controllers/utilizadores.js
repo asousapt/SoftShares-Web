@@ -16,7 +16,8 @@ const controladorUtilizadores = {
             idiomaid,
             departamentoid,
             funcaoid,
-            sobre
+            sobre,
+            inactivo
         } = req.body;
 
         try {
@@ -31,7 +32,8 @@ const controladorUtilizadores = {
                 idiomaid,
                 departamentoid,
                 funcaoid,
-                sobre
+                sobre,
+                inactivo
             });
 
             await models.destinatario.create({

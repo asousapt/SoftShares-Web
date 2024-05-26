@@ -16,7 +16,6 @@ const AddUserModal = ({ open, onClose }) => {
     const [unome, setUnome] = useState('');
     const [email, setEmail] = useState('');
     const [passwd, setPasswd] = useState('');
-    const [idiomaid, setIdiomaid] = useState('');
     const [departamentoid, setDepartamentoid] = useState('');
     const [departamentos, setDepartamentos] = useState([]);
     const [polos, setPolos] = useState([]);
@@ -24,7 +23,7 @@ const AddUserModal = ({ open, onClose }) => {
     const [perfil, setPerfil] = useState([]);
     const [funcaoid, setFuncaoid] = useState('');
     const [sobre, setSobre] = useState('');
-    const [ativo, setAtivo] = useState(true);
+    const [inactivo, setInactivo] = useState(true);
     const [image, setImage] = useState('https://i0.wp.com/ctmirror-images.s3.amazonaws.com/wp-content/uploads/2021/01/dummy-man-570x570-1.png?fit=570%2C570&ssl=1');
 
     useEffect(() => {
@@ -59,9 +58,8 @@ const AddUserModal = ({ open, onClose }) => {
                     value: polo.poloid,
                     label: polo.descricao
                 }));
-    
+
                 setPolos(polosOptions);
-                
                 console.log(polosOptions);
             } catch (error) {
                 console.error('Erro ao buscar polos:', error);
@@ -80,7 +78,7 @@ const AddUserModal = ({ open, onClose }) => {
                     value: funcao.funcaoid,
                     label: funcao.valorpt
                 }));
-    
+
                 setFuncao(funcaoOptions);
                 console.log(funcaoOptions);
             } catch (error) {
@@ -100,7 +98,7 @@ const AddUserModal = ({ open, onClose }) => {
                     value: perfil.perfilid,
                     label: perfil.descricao
                 }));
-    
+
                 setPerfil(perfilOptions);
                 console.log(perfilOptions);
             } catch (error) {
@@ -124,20 +122,19 @@ const AddUserModal = ({ open, onClose }) => {
                 unome,
                 email,
                 passwd,
-                chavesalt: '',
+                chavesalt: 'saltsalt',
                 idiomaid: 1,
                 departamentoid,
                 funcaoid,
                 sobre,
-                ativo
+                inactivo
             };
             console.log(JSON.stringify(newUser));
             await axios.post('http://localhost:8000/utilizadores/add', newUser, {
-                headers: { 
+                headers: {
                     'Authorization': `${token}`,
-                    'Content-Type': 'application/json' 
+                    'Content-Type': 'application/json'
                 },
-                data: JSON.stringify(newUser)
             });
             console.log('Utilizador Adicionado com sucesso');
             onClose();
@@ -147,8 +144,16 @@ const AddUserModal = ({ open, onClose }) => {
     };
 
     const handleChangeAtivo = () => {
-        setAtivo(!ativo);
+        setInactivo((prevInactivo) => {
+            const novoInactivo = !prevInactivo;
+            console.log('Novo valor de inactivo:', novoInactivo);
+            return novoInactivo;
+        });
     };
+
+    useEffect(() => {
+        console.log('Valor inicial de inactivo:', inactivo);
+    }, []);
 
     return (
         <Modal open={open} onClose={onClose}>
@@ -196,8 +201,12 @@ const AddUserModal = ({ open, onClose }) => {
                                     <InputImage image={image} />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                    <FormControlLabel labelPlacement="start" control={<Switch checked={ativo} onChange={handleChangeAtivo} />} label="Inativo" sx={{ marginTop: '10px' }} />
-                                </div>
+                                    <FormControlLabel
+                                        labelPlacement="start"
+                                        control={<Switch checked={inactivo} onChange={handleChangeAtivo} />}
+                                        label="Inativo"
+                                        sx={{ marginTop: '10px' }}
+                                    /></div>
                             </div>
                         </div>
                     </div>

@@ -1,6 +1,7 @@
 const { Sequelize, QueryTypes } = require('sequelize');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
+const utilizador = require('../models/utilizador');
 const models = initModels(sequelizeConn);
 
 const controladorThread = {
@@ -90,12 +91,22 @@ const controladorThread = {
 
     consultarTodos: async (req, res) => {
         try {
-            const thread = await models.thread.findAll();
+            const thread = await models.thread.findAll({
+                include: [
+                    {
+                        model: models.utilizador,
+                        as: 'utilizador',
+                        attributes: ['pnome', 'unome']
+                    }
+                ]
+            });
+    
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: thread });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar utilizador', details: error.message });
         }
     }
+    
 };
 
 module.exports = controladorThread;

@@ -9,12 +9,6 @@ import SubmitButton from '../../components/buttons/submitButton';
 import CancelButton from '../../components/buttons/cancelButton';
 import InputImage from '../../components/image/imageInput';
 
-const perfis = [
-    { value: '3', label: 'Super Admin' },
-    { value: '4', label: 'Admin' },
-    { value: '5', label: 'User' }
-];
-
 const AddUserModal = ({ open, onClose }) => {
     const [poloid, setPoloid] = useState('');
     const [perfilid, setPerfilid] = useState('');
@@ -27,6 +21,7 @@ const AddUserModal = ({ open, onClose }) => {
     const [departamentos, setDepartamentos] = useState([]);
     const [polos, setPolos] = useState([]);
     const [funcao, setFuncao] = useState([]);
+    const [perfil, setPerfil] = useState([]);
     const [funcaoid, setFuncaoid] = useState('');
     const [sobre, setSobre] = useState('');
     const [ativo, setAtivo] = useState(true);
@@ -93,6 +88,27 @@ const AddUserModal = ({ open, onClose }) => {
             }
         };
 
+        const fetchPerfil = async () => {
+            try {
+                const token = 'tokenFixo';
+                const response = await axios.get('http://localhost:8000/perfil', {
+                    headers: { Authorization: `${token}` }
+                });
+                const perfilData = response.data.data;
+                console.log(perfilData);
+                const perfilOptions = perfilData.map(perfil => ({
+                    value: perfil.perfilid,
+                    label: perfil.descricao
+                }));
+    
+                setPerfil(perfilOptions);
+                console.log(perfilOptions);
+            } catch (error) {
+                console.error('Erro ao buscar funções:', error);
+            }
+        };
+
+        fetchPerfil();
         fetchFuncao();
         fetchPolos();
         fetchDepartamentos();
@@ -161,7 +177,7 @@ const AddUserModal = ({ open, onClose }) => {
                                         <ComboBox caption='Polo' options={polos} value={poloid} handleChange={(e) => setPoloid(e.target.value)} />
                                     </div>
                                     <div style={{ width: "50%" }}>
-                                        <ComboBox caption='Perfil' options={perfis} value={perfilid} handleChange={(e) => setPerfilid(e.target.value)} />
+                                        <ComboBox caption='Perfil' options={perfil} value={perfilid} handleChange={(e) => setPerfilid(e.target.value)} />
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>

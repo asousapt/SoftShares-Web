@@ -51,8 +51,8 @@ export default function ChartPieUsers() {
       border={1} 
       borderRadius={2} 
       borderColor="#ccc"
-      width={340}  // Tamanho da Box ajustado para acomodar o gráfico
-      height={530}  // Mantém a altura da Box constante
+      width={340}  // Tamanho da Box 
+      height={530}  
     >
       <Box
         sx={{

@@ -163,6 +163,34 @@ const controladorUtilizadores = {
             res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
         }
     },
+
+    consultarTotalPorPolo: async (req, res) => {
+        try {
+            const totalPorPolo = await sequelizeConn.query(
+                `SELECT 
+                    pol.descricao AS label, 
+                    COUNT(u.utilizadorid) AS value
+                FROM 
+                    utilizador u
+                LEFT JOIN 
+                    polo pol ON u.poloid = pol.poloid
+                GROUP BY 
+                    pol.descricao`,
+                { type: QueryTypes.SELECT }
+            );
+    
+            // atribuir cores aos polos
+            const colors = ['#7cb342', '#ffca28', '#ff7043', '#ab47bc', '#42a5f5', '#66bb6a', '#26a69a', '#ef5350', '#ec407a', '#ab47bc'];
+            totalPorPolo.forEach((item, index) => {
+                item.color = colors[index % colors.length];
+            });
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: totalPorPolo });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar utilizadores por polo', details: error.message });
+        }
+    }
+    
 };
 
 module.exports = controladorUtilizadores;

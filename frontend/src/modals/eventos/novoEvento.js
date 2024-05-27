@@ -24,6 +24,8 @@ const AddEventModal = ({ open, onClose }) => {
     const [dataLimInscricao, setDataLimInscricao] = useState('');
     const [cidade, setCidade] = useState(null);
     const [cidades, setCidades] = useState([]);
+    const [error, setError] = useState(null);
+    const [opcoesFiltroCat, setOpcoesCat] = useState([]);
 
     useEffect(() => {
         const fetchCidades = async () => {
@@ -46,6 +48,28 @@ const AddEventModal = ({ open, onClose }) => {
             }
         };
 
+        const fetchCategorias = async () => {
+            try {
+                const token = 'tokenFixo';
+                const response = await axios.get('http://localhost:8000/categoria', {
+                    headers: {
+                        Authorization: `${token}`
+                    }
+                });
+                const categorias = response.data;
+                console.log(categorias);
+                setOpcoesCat([
+                    { value: 0, label: 'Sem Filtro' }, 
+                    ...categorias.map((cat) => ({
+                        value: cat.categoriaid,
+                        label: cat.valorpt
+                    }))
+                ]);
+            } catch (error) {
+                setError(error);
+            }
+        };
+        fetchCategorias();
         fetchCidades();
     }, []);
 

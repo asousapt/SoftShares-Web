@@ -21,7 +21,7 @@ export default function ListaEventos() {
     const [isNewModalOpen, setNewModalOpen] = useState(false);
     const [filtroText, setFiltroText] = useState('');
     const [filtroEstado, setFiltroEstado] = useState('Todos');
-    const [opcoesFiltroCat, setOpcoesCat] = useState([]);
+    const [opcoesFiltroSubcat, setOpcoesSubcat] = useState([]);
     const [filtroCategoria, setFiltroCategoria] = useState(0);
     const [tableRows, setTableRows] = useState([]);
     const [error, setError] = useState(null);
@@ -32,6 +32,7 @@ export default function ListaEventos() {
         { field: 'nParticipantes', headerName: '# Participantes', flex: 0.5, headerAlign: 'left' },
         { field: 'dataHora', headerName: 'Data e Hora de Começo', type: 'dateTime', width: 300, headerAlign: 'left' },
         { field: 'localizacao', headerName: 'Localização', flex: 1, headerAlign: 'left' },
+        { field: 'subcategoria', headerName: 'Subcategoria', flex: 1, headerAlign: 'left' },
         { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false, renderCell: (row) => (
                 <EditButton caption=' ' /*onclick={} id={row.id}*/ />
             )
@@ -42,52 +43,49 @@ export default function ListaEventos() {
         const fetchData = async () => {
             try {
                 const token = 'tokenFixo';
-                const response = await axios.get('http://localhost:8000/evento', {
+    
+                const subcategoriasResponse = await axios.get('http://localhost:8000/subcategoria', {
                     headers: {
                         Authorization: `${token}`
                     }
                 });
-                const eventos = response.data.data;
-                setTableRows(
-                    eventos.map((evento) => ({
-                        key: evento.eventoid,
-                        id: evento.eventoid,
-                        titulo: evento.titulo,
-                        nParticipantes: `- / ${evento.nmrmaxparticipantes}`,
-                        dataHora: new Date(evento.datainicio),
-                        localizacao: evento.localizacao
-                    }))
-                );
-            } catch (error) {
-                setError(error);
-            }
-        };
-        
-        const fetchCategorias = async () => {
-            try {
-                const token = 'tokenFixo';
-                const response = await axios.get('http://localhost:8000/categoria', {
-                    headers: {
-                        Authorization: `${token}`
-                    }
-                });
-                const categorias = response.data;
-                console.log(categorias);
-                setOpcoesCat([
+                const subcategorias = subcategoriasResponse.data;
+                console.log(subcategorias);
+                
+                setOpcoesSubcat([
                     { value: 0, label: 'Sem Filtro' }, 
-                    ...categorias.map((cat) => ({
-                        value: cat.categoriaid,
-                        label: cat.valorpt
+                    ...subcategorias.map((subcat) => ({
+                        value: subcat.subcategoriaid,
+                        label: subcat.valorpt
                     }))
                 ]);
+    
+                const eventosResponse = await axios.get('http://localhost:8000/evento', {
+                    headers: {
+                        Authorization: `${token}`
+                    }
+                });
+                const eventos = eventosResponse.data.data;
+    
+                const eventosTable = eventos.map((evento) => ({
+                    key: evento.eventoid,
+                    id: evento.eventoid,
+                    titulo: evento.titulo,
+                    nParticipantes: `- / ${evento.nmrmaxparticipantes}`,
+                    dataHora: new Date(evento.datainicio),
+                    localizacao: evento.localizacao,
+                    subcategoria: subcategorias.find(subcat => subcat.subcategoriaid === evento.subcategoriaid)?.valorpt || 'Subcategoria não encontrada'
+                }));
+    
+                setTableRows(eventosTable);
             } catch (error) {
                 setError(error);
             }
         };
-        fetchCategorias();
+    
         fetchData();
     }, []);
-
+    
     if (error) {
         return <div>Error: {error.message}</div>;
     }
@@ -100,7 +98,7 @@ export default function ListaEventos() {
                     <AddButton caption='Adicionar' onclick={() => setNewModalOpen(true)} />
                     <Search onchange={(e) => setFiltroText(e.target.value)} />
                     <ComboFilter options={opcoesFiltroEstado} value={filtroEstado} handleChange={(e) => setFiltroEstado(e.target.value)} />
-                    <ComboFilter options={opcoesFiltroCat} value={filtroCategoria} handleChange={(event) => setFiltroCategoria(event.target.value)} />
+                    <ComboFilter options={opcoesFiltroSubcat} value={filtroCategoria} handleChange={(event) => setFiltroCategoria(event.target.value)} />
                 </div>
                 <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px', border: 'none', boxShadow: 'none' }}>
                     <DataTable rows={tableRows || []} columns={tableColumns} />

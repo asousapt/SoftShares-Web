@@ -16,6 +16,11 @@ const controladorThread = {
                 idiomaid: idiomaid
             });
 
+            await models.objecto.create({
+                registoid: thread.threadid,
+                entidade: 'THREAD'
+            });
+
             res.status(201).json({ message: 'Thread adicionada com sucesso', data: thread });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao adicionar thread', details: error.message });
@@ -59,6 +64,13 @@ const controladorThread = {
             if (!thread) {
                 return res.status(404).json({ error: 'Thread não encontrada' });
             }
+
+            await models.objecto.destroy({
+                where: {
+                    registoid: id,
+                    entidade: 'THREAD'
+                }
+            });
 
             await models.thread.destroy({
                 where: {

@@ -20,6 +20,11 @@ const controladorGrupo = {
                 tipo: 'GR'
             });
 
+            await models.objecto.create({
+                registoid: grupo.grupoid,
+                entidade: 'GRUPO'
+            });
+
             res.status(201).json({ message: 'Grupo adicionado com sucesso'});
         } catch (error) {
             res.status(500).json({ error: 'Erro ao adicionar grupo', details: error.message });
@@ -57,6 +62,11 @@ const controladorGrupo = {
         const { id } = req.params;
 
         try {
+            const grupo = await models.grupo.findByPk(id);
+            if (!grupo) {
+                return res.status(404).json({ error: 'Grupo não encontrado' });
+            }
+
             await models.destinatario.destroy({
                 where: {
                     itemdestinatario: id,
@@ -64,10 +74,12 @@ const controladorGrupo = {
                 }
             });
 
-            const grupo = await models.grupo.findByPk(id);
-            if (!grupo) {
-                return res.status(404).json({ error: 'Grupo não encontrado' });
-            }
+            await models.objecto.destroy({
+                where: {
+                    registoid: id,
+                    entidade: 'GRUPO'
+                }
+            });
 
             await models.grupo.destroy({
                 where: {

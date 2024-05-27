@@ -15,10 +15,15 @@ const controladorMensagem = {
                 }
             });
 
-            await models.mensagem.create({
+            const mensagemRtn = await models.mensagem.create({
                 destinatarioid: destinatario.destinatarioid,
                 mensagem: mensagem,
                 remententeid: idRemetente
+            });
+
+            await models.objecto.create({
+                registoid: mensagemRtn.mensagemid,
+                entidade: 'MENSAGEM'
             });
             
             res.status(201).json({ message: 'Mensagem adicionada com sucesso' });
@@ -50,6 +55,13 @@ const controladorMensagem = {
         const { id } = req.params;
         
         try {
+            await models.objecto.destroy({
+                where: {
+                    registoid: id,
+                    entidade: 'MENSAGEM'
+                }
+            });
+
             await models.mensagem.destroy({
                 where: {
                     mensagemid: id

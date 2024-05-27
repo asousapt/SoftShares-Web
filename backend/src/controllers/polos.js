@@ -1,4 +1,4 @@
-const { Sequelize, Op } = require('sequelize');
+const { Sequelize, Op, where } = require('sequelize');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
@@ -8,13 +8,18 @@ const controladorPolos = {
         const { cidadeID, descricao, morada, email, telefone, coordenador } = req.body;
 
         try {
-            await models.polo.create({
+            const polo = await models.polo.create({
                 cidadeid: cidadeID,
                 descricao: descricao,
                 morada: morada,
                 email: email,
                 telefone: telefone,
                 coordenador: coordenador
+            });
+
+            await models.objecto.create({
+                registoid: polo.poloid,
+                entidade: 'POLO'
             });
 
             res.status(201).json({ message: 'Polo adicionado com sucesso' });
@@ -51,6 +56,13 @@ const controladorPolos = {
         const { idPolo } = req.params;
 
         try {
+            await models.objecto.destroy({
+                where: {
+                    registoid: idPolo,
+                    entidade: 'POLO'
+                }
+            });
+
             await models.polo.destroy({
                 where: {
                     poloid: idPolo

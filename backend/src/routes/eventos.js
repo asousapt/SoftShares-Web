@@ -20,7 +20,7 @@ router.put('/rejeitar/:idEvento', authenticate, eventoControlador.rejeitarEvento
 router.put('/utilizador/update/:idEvento/:idUser', authenticate, eventoControlador.atualizarConvidados);
 
 //ROUTES DELETE
-router.delete('/utilizador/delete/:idEvento/:idUser', authenticate, eventoControlador.atualizarConvidados);
+router.delete('/utilizador/delete/:idEvento/:idUser', authenticate, eventoControlador.removerInscricao);
 
 //ROUTES GET
 router.get('/', authenticate, eventoControlador.consultarTodos);

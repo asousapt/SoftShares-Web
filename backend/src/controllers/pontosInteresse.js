@@ -18,7 +18,7 @@ const controladorPontosInteresse = {
         } = req.body;
 
         try {
-            await models.pontointeresse.create({
+            const pontointeresse = await models.pontointeresse.create({
                 subcategoriaid: subcategoriaid,
                 titulo: titulo,
                 descricao: descricao,
@@ -28,6 +28,11 @@ const controladorPontosInteresse = {
                 idiomaid: idiomaid,
                 cidadeid: cidadeid,
                 utilizadorcriou: utilizadorcriou
+            });
+
+            await models.objecto.create({
+                registoid: pontointeresse.pontointeresseid,
+                entidade: 'PONTOINTERESSE'
             });
 
             res.status(201).json({ message: 'Ponto de interesse adicionado com sucesso' });
@@ -114,6 +119,13 @@ const controladorPontosInteresse = {
         const { idPontoInteresse } = req.params;
 
         try {
+            await models.objecto.destroy({
+                where: {
+                    registoid: idPontoInteresse,
+                    entidade: 'PONTOINTERESSE'
+                }
+            });
+
             await models.pontointeresse.destroy({
                 where: {
                     pontointeresseid: idPontoInteresse

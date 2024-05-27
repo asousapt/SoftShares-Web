@@ -39,6 +39,11 @@ const controladorUtilizadores = {
                 tipo: 'UT'
             });
 
+            await models.objecto.create({
+                registoid: user.userid,
+                entidade: 'USER'
+            });
+
             res.status(201).json({ message: 'Utilizador adicionado com sucesso' });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao adicionar utilizador', details: error.message });
@@ -90,6 +95,13 @@ const controladorUtilizadores = {
         const { idUtilizador } = req.params;
 
         try {
+            await models.objecto.destroy({
+                where: {
+                    registoid: idUtilizador,
+                    entidade: 'USER'
+                }
+            });
+
             await models.destinatario.destroy({
                 where: {
                     itemdestinatario: idUtilizador,

@@ -8,7 +8,7 @@ const controladorEventos = {
         const { titulo, descricao, dataInicio, dataFim, dataLimInscricao, nmrMaxParticipantes, localizacao, latitude, longitude, cidadeID, utilizadorCriou } = req.body;
 
         try {
-            await models.evento.create({
+            const evento = await models.evento.create({
                 titulo: titulo,
                 descricao: descricao,
                 datainicio: dataInicio,
@@ -20,6 +20,11 @@ const controladorEventos = {
                 longitude: longitude,
                 cidadeid: cidadeID,
                 utilizadorcriou: utilizadorCriou
+            });
+
+            await models.objecto.create({
+                registoid: evento.eventoid,
+                entidade: 'EVENTO'
             });
 
             res.status(201).json({ message: 'Evento adicionado com sucesso' });

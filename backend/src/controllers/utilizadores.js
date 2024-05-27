@@ -1,4 +1,4 @@
-const { Sequelize, Op } = require('sequelize');
+const { Sequelize, QueryTypes } = require('sequelize');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
@@ -16,7 +16,8 @@ const controladorUtilizadores = {
             idiomaid,
             departamentoid,
             funcaoid,
-            sobre
+            sobre,
+            inactivo
         } = req.body;
 
         try {
@@ -31,7 +32,8 @@ const controladorUtilizadores = {
                 idiomaid,
                 departamentoid,
                 funcaoid,
-                sobre
+                sobre,
+                inactivo
             });
 
             await models.destinatario.create({
@@ -145,21 +147,62 @@ const controladorUtilizadores = {
 
     consultarTodos: async (req, res) => {
         try {
-            const utilizadors = await models.utilizador.findAll({
-                include: [
-                    {
-                        model: models.perfil,
-                        as: 'perfil',
-                        attributes: ['descricao']
-                    },
-                ]
-            });
-    
+            const utilizadors = await sequelizeConn.query(
+                `SELECT 
+                    u.*, 
+                    perf.descricao AS descricao_perfil,
+                    pol.descricao AS descricao_polo,
+                    dep.valor AS descricao_departamento,
+                    func.valor AS descricao_funcao
+                FROM 
+                    utilizador u
+                LEFT JOIN 
+                    perfil perf ON u.perfilid = perf.perfilid
+                LEFT JOIN 
+                    polo pol ON u.poloid = pol.poloid
+                INNER JOIN 
+                    chave ch_dep ON u.departamentoid = ch_dep.registoid AND ch_dep.entidade = 'DEPARTAMENTO'
+                LEFT JOIN 
+                    traducao dep ON ch_dep.chaveid = dep.chaveid AND dep.idiomaid = 1
+                INNER JOIN 
+                    chave ch_func ON u.funcaoid = ch_func.registoid AND ch_func.entidade = 'FUNCAO'
+                LEFT JOIN 
+                    traducao func ON ch_func.chaveid = func.chaveid AND func.idiomaid = 1`,
+                { type: QueryTypes.SELECT }
+            );
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: utilizadors });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
         }
     },
+
+    consultarTotalPorPolo: async (req, res) => {
+        try {
+            const totalPorPolo = await sequelizeConn.query(
+                `SELECT 
+                    pol.descricao AS label, 
+                    COUNT(u.utilizadorid) AS value
+                FROM 
+                    utilizador u
+                LEFT JOIN 
+                    polo pol ON u.poloid = pol.poloid
+                GROUP BY 
+                    pol.descricao`,
+                { type: QueryTypes.SELECT }
+            );
+    
+            // atribuir cores aos polos
+            const colors = ['#7cb342', '#ffca28', '#ff7043', '#ab47bc', '#42a5f5', '#66bb6a', '#26a69a', '#ef5350', '#ec407a', '#ab47bc'];
+            totalPorPolo.forEach((item, index) => {
+                item.color = colors[index % colors.length];
+            });
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: totalPorPolo });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar utilizadores por polo', details: error.message });
+        }
+    }
+    
 };
 
 module.exports = controladorUtilizadores;

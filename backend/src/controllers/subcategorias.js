@@ -334,6 +334,29 @@ const controladorSubcategorias = {
             res.status(500).json({ error: 'Erro ao remover subcategoria favorita', details: error.message });
         }
     },
+
+    consultarTudo: async (req, res) => {
+        try {
+            const subcategorias = await sequelizeConn.query(
+                `SELECT 
+                    s.*, 
+                    (SELECT valor from traducao WHERE ch.chaveid = traducao.chaveid AND idiomaID = 1) as ValorPT, 
+                    (SELECT valor from traducao WHERE ch.chaveid = traducao.chaveid AND idiomaID = 2) as ValorEN, 
+                    (SELECT valor from traducao WHERE ch.chaveid = traducao.chaveid AND idiomaID = 3) as ValorES 
+                FROM 
+                    subcategoria s 
+                INNER JOIN 
+                    chave ch ON s.subcategoriaid = ch.registoid AND ch.entidade = 'SUBCAT' `,
+                {
+                    type: QueryTypes.SELECT
+                }
+            );
+            
+            res.status(200).json(subcategorias);
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar as subcategorias', details: error.message });
+        }
+    }
 };
 
 module.exports = controladorSubcategorias;

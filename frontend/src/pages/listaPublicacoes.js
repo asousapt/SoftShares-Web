@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './page.css';
 /* COMPONENTES */
 import DataTable from '../components/tables/dataTable';
@@ -27,7 +28,10 @@ export default function ListaPublicacoes() {
     const [isNewModalOpen, setNewModalOpen] = useState(false);
     const [filtroText, setFiltroText] = useState('');
     const [filtroEstado, setFiltroEstado] = useState('Todos');
-    const [filtroCategoria, setFiltroCategoria] = useState('Todos');
+    const [opcoesFiltroCat, setOpcoesCat] = useState([]);
+    const [filtroCategoria, setFiltroCategoria] = useState(0);
+    const [tableRows, setTableRows] = useState([]);
+    const [error, setError] = useState(null);
 
     const tableColumns = [
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
@@ -37,27 +41,59 @@ export default function ListaPublicacoes() {
         { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'left', renderCell: (row) => ( <StateChanger status={row.value} />) },
         { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
     ];
-    
-    const tableRows = [
-        { id: 1, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Ativo' },
-        { id: 2, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Inativo' },
-        { id: 3, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Ativo' },
-        { id: 4, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Inativo' },
-        { id: 5, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Ativo' },
-        { id: 6, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Inativo' },
-        { id: 7, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Ativo' },
-        { id: 8, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Inativo' },
-        { id: 9, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Ativo' },
-        { id: 10, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Inativo' },
-        { id: 11, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Ativo' },
-        { id: 12, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Inativo' },
-        { id: 13, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Ativo' },
-        { id: 14, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Inativo' },
-        { id: 15, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Ativo' },
-        { id: 16, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Inativo' },
-        { id: 17, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Ativo' },
-        { id: 18, titulo: 'teste', dataHora: new Date('2023-12-19T20:00:00'), criadoPor:'asd', estado: 'Inativo' },
-    ];
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const token = 'tokenFixo';
+                const response = await axios.get('http://localhost:8000/thread', {
+                    headers: {
+                        Authorization: `${token}`
+                    }
+                });
+                const threads = response.data.data;
+                setTableRows(
+                    threads.map((thread) => ({
+                        key: thread.threadid,
+                        id: thread.threadid,
+                        titulo: thread.titulo,
+                        dataHora: new Date(thread.datacriacao),
+                        criadoPor: thread.utilizador.pnome+' '+thread.utilizador.unome,
+                        estado: thread.estado ? 'Ativo' : 'Inativo'
+                    }))
+                );
+            } catch (error) {
+                setError(error);
+            }
+        };
+        
+        const fetchCategorias = async () => {
+            try {
+                const token = 'tokenFixo';
+                const response = await axios.get('http://localhost:8000/categoria', {
+                    headers: {
+                        Authorization: `${token}`
+                    }
+                });
+                const categorias = response.data;
+                setOpcoesCat([
+                    { value: 0, label: 'Sem Filtro' }, 
+                    ...categorias.map((cat) => ({
+                        value: cat.categoriaid,
+                        label: cat.valorpt
+                    }))
+                ]);
+            } catch (error) {
+                setError(error);
+            }
+        };
+        fetchCategorias();
+        fetchData();
+    }, []);
+
+    if (error) {
+        return <div>Error: {error.message}</div>;
+    }
 
     const handleOpenNewModal = () => {
         setNewModalOpen(true);

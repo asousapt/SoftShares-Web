@@ -35,6 +35,7 @@ const categoriasRoutes = require('./routes/categorias');
 const subcategoriasRoutes = require('./routes/subcategorias');
 const usersRoutes = require('./routes/utilizadores');
 const departamentoRoutes = require('./routes/departamentos');
+const perfilRoutes = require('./routes/perfis');
 const funcoesRoutes = require('./routes/funcoes');
 const alertasRoutes = require('./routes/alertas');
 const grupoRoutes = require('./routes/grupo');
@@ -49,6 +50,7 @@ const denunciaRoutes = require('./routes/denuncia');
 const formularioRoutes = require('./routes/formularios');
 const mensagemRoutes = require('./routes/mensagens');
 const notificacoesRoutes = require('./routes/notificacoes');
+const cidadesRoutes = require('./routes/cidades');
 
 // Use route files
 app.use('/evento', eventosRoutes);
@@ -57,6 +59,7 @@ app.use('/categoria', categoriasRoutes);
 app.use('/subcategoria', subcategoriasRoutes);
 app.use('/utilizadores', usersRoutes);
 app.use('/departamento', departamentoRoutes);
+app.use('/perfil', perfilRoutes);
 app.use('/funcao', funcoesRoutes);
 app.use('/alerta', alertasRoutes);
 app.use('/grupo', grupoRoutes);
@@ -71,6 +74,7 @@ app.use('/denuncia', denunciaRoutes);
 app.use('/formulario', formularioRoutes);
 app.use('/mensagens', mensagemRoutes);
 app.use('/notificacao', notificacoesRoutes);
+app.use('/cidades', cidadesRoutes);
 
 // Start server
 const PORT = process.env.PORT || 8000;

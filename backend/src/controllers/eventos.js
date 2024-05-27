@@ -1,11 +1,12 @@
 const { Sequelize, Op } = require('sequelize');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
+const subcategoria = require('../models/subcategoria');
 const models = initModels(sequelizeConn);
 
 const controladorEventos = {
     adicionarEvento: async (req, res) => {
-        const { titulo, descricao, dataInicio, dataFim, dataLimInscricao, nmrMaxParticipantes, localizacao, latitude, longitude, cidadeID, utilizadorCriou } = req.body;
+        const { titulo, descricao, dataInicio, dataFim, dataLimInscricao, nmrMaxParticipantes, localizacao, latitude, longitude, cidadeID, utilizadorCriou, subcategoriaId, poloId } = req.body;
 
         try {
             const evento = await models.evento.create({
@@ -19,7 +20,9 @@ const controladorEventos = {
                 latitude: latitude,
                 longitude: longitude,
                 cidadeid: cidadeID,
-                utilizadorcriou: utilizadorCriou
+                utilizadorcriou: utilizadorCriou,
+                subcategoriaid: subcategoriaId,
+                poloid: poloId
             });
 
             await models.objecto.create({
@@ -51,7 +54,7 @@ const controladorEventos = {
 
     atualizarEvento: async (req, res) => {
         const { idEvento } = req.params;
-        const { titulo, descricao, dataInicio, dataFim, dataLimInscricao, nmrMaxParticipantes, localizacao, latitude, longitude, cidadeID } = req.body;
+        const { titulo, descricao, dataInicio, dataFim, dataLimInscricao, nmrMaxParticipantes, localizacao, latitude, longitude, cidadeID, subcategoriaId, poloId } = req.body;
 
         try {
             await models.evento.update({
@@ -64,7 +67,9 @@ const controladorEventos = {
                 localizacao: localizacao,
                 latitude: latitude,
                 longitude: longitude,
-                cidadeID: cidadeID
+                cidadeID: cidadeID,
+                subcategoriaid: subcategoriaId,
+                poloid: poloId
             }, {
                 where: {
                     eventoid: idEvento

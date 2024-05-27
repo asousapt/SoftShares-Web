@@ -90,6 +90,22 @@ module.exports = function(sequelize, DataTypes) {
     dataaprovacao: {
       type: DataTypes.DATE,
       allowNull: true
+    },
+    subcategoriaid: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'subcategoria',
+        key: 'subcategoriaid'
+      }
+    },
+    poloid: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'polo',
+        key: 'poloid'
+      }
     }
   }, {
     sequelize,

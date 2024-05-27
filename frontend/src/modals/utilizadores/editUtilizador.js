@@ -9,7 +9,7 @@ import SubmitButton from '../../components/buttons/submitButton';
 import CancelButton from '../../components/buttons/cancelButton';
 import InputImage from '../../components/image/imageInput';
 
-const AddUserModal = ({ open, onClose }) => {
+const EditUserModal = ({ open, onClose, userId }) => {
     const [poloid, setPoloid] = useState('');
     const [perfilid, setPerfilid] = useState('');
     const [pnome, setPnome] = useState('');
@@ -27,6 +27,34 @@ const AddUserModal = ({ open, onClose }) => {
     const [image, setImage] = useState('https://i0.wp.com/ctmirror-images.s3.amazonaws.com/wp-content/uploads/2021/01/dummy-man-570x570-1.png?fit=570%2C570&ssl=1');
 
     useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const token = 'tokenFixo';
+                const response = await axios.get(`http://localhost:8000/utilizadores/${userId}`, {
+                    headers: { Authorization: `${token}` }
+                });
+                const userData = response.data;
+                setPoloid(userData.poloid);
+                setPerfilid(userData.perfilid);
+                setPnome(userData.pnome);
+                setUnome(userData.unome);
+                setEmail(userData.email);
+                setDepartamentoid(userData.departamentoid);
+                setFuncaoid(userData.funcaoid);
+                setSobre(userData.sobre);
+                setInactivo(userData.inactivo);
+                setImage(userData.image || 'https://i0.wp.com/ctmirror-images.s3.amazonaws.com/wp-content/uploads/2021/01/dummy-man-570x570-1.png?fit=570%2C570&ssl=1');
+            } catch (error) {
+                console.error('Erro ao buscar dados do utilizador:', error);
+            }
+        };
+
+        if (open) {
+            fetchUserData();
+        }
+    }, [open, userId]);
+
+    useEffect(() => {
         const fetchDepartamentos = async () => {
             try {
                 const token = 'tokenFixo';
@@ -41,7 +69,6 @@ const AddUserModal = ({ open, onClose }) => {
                 }));
 
                 setDepartamentos(departamentosOptions);
-                console.log(departamentosOptions);
             } catch (error) {
                 console.error('Erro ao buscar departamentos:', error);
             }
@@ -60,7 +87,6 @@ const AddUserModal = ({ open, onClose }) => {
                 }));
 
                 setPolos(polosOptions);
-                console.log(polosOptions);
             } catch (error) {
                 console.error('Erro ao buscar polos:', error);
             }
@@ -73,14 +99,13 @@ const AddUserModal = ({ open, onClose }) => {
                     headers: { Authorization: `${token}` }
                 });
                 const funcaoData = response.data;
-                console.log(funcaoData);
+
                 const funcaoOptions = funcaoData.map(funcao => ({
                     value: funcao.funcaoid,
                     label: funcao.valorpt
                 }));
 
                 setFuncao(funcaoOptions);
-                console.log(funcaoOptions);
             } catch (error) {
                 console.error('Erro ao buscar funções:', error);
             }
@@ -93,14 +118,13 @@ const AddUserModal = ({ open, onClose }) => {
                     headers: { Authorization: `${token}` }
                 });
                 const perfilData = response.data.data;
-                console.log(perfilData);
+
                 const perfilOptions = perfilData.map(perfil => ({
                     value: perfil.perfilid,
                     label: perfil.descricao
                 }));
 
                 setPerfil(perfilOptions);
-                console.log(perfilOptions);
             } catch (error) {
                 console.error('Erro ao buscar funções:', error);
             }
@@ -112,62 +136,51 @@ const AddUserModal = ({ open, onClose }) => {
         fetchDepartamentos();
     }, []);
 
-    const handleAddUser = async () => {
+    const handleEditUser = async () => {
         try {
             const token = 'tokenFixo';
-            const newUser = {
+            const updatedUser = {
                 poloid,
                 perfilid,
                 pnome,
                 unome,
                 email,
                 passwd,
-                chavesalt: 'saltsalt',
-                idiomaid: 1,
                 departamentoid,
                 funcaoid,
                 sobre,
                 inactivo
             };
-            console.log(JSON.stringify(newUser));
-            await axios.post('http://localhost:8000/utilizadores/add', newUser, {
+            await axios.put(`http://localhost:8000/utilizadores/update/${userId}`, updatedUser, {
                 headers: {
                     'Authorization': `${token}`,
                     'Content-Type': 'application/json'
                 },
             });
-            console.log('Utilizador Adicionado com sucesso');
+            console.log('Utilizador atualizado com sucesso');
             onClose();
         } catch (error) {
-            console.error('Erro ao adicionar utilizador:', error);
+            console.error('Erro ao atualizar utilizador:', error);
         }
     };
 
     const handleChangeAtivo = () => {
-        setInactivo((prevInactivo) => {
-            const novoInactivo = !prevInactivo;
-            console.log('Novo valor de inactivo:', novoInactivo);
-            return novoInactivo;
-        });
+        setInactivo((prevInactivo) => !prevInactivo);
     };
-
-    useEffect(() => {
-        console.log('Valor inicial de inactivo:', inactivo);
-    }, []);
 
     return (
         <Modal open={open} onClose={onClose}>
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px', overflow: 'auto' }}>
-                <h2 style={{ marginTop: 0, color: 'white' }}>Novo Utilizador</h2>
+                <h2 style={{ marginTop: 0, color: 'white' }}>Editar Utilizador</h2>
                 <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 20, borderRadius: 12 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <div style={{ flex: '65%', paddingRight: 15 }}>
                             <div style={{ marginBottom: 15 }}>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
-                                    <div style={{ width: "50%" }} >
+                                    <div style={{ width: "50%" }}>
                                         <BasicTextField caption='Primeiro Nome' valor={pnome} onchange={(e) => setPnome(e.target.value)} fullwidth={true} />
                                     </div>
-                                    <div style={{ width: "50%" }} >
+                                    <div style={{ width: "50%" }}>
                                         <BasicTextField caption='Último Nome' valor={unome} onchange={(e) => setUnome(e.target.value)} fullwidth={true} />
                                     </div>
                                 </div>
@@ -189,7 +202,7 @@ const AddUserModal = ({ open, onClose }) => {
                                     <div style={{ width: "50%" }}>
                                         <ComboBox caption='Departamento' options={departamentos} value={departamentoid} handleChange={(e) => setDepartamentoid(e.target.value)} />
                                     </div>
-                                    <div style={{ width: "50%" }} >
+                                    <div style={{ width: "50%" }}>
                                         <ComboBox caption='Função' options={funcao} value={funcaoid} handleChange={(e) => setFuncaoid(e.target.value)} />
                                     </div>
                                 </div>
@@ -212,12 +225,12 @@ const AddUserModal = ({ open, onClose }) => {
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
                         <CancelButton onclick={onClose} caption='Cancelar' />
-                        <SubmitButton onclick={handleAddUser} caption='Guardar' />
+                        <SubmitButton onclick={handleEditUser} caption='Guardar' />
                     </div>
                 </div>
             </div>
         </Modal>
     );
-}
+};
 
-export default AddUserModal;
+export default EditUserModal;

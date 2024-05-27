@@ -30,9 +30,19 @@ const controladorPerfil = {
                 });
             }
         } catch (error) {
-            console.error('Ocorreu um erro ao criar os idiomas:', error);
+            console.error('Ocorreu um erro ao criar os Utilizadores', error);
         }
-    }
+    },
+
+    consultarTudo: async (req, res) => {
+        try {
+            const perfil = await models.perfil.findAll();
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: perfil });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar perfil', details: error.message });
+        }
+    },
 }
+
 
 module.exports = controladorPerfil;

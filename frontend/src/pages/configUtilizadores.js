@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './page.css';
 /* COMPONENTES */
 import DataTable from '../components/tables/dataTable';
@@ -10,64 +11,72 @@ import Search from '../components/textFields/search';
 import StateChanger from '../components/stateChanger/stateChanger';
 /* FIM COMPONENTES */
 import NovoUser from '../modals/utilizadores/novoUtilizador';
-import axios from 'axios';
-
+import EditUser from '../modals/utilizadores/editUtilizador';
 
 const opcoesFiltro = [
-    { value:'Todos', label: 'Todos'},
-    { value:'Ativos', label: 'Apenas Ativos'},
-    { value:'inativos', label: 'Apenas Inativos'}
+    { value: 'Todos', label: 'Todos' },
+    { value: 'Ativos', label: 'Apenas Ativos' },
+    { value: 'inativos', label: 'Apenas Inativos' }
 ];
 
 export default function Configtilizadores() {
     const [isNewModalOpen, setNewModalOpen] = useState(false);
+    const [isEditModalOpen, setEditModalOpen] = useState(false);
     const [filtroText, setFiltroText] = useState('');
     const [filtroCombo, setFiltroCombo] = useState('Todos');
     const [tableRows, setTableRows] = useState([]);
     const [error, setError] = useState(null);
+    const [selectedUserId, setSelectedUserId] = useState(null);
 
     const tableColumns = [
-        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left'},
+        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
         { field: 'nome', headerName: 'Nome', flex: 1, headerAlign: 'left' },
-        { field: 'tipo', headerName: 'Tipo', flex: 0.5, headerAlign: 'left' },
-        { field: 'dataHora', headerName: 'Data de Criação', type: 'dateTime', width: 300, headerAlign: 'left' },
-        { field: 'departamento', headerName: 'Departamento', flex: 0.5 , headerAlign: 'left' },
-        { field: 'funcao', headerName: 'Função', flex: 1 , headerAlign: 'left'},
-        { field: 'idioma', headerName: 'Idioma', flex: 1 , headerAlign: 'left'},
-        { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => ( <StateChanger status={row.value} />) },
-        { field: 'status', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
+        { field: 'tipo', headerName: 'Tipo', flex: 0.7, headerAlign: 'left' },
+        { field: 'dataHora', headerName: 'Data de Criação', type: 'dateTime', width: 220, headerAlign: 'left' },
+        { field: 'departamento', headerName: 'Departamento', flex: 1, headerAlign: 'left' },
+        { field: 'funcao', headerName: 'Função', flex: 1, headerAlign: 'left' },
+        { field: 'polo', headerName: 'Polo', flex: 1, headerAlign: 'left' },
+        { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => (<StateChanger status={row.value} />) },
+        { field: 'status', headerName: ' ', width: 100, headerAlign: 'left', sortable: false, renderCell: (row) => (<EditButton caption=' ' onclick={() => handleEditButtonClick(row.id)} />) },
     ];
 
+    const fetchData = async () => {
+        try {
+            const token = 'tokenFixo';
+            const utilizadoresResponse = await axios.get('http://localhost:8000/utilizadores', {
+                headers: { Authorization: `${token}` }
+            });
+            const utilizadores = utilizadoresResponse.data.data;
+            console.log(utilizadores);
+
+            setTableRows(
+                utilizadores.map((utilizador, index) => ({
+                    key: utilizador.utilizadorid,
+                    id: utilizador.utilizadorid,
+                    nome: utilizador.pnome + ' ' + utilizador.unome,
+                    tipo: utilizador.descricao_perfil,
+                    dataHora: new Date(utilizador.datacriacao),
+                    departamento: utilizador.descricao_departamento,
+                    funcao: utilizador.descricao_funcao,
+                    polo: utilizador.descricao_polo,
+                    estado: utilizador.inactivo ? 'Inativo' : 'Ativo',
+                    status: utilizador.estado
+                }))
+            );
+        } catch (error) {
+            setError(error);
+        }
+    };
+
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const token = 'tokenFixo';
-                const response = await axios.get('http://localhost:8000/utilizadores', {
-                    headers: {
-                        Authorization: `${token}`
-                    }
-                });
-                const utilizadores = response.data.data;
-                setTableRows(
-                    utilizadores.map((utilizador, index) => ({
-                        key: utilizador.utilizadorid,
-                        id: utilizador.utilizadorid,
-                        nome: utilizador.pnome + ' ' + utilizador.unome,
-                        tipo: utilizador.perfil.descricao,
-                        dataHora: new Date(utilizador.datacriacao),
-                        departamento: utilizador.departamentoid,
-                        funcao: utilizador.funcaoid,
-                        idioma: utilizador.idiomaid,
-                        estado: utilizador.inactivo ? 'Inativo' : 'Ativo',
-                        status: utilizador.estado
-                    }))
-                );
-            } catch (error) {
-                setError(error);
-            }
-        };
         fetchData();
     }, []);
+
+    useEffect(() => {
+        if (!isNewModalOpen && !isEditModalOpen) {
+            fetchData();
+        }
+    }, [isNewModalOpen, isEditModalOpen]);
 
     const handleOpenNewModal = () => {
         setNewModalOpen(true);
@@ -77,24 +86,39 @@ export default function Configtilizadores() {
         setNewModalOpen(false);
     };
 
+    const handleOpenEditModal = () => {
+        setEditModalOpen(true);
+    };
+
+    const handleCloseEditModal = () => {
+        setEditModalOpen(false);
+        setSelectedUserId(null);
+    };
+
+    const handleEditButtonClick = (userId) => {
+        setSelectedUserId(userId);
+        handleOpenEditModal();
+    };
+
     const handleTextFilter = (e) => {
         setFiltroText(e.target.value);
     };
 
-    return(
+    return (
         <div className="page-container">
             <Header caption='Utilizadores' />
             <div className="data-container">
-                <div style={{marginBottom:'20px', paddingTop: '20px'}}>
+                <div style={{ marginBottom: '20px', paddingTop: '20px' }}>
                     <AddButton caption='Adicionar' onclick={handleOpenNewModal} />
                     <Search onchange={handleTextFilter} />
                     <ComboFilter options={opcoesFiltro} value={filtroCombo} handleChange={(e) => setFiltroCombo(e.target.value)} />
                 </div>
-                <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px',border: 'none', boxShadow: 'none'}}>
-                    <DataTable rows={tableRows || []} columns={tableColumns}/>
+                <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px', border: 'none', boxShadow: 'none' }}>
+                    <DataTable rows={tableRows || []} columns={tableColumns} />
                 </div>
             </div>
-            <NovoUser open={isNewModalOpen} onClose={handleCloseNewModal}/>
+            <NovoUser open={isNewModalOpen} onClose={handleCloseNewModal} />
+            <EditUser open={isEditModalOpen} onClose={handleCloseEditModal} userId={selectedUserId} />
         </div>
     )
 }

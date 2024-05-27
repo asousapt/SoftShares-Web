@@ -17,6 +17,6 @@ router.delete('/fav/delete/:idSubCatFav', authenticate, subcategoriasControlador
 
 //ROUTES GET
 router.get('/', authenticate, subcategoriasControlador.consultarTudo);
-router.get('/:idCat', authenticate, subcategoriasControlador.consultarPorCategoria);
+router.get('/categoria/:idCat', authenticate, subcategoriasControlador.consultarPorCategoria);
 
 module.exports = router;

@@ -9,9 +9,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import axios from 'axios';
 
-const imgs = [
-    
-];
+const imgs = [];
 
 const AddEventModal = ({ open, onClose }) => {
     const [title, setTitle] = useState('');
@@ -24,10 +22,35 @@ const AddEventModal = ({ open, onClose }) => {
     const [dataLimInscricao, setDataLimInscricao] = useState('');
     const [cidade, setCidade] = useState(null);
     const [cidades, setCidades] = useState([]);
-    const [error, setError] = useState(null);
+    const [distrito, setDistrito] = useState(null);
+    const [distritos, setDistritos] = useState([]);
+    const [categoria, setCategoria] = useState(null);
     const [opcoesFiltroCat, setOpcoesCat] = useState([]);
+    const [subcategoria, setSubcategoria] = useState(null);
+    const [opcoesFiltroSubcat, setOpcoesSubcat] = useState([]);
+    const [error, setError] = useState(null);
+    const [categoriaSelecionada, setCategoriaSelecionada] = useState(null);
 
     useEffect(() => {
+        const fetchDistritos = async () => {
+            try {
+                const token = 'tokenFixo';
+                const response = await axios.get('http://localhost:8000/distritos', {
+                    headers: { Authorization: `${token}` }
+                });
+                const distritoData = response.data.data;
+
+                const distritosOptions = distritoData.map(distrito => ({
+                    value: distrito.distritoid,
+                    label: distrito.nome
+                }));
+
+                setCidades(distritosOptions);
+            } catch (error) {
+                console.error('Erro ao buscar cidades:', error);
+            }
+        };
+
         const fetchCidades = async () => {
             try {
                 const token = 'tokenFixo';
@@ -42,7 +65,6 @@ const AddEventModal = ({ open, onClose }) => {
                 }));
 
                 setCidades(cidadesOptions);
-                console.log(cidadesOptions);
             } catch (error) {
                 console.error('Erro ao buscar cidades:', error);
             }
@@ -52,26 +74,48 @@ const AddEventModal = ({ open, onClose }) => {
             try {
                 const token = 'tokenFixo';
                 const response = await axios.get('http://localhost:8000/categoria', {
-                    headers: {
-                        Authorization: `${token}`
-                    }
+                    headers: { Authorization: `${token}` }
                 });
                 const categorias = response.data;
-                console.log(categorias);
-                setOpcoesCat([
-                    { value: 0, label: 'Sem Filtro' }, 
-                    ...categorias.map((cat) => ({
-                        value: cat.categoriaid,
-                        label: cat.valorpt
-                    }))
-                ]);
+                const categoriasOptions = categorias.map((cat) => ({
+                    value: cat.categoriaid,
+                    label: cat.valorpt
+                }));
+                setOpcoesCat(categoriasOptions);
             } catch (error) {
                 setError(error);
             }
         };
-        fetchCategorias();
+
+        fetchDistritos();
         fetchCidades();
+        fetchCategorias();
     }, []);
+
+    const handleCategoriaChange = async (event, newValue) => {
+        setCategoria(newValue);
+        setSubcategoria(null); 
+        if (newValue) {
+            try {
+                const token = 'tokenFixo';
+                const response = await axios.get(`http://localhost:8000/subcategoria/categoria/${newValue.value}`, {
+                    headers: { Authorization: `${token}` }
+                });
+                const subcategorias = response.data;
+                console.log(subcategorias);
+                const subcategoriasOptions = subcategorias.map((subcat) => ({
+                    value: subcat.subcategoriaid,
+                    label: subcat.valorpt
+                }));
+                setOpcoesSubcat(subcategoriasOptions);
+            } catch (error) {
+                setError(error);
+            }
+        } else {
+            setOpcoesSubcat([]);
+            setSubcategoria(null);
+        }
+    };
 
     const handleAddEvent = async () => {
         try {
@@ -88,10 +132,9 @@ const AddEventModal = ({ open, onClose }) => {
                 longitude: 0,
                 cidadeID: cidade ? cidade.value : '',
                 utilizadorCriou: 14,
+                subcategoriaID: subcategoria ? subcategoria.value : '',
             };
-            console.log(JSON.stringify(novoEvento));
-            const jsonData = JSON.stringify(novoEvento);
-            await axios.post('http://localhost:8000/evento/add', jsonData, {
+            await axios.post('http://localhost:8000/evento/add', novoEvento, {
                 headers: {
                     Authorization: `${token}`,
                     'Content-Type': 'application/json',
@@ -120,44 +163,48 @@ const AddEventModal = ({ open, onClose }) => {
                                 <BasicTextField caption='Nº Participantes Máximo' type='number' valor={numParticipantes} onchange={(e) => setNumParticipantes(e.target.value)} />
                             </div>
                             <div style={{ width: '30%' }}>
-                                <DataHora
-                                    caption="Data e Hora Início"
-                                    value={dataHoraInicio}
-                                    onChange={(newValue) => {
-                                        setDataHoraInicio(newValue);
-                                        console.log('Data e Hora Início:', newValue);
-                                    }}
-                                />
+                                <DataHora caption="Data e Hora Início" value={dataHoraInicio} onChange={(newValue) => setDataHoraInicio(newValue)} />
                             </div>
                             <div style={{ width: '30%' }}>
-                                <DataHora
-                                    caption="Data e Hora Fim"
-                                    value={dataHoraFim}
-                                    onChange={(newValue) => {
-                                        setDataHoraFim(newValue);
-                                        console.log('Data e Hora Fim:', newValue);
-                                    }}
-                                />
+                                <DataHora caption="Data e Hora Fim" value={dataHoraFim} onChange={(newValue) => setDataHoraFim(newValue)} />
                             </div>
                             <div style={{ width: '30%' }}>
-                                <DataHora
-                                    caption="Data Limite de Inscrição"
-                                    value={dataLimInscricao}
-                                    onChange={(newValue) => {
-                                        setDataLimInscricao(newValue);
-                                        console.log('Data Limite de Inscrição:', newValue);
-                                    }}
+                                <DataHora caption="Data Limite de Inscrição" value={dataLimInscricao} onChange={(newValue) => setDataLimInscricao(newValue)} />
+                            </div>
+                            <div style={{ width: '40%' }}>
+                                <Autocomplete 
+                                    options={distritos} 
+                                    getOptionLabel={(option) => option.label} 
+                                    renderInput={(params) => <TextField {...params} label="Distrito" variant="outlined" />}
+                                    value={distrito} 
+                                    onChange={(event, newValue) => { setDistrito(newValue); }} 
                                 />
                             </div>
                             <div style={{ width: '40%' }}>
-                                <Autocomplete
-                                    options={cidades}
-                                    getOptionLabel={(option) => option.label}
+                                <Autocomplete 
+                                    options={cidades} 
+                                    getOptionLabel={(option) => option.label} 
                                     renderInput={(params) => <TextField {...params} label="Cidade" variant="outlined" />}
-                                    value={cidade}
-                                    onChange={(event, newValue) => {
-                                        setCidade(newValue);
-                                    }}
+                                    value={cidade} 
+                                    onChange={(event, newValue) => { setCidade(newValue); }} 
+                                />
+                            </div>
+                            <div style={{ width: '40%' }}>
+                                <Autocomplete 
+                                    options={opcoesFiltroCat} 
+                                    getOptionLabel={(option) => option.label} 
+                                    renderInput={(params) => <TextField {...params} label="Categoria" variant="outlined" />}
+                                    value={categoria} 
+                                    onChange={handleCategoriaChange} 
+                                />
+                            </div>
+                            <div style={{ width: '40%' }}>
+                                <Autocomplete 
+                                    options={opcoesFiltroSubcat} 
+                                    getOptionLabel={(option) => option.label} 
+                                    renderInput={(params) => <TextField {...params} label="SubCategoria" variant="outlined" />}
+                                    value={subcategoria} 
+                                    onChange={(event, newValue) => { setSubcategoria(newValue); }} 
                                 />
                             </div>
                         </div>

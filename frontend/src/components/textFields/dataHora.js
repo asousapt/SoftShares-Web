@@ -3,6 +3,7 @@ import { TextField } from '@mui/material';
 
 export default function DataHora({ caption, value, onChange, fullwidth = true }) {
     const handleChange = (event) => {
+        onChange(event.target.value);
         console.log(`${caption} value:`, event.target.value);
     };
 

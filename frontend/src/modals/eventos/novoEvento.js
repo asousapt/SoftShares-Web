@@ -10,7 +10,7 @@ import TextField from '@mui/material/TextField';
 import axios from 'axios';
 
 const imgs = [
-    { src: 'https://i1.sndcdn.com/artworks-000537542583-dr2w2s-t500x500.jpg', alt: 'testas' },
+    
 ];
 
 const AddEventModal = ({ open, onClose }) => {
@@ -67,7 +67,7 @@ const AddEventModal = ({ open, onClose }) => {
             };
             console.log(JSON.stringify(novoEvento));
             const jsonData = JSON.stringify(novoEvento);
-            await axios.post('http://localhost:8000/eventos/add', jsonData, {
+            await axios.post('http://localhost:8000/evento/add', jsonData, {
                 headers: {
                     Authorization: `${token}`,
                     'Content-Type': 'application/json',

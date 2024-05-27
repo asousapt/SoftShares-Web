@@ -50,6 +50,7 @@ const denunciaRoutes = require('./routes/denuncia');
 const formularioRoutes = require('./routes/formularios');
 const mensagemRoutes = require('./routes/mensagens');
 const notificacoesRoutes = require('./routes/notificacoes');
+const cidadesRoutes = require('./routes/cidades');
 
 // Use route files
 app.use('/evento', eventosRoutes);
@@ -73,6 +74,7 @@ app.use('/denuncia', denunciaRoutes);
 app.use('/formulario', formularioRoutes);
 app.use('/mensagens', mensagemRoutes);
 app.use('/notificacao', notificacoesRoutes);
+app.use('/cidades', cidadesRoutes);
 
 // Start server
 const PORT = process.env.PORT || 8000;

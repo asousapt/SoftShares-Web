@@ -1,4 +1,4 @@
-const { Sequelize, Op, where } = require('sequelize');
+const { Sequelize, Op, QueryTypes } = require('sequelize');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
@@ -88,8 +88,25 @@ const controladorPolos = {
 
     consultarTodos: async (req, res) => {
         try {
-            const polo = await models.polo.findAll();
-            res.status(200).json({ message: 'Consulta realizada com sucesso', data: polo });
+            const polos = await sequelizeConn.query(
+                `SELECT 
+                    p.poloid,
+                    p.descricao, 
+                    c.nome as cidade,
+                    COUNT(u.*) AS numusers
+                FROM 
+                    polo p
+                INNER JOIN 
+                    cidade c ON p.cidadeid = c.cidadeid
+                INNER JOIN 
+                    utilizador u ON p.poloid = u.poloid 
+                GROUP BY
+                    p.poloid,
+                    p.descricao, 
+                    c.nome`,
+                { type: QueryTypes.SELECT }
+            );
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: polos });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar polo', details: error.message });
         }

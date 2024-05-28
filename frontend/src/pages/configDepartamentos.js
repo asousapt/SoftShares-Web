@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './page.css';
 /* COMPONENTES */
 import DataTable from '../components/tables/dataTable';
@@ -21,6 +22,8 @@ export default function Configtilizadores() {
     const [isNewModalOpen, setNewModalOpen] = useState(false);
     const [filtroText, setFiltroText] = useState('');
     const [filtroCombo, setFiltroCombo] = useState('Todos');
+    const [tableRows, setTableRows] = useState([]);
+    const [error, setError] = useState('');
 
     const tableColumns = [
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left'},
@@ -29,16 +32,38 @@ export default function Configtilizadores() {
         { field: 'edit', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
     ];
 
-    const tableRows = [
-        { id: 1, descricao: 'Informático', estado: 'Ativo' },
-        { id: 1, descricao: 'Informático', estado: 'Ativo' },
-        { id: 1, descricao: 'Informático', estado: 'Ativo' },
-        { id: 1, descricao: 'Informático', estado: 'Ativo' },
-        { id: 1, descricao: 'Informático', estado: 'Ativo' },
-        { id: 1, descricao: 'Informático', estado: 'Ativo' },
-        { id: 1, descricao: 'Informático', estado: 'Ativo' },
-        { id: 1, descricao: 'Informático', estado: 'Ativo' },
-    ];
+    const fetchData = async () => {
+        try {
+            const token = 'tokenFixo';
+            const response = await axios.get('http://localhost:8000/departamento', {
+                headers: {
+                    Authorization: `${token}`
+                }
+            });
+            const departamentos = response.data;
+            
+            setTableRows(departamentos.map((departamento) => ({
+                key: departamento.departamentoid,
+                id: departamento.departamentoid,
+                descricao: departamento.valorpt,
+                estado: departamento.inactivo ? 'Inativo' : 'Ativo',
+            })));
+        } catch (error) {
+            setError(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    if (error) {
+        return <div>Error: {error.message}</div>;
+    }
+
+    // const tableRows = [
+    //     { id: 1, descricao: 'Informático', estado: 'Ativo' },
+    // ];
 
     const handleOpenNewModal = () => {
         setNewModalOpen(true);

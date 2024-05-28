@@ -100,7 +100,7 @@ const controladorDepartamentos = {
                 return res.status(404).json({ error: 'Departamento não encontrado' });
             }
 
-            await models.departamento.update({ inativo }, { where: { departamentoid: idDepartamento } });
+            await models.departamento.update({ inativo: inativo }, { where: { departamentoid: idDepartamento } });
 
             const chave = await models.chave.findOne({
                 where: {

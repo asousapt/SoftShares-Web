@@ -61,36 +61,20 @@ export default function Configtilizadores() {
         return <div>Error: {error.message}</div>;
     }
 
-    // const tableRows = [
-    //     { id: 1, descricao: 'Informático', estado: 'Ativo' },
-    // ];
-
-    const handleOpenNewModal = () => {
-        setNewModalOpen(true);
-    };
-
-    const handleCloseNewModal = () => {
-        setNewModalOpen(false);
-    };
-
-    const handleTextFilter = (e) => {
-        setFiltroText(e.target.value);
-    };
-
     return(
         <div className="page-container">
             <Header caption='Departamentos' />
             <div className="data-container">
                 <div style={{marginBottom:'20px', paddingTop: '20px'}}>
-                    <AddButton caption='Adicionar' onclick={handleOpenNewModal} />
-                    <Search onchange={handleTextFilter} />
+                    <AddButton caption='Adicionar' onclick={() => setNewModalOpen(true)} />
+                    <Search onchange={(e) => setFiltroText(e.target.value)} />
                     <ComboFilter options={opcoesFiltro} value={filtroCombo} handleChange={(e) => setFiltroCombo(e.target.value)} />
                 </div>
                 <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px',border: 'none', boxShadow: 'none'}}>
                     <DataTable rows={tableRows || []} columns={tableColumns}/>
                 </div>
             </div>
-            <NovoDepartamento open={isNewModalOpen} onClose={handleCloseNewModal}/>
+            <NovoDepartamento open={isNewModalOpen} onClose={() => setNewModalOpen(false)}/>
         </div>
     )
 }

@@ -42,7 +42,7 @@ export default function ConfigCategorias() {
                 }
             });
             const categorias = response.data;
-            console.log(categorias);
+            
             setTableRows(categorias.map((categoria) => ({
                 key: categoria.categoriaid,
                 id: categoria.categoriaid,

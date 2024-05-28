@@ -29,44 +29,23 @@ const AddEventModal = ({ open, onClose }) => {
     const [subcategoria, setSubcategoria] = useState(null);
     const [opcoesFiltroSubcat, setOpcoesSubcat] = useState([]);
     const [error, setError] = useState(null);
-    const [categoriaSelecionada, setCategoriaSelecionada] = useState(null);
 
     useEffect(() => {
         const fetchDistritos = async () => {
             try {
                 const token = 'tokenFixo';
-                const response = await axios.get('http://localhost:8000/distritos', {
+                const response = await axios.get('http://localhost:8000/cidades/distritos', {
                     headers: { Authorization: `${token}` }
                 });
                 const distritoData = response.data.data;
-
                 const distritosOptions = distritoData.map(distrito => ({
                     value: distrito.distritoid,
                     label: distrito.nome
                 }));
 
-                setCidades(distritosOptions);
+                setDistritos(distritosOptions);
             } catch (error) {
-                console.error('Erro ao buscar cidades:', error);
-            }
-        };
-
-        const fetchCidades = async () => {
-            try {
-                const token = 'tokenFixo';
-                const response = await axios.get('http://localhost:8000/cidades', {
-                    headers: { Authorization: `${token}` }
-                });
-                const cidadesData = response.data.data;
-
-                const cidadesOptions = cidadesData.map(cidade => ({
-                    value: cidade.cidadeid,
-                    label: cidade.nome
-                }));
-
-                setCidades(cidadesOptions);
-            } catch (error) {
-                console.error('Erro ao buscar cidades:', error);
+                console.error('Erro ao buscar distritos:', error);
             }
         };
 
@@ -88,9 +67,38 @@ const AddEventModal = ({ open, onClose }) => {
         };
 
         fetchDistritos();
-        fetchCidades();
         fetchCategorias();
     }, []);
+
+    const fetchCidades = async (distritoId) => {
+        try {
+            const token = 'tokenFixo';
+            console.log(distritoId);
+            const response = await axios.get(`http://localhost:8000/cidades/distrito/${distritoId}`, {
+                headers: { Authorization: `${token}` }
+            });
+            const cidadesData = response.data.data;
+            console.log(cidadesData);
+            const cidadesOptions = cidadesData.map(cidade => ({
+                value: cidade.cidadeid,
+                label: cidade.nome
+            }));
+
+            setCidades(cidadesOptions);
+        } catch (error) {
+            console.error('Erro ao buscar cidades:', error);
+        }
+    };
+
+    const handleDistritoChange = (event, newValue) => {
+        setDistrito(newValue);
+        setCidade(null);
+        if (newValue) {
+            fetchCidades(newValue.value);
+        } else {
+            setCidades([]);
+        }
+    };
 
     const handleCategoriaChange = async (event, newValue) => {
         setCategoria(newValue);
@@ -102,7 +110,6 @@ const AddEventModal = ({ open, onClose }) => {
                     headers: { Authorization: `${token}` }
                 });
                 const subcategorias = response.data;
-                console.log(subcategorias);
                 const subcategoriasOptions = subcategorias.map((subcat) => ({
                     value: subcat.subcategoriaid,
                     label: subcat.valorpt
@@ -152,60 +159,65 @@ const AddEventModal = ({ open, onClose }) => {
                 <h2 style={{ marginTop: 0, color: 'white' }}>Novo Evento</h2>
                 <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 20, borderRadius: 12 }}>
                     <div style={{ marginBottom: 15 }}>
-                        <BasicTextField caption='Titulo' valor={title} onchange={(e) => setTitle(e.target.value)} fullwidth={true} />
-                        <div style={{ marginBottom: 20 }}></div>
-                        <BasicTextField caption='Localização' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} />
+                    <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                            <div style={{ width: '40%' }}>
+                                <BasicTextField caption='Titulo' valor={title} onchange={(e) => setTitle(e.target.value)} fullwidth={true} />
+                            </div>
+                            <div style={{ width: '33.9%' }}>
+                                <BasicTextField caption='Localização' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} />
+                            </div>
+                            <div style={{ width: '25%' }}>
+                                <BasicTextField caption='Nº Participantes Máximo' type='number' valor={numParticipantes} onchange={(e) => setNumParticipantes(e.target.value)} fullwidth={true} />
+                            </div>
+                        </div>
                         <div style={{ marginBottom: 20 }}></div>
                         <BasicTextField caption='Descrição' valor={description} onchange={(e) => setDescription(e.target.value)} fullwidth={true} />
                         <div style={{ marginBottom: 20 }}></div>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-                            <div style={{ width: '20%' }}>
-                                <BasicTextField caption='Nº Participantes Máximo' type='number' valor={numParticipantes} onchange={(e) => setNumParticipantes(e.target.value)} />
+                            <div style={{ width: '32.9%' }}>
+                                <DataHora caption="Data e Hora Início" value={dataHoraInicio} onChange={(newValue) => setDataHoraInicio(newValue)} fullwidth={true}  />
                             </div>
-                            <div style={{ width: '30%' }}>
-                                <DataHora caption="Data e Hora Início" value={dataHoraInicio} onChange={(newValue) => setDataHoraInicio(newValue)} />
+                            <div style={{ width: '33%' }}>
+                                <DataHora caption="Data e Hora Fim" value={dataHoraFim} onChange={(newValue) => setDataHoraFim(newValue)} fullwidth={true} />
                             </div>
-                            <div style={{ width: '30%' }}>
-                                <DataHora caption="Data e Hora Fim" value={dataHoraFim} onChange={(newValue) => setDataHoraFim(newValue)} />
+                            <div style={{ width: '33%' }}>
+                                <DataHora caption="Data Limite de Inscrição" value={dataLimInscricao} onChange={(newValue) => setDataLimInscricao(newValue)} fullwidth={true}  />
                             </div>
-                            <div style={{ width: '30%' }}>
-                                <DataHora caption="Data Limite de Inscrição" value={dataLimInscricao} onChange={(newValue) => setDataLimInscricao(newValue)} />
-                            </div>
-                            <div style={{ width: '40%' }}>
+                        </div>
+                        <div style={{ marginBottom: 20 }}></div>
+                        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                            
+                            <div style={{ width: '25%' }}>
                                 <Autocomplete 
                                     options={distritos} 
                                     getOptionLabel={(option) => option.label} 
                                     renderInput={(params) => <TextField {...params} label="Distrito" variant="outlined" />}
                                     value={distrito} 
-                                    onChange={(event, newValue) => { setDistrito(newValue); }} 
-                                />
+                                    onChange={handleDistritoChange} fullwidth={true} />
                             </div>
-                            <div style={{ width: '40%' }}>
+                            <div style={{ width: '23.4%' }}>
                                 <Autocomplete 
                                     options={cidades} 
                                     getOptionLabel={(option) => option.label} 
                                     renderInput={(params) => <TextField {...params} label="Cidade" variant="outlined" />}
                                     value={cidade} 
-                                    onChange={(event, newValue) => { setCidade(newValue); }} 
-                                />
+                                    onChange={(event, newValue) => { setCidade(newValue); }} fullwidth={true} />
                             </div>
-                            <div style={{ width: '40%' }}>
+                            <div style={{ width: '25%' }}>
                                 <Autocomplete 
                                     options={opcoesFiltroCat} 
                                     getOptionLabel={(option) => option.label} 
                                     renderInput={(params) => <TextField {...params} label="Categoria" variant="outlined" />}
                                     value={categoria} 
-                                    onChange={handleCategoriaChange} 
-                                />
+                                    onChange={handleCategoriaChange} fullwidth={true}  />
                             </div>
-                            <div style={{ width: '40%' }}>
+                            <div style={{ width: '25%' }}>
                                 <Autocomplete 
                                     options={opcoesFiltroSubcat} 
                                     getOptionLabel={(option) => option.label} 
-                                    renderInput={(params) => <TextField {...params} label="SubCategoria" variant="outlined" />}
+                                    renderInput={(params) => <TextField {...params} label="Subcategoria" variant="outlined" />}
                                     value={subcategoria} 
-                                    onChange={(event, newValue) => { setSubcategoria(newValue); }} 
-                                />
+                                    onChange={(event, newValue) => { setSubcategoria(newValue); }} fullwidth={true}  />
                             </div>
                         </div>
                         <ImageTable images={imgs} styleProp={{ paddingTop: 10 }} />

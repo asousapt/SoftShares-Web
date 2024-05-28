@@ -21,6 +21,18 @@ const controladorCidades = {
             res.status(500).json({ error: 'Erro ao consultar utilizador', details: error.message });
         }
     },
+
+    consultarCidadesDistrito: async (req, res) => {
+        try {
+            const { distritoId } = req.params;
+            const cidades = await models.cidade.findAll({
+                where: { distritoid: distritoId }
+            });
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: cidades });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar cidades por distrito', details: error.message });
+        }
+    },
 };
 
 module.exports = controladorCidades;

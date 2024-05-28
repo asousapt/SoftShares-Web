@@ -47,7 +47,48 @@ const controladorFicheiros = {
             console.error('Não foi possível adicionar os ficheiros!', error);
             return false;
         }
-    } 
+    },
+
+    remover: async (id, entidade, files) => {
+        try {
+            const objecto = await models.objecto.findOne({
+                where:{
+                    registoid: id,
+                    entidade: entidade
+                }
+            });
+            if (!objecto){
+                console.error('O objeto não existe!');
+                return false;
+            }
+
+            const album = await models.album.findOne({
+                where:{
+                    objectoid: objecto.objectoid
+                }
+            });
+            if (!album){
+                console.error('O album não existe!');
+                return false;
+            }
+
+            let fileNames = [];
+            for (const file of files){
+                await models.ficheiro.destroy({
+                    where: {
+                        albumid: album.albumid,
+                        nome: file.nome
+                    }
+                });
+                fileNames.push(file.nome);
+            }
+            objStorage.deleteFiles(album.descricao, fileNames);
+            return true;
+        } catch (error) {
+            console.error('Não foi possível remover os ficheiros!', error);
+            return false;
+        }
+    }
 }
 
 module.exports = controladorFicheiros

@@ -95,7 +95,15 @@ const controladorAlertas = {
 
     consultarAlertas: async (req, res) => {
         try {
-            const alertas = await models.alerta.findAll();
+            const alertas = await models.alerta.findAll({
+                include: [
+                    {
+                        model: models.utilizador,
+                        as: 'utilizador',
+                        attributes: ['pnome', 'unome']
+                    }
+                ]
+            });
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: alertas });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar os alertas', details: error.message });

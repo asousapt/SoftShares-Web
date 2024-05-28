@@ -95,25 +95,13 @@ export default function ListaPublicacoes() {
         return <div>Error: {error.message}</div>;
     }
 
-    const handleOpenNewModal = () => {
-        setNewModalOpen(true);
-    };
-
-    const handleCloseNewModal = () => {
-        setNewModalOpen(false);
-    };
-
-    const handleTextFilter = (e) => {
-        setFiltroText(e.target.value);
-    };
-
     return(
         <div className="page-container">
             <Header caption='Publicações' />
             <div className="data-container">
                 <div style={{marginBottom:'20px', paddingTop: '20px'}}>
-                    <AddButton caption='Adicionar' onclick={handleOpenNewModal} />
-                    <Search onchange={handleTextFilter} />
+                    <AddButton caption='Adicionar' onclick={() => setNewModalOpen(true)} />
+                    <Search onchange={(e) => setFiltroText(e.target.value)} />
                     <ComboFilter options={opcoesFiltroEstado} value={filtroEstado} handleChange={(e) => setFiltroEstado(e.target.value)} />
                     <ComboFilter options={opcoesFiltroCat} value={filtroCategoria} handleChange={(e) => setFiltroCategoria(e.target.value)} />
                 </div>
@@ -121,7 +109,7 @@ export default function ListaPublicacoes() {
                     <DataTable rows={tableRows || []} columns={tableColumns}/>
                 </div>
             </div>
-            <NovaPub open={isNewModalOpen} onClose={handleCloseNewModal}/>
+            <NovaPub open={isNewModalOpen} onClose={() => setNewModalOpen(false)}/>
         </div>
     )
 }

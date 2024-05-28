@@ -342,11 +342,16 @@ const controladorSubcategorias = {
                     s.*, 
                     (SELECT valor from traducao WHERE ch.chaveid = traducao.chaveid AND idiomaID = 1) as ValorPT, 
                     (SELECT valor from traducao WHERE ch.chaveid = traducao.chaveid AND idiomaID = 2) as ValorEN, 
-                    (SELECT valor from traducao WHERE ch.chaveid = traducao.chaveid AND idiomaID = 3) as ValorES 
+                    (SELECT valor from traducao WHERE ch.chaveid = traducao.chaveid AND idiomaID = 3) as ValorES,
+                    (SELECT valor from traducao WHERE ch2.chaveid = traducao.chaveid AND idiomaID = 1) as ValorPTCat, 
+                    (SELECT valor from traducao WHERE ch2.chaveid = traducao.chaveid AND idiomaID = 2) as ValorENCat, 
+                    (SELECT valor from traducao WHERE ch2.chaveid = traducao.chaveid AND idiomaID = 3) as ValorESCat
                 FROM 
                     subcategoria s 
                 INNER JOIN 
-                    chave ch ON s.subcategoriaid = ch.registoid AND ch.entidade = 'SUBCAT' `,
+                    chave ch ON s.subcategoriaid = ch.registoid AND ch.entidade = 'SUBCAT'
+                INNER JOIN 
+                    chave ch2 ON s.categoriaid = ch2.registoid AND ch2.entidade = 'CATEGORIA' `,
                 {
                     type: QueryTypes.SELECT
                 }

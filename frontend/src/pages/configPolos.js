@@ -43,7 +43,6 @@ export default function ConfigPolos() {
                 }
             });
             const polos = response.data.data;
-            console.log(response);
             
             setTableRows(polos.map((polo) => ({
                 key: polo.categoriaid,

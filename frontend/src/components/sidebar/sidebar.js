@@ -75,6 +75,9 @@ const Sidebar = () => {
                 { title: 'Utilizadores', link: '/config/utilizadores', icon: MdIcons.MdOutlineManageAccounts },
                 { title: 'Departamentos', link: '/config/departamentos', icon: MdIcons.MdOutlineManageAccounts },
                 { title: 'Funções', link: '/config/funcoes', icon: IoIcons.IoIosPaper },
+                { title: 'Categorias', link: '/config/categorias', icon: IoIcons.IoIosPaper },
+                { title: 'Subcategorias', link: '/config/subcategorias', icon: IoIcons.IoIosPaper },
+                { title: 'Alertas', link: '/config/alertas', icon: IoIcons.IoIosPaper },
             ],
         },
     ];

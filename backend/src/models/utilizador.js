@@ -99,10 +99,10 @@ module.exports = function(sequelize, DataTypes) {
     timestamps: false,
     indexes: [
       {
-        name: "utilizador_email_key",
+        name: "utilizador_polo_key",
         unique: true,
         fields: [
-          { name: "email" },
+          { name: "descricao" },
         ]
       },
       {

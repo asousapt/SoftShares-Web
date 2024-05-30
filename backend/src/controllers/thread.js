@@ -41,7 +41,6 @@ const controladorThread = {
             await models.thread.update({
                 titulo: titulo,
                 mensagem: mensagem,
-                aprovado: aprovado,
                 utilizadoraprovou: utilizadoraprovou,
                 dataaprovacao: dataaprovacao,
                 inactivo: inactivo

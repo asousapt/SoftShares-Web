@@ -31,10 +31,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: false
     },
-    aprovado: {
-      type: DataTypes.BOOLEAN,
-      allowNull: true
-    },
     utilizadoraprovou: {
       type: DataTypes.INTEGER,
       allowNull: true,

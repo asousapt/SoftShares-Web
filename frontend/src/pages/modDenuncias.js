@@ -63,11 +63,7 @@ export default function ModDen() {
     const handleCloseNewModal = () => {
         setNewModalOpen(false);
     };
-
-    const handleTextFilter = (e) => {
-        setFiltroText(e.target.value);
-    };
-
+    
     if (error) {
         return <div>Error: {error.message}</div>;
     }
@@ -77,7 +73,7 @@ export default function ModDen() {
             <Header caption='Denúncias' />
             <div className="data-container">
                 <div style={{marginBottom:'20px', paddingTop: '20px'}}>
-                    <Search onchange={handleTextFilter} />
+                    <Search onchange={(e) => setFiltroText(e.target.value)} />
                 </div>
                 <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px',border: 'none', boxShadow: 'none'}}>
                     <DataTable rows={tableRows || []} columns={tableColumns}/>

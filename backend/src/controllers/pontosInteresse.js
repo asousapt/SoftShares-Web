@@ -147,6 +147,24 @@ const controladorPontosInteresse = {
         }
     },
 
+    consultarPorAprovar: async (req, res) => {
+        try {
+            const pontosInteresse = await models.pontointeresse.findAll({
+                include: {
+                    model: models.utilizador,
+                    as: 'utilizadorcriou_utilizador',
+                    attributes: ['pnome', 'unome']
+                },
+                where:{
+                    aprovado: null
+                }
+            });
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: pontosInteresse });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar os pontos de interesse', details: error.message });
+        }
+    },
+
     consultarPorSubcategoria: async (req, res) => {
         const { idSubCat } = req.params;
 

@@ -25,6 +25,8 @@ router.delete('/utilizador/delete/:idEvento/:idUser', authenticate, eventoContro
 //ROUTES GET
 router.get('/', authenticate, eventoControlador.consultarTodos);
 
+router.get('/porAprovar', authenticate, eventoControlador.consultarPorAprovar);
+
 router.get('/:idPolo/data/range/:data1/:data2', authenticate, eventoControlador.consultarEventosEntreDatas);
 
 router.get('/utilizador/lista/:idEvento', authenticate, eventoControlador.consultarUtilizadoresEvento);

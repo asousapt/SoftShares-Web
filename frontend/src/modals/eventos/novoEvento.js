@@ -24,6 +24,8 @@ const AddEventModal = ({ open, onClose }) => {
     const [cidades, setCidades] = useState([]);
     const [distrito, setDistrito] = useState(null);
     const [distritos, setDistritos] = useState([]);
+    const [polo, setPolo] = useState(null);
+    const [polos, setPolos] = useState([]);
     const [categoria, setCategoria] = useState(null);
     const [opcoesFiltroCat, setOpcoesCat] = useState([]);
     const [subcategoria, setSubcategoria] = useState(null);
@@ -66,6 +68,24 @@ const AddEventModal = ({ open, onClose }) => {
             }
         };
 
+        const fetchPolos = async () => {
+            try {
+                const token = 'tokenFixo';
+                const response = await axios.get('http://localhost:8000/polo', {
+                    headers: { Authorization: `${token}` }
+                });
+                const polosData = response.data.data;
+                const polosOptions = polosData.map(polo => ({
+                    value: polo.poloid,
+                    label: polo.descricao
+                }));
+                setPolos(polosOptions);
+            } catch (error) {
+                console.error('Erro ao buscar polos:', error);
+            }
+        };
+
+        fetchPolos();
         fetchDistritos();
         fetchCategorias();
     }, []);
@@ -73,12 +93,10 @@ const AddEventModal = ({ open, onClose }) => {
     const fetchCidades = async (distritoId) => {
         try {
             const token = 'tokenFixo';
-            console.log(distritoId);
             const response = await axios.get(`http://localhost:8000/cidades/distrito/${distritoId}`, {
                 headers: { Authorization: `${token}` }
             });
             const cidadesData = response.data.data;
-            console.log(cidadesData);
             const cidadesOptions = cidadesData.map(cidade => ({
                 value: cidade.cidadeid,
                 label: cidade.nome
@@ -102,7 +120,7 @@ const AddEventModal = ({ open, onClose }) => {
 
     const handleCategoriaChange = async (event, newValue) => {
         setCategoria(newValue);
-        setSubcategoria(null); 
+        setSubcategoria(null);
         if (newValue) {
             try {
                 const token = 'tokenFixo';
@@ -139,7 +157,8 @@ const AddEventModal = ({ open, onClose }) => {
                 longitude: 0,
                 cidadeID: cidade ? cidade.value : '',
                 utilizadorCriou: 14,
-                subcategoriaID: subcategoria ? subcategoria.value : '',
+                subcategoriaId: subcategoria ? subcategoria.value : '',
+                poloId: polo ? polo.value : '',
             };
             await axios.post('http://localhost:8000/evento/add', novoEvento, {
                 headers: {
@@ -159,7 +178,7 @@ const AddEventModal = ({ open, onClose }) => {
                 <h2 style={{ marginTop: 0, color: 'white' }}>Novo Evento</h2>
                 <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 20, borderRadius: 12 }}>
                     <div style={{ marginBottom: 15 }}>
-                    <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                             <div style={{ width: '40%' }}>
                                 <BasicTextField caption='Titulo' valor={title} onchange={(e) => setTitle(e.target.value)} fullwidth={true} />
                             </div>
@@ -171,53 +190,74 @@ const AddEventModal = ({ open, onClose }) => {
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>
-                        <BasicTextField caption='Descrição' valor={description} onchange={(e) => setDescription(e.target.value)} fullwidth={true} />
+                        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                            <div style={{ width: '74.5%' }}>
+                                <BasicTextField caption='Descrição' valor={description} onchange={(e) => setDescription(e.target.value)} fullwidth={true} />
+                            </div>
+                            <div style={{ width: '24.9%' }}>
+                                <Autocomplete
+                                    options={polos}
+                                    getOptionLabel={(option) => option.label}
+                                    renderInput={(params) => <TextField {...params} label="Polo" variant="outlined" />}
+                                    value={polo}
+                                    onChange={(event, newValue) => { setPolo(newValue); }}
+                                    fullWidth={true}
+                                />
+                            </div>
+                        </div>
                         <div style={{ marginBottom: 20 }}></div>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                             <div style={{ width: '32.9%' }}>
-                                <DataHora caption="Data e Hora Início" value={dataHoraInicio} onChange={(newValue) => setDataHoraInicio(newValue)} fullwidth={true}  />
+                                <DataHora caption="Data e Hora Início" value={dataHoraInicio} onChange={(newValue) => setDataHoraInicio(newValue)} fullwidth={true} />
                             </div>
                             <div style={{ width: '33%' }}>
                                 <DataHora caption="Data e Hora Fim" value={dataHoraFim} onChange={(newValue) => setDataHoraFim(newValue)} fullwidth={true} />
                             </div>
                             <div style={{ width: '33%' }}>
-                                <DataHora caption="Data Limite de Inscrição" value={dataLimInscricao} onChange={(newValue) => setDataLimInscricao(newValue)} fullwidth={true}  />
+                                <DataHora caption="Data Limite de Inscrição" value={dataLimInscricao} onChange={(newValue) => setDataLimInscricao(newValue)} fullwidth={true} />
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-                            
                             <div style={{ width: '25%' }}>
-                                <Autocomplete 
-                                    options={distritos} 
-                                    getOptionLabel={(option) => option.label} 
+                                <Autocomplete
+                                    options={distritos}
+                                    getOptionLabel={(option) => option.label}
                                     renderInput={(params) => <TextField {...params} label="Distrito" variant="outlined" />}
-                                    value={distrito} 
-                                    onChange={handleDistritoChange} fullwidth={true} />
+                                    value={distrito}
+                                    onChange={handleDistritoChange}
+                                    fullWidth={true}
+                                />
                             </div>
                             <div style={{ width: '23.4%' }}>
-                                <Autocomplete 
-                                    options={cidades} 
-                                    getOptionLabel={(option) => option.label} 
+                                <Autocomplete
+                                    options={cidades}
+                                    getOptionLabel={(option) => option.label}
                                     renderInput={(params) => <TextField {...params} label="Cidade" variant="outlined" />}
-                                    value={cidade} 
-                                    onChange={(event, newValue) => { setCidade(newValue); }} fullwidth={true} />
+                                    value={cidade}
+                                    onChange={(event, newValue) => { setCidade(newValue); }}
+                                    fullWidth={true}
+                                />
                             </div>
                             <div style={{ width: '25%' }}>
-                                <Autocomplete 
-                                    options={opcoesFiltroCat} 
-                                    getOptionLabel={(option) => option.label} 
+                                <Autocomplete
+                                    options={opcoesFiltroCat}
+                                    getOptionLabel={(option) => option.label}
                                     renderInput={(params) => <TextField {...params} label="Categoria" variant="outlined" />}
-                                    value={categoria} 
-                                    onChange={handleCategoriaChange} fullwidth={true}  />
+                                    value={categoria}
+                                    onChange={handleCategoriaChange}
+                                    fullWidth={true}
+                                />
                             </div>
                             <div style={{ width: '25%' }}>
-                                <Autocomplete 
-                                    options={opcoesFiltroSubcat} 
-                                    getOptionLabel={(option) => option.label} 
+                                <Autocomplete
+                                    options={opcoesFiltroSubcat}
+                                    getOptionLabel={(option) => option.label}
                                     renderInput={(params) => <TextField {...params} label="Subcategoria" variant="outlined" />}
-                                    value={subcategoria} 
-                                    onChange={(event, newValue) => { setSubcategoria(newValue); }} fullwidth={true}  />
+                                    value={subcategoria}
+                                    onChange={(event, newValue) => { setSubcategoria(newValue); }}
+                                    fullWidth={true}
+                                />
                             </div>
                         </div>
                         <ImageTable images={imgs} styleProp={{ paddingTop: 10 }} />

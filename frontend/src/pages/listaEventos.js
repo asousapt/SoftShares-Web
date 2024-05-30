@@ -29,8 +29,8 @@ export default function ListaEventos() {
     const tableColumns = [
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
         { field: 'titulo', headerName: 'Título', flex: 1, headerAlign: 'left' },
-        { field: 'nParticipantes', headerName: '# Participantes', flex: 0.5, headerAlign: 'left' },
-        { field: 'dataHora', headerName: 'Data e Hora de Começo', type: 'dateTime', width: 300, headerAlign: 'left' },
+        { field: 'nParticipantes', headerName: '# Participantes', flex: 1, headerAlign: 'left' },
+        { field: 'dataHora', headerName: 'Data e Hora de Começo', type: 'dateTime', width: 250, headerAlign: 'left' },
         { field: 'localizacao', headerName: 'Localização', flex: 1, headerAlign: 'left' },
         { field: 'subcategoria', headerName: 'Subcategoria', flex: 1, headerAlign: 'left' },
         { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false, renderCell: (row) => (

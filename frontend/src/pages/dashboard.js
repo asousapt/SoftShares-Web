@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './page.css';
 /* COMPONENTES */
 import Header from '../components/header/header';
-import ChartPieUsers from '../components/charts/chartpieUsers';
-import ChartpieRegistos from '../components/charts/chartpieRegistos';
-import ChartpieRegistos2 from '../components/charts/chartpieRegistos2';
+import ChartPie from '../components/charts/chartpie';
 /* FIM COMPONENTES */
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ForumIcon from '@mui/icons-material/Forum';
@@ -15,6 +14,37 @@ export default function Dashboard() {
     const [numPoiAprovar, setNumPoiAprovar] = useState('13');
     const [numPubAprovar, setNumPubAprovar] = useState('35');
     const [numEventoAprovar, setNumEventoAprovar] = useState('9');
+    const [error, setError] = useState(null);
+    const [data, setData] = useState([]);
+    const [total, setTotal] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const token = 'tokenFixo';
+    
+                const polosResponse = await axios.get('http://localhost:8000/utilizadores/totalpolo', {
+                    headers: {
+                        Authorization: `${token}`
+                    }
+                });
+                const polosCount = polosResponse.data.data;
+                
+                setTotal(polosCount.reduce((acc, polo) => acc + parseFloat(polo.value), 0));
+                
+                const formattedData = polosCount.map((polo) => ({
+                    value: Math.round((parseFloat(polo.value) / parseFloat(total)) * 100),
+                    label: polo.label
+                }));
+                
+                setData(formattedData);
+            } catch (error) {
+                setError(error);
+            }
+        };
+    
+        fetchData();
+    }, [total]);
 
     return (
         <div className="page-container">
@@ -51,13 +81,13 @@ export default function Dashboard() {
                 <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px', border: 'none', boxShadow: 'none' }}>
                     <Grid container spacing={1} wrap="wrap">
                         <Grid item xs={12} md={4} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
-                            <ChartPieUsers style={{ maxWidth: '100%' }} />
+                            <ChartPie style={{ maxWidth: '100%' }} chartData={data} total={total} label='Utilizadores' />
                         </Grid>
                         <Grid item xs={12} md={4} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
-                            <ChartpieRegistos style={{ maxWidth: '100%' }} />
+                            <ChartPie style={{ maxWidth: '100%' }} chartData={[]} total={0} label='Registos' />
                         </Grid>
                         <Grid item xs={12} md={4} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
-                            <ChartpieRegistos2 style={{ maxWidth: '100%' }} />
+                            <ChartPie style={{ maxWidth: '100%' }} chartData={[]} total={0} label='Registos' />
                         </Grid>
                     </Grid>
                 </div>

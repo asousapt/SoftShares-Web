@@ -23,7 +23,7 @@ const EditUserModal = ({ open, onClose, userId }) => {
     const [perfil, setPerfil] = useState([]);
     const [funcaoid, setFuncaoid] = useState('');
     const [sobre, setSobre] = useState('');
-    const [inactivo, setInactivo] = useState(true);
+    const [inactivo, setInactivo] = useState(false);
     const [image, setImage] = useState('https://i0.wp.com/ctmirror-images.s3.amazonaws.com/wp-content/uploads/2021/01/dummy-man-570x570-1.png?fit=570%2C570&ssl=1');
 
     useEffect(() => {

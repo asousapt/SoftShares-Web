@@ -23,7 +23,7 @@ const AddUserModal = ({ open, onClose }) => {
     const [perfil, setPerfil] = useState([]);
     const [funcaoid, setFuncaoid] = useState('');
     const [sobre, setSobre] = useState('');
-    const [inactivo, setInactivo] = useState(true);
+    const [inactivo, setInactivo] = useState(false);
     const [image, setImage] = useState('https://i0.wp.com/ctmirror-images.s3.amazonaws.com/wp-content/uploads/2021/01/dummy-man-570x570-1.png?fit=570%2C570&ssl=1');
 
     useEffect(() => {
@@ -146,14 +146,9 @@ const AddUserModal = ({ open, onClose }) => {
     const handleChangeAtivo = () => {
         setInactivo((prevInactivo) => {
             const novoInactivo = !prevInactivo;
-            console.log('Novo valor de inactivo:', novoInactivo);
             return novoInactivo;
         });
     };
-
-    useEffect(() => {
-        console.log('Valor inicial de inactivo:', inactivo);
-    }, []);
 
     return (
         <Modal open={open} onClose={onClose}>

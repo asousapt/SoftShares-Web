@@ -35,7 +35,7 @@ export default function ModAprov() {
             });
             const eventos = responseEventos.data.data;
 
-            const responsePontosInteresse = await axios.get('http://localhost:8000/evento/porAprovar', {
+            const responsePontosInteresse = await axios.get('http://localhost:8000/pontoInteresse/porAprovar', {
                 headers: {
                     Authorization: `${token}`
                 }
@@ -44,21 +44,25 @@ export default function ModAprov() {
             console.log(responseEventos);
             console.log(responsePontosInteresse);
             
-            setTableRows(
-                pontosinteresse.map((ponto) => ({
-                    key: 'PDI'+ponto.pontointeresse,
-                    id: ponto.eventoid,
+            const linhatemp = [
+                ...pontosinteresse.map((ponto) => ({
+                    key: 'PDI'+ponto.pontointeresseid,
+                    id: ponto.pontointeresseid,
                     tipo: 'Ponto de Interesse',
                     titulo: ponto.titulo,
-                    criadoPor: ponto.utilizador.pnome+' '+ponto.utilizador.unome
+                    criadoPor: ponto.utilizadorcriou_utilizador.pnome + ' ' + ponto.utilizadorcriou_utilizador.unome
                 })),
                 ...eventos.map((evento) => ({
                     key: 'evento'+evento.eventoid,
                     id: evento.eventoid,
                     tipo: 'Evento',
                     titulo: evento.titulo,
-                    criadoPor: evento.utilizador.pnome+' '+evento.utilizador.unome
-            })));
+                    criadoPor: evento.utilizadorcriou_utilizador.pnome + ' ' + evento.utilizadorcriou_utilizador.unome
+                }))
+            ];
+            
+            setTableRows(linhatemp);
+            
         } catch (error) {
             setError(error);
         }
@@ -74,8 +78,9 @@ export default function ModAprov() {
 
     useEffect(() => {
         fetchData();
+        console.log(tableRows);
     }, []);
-
+    
     if (error) {
         return <div>Error: {error.message}</div>;
     }

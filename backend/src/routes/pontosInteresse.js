@@ -17,5 +17,6 @@ router.delete('/delete/:idPontoInteresse', authenticate, pontosInteresseControla
 //ROUTES GET
 router.get('/', authenticate, pontosInteresseControlador.consultarTudo);
 router.get('/subcategoria/:idSubCat', authenticate, pontosInteresseControlador.consultarPorSubcategoria);
+router.get('/porAprovar', authenticate, pontosInteresseControlador.consultarPorAprovar);
 
 module.exports = router;

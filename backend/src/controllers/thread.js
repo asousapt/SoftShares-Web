@@ -102,22 +102,31 @@ const controladorThread = {
 
     consultarTodos: async (req, res) => {
         try {
-            const thread = await models.thread.findAll({
-                include: [
-                    {
-                        model: models.utilizador,
-                        as: 'utilizador',
-                        attributes: ['pnome', 'unome']
-                    }
-                ]
-            });
-    
-            res.status(200).json({ message: 'Consulta realizada com sucesso', data: thread });
+            const threads = await sequelizeConn.query(
+                `SELECT 
+                    t.*, 
+                    (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 1) AS ValorPT, 
+                    (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 2) AS ValorEN, 
+                    (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 3) AS ValorES,
+                    u.pnome, 
+                    u.unome
+                FROM 
+                    thread t
+                INNER JOIN 
+                    chave ch ON t.subcategoriaid = ch.registoid AND ch.entidade = 'SUBCAT'
+                INNER JOIN
+                    utilizador u ON t.utilizadorid = u.utilizadorid
+                `,
+                {
+                    type: QueryTypes.SELECT
+                }
+            );
+
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: threads });
         } catch (error) {
-            res.status(500).json({ error: 'Erro ao consultar utilizador', details: error.message });
+            res.status(500).json({ error: 'Erro ao consultar threads', details: error.message });
         }
     }
-    
 };
 
 module.exports = controladorThread;

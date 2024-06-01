@@ -41,7 +41,7 @@ export default function Configtilizadores() {
                 }
             });
             const departamentos = response.data;
-            
+            console.log(departamentos);
             setTableRows(departamentos.map((departamento) => ({
                 key: departamento.departamentoid,
                 id: departamento.departamentoid,
@@ -54,8 +54,10 @@ export default function Configtilizadores() {
     };
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        if(!isNewModalOpen){
+            fetchData();
+        }
+    }, [isNewModalOpen])
 
     if (error) {
         return <div>Error: {error.message}</div>;

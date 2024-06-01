@@ -98,7 +98,7 @@ const controladorPolos = {
                     polo p
                 INNER JOIN 
                     cidade c ON p.cidadeid = c.cidadeid
-                INNER JOIN 
+                LEFT JOIN 
                     utilizador u ON p.poloid = u.poloid 
                 GROUP BY
                     p.poloid,
@@ -110,8 +110,7 @@ const controladorPolos = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar polo', details: error.message });
         }
-    },
-
+    }
 };
 
 module.exports = controladorPolos;

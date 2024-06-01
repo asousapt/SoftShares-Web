@@ -28,44 +28,49 @@ export default function ConfigAlertas() {
     const tableColumns = [
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
         { field: 'alerta', headerName: 'Alerta', flex: 1, headerAlign: 'left' },
-        { field: 'dataHora', headerName: 'Data e Hora de Começo', type: 'dateTime', width: 300, headerAlign: 'left' },
+        { field: 'dataHora', headerName: 'Data e Hora de Criação', type: 'dateTime', width: 300, headerAlign: 'left' },
         { field: 'criadoPor', headerName: 'Criado por', flex: 1, headerAlign: 'left' },
         { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => ( <StateChanger status={row.value} />) },
         { field: 'ver', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
     ];
 
+    const fetchData = async () => {
+        try {
+            const token = 'tokenFixo';
+
+            const response = await axios.get('http://localhost:8000/alerta', {
+                headers: {
+                    Authorization: `${token}`
+                }
+            });
+            const alertas = response.data.data;
+            
+            setTableRows(alertas.map((alerta) => ({
+                key: alerta.alertaid,
+                id: alerta.alertaid,
+                alerta: alerta.texto,
+                dataHora: new Date(alerta.datacriacao),
+                criadoPor: alerta.utilizador.pnome+' '+alerta.utilizador.unome,
+                estado: alerta.inactivo ? 'Inativo' : 'Ativo',
+            })));
+        } catch (error) {
+            setError(error);
+        }
+    };
+
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const token = 'tokenFixo';
-    
-                const response = await axios.get('http://localhost:8000/alerta', {
-                    headers: {
-                        Authorization: `${token}`
-                    }
-                });
-                const alertas = response.data.data;
-                
-                setTableRows(alertas.map((alerta) => ({
-                    key: alerta.alertaid,
-                    id: alerta.alertaid,
-                    alerta: alerta.texto,
-                    dataHora: new Date(alerta.datainicio),
-                    criadoPor: alerta.utilizador.pnome+' '+alerta.utilizador.unome,
-                    estado: alerta.inactivo ? 'Inativo' : 'Ativo',
-                })));
-            } catch (error) {
-                setError(error);
-            }
-        };
-    
         fetchData();
     }, [])
+
+    useEffect(() => {
+        if(!isNewModalOpen){
+            fetchData();
+        }
+    }, [isNewModalOpen])
 
     if (error) {
         return <div>Error: {error.message}</div>;
     }
-
 
     return(
         <div className="page-container">

@@ -8,10 +8,16 @@ const controladorAlertas = {
         const { utilizadorID, texto, idiomaid, poloID } = req.body;
 
         try {
+            const idioma = await models.idioma.findOne({
+                where: {
+                    icone: 'pt'
+                }
+            });
+
             await models.alerta.create({
                 utilizadorid: utilizadorID,
                 texto: texto,
-                idiomaid: idiomaid,
+                idiomaid: idioma.idiomaid,
                 poloid: poloID
             });
 
@@ -29,7 +35,6 @@ const controladorAlertas = {
             await models.alerta.update({
                 utilizadorid: utilizadorID,
                 texto: texto,
-                idiomaid: idiomaid,
                 poloid: poloID,
                 inactivo: inactivo
             }, {

@@ -45,8 +45,8 @@ export default function ConfigPolos() {
             const polos = response.data.data;
             
             setTableRows(polos.map((polo) => ({
-                key: polo.categoriaid,
-                id: polo.categoriaid,
+                key: polo.poloid,
+                id: polo.poloid,
                 descricao: polo.descricao,
                 numerousers: polo.numusers,
                 localidade: polo.cidade,

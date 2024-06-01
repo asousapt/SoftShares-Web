@@ -38,9 +38,19 @@ export default function ConfigAlertas() {
         try {
             const token = 'tokenFixo';
 
-            const response = await axios.get('http://localhost:8000/alerta', {
+            let estado = undefined;
+            if (filtroCombo === 'Ativos') {
+                estado = false;
+            } else if (filtroCombo === 'Inativos') {
+                estado = true;
+            }
+            const response = await axios.get('http://localhost:8000/alerta/filtro', {
                 headers: {
                     Authorization: `${token}`
+                },
+                params: {
+                    estado: estado,
+                    descricao: filtroText
                 }
             });
             const alertas = response.data.data;
@@ -60,7 +70,7 @@ export default function ConfigAlertas() {
 
     useEffect(() => {
         fetchData();
-    }, [])
+    }, [filtroCombo, filtroText])
 
     useEffect(() => {
         if(!isNewModalOpen){

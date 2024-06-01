@@ -58,10 +58,12 @@ export default function ConfigPolos() {
             setError(error);
         }
     };
-
+    
     useEffect(() => {
-        fetchData();
-    }, []);
+        if(!isNewModalOpen){
+            fetchData();
+        }
+    }, [isNewModalOpen])
 
     if (error) {
         return <div>Error: {error.message}</div>;

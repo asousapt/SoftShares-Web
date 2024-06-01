@@ -251,6 +251,44 @@ const controladorCategorias = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar as categorias', details: error.message });
         }
+    },
+
+    consultarTudoComFiltroPT: async (req, res) => {
+        const { estado, descricao } = req.query;
+        try {
+            let whereClause = '';
+            const replacements = {};
+    
+            if (estado !== undefined) {
+                whereClause += ` AND c.inactivo = ${estado}`;
+            }
+        
+            const query = `
+                SELECT 
+                    c.*, 
+                    t.valor AS ValorPT
+                FROM 
+                    categoria c 
+                INNER JOIN 
+                    chave ch ON c.categoriaid = ch.registoid AND ch.entidade = 'CATEGORIA' 
+                INNER JOIN 
+                    traducao t on ch.chaveid = t.chaveid AND idiomaID = 1
+                WHERE 
+                    t.valor LIKE '%${descricao}%'
+                ${whereClause}
+            `;
+
+            console.log(query);
+    
+            const categorias = await sequelizeConn.query(query, {
+                type: QueryTypes.SELECT,
+                replacements,
+            });
+    
+            res.status(200).json(categorias);
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar as categorias', details: error.message });
+        }
     }
 };
 

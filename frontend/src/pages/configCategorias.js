@@ -15,7 +15,7 @@ import NovaCategoria from '../modals/categorias/novaCategoria';
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},
     { value:'Ativos', label: 'Apenas Ativos'},
-    { value:'inativos', label: 'Apenas Inativos'}
+    { value:'Inativos', label: 'Apenas Inativos'}
 ];
 
 export default function ConfigCategorias() {
@@ -36,12 +36,24 @@ export default function ConfigCategorias() {
     const fetchData = async () => {
         try {
             const token = 'tokenFixo';
-            const response = await axios.get('http://localhost:8000/categoria', {
+
+            let estado = undefined;
+            if (filtroCombo === 'Ativos') {
+                estado = false;
+            } else if (filtroCombo === 'Inativos') {
+                estado = true;
+            }
+            const response = await axios.get('http://localhost:8000/categoria/filtro', {
                 headers: {
                     Authorization: `${token}`
+                },
+                params: {
+                    estado: estado,
+                    descricao: filtroText
                 }
             });
             const categorias = response.data;
+            console.log('response',response);
             
             setTableRows(categorias.map((categoria) => ({
                 key: categoria.categoriaid,
@@ -57,7 +69,8 @@ export default function ConfigCategorias() {
 
     useEffect(() => {
         fetchData();
-    }, []);
+        console.log('tableRows',tableRows);
+    }, [filtroCombo, filtroText]);
 
     if (error) {
         return <div>Error: {error.message}</div>;

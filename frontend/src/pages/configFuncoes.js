@@ -54,8 +54,10 @@ export default function Configtilizadores() {
     };
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        if(!isNewModalOpen){
+            fetchData();
+        }
+    }, [isNewModalOpen])
 
     if (error) {
         return <div>Error: {error.message}</div>;

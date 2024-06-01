@@ -36,8 +36,9 @@ export default function ListaPublicacoes() {
     const tableColumns = [
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
         { field: 'titulo', headerName: 'Título', flex: 1, headerAlign: 'left' },
-        { field: 'dataHora', headerName: 'Data e Hora de Criação', type: 'dateTime', width: 300, headerAlign: 'left' },
+        { field: 'dataHora', headerName: 'Data e Hora de Criação', type: 'dateTime', width: 250, headerAlign: 'left' },
         { field: 'criadoPor', headerName: 'Criado por', flex: 1, headerAlign: 'left' },
+        { field: 'subcategoria', headerName: 'Subcategoria', flex: 1, headerAlign: 'left' },
         { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'left', renderCell: (row) => ( <StateChanger status={row.value} />) },
         { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
     ];
@@ -58,7 +59,8 @@ export default function ListaPublicacoes() {
                         id: thread.threadid,
                         titulo: thread.titulo,
                         dataHora: new Date(thread.datacriacao),
-                        criadoPor: thread.utilizador.pnome+' '+thread.utilizador.unome,
+                        criadoPor: thread.pnome+' '+thread.unome,
+                        subcategoria: thread.valorpt,
                         estado: thread.estado ? 'Ativo' : 'Inativo'
                     }))
                 );

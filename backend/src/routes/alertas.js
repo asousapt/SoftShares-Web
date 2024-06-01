@@ -14,7 +14,8 @@ router.put('/inativar/:idPolo', authenticate, alertaControlador.inativarAlerta);
 router.delete('/delete/:idPolo', authenticate, alertaControlador.removerAlerta);
 
 //ROUTES GET
-router.get('/', authenticate, alertaControlador.consultarAlertas);
+router.get('/', authenticate, alertaControlador.consultarTudo);
+router.get('/filtro', authenticate, alertaControlador.consultarTudoComFiltros);
 router.get('/polo/:idPolo', authenticate, alertaControlador.consultarAlertaPorPolo);
 
 module.exports = router;

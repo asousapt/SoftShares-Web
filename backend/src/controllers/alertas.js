@@ -5,7 +5,7 @@ const models = initModels(sequelizeConn);
 
 const controladorAlertas = {
     adicionarAlerta: async (req, res) => {
-        const { utilizadorID, texto, idiomaid, poloID } = req.body;
+        const { utilizadorID, texto, poloID } = req.body;
 
         try {
             const idioma = await models.idioma.findOne({
@@ -98,7 +98,7 @@ const controladorAlertas = {
         }
     },
 
-    consultarAlertas: async (req, res) => {
+    consultarTudo: async (req, res) => {
         try {
             const alertas = await models.alerta.findAll({
                 include: [
@@ -108,6 +108,28 @@ const controladorAlertas = {
                         attributes: ['pnome', 'unome']
                     }
                 ]
+            });
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: alertas });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar os alertas', details: error.message });
+        }
+    },
+
+    consultarTudoComFiltros: async (req, res) => {
+        const {estado, descricao} = req.query;
+        try {
+            const alertas = await models.alerta.findAll({
+                include: [
+                    {
+                        model: models.utilizador,
+                        as: 'utilizador',
+                        attributes: ['pnome', 'unome']
+                    }
+                ],
+                where: {
+                    texto: { [Op.like]: `%${descricao}%` },
+                    ...(estado !== undefined && { inactivo: estado })
+                }
             });
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: alertas });
         } catch (error) {

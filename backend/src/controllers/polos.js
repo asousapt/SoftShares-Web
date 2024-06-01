@@ -91,7 +91,8 @@ const controladorPolos = {
             const polos = await sequelizeConn.query(
                 `SELECT 
                     p.poloid,
-                    p.descricao, 
+                    p.descricao,
+                    p.coordenador, 
                     c.nome as cidade,
                     COUNT(u.*) AS numusers
                 FROM 

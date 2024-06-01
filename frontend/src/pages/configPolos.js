@@ -30,6 +30,7 @@ export default function ConfigPolos() {
         { field: 'descricao', headerName: 'Descrição', flex: 0.5, headerAlign: 'left' },
         { field: 'numerousers', headerName: 'Nº de Utilizadores', flex: 0.5, headerAlign: 'left' },
         { field: 'localidade', headerName: 'Localidade', flex: 0.5, headerAlign: 'left' },
+        { field: 'coordenador', headerName: 'Coordenador', flex: 0.5, headerAlign: 'left' },
         { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => ( <StateChanger status={row.value} />) },
         { field: 'status', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
     ];
@@ -50,6 +51,7 @@ export default function ConfigPolos() {
                 descricao: polo.descricao,
                 numerousers: polo.numusers,
                 localidade: polo.cidade,
+                coordenador: polo.coordenador,
                 estado: polo.inactivo ? 'Inativo' : 'Ativo',
             })));
         } catch (error) {

@@ -53,7 +53,6 @@ export default function ConfigCategorias() {
                 }
             });
             const categorias = response.data;
-            console.log('response',response);
             
             setTableRows(categorias.map((categoria) => ({
                 key: categoria.categoriaid,
@@ -69,8 +68,13 @@ export default function ConfigCategorias() {
 
     useEffect(() => {
         fetchData();
-        console.log('tableRows',tableRows);
     }, [filtroCombo, filtroText]);
+
+    useEffect(() => {
+        if(!isNewModalOpen){
+            fetchData();
+        }
+    }, [isNewModalOpen]);
 
     if (error) {
         return <div>Error: {error.message}</div>;

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import Modal from '@mui/material/Modal';
 import BasicTextField from '../../components/textFields/basic';
 import SubmitButton from '../../components/buttons/submitButton';
@@ -9,9 +10,30 @@ const NovaCategoria = ({ open, onClose }) => {
     const [descricaoENG, setDescricaoENG] = useState('');
     const [descricaoSPA, setDescricaoSPA] = useState('');
 
-    const handleAddEvent = () => {
-        console.log('Evento Adicionado');
-        onClose(); 
+    const handleAddEvent = async () => {
+        if (!descricao.trim() || !descricaoENG.trim() || !descricaoSPA.trim()){
+            alert('Preencha todos os campos!');
+            return;
+        }
+
+        try {
+            const token = 'tokenFixo';
+            await axios.post('http://localhost:8000/categoria/add', {
+                descricaoPT: descricao,
+                descricaoEN: descricaoENG,
+                descricaoES: descricaoSPA
+            }, {
+                headers: {
+                    'Authorization': `${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            console.log('Categoria Adicionada');
+            onClose();
+        } catch (error) {
+            console.error('Erro ao adicionar categoria:', error);
+        }
     };
     
     return (

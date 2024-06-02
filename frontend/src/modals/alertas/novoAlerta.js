@@ -50,10 +50,10 @@ const NovoAlerta = ({ open, onClose }) => {
                 }
             });
 
-            console.log('Evento Adicionado');
+            console.log('Alerta Adicionado');
             onClose();
         } catch (error) {
-            console.error('Erro ao adicionar evento:', error);
+            console.error('Erro ao adicionar alerta:', error);
         }
     };
 

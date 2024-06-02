@@ -76,7 +76,7 @@ export default function ConfigAlertas() {
         if(!isNewModalOpen){
             fetchData();
         }
-    }, [isNewModalOpen])
+    }, [isNewModalOpen]);
 
     if (error) {
         return <div>Error: {error.message}</div>;

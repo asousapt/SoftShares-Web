@@ -13,7 +13,7 @@ router.put('/update/:idCat', authenticate, categoriasControlador.adicionar);
 router.delete('/delete/:idCat', authenticate, categoriasControlador.remover);
 
 //ROUTES GET
-router.get('/', categoriasControlador.consultarTudo);
+router.get('/', authenticate, categoriasControlador.consultarTudo);
 router.get('/filtro', authenticate, categoriasControlador.consultarTudoComFiltroPT);
 
 module.exports = router;

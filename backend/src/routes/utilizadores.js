@@ -14,6 +14,7 @@ router.delete('/delete/:idUtilizador', authenticate, utilizadorControlador.remov
 
 // ROUTES GET
 router.get('/', authenticate, utilizadorControlador.consultarTodos);
+router.get('/filtro', authenticate, utilizadorControlador.consultarTodosComFiltro);
 router.get('/totalpolo', authenticate, utilizadorControlador.consultarTotalPorPolo);
 router.get('/:idUtilizador', authenticate, utilizadorControlador.consultarUtilizador);
 

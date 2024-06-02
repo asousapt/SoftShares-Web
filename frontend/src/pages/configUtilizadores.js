@@ -16,7 +16,7 @@ import EditUser from '../modals/utilizadores/editUtilizador';
 const opcoesFiltro = [
     { value: 'Todos', label: 'Todos' },
     { value: 'Ativos', label: 'Apenas Ativos' },
-    { value: 'inativos', label: 'Apenas Inativos' }
+    { value: 'Inativos', label: 'Apenas Inativos' }
 ];
 
 export default function Configtilizadores() {
@@ -37,20 +37,32 @@ export default function Configtilizadores() {
         { field: 'funcao', headerName: 'Função', flex: 1, headerAlign: 'left' },
         { field: 'polo', headerName: 'Polo', flex: 1, headerAlign: 'left' },
         { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => (<StateChanger status={row.value} />) },
-        { field: 'status', headerName: ' ', width: 100, headerAlign: 'left', sortable: false, renderCell: (row) => (<EditButton caption=' ' onclick={() => handleEditButtonClick(row.id)} />) },
+        { field: 'status', headerName: ' ', width: 100, headerAlign: 'left', sortable: false, renderCell: (row) => (<EditButton caption=' ' onclick={() => {setSelectedUserId(row.id); setEditModalOpen(true);}} />) },
     ];
 
     const fetchData = async () => {
         try {
             const token = 'tokenFixo';
-            const utilizadoresResponse = await axios.get('http://localhost:8000/utilizadores', {
-                headers: { Authorization: `${token}` }
+
+            let estado = undefined;
+            if (filtroCombo === 'Ativos') {
+                estado = false;
+            } else if (filtroCombo === 'Inativos') {
+                estado = true;
+            }
+            const response = await axios.get('http://localhost:8000/utilizadores/filtro', {
+                headers: { 
+                    Authorization: `${token}` 
+                },
+                params: {
+                    estado: estado,
+                    descricao: filtroText
+                }
             });
-            const utilizadores = utilizadoresResponse.data.data;
-            console.log(utilizadores);
+            const utilizadores = response.data.data;
 
             setTableRows(
-                utilizadores.map((utilizador, index) => ({
+                utilizadores.map((utilizador) => ({
                     key: utilizador.utilizadorid,
                     id: utilizador.utilizadorid,
                     nome: utilizador.pnome + ' ' + utilizador.unome,
@@ -70,55 +82,39 @@ export default function Configtilizadores() {
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [filtroCombo, filtroText]);
 
     useEffect(() => {
-        if (!isNewModalOpen && !isEditModalOpen) {
+        if (!isNewModalOpen) {
             fetchData();
         }
-    }, [isNewModalOpen, isEditModalOpen]);
+    }, [isNewModalOpen]);
 
-    const handleOpenNewModal = () => {
-        setNewModalOpen(true);
-    };
+    useEffect(() => {
+        if (!isEditModalOpen) {
+            fetchData();
+        }
+    }, [isEditModalOpen]);
 
-    const handleCloseNewModal = () => {
-        setNewModalOpen(false);
-    };
-
-    const handleOpenEditModal = () => {
-        setEditModalOpen(true);
-    };
-
-    const handleCloseEditModal = () => {
-        setEditModalOpen(false);
-        setSelectedUserId(null);
-    };
-
-    const handleEditButtonClick = (userId) => {
-        setSelectedUserId(userId);
-        handleOpenEditModal();
-    };
-
-    const handleTextFilter = (e) => {
-        setFiltroText(e.target.value);
-    };
+    if (error) {
+        return <div>Error: {error.message}</div>;
+    }
 
     return (
         <div className="page-container">
             <Header caption='Utilizadores' />
             <div className="data-container">
                 <div style={{ marginBottom: '20px', paddingTop: '20px' }}>
-                    <AddButton caption='Adicionar' onclick={handleOpenNewModal} />
-                    <Search onchange={handleTextFilter} />
+                    <AddButton caption='Adicionar' onclick={() => setNewModalOpen(true)} />
+                    <Search onchange={(e) => setFiltroText(e.target.value)} />
                     <ComboFilter options={opcoesFiltro} value={filtroCombo} handleChange={(e) => setFiltroCombo(e.target.value)} />
                 </div>
                 <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px', border: 'none', boxShadow: 'none' }}>
                     <DataTable rows={tableRows || []} columns={tableColumns} />
                 </div>
             </div>
-            <NovoUser open={isNewModalOpen} onClose={handleCloseNewModal} />
-            <EditUser open={isEditModalOpen} onClose={handleCloseEditModal} userId={selectedUserId} />
+            <NovoUser open={isNewModalOpen} onClose={() => setNewModalOpen(false)} />
+            <EditUser open={isEditModalOpen} onClose={() => {setEditModalOpen(false); setSelectedUserId(null);}} userId={selectedUserId} />
         </div>
     )
 }

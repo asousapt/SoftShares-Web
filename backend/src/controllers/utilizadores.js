@@ -201,8 +201,48 @@ const controladorUtilizadores = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar utilizadores por polo', details: error.message });
         }
-    }
-    
+    },
+
+    consultarTodosComFiltro: async (req, res) => {
+        const { estado, descricao } = req.query;
+        try {
+            let whereClause = '';
+            if (estado !== undefined) {
+                whereClause += ` AND u.inactivo = ${estado}`;
+            }
+
+            const utilizadors = await sequelizeConn.query(
+                `SELECT 
+                    u.*, 
+                    perf.descricao AS descricao_perfil,
+                    pol.descricao AS descricao_polo,
+                    dep.valor AS descricao_departamento,
+                    func.valor AS descricao_funcao
+                FROM 
+                    utilizador u
+                LEFT JOIN 
+                    perfil perf ON u.perfilid = perf.perfilid
+                LEFT JOIN 
+                    polo pol ON u.poloid = pol.poloid
+                INNER JOIN 
+                    chave ch_dep ON u.departamentoid = ch_dep.registoid AND ch_dep.entidade = 'DEPARTAMENTO'
+                LEFT JOIN 
+                    traducao dep ON ch_dep.chaveid = dep.chaveid AND dep.idiomaid = 1
+                INNER JOIN 
+                    chave ch_func ON u.funcaoid = ch_func.registoid AND ch_func.entidade = 'FUNCAO'
+                LEFT JOIN 
+                    traducao func ON ch_func.chaveid = func.chaveid AND func.idiomaid = 1
+                WHERE
+                    CONCAT(u.pnome, ' ', u.unome) LIKE '%${descricao}%'
+                ${whereClause}
+                    `,
+                { type: QueryTypes.SELECT }
+            );
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: utilizadors });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
+        }
+    },    
 };
 
 module.exports = controladorUtilizadores;

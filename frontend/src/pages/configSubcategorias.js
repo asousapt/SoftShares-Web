@@ -15,7 +15,7 @@ import NovaSubcategoria from '../modals/subcategorias/novaSubcategoria';
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},
     { value:'Ativos', label: 'Apenas Ativos'},
-    { value:'inativos', label: 'Apenas Inativos'}
+    { value:'Inativos', label: 'Apenas Inativos'}
 ];
 
 export default function ConfigSubcategorias() {
@@ -39,18 +39,18 @@ export default function ConfigSubcategorias() {
     const fetchCategorias = async () => {
         try {
             const token = 'tokenFixo';
-            const response = await axios.get('http://localhost:8000/subcategoria', {
+            const response = await axios.get('http://localhost:8000/categoria', {
                     headers: {
                         Authorization: `${token}`
                     }
                 });
-                const subcategorias = response.data;
+                const categorias = response.data;
                 
                 setOpcoesSubcat([
                     { value: 0, label: 'Sem Filtro' }, 
-                    ...subcategorias.map((subcat) => ({
-                        value: subcat.subcategoriaid,
-                        label: subcat.valorpt
+                    ...categorias.map((cat) => ({
+                        value: cat.categoriaid,
+                        label: cat.valorpt
                     }))
                 ]);
         } catch (error) {
@@ -61,9 +61,21 @@ export default function ConfigSubcategorias() {
     const fetchData = async () => {
         try {
             const token = 'tokenFixo';
-            const response = await axios.get('http://localhost:8000/subcategoria', {
+
+            let estado = undefined;
+            if (filtroCombo === 'Ativos') {
+                estado = false;
+            } else if (filtroCombo === 'Inativos') {
+                estado = true;
+            }
+            const response = await axios.get('http://localhost:8000/subcategoria/filtro', {
                 headers: {
                     Authorization: `${token}`
+                },
+                params: {
+                    estado: estado,
+                    categoria: filtroCategoria,
+                    descricao: filtroText
                 }
             });
             const subcategorias = response.data;
@@ -85,6 +97,10 @@ export default function ConfigSubcategorias() {
         fetchCategorias();
         fetchData();
     }, []);
+
+    useEffect(() => {
+        fetchData();
+    }, [filtroCategoria, filtroCombo, filtroText]);
 
     if (error) {
         return <div>Error: {error.message}</div>;

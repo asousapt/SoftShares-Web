@@ -246,6 +246,42 @@ const funcoes = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar as funções', details: error.message });
         }
+    },
+
+    consultarTudoComFiltroPT: async (req, res) => {
+        const { estado, descricao } = req.query;
+        try {
+            let whereClause = '';
+            const replacements = {};
+    
+            if (estado !== undefined) {
+                whereClause += ` AND f.inactivo = ${estado}`;
+            }
+        
+            const query = `
+                SELECT 
+                    f.*, 
+                    t.valor AS ValorPT
+                FROM 
+                    funcao f
+                INNER JOIN 
+                    chave ch ON f.funcaoid = ch.registoid AND ch.entidade = 'FUNCAO' 
+                INNER JOIN 
+                    traducao t on ch.chaveid = t.chaveid AND idiomaID = 1
+                WHERE 
+                    t.valor LIKE '%${descricao}%'
+                ${whereClause}
+            `;
+    
+            const funcoes = await sequelizeConn.query(query, {
+                type: QueryTypes.SELECT,
+                replacements,
+            });
+    
+            res.status(200).json(funcoes);
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar os departamentos', details: error.message });
+        }
     }
 };
 

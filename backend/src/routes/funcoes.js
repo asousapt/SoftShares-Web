@@ -14,5 +14,6 @@ router.delete('/delete/:idFuncao', authenticate, funcoesControlador.remover);
 
 //ROUTES GET
 router.get('/', authenticate, funcoesControlador.consultarTudo);
+router.get('/filtro', authenticate, funcoesControlador.consultarTudoComFiltroPT);
 
 module.exports = router;

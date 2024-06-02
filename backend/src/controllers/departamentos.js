@@ -198,17 +198,53 @@ const controladorDepartamentos = {
         try {
             const departamentos = await sequelizeConn.query(
                 `SELECT 
-                    c.*, 
+                    d.*, 
                     (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 1) as ValorPT, 
                     (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 2) as ValorEN, 
                     (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 3) as ValorES 
                 FROM 
-                    departamento c 
+                    departamento d
                 INNER JOIN 
-                    chave ch ON c.departamentoid = ch.registoid AND ch.entidade = 'DEPARTAMENTO'`,
+                    chave ch ON d.departamentoid = ch.registoid AND ch.entidade = 'DEPARTAMENTO'`,
                 { type: QueryTypes.SELECT }
             );
 
+            res.status(200).json(departamentos);
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar os departamentos', details: error.message });
+        }
+    },
+
+    consultarTudoComFiltroPT: async (req, res) => {
+        const { estado, descricao } = req.query;
+        try {
+            let whereClause = '';
+            const replacements = {};
+    
+            if (estado !== undefined) {
+                whereClause += ` AND d.inactivo = ${estado}`;
+            }
+        
+            const query = `
+                SELECT 
+                    d.*, 
+                    t.valor AS ValorPT
+                FROM 
+                    departamento d 
+                INNER JOIN 
+                    chave ch ON d.departamentoid = ch.registoid AND ch.entidade = 'DEPARTAMENTO' 
+                INNER JOIN 
+                    traducao t on ch.chaveid = t.chaveid AND idiomaID = 1
+                WHERE 
+                    t.valor LIKE '%${descricao}%'
+                ${whereClause}
+            `;
+    
+            const departamentos = await sequelizeConn.query(query, {
+                type: QueryTypes.SELECT,
+                replacements,
+            });
+    
             res.status(200).json(departamentos);
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar os departamentos', details: error.message });

@@ -15,7 +15,7 @@ import NovoDepartamento from '../modals/departamentos/novoDepartamento';
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},
     { value:'Ativos', label: 'Apenas Ativos'},
-    { value:'inativos', label: 'Apenas Inativos'}
+    { value:'Inativos', label: 'Apenas Inativos'}
 ];
 
 export default function Configtilizadores() {
@@ -35,13 +35,24 @@ export default function Configtilizadores() {
     const fetchData = async () => {
         try {
             const token = 'tokenFixo';
-            const response = await axios.get('http://localhost:8000/departamento', {
+
+            let estado = undefined;
+            if (filtroCombo === 'Ativos') {
+                estado = false;
+            } else if (filtroCombo === 'Inativos') {
+                estado = true;
+            }
+            const response = await axios.get('http://localhost:8000/departamento/filtro', {
                 headers: {
                     Authorization: `${token}`
+                },
+                params: {
+                    estado: estado,
+                    descricao: filtroText
                 }
             });
             const departamentos = response.data;
-            console.log(departamentos);
+
             setTableRows(departamentos.map((departamento) => ({
                 key: departamento.departamentoid,
                 id: departamento.departamentoid,
@@ -52,6 +63,10 @@ export default function Configtilizadores() {
             setError(error);
         }
     };
+
+    useEffect(() => {
+        fetchData();
+    }, [filtroCombo, filtroText]);
 
     useEffect(() => {
         if(!isNewModalOpen){

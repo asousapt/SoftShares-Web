@@ -14,6 +14,7 @@ router.delete('/delete/:idDepartamento', authenticate, departamentoController.re
 
 // GET routes
 router.get('/', authenticate, departamentoController.consultarTudo);
+router.get('/filtro', authenticate, departamentoController.consultarTudoComFiltroPT);
 router.get('/:idDepartamento', authenticate, departamentoController.consultarPorID);
 
 module.exports = router;

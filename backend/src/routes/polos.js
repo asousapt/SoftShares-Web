@@ -14,6 +14,7 @@ router.delete('/delete/:idPolo', authenticate, poloControlador.apagarPolo);
 
 //ROUTES GET
 router.get('/', authenticate, poloControlador.consultarTodos);
+router.get('/filtro', authenticate, poloControlador.consultarTodosComFiltro);
 router.get('/:idPolo', authenticate, poloControlador.consultarPoloPorID);
 
 module.exports = router;

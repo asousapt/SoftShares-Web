@@ -111,6 +111,36 @@ const controladorPolos = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar polo', details: error.message });
         }
+    },
+
+    consultarTodosComFiltro: async (req, res) => {
+        const { descricao } = req.query;
+        try {
+            const polos = await sequelizeConn.query(
+                `SELECT 
+                    p.poloid,
+                    p.descricao,
+                    p.coordenador, 
+                    c.nome as cidade,
+                    COUNT(u.*) AS numusers
+                FROM 
+                    polo p
+                INNER JOIN 
+                    cidade c ON p.cidadeid = c.cidadeid
+                LEFT JOIN 
+                    utilizador u ON p.poloid = u.poloid 
+                WHERE
+                    p.descricao LIKE '%${descricao}%'
+                GROUP BY
+                    p.poloid,
+                    p.descricao, 
+                    c.nome`,
+                { type: QueryTypes.SELECT }
+            );
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: polos });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar polo', details: error.message });
+        }
     }
 };
 

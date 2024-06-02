@@ -15,13 +15,13 @@ import NovoPolo from '../modals/polos/novoPolo';
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},
     { value:'Ativos', label: 'Apenas Ativos'},
-    { value:'inativos', label: 'Apenas Inativos'}
+    { value:'Inativos', label: 'Apenas Inativos'}
 ];
 
 export default function ConfigPolos() {
     const [isNewModalOpen, setNewModalOpen] = useState(false);
     const [filtroText, setFiltroText] = useState('');
-    const [filtroCombo, setFiltroCombo] = useState('Todos');
+    // const [filtroCombo, setFiltroCombo] = useState('Todos');
     const [tableRows, setTableRows] = useState([]);
     const [error, setError] = useState('');
 
@@ -38,9 +38,12 @@ export default function ConfigPolos() {
     const fetchData = async () => {
         try {
             const token = 'tokenFixo';
-            const response = await axios.get('http://localhost:8000/polo', {
+            const response = await axios.get('http://localhost:8000/polo/filtro', {
                 headers: {
                     Authorization: `${token}`
+                },
+                params: {
+                    descricao: filtroText
                 }
             });
             const polos = response.data.data;
@@ -58,7 +61,11 @@ export default function ConfigPolos() {
             setError(error);
         }
     };
-    
+
+    useEffect(() => {
+        fetchData();
+    }, [filtroText])
+
     useEffect(() => {
         if(!isNewModalOpen){
             fetchData();
@@ -76,7 +83,7 @@ export default function ConfigPolos() {
                 <div style={{ marginBottom:'20px', paddingTop: '20px'}}>
                     <AddButton caption='Adicionar' onclick={() => setNewModalOpen(true)} />
                     <Search onchange={(e) => setFiltroText(e.target.value)} />
-                    <ComboFilter options={opcoesFiltro} value={filtroCombo} handleChange={(e) => setFiltroCombo(e.target.value)} />
+                    {/* <ComboFilter options={opcoesFiltro} value={filtroCombo} handleChange={(e) => setFiltroCombo(e.target.value)} /> */}
                 </div>
                 <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px',border: 'none', boxShadow: 'none'}}>
                     <DataTable rows={tableRows || []} columns={tableColumns}/>

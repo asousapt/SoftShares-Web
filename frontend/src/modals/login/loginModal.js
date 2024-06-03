@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Modal, Box, Typography, TextField, Button, Checkbox, FormControlLabel, IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Google, Facebook } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 const style = {
   position: 'absolute',
@@ -17,9 +18,16 @@ const style = {
 
 const LoginModal = ({ open, handleClose }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleLogin = () => {
+    // lógica de autenticação
+    // se o login for bem sucedido, redirecionar para a dashboard
+    navigate('/dashboard');
   };
 
   return (
@@ -57,7 +65,13 @@ const LoginModal = ({ open, handleClose }) => {
           }}
         />
         <FormControlLabel control={<Checkbox />} label="Lembrar-me" />
-        <Button variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          sx={{ mt: 2 }}
+          onClick={handleLogin}
+        >
           Entrar
         </Button>
         <Button

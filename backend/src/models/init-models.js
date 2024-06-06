@@ -8,6 +8,7 @@ var _categoria = require("./categoria");
 var _chave = require("./chave");
 var _cidade = require("./cidade");
 var _comentario = require("./comentario");
+var _comentarioresposta = require("./comentarioresposta");
 var _denuncia = require("./denuncia");
 var _departamento = require("./departamento");
 var _destinatario = require("./destinatario");
@@ -51,6 +52,7 @@ function initModels(sequelize) {
   var chave = _chave(sequelize, DataTypes);
   var cidade = _cidade(sequelize, DataTypes);
   var comentario = _comentario(sequelize, DataTypes);
+  var comentarioresposta = _comentarioresposta(sequelize, DataTypes);
   var denuncia = _denuncia(sequelize, DataTypes);
   var departamento = _departamento(sequelize, DataTypes);
   var destinatario = _destinatario(sequelize, DataTypes);
@@ -198,6 +200,10 @@ function initModels(sequelize) {
   utilizador.hasMany(thread, { as: "utilizador_threads", foreignKey: "utilizadorid"});
   utilizador_grupo.belongsTo(utilizador, { as: "utilizador", foreignKey: "utilizadorid"});
   utilizador.hasMany(utilizador_grupo, { as: "utilizador_grupos", foreignKey: "utilizadorid"});
+  comentarioresposta.belongsTo(comentario, { as: "comentariopai", foreignKey: "comentariopaiid" });
+  comentario.hasMany(comentarioresposta, { as: "respostas", foreignKey: "comentariopaiid" });
+  comentarioresposta.belongsTo(comentario, { as: "resposta", foreignKey: "respostaid" });
+  comentario.hasMany(comentarioresposta, { as: "comentariorepostas", foreignKey: "respostaid" });
 
   return {
     administrador_polo,
@@ -209,6 +215,7 @@ function initModels(sequelize) {
     chave,
     cidade,
     comentario,
+    comentarioresposta,
     denuncia,
     departamento,
     destinatario,

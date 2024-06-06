@@ -1,4 +1,4 @@
-const { Sequelize, QueryTypes } = require('sequelize');
+const { Sequelize, Op, QueryTypes } = require('sequelize');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
@@ -148,6 +148,7 @@ const controladorPontosInteresse = {
     },
 
     consultarPorAprovar: async (req, res) => {
+        const { descricao } = req.query;
         try {
             const pontosInteresse = await models.pontointeresse.findAll({
                 include: {
@@ -156,7 +157,10 @@ const controladorPontosInteresse = {
                     attributes: ['pnome', 'unome']
                 },
                 where:{
-                    aprovado: null
+                    aprovado: null,
+                    titulo: {
+                        [Op.like]: `%${descricao}%`
+                    }
                 }
             });
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: pontosInteresse });

@@ -253,6 +253,7 @@ const controladorEventos = {
     },
 
     consultarPorAprovar: async (req, res) => {
+        const { descricao } = req.query;
         try {
             const evento = await models.evento.findAll({
                 include: {
@@ -261,7 +262,10 @@ const controladorEventos = {
                     attributes: ['pnome', 'unome']
                 },
                 where: {
-                    aprovado: null
+                    aprovado: null,
+                    titulo: {
+                        [Op.like]: `%${descricao}%`
+                    }
                 }
             });
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: evento });

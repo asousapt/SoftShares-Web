@@ -17,5 +17,6 @@ router.get('/subcategoria/:subcategoriaid', authenticate, controladorThread.cons
 
 // GET - Consultar threads por utilizador
 router.get('/', authenticate, controladorThread.consultarTodos);
+router.get('/filtro', authenticate, controladorThread.consultarTodosComFiltro);
 
 module.exports = router;

@@ -126,7 +126,37 @@ const controladorThread = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar threads', details: error.message });
         }
-    }
+    },
+
+    consultarTodosComFiltro: async (req, res) => {
+        const { categoria, descricao } = req.query;
+        try {
+            let whereClause = '';
+            if (categoria > 0){
+                whereClause += ` AND t.subcategoriaid IN (SELECT subcategoriaid FROM subcategoria WHERE categoriaid = ${categoria}) `;
+            }
+
+            const threads = await sequelizeConn.query(
+                `SELECT 
+                    t.*, 
+                    tr.valor as valorpt
+                FROM 
+                    thread t
+                INNER JOIN 
+                    chave ch ON t.subcategoriaid = ch.registoid AND ch.entidade = 'SUBCAT'
+                LEFT JOIN 
+                    traducao tr ON ch.chaveid = tr.chaveid AND tr.idiomaid = 1
+                WHERE
+                    t.titulo LIKE '%${descricao}%'
+                ${whereClause}
+                    `,
+                { type: QueryTypes.SELECT }
+            );
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: threads });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
+        }
+    }, 
 };
 
 module.exports = controladorThread;

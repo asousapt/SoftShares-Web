@@ -79,6 +79,22 @@ const denunciaController = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar denúncias por comentário', details: error.message });
         }
+    },
+
+    consultarTudoComFiltro: async (req, res) => {
+        const { descricao } = req.query;
+        try {
+            const denuncias = await models.denuncia.findAll({
+                where:{
+                    texto:{
+                        [Op.like]: `%${descricao}%`
+                    }
+                }
+            });
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: denuncias });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar denúncias', details: error.message });
+        }
     }
 };
 

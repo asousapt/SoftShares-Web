@@ -7,5 +7,7 @@ const { authenticate } = require('../tokenUtils');
 router.get('/', authenticate, cidadesControlador.consultarTodos);
 router.get('/distritos', authenticate, cidadesControlador.consultarTodosDistritos);
 router.get('/distrito/:distritoId', cidadesControlador.consultarCidadesDistrito);
+router.get('/:cidadeId/distrito', authenticate, cidadesControlador.consultarDistritoCidade);
+
 
 module.exports = router;

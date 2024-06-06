@@ -33,6 +33,24 @@ const controladorCidades = {
             res.status(500).json({ error: 'Erro ao consultar cidades por distrito', details: error.message });
         }
     },
+
+    consultarDistritoCidade: async (req, res) => {
+        try {
+            const { cidadeId } = req.params;
+            const cidade = await models.cidade.findOne({
+                where: { cidadeid: cidadeId },
+                include: [{ model: models.distrito, as: 'distrito' }]
+            });
+
+            if (!cidade) {
+                return res.status(404).json({ message: 'Cidade não encontrada' });
+            }
+
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: cidade.distrito });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar distrito por cidade', details: error.message });
+        }
+    },
 };
 
 module.exports = controladorCidades;

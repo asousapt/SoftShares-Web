@@ -31,7 +31,6 @@ const controladorPolos = {
     atualizarPolo: async (req, res) => {
         const { idPolo } = req.params;
         const { cidadeID, descricao, morada, email, telefone, coordenador } = req.body;
-
         try {
             await models.polo.update({
                 cidadeid: cidadeID,

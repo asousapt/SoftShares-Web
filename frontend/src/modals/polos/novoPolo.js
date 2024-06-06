@@ -22,23 +22,6 @@ const NovoPolo = ({ open, onClose }) => {
     const [utilizadores, setUtilizadores] = useState([]);
 
     useEffect(() => {
-        const fetchUtilizadores = async () => {
-            try {
-                const token = 'tokenFixo';
-                const response = await axios.get('http://localhost:8000/utilizadores', {
-                    headers: { Authorization: `${token}` }
-                });
-                const utilizadorData = response.data.data;
-                const utilizadorOptions = utilizadorData.map(utilizador => ({
-                    value: utilizador.utilizadorid,
-                    label: utilizador.pnome + ' ' + utilizador.unome
-                }));
-                setUtilizadores(utilizadorOptions);
-            } catch (error) {
-                console.error('Erro ao buscar utilizadores:', error);
-            }
-        };
-
         const fetchDistritos = async () => {
             try {
                 const token = 'tokenFixo';
@@ -57,7 +40,6 @@ const NovoPolo = ({ open, onClose }) => {
             }
         };
 
-        fetchUtilizadores();
         fetchDistritos();
     }, []);
 
@@ -97,7 +79,7 @@ const NovoPolo = ({ open, onClose }) => {
                     morada: morada,
                     email: email,
                     telefone: telefone,
-                    coordenador: responsavel.value,
+                    coordenador: responsavel,
                     cidadeID: cidade.value
                 };
 
@@ -157,14 +139,7 @@ const NovoPolo = ({ open, onClose }) => {
                                 <BasicTextField caption='Telefone' valor={telefone} onchange={(e) => setTelefone(e.target.value)} fullwidth={true} />
                             </div>
                             <div style={{ width: '40%' }}>
-                                <Autocomplete
-                                    options={utilizadores}
-                                    getOptionLabel={(option) => option.label}
-                                    renderInput={(params) => <TextField {...params} label="Responsável" variant="outlined" />}
-                                    value={responsavel}
-                                    onChange={(event, newValue) => { setResponsavel(newValue); }}
-                                    fullWidth={true}
-                                />
+                                <BasicTextField caption='Coordenador'  valor={responsavel} onchange={(e) => setResponsavel(e.target.value)} fullwidth={true} />
                             </div>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>

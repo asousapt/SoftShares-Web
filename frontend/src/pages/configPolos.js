@@ -11,6 +11,7 @@ import StateChanger from '../components/stateChanger/stateChanger';
 import ComboFilter from '../components/combobox/comboFilter';
 /* FIM COMPONENTES */
 import NovoPolo from '../modals/polos/novoPolo';
+import EditarPolo from '../modals/polos/editarPolo';
 
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},
@@ -20,8 +21,9 @@ const opcoesFiltro = [
 
 export default function ConfigPolos() {
     const [isNewModalOpen, setNewModalOpen] = useState(false);
+    const [isEditModalOpen, setEditModalOpen] = useState(false);
+    const [selectedPoloId, setSelectedPoloId] = useState(null);
     const [filtroText, setFiltroText] = useState('');
-    // const [filtroCombo, setFiltroCombo] = useState('Todos');
     const [tableRows, setTableRows] = useState([]);
     const [error, setError] = useState('');
 
@@ -32,7 +34,7 @@ export default function ConfigPolos() {
         { field: 'localidade', headerName: 'Localidade', flex: 0.5, headerAlign: 'left' },
         { field: 'coordenador', headerName: 'Coordenador', flex: 0.5, headerAlign: 'left' },
         { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => ( <StateChanger status={row.value} />) },
-        { field: 'status', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
+        { field: 'status', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEditClick(row.id)} />)},
     ];
 
     const fetchData = async () => {
@@ -72,6 +74,11 @@ export default function ConfigPolos() {
         }
     }, [isNewModalOpen])
 
+    const handleEditClick = (id) => {
+        setSelectedPoloId(id);
+        setEditModalOpen(true);
+    };
+
     if (error) {
         return <div>Error: {error.message}</div>;
     }
@@ -90,6 +97,7 @@ export default function ConfigPolos() {
                 </div>
             </div>
             <NovoPolo open={isNewModalOpen} onClose={() => setNewModalOpen(false)}/>
+            <EditarPolo open={isEditModalOpen} onClose={() => setEditModalOpen(false)} poloId={selectedPoloId} />
         </div>
     )
 }

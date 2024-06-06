@@ -28,20 +28,20 @@ export default function ModDen() {
         { field: 'ver', headerName: 'Ver', width: 85, headerAlign: 'left', sortable: false , renderCell: (row) => ( <DetailButton /*onclick={} id={row.id}*/ />)},
     ];
 
-    useEffect(() => {
-        fetchData();
-    }, []);
-
     const fetchData = async () => {
         try {
             const token = 'tokenFixo';
-            const response = await axios.get('http://localhost:8000/denuncia', {
+
+            const response = await axios.get('http://localhost:8000/denuncia/filtro', {
                 headers: {
                     Authorization: `${token}`
+                },
+                params: {
+                    descricao: filtroText
                 }
             });
             const denuncias = response.data.data;
-            console.log(denuncias);
+
             const formattedData = denuncias.map(denuncia => ({
                 id: denuncia.denunciaid,
                 motivo: denuncia.texto,
@@ -55,6 +55,10 @@ export default function ModDen() {
             setError(error);
         }
     };
+
+    useEffect(() => {
+        fetchData();
+    }, [filtroText]);
 
     const handleOpenNewModal = () => {
         setNewModalOpen(true);

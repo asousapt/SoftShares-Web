@@ -31,6 +31,9 @@ export default function ModAprov() {
             const responseEventos = await axios.get('http://localhost:8000/evento/porAprovar', {
                 headers: {
                     Authorization: `${token}`
+                },
+                params: {
+                    descricao: filtroText
                 }
             });
             const eventos = responseEventos.data.data;
@@ -38,11 +41,12 @@ export default function ModAprov() {
             const responsePontosInteresse = await axios.get('http://localhost:8000/pontoInteresse/porAprovar', {
                 headers: {
                     Authorization: `${token}`
+                },
+                params: {
+                    descricao: filtroText
                 }
             });
             const pontosinteresse = responsePontosInteresse.data.data;
-            console.log(responseEventos);
-            console.log(responsePontosInteresse);
             
             const linhatemp = [
                 ...pontosinteresse.map((ponto) => ({
@@ -78,8 +82,7 @@ export default function ModAprov() {
 
     useEffect(() => {
         fetchData();
-        console.log(tableRows);
-    }, []);
+    }, [filtroText]);
     
     if (error) {
         return <div>Error: {error.message}</div>;

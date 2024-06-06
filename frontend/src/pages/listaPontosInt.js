@@ -13,14 +13,16 @@ import NovoPontoInt from '../modals/pontosInteresse/novoPontoInt';
 
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},
-    { value:'Ativos', label: 'Apenas Ativos'},
-    { value:'inativos', label: 'Apenas Inativos'}
+    { value:'Aprovados', label: 'Apenas Aprovados'},
+    { value:'Rejeitados', label: 'Apenas Rejeitados'}
 ];
 
 export default function ListaPontosInt() {
     const [isNewModalOpen, setNewModalOpen] = useState(false);
     const [filtroText, setFiltroText] = useState('');
-    const [filtroCombo, setFiltroCombo] = useState('Todos');
+    const [filtroEstado, setFiltroEstado] = useState('Todos');
+    const [opcoesFiltroSubcat, setOpcoesSubcat] = useState([]);
+    const [filtroCategoria, setFiltroCategoria] = useState(0);
     const [tableRows, setTableRows] = useState([]);
     const [error, setError] = useState(null);
 
@@ -29,35 +31,74 @@ export default function ListaPontosInt() {
         { field: 'titulo', headerName: 'Título', flex: 0.5, headerAlign: 'left' },
         { field: 'dataHora', headerName: 'Data e Hora de Começo', type: 'dateTime', width: 300, headerAlign: 'left' },
         { field: 'localizacao', headerName: 'Localização', flex: 0.5, headerAlign: 'left' },
+        { field: 'subcategoria', headerName: 'Subcategoria', flex: 1, headerAlign: 'left' },
         { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
     ];
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const token = 'tokenFixo';
-                const response = await axios.get('http://localhost:8000/pontoInteresse', {
-                    headers: {
-                        Authorization: `${token}`
-                    }
-                });
-                const pontosInteresse = response.data.data;
-                setTableRows(
-                    pontosInteresse.map((ponto) => ({
-                        key: ponto.pontointeresseid,
-                        id: ponto.pontointeresseid,
-                        titulo: ponto.titulo,
-                        dataHora: new Date(ponto.datacriacao),
-                        localizacao: ponto.localizacao
-                    }))
-                );
-                console.log(pontosInteresse);
-            } catch (error) {
-                setError(error);
+    const fetchCategorias = async () => {
+        const token = 'tokenFixo';
+
+        const response = await axios.get('http://localhost:8000/categoria', {
+            headers: {
+                Authorization: `${token}`
             }
-        };
-        fetchData();
+        });
+        const categorias = response.data;
+        console.log(categorias);
+
+        setOpcoesSubcat([
+            { value: 0, label: 'Sem Filtro' }, 
+            ...categorias.map((cat) => ({
+                value: cat.categoriaid,
+                label: cat.valorpt
+            }))
+        ]);
+    }
+
+    const fetchData = async () => {
+        try {
+            const token = 'tokenFixo';
+
+            let estado = undefined;
+            if (filtroEstado === 'Aprovados') {
+                estado = true;
+            } else if (filtroEstado === 'Rejeitados') {
+                estado = false;
+            }
+            const response = await axios.get('http://localhost:8000/pontoInteresse/filtro', {
+                headers: {
+                    Authorization: `${token}`
+                },
+                params: {
+                    estado: estado,
+                    categoria: filtroCategoria,
+                    descricao: filtroText
+                }
+            });
+            const eventos = response.data.data;
+
+            const pontosInteresseTable = eventos.map((ponto) => ({
+                key: ponto.pontointeresseid,
+                id: ponto.pontointeresseid,
+                titulo: ponto.titulo,
+                dataHora: new Date(ponto.datacriacao),
+                localizacao: ponto.localizacao,
+                subcategoria: ponto.valorpt
+            }));
+
+            setTableRows(pontosInteresseTable);
+        } catch (error) {
+            setError(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchCategorias();
     }, []);
+
+    useEffect(() => {
+        fetchData();
+    }, [filtroEstado, filtroCategoria, filtroText]);
 
     if (error) {
         return <div>Error: {error.message}</div>;
@@ -70,7 +111,8 @@ export default function ListaPontosInt() {
                 <div style={{marginBottom:'20px', paddingTop: '20px'}}>
                     <AddButton caption='Adicionar' onclick={() => setNewModalOpen(true)} />
                     <Search onchange={(e) => setFiltroText(e.target.value)} />
-                    <ComboFilter options={opcoesFiltro} value={filtroCombo} handleChange={(e) => setFiltroCombo(e.target.value)} />
+                    <ComboFilter options={opcoesFiltro} value={filtroEstado} handleChange={(e) => setFiltroEstado(e.target.value)} />
+                    <ComboFilter options={opcoesFiltroSubcat} value={filtroCategoria} handleChange={(event) => setFiltroCategoria(event.target.value)} />
                 </div>
                 <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px',border: 'none', boxShadow: 'none'}}>
                     <DataTable rows={tableRows || []} columns={tableColumns}/>

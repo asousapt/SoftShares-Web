@@ -13,8 +13,8 @@ import NovoEvento from '../modals/eventos/novoEvento';
 
 const opcoesFiltroEstado = [
     { value: 'Todos', label: 'Todos' },
-    { value: 'Ativos', label: 'Apenas Ativos' },
-    { value: 'inativos', label: 'Apenas Inativos' }
+    { value: 'Aprovados', label: 'Apenas Aprovados' },
+    { value: 'Rejeitados', label: 'Apenas Rejeitados' }
 ];
 
 export default function ListaEventos() {
@@ -39,52 +39,70 @@ export default function ListaEventos() {
         },
     ];
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const token = 'tokenFixo';
-    
-                const subcategoriasResponse = await axios.get('http://localhost:8000/subcategoria', {
-                    headers: {
-                        Authorization: `${token}`
-                    }
-                });
-                const subcategorias = subcategoriasResponse.data;
-                console.log(subcategorias);
-                
-                setOpcoesSubcat([
-                    { value: 0, label: 'Sem Filtro' }, 
-                    ...subcategorias.map((subcat) => ({
-                        value: subcat.subcategoriaid,
-                        label: subcat.valorpt
-                    }))
-                ]);
-    
-                const eventosResponse = await axios.get('http://localhost:8000/evento', {
-                    headers: {
-                        Authorization: `${token}`
-                    }
-                });
-                const eventos = eventosResponse.data.data;
-    
-                const eventosTable = eventos.map((evento) => ({
-                    key: evento.eventoid,
-                    id: evento.eventoid,
-                    titulo: evento.titulo,
-                    nParticipantes: `- / ${evento.nmrmaxparticipantes}`,
-                    dataHora: new Date(evento.datainicio),
-                    localizacao: evento.localizacao,
-                    subcategoria: subcategorias.find(subcat => subcat.subcategoriaid === evento.subcategoriaid)?.valorpt || 'Subcategoria não encontrada'
-                }));
-    
-                setTableRows(eventosTable);
-            } catch (error) {
-                setError(error);
+    const fetchCategorias = async () => {
+        const token = 'tokenFixo';
+
+        const response = await axios.get('http://localhost:8000/categoria', {
+            headers: {
+                Authorization: `${token}`
             }
-        };
-    
-        fetchData();
+        });
+        const categorias = response.data;
+        
+        setOpcoesSubcat([
+            { value: 0, label: 'Sem Filtro' }, 
+            ...categorias.map((cat) => ({
+                value: cat.categoriaid,
+                label: cat.valorpt
+            }))
+        ]);
+    }
+
+    const fetchData = async () => {
+        try {
+            const token = 'tokenFixo';
+
+            let estado = undefined;
+            if (filtroEstado === 'Aprovados') {
+                estado = true;
+            } else if (filtroEstado === 'Rejeitados') {
+                estado = false;
+            }
+            const response = await axios.get('http://localhost:8000/evento/filtro', {
+                headers: {
+                    Authorization: `${token}`
+                },
+                params: {
+                    estado: estado,
+                    categoria: filtroCategoria,
+                    descricao: filtroText
+                }
+            });
+            const eventos = response.data.data;
+
+            const eventosTable = eventos.map((evento) => ({
+                key: evento.eventoid,
+                id: evento.eventoid,
+                titulo: evento.titulo,
+                nParticipantes: `${evento.numinscritos+evento.numconvidados} / ${evento.nmrmaxparticipantes}`,
+                dataHora: new Date(evento.datainicio),
+                localizacao: evento.localizacao,
+                subcategoria: evento.valorpt
+            }));
+
+            setTableRows(eventosTable);
+        } catch (error) {
+            setError(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchCategorias();
     }, []);
+
+    useEffect(() => {
+        fetchData();
+    }, [filtroEstado, filtroCategoria, filtroText]);
     
     if (error) {
         return <div>Error: {error.message}</div>;

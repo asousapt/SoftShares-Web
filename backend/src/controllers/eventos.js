@@ -1,4 +1,4 @@
-const { Sequelize, Op } = require('sequelize');
+const { Sequelize, Op, QueryTypes } = require('sequelize');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
 const subcategoria = require('../models/subcategoria');
@@ -253,6 +253,7 @@ const controladorEventos = {
     },
 
     consultarPorAprovar: async (req, res) => {
+        const { descricao } = req.query;
         try {
             const evento = await models.evento.findAll({
                 include: {
@@ -261,7 +262,10 @@ const controladorEventos = {
                     attributes: ['pnome', 'unome']
                 },
                 where: {
-                    aprovado: null
+                    aprovado: null,
+                    titulo: {
+                        [Op.like]: `%${descricao}%`
+                    }
                 }
             });
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: evento });
@@ -278,6 +282,42 @@ const controladorEventos = {
             res.status(500).json({ error: 'Erro ao consultar utilizador', details: error.message });
         }
     },
+
+    consultarTodosComFiltro: async (req, res) => {
+        const { estado, categoria, descricao } = req.query;
+        try {
+            let whereClause = '';
+            if (estado !== undefined) {
+                whereClause += ` AND e.aprovado = ${estado}`;
+            }
+
+            if (categoria > 0){
+                whereClause += ` AND e.subcategoriaid IN (SELECT subcategoriaid FROM subcategoria WHERE categoriaid = ${categoria}) `;
+            }
+
+            const eventos = await sequelizeConn.query(
+                `SELECT 
+                    e.*, 
+                    t.valor as valorpt,
+                    (SELECT COUNT(pe.participantes_eventosid) FROM participantes_eventos pe WHERE pe.eventoid = e.eventoid ) as numinscritos,
+                    (SELECT SUM(convidadosadic) FROM participantes_eventos pe WHERE pe.eventoid = e.eventoid ) as numconvidados
+                FROM 
+                    evento e
+                INNER JOIN 
+                    chave ch ON e.subcategoriaid = ch.registoid AND ch.entidade = 'SUBCAT'
+                LEFT JOIN 
+                    traducao t ON ch.chaveid = t.chaveid AND t.idiomaid = 1
+                WHERE
+                    e.titulo LIKE '%${descricao}%'
+                ${whereClause}
+                    `,
+                { type: QueryTypes.SELECT }
+            );
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: eventos });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
+        }
+    }, 
 };
 
 module.exports = controladorEventos;

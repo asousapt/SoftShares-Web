@@ -12,22 +12,9 @@ import ComboFilter from '../components/combobox/comboFilter';
 /* FIM COMPONENTES */
 import NovaPub from '../modals/publicacoes/novaPub';
 
-const opcoesFiltroEstado = [
-    { value:'Todos', label: 'Todos'},
-    { value:'Ativos', label: 'Apenas Ativos'},
-    { value:'inativos', label: 'Apenas Inativos'}
-];
-
-const opcoesFiltroCat = [
-    { value:'Todos', label: 'Todos'},
-    { value:'Ativos', label: 'Apenas Ativos'},
-    { value:'inativos', label: 'Apenas Inativos'}
-];
-
 export default function ListaPublicacoes() {
     const [isNewModalOpen, setNewModalOpen] = useState(false);
     const [filtroText, setFiltroText] = useState('');
-    const [filtroEstado, setFiltroEstado] = useState('Todos');
     const [opcoesFiltroCat, setOpcoesCat] = useState([]);
     const [filtroCategoria, setFiltroCategoria] = useState(0);
     const [tableRows, setTableRows] = useState([]);
@@ -43,55 +30,63 @@ export default function ListaPublicacoes() {
         { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
     ];
 
+    const fetchCategorias = async () => {
+        try {
+            const token = 'tokenFixo';
+            const response = await axios.get('http://localhost:8000/categoria', {
+                headers: {
+                    Authorization: `${token}`
+                }
+            });
+            const categorias = response.data;
+            setOpcoesCat([
+                { value: 0, label: 'Sem Filtro' }, 
+                ...categorias.map((cat) => ({
+                    value: cat.categoriaid,
+                    label: cat.valorpt
+                }))
+            ]);
+        } catch (error) {
+            setError(error);
+        }
+    };
+
+    const fetchData = async () => {
+        try {
+            const token = 'tokenFixo';
+            const response = await axios.get('http://localhost:8000/thread/filtro', {
+                headers: {
+                    Authorization: `${token}`
+                },
+                params: {
+                    categoria: filtroCategoria,
+                    descricao: filtroText
+                }
+            });
+            const threads = response.data.data;
+            setTableRows(
+                threads.map((thread) => ({
+                    key: thread.threadid,
+                    id: thread.threadid,
+                    titulo: thread.titulo,
+                    dataHora: new Date(thread.datacriacao),
+                    criadoPor: thread.pnome+' '+thread.unome,
+                    subcategoria: thread.valorpt,
+                    estado: thread.estado ? 'Ativo' : 'Inativo'
+                }))
+            );
+        } catch (error) {
+            setError(error);
+        }
+    };
+
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const token = 'tokenFixo';
-                const response = await axios.get('http://localhost:8000/thread', {
-                    headers: {
-                        Authorization: `${token}`
-                    }
-                });
-                const threads = response.data.data;
-                setTableRows(
-                    threads.map((thread) => ({
-                        key: thread.threadid,
-                        id: thread.threadid,
-                        titulo: thread.titulo,
-                        dataHora: new Date(thread.datacriacao),
-                        criadoPor: thread.pnome+' '+thread.unome,
-                        subcategoria: thread.valorpt,
-                        estado: thread.estado ? 'Ativo' : 'Inativo'
-                    }))
-                );
-            } catch (error) {
-                setError(error);
-            }
-        };
-        
-        const fetchCategorias = async () => {
-            try {
-                const token = 'tokenFixo';
-                const response = await axios.get('http://localhost:8000/categoria', {
-                    headers: {
-                        Authorization: `${token}`
-                    }
-                });
-                const categorias = response.data;
-                setOpcoesCat([
-                    { value: 0, label: 'Sem Filtro' }, 
-                    ...categorias.map((cat) => ({
-                        value: cat.categoriaid,
-                        label: cat.valorpt
-                    }))
-                ]);
-            } catch (error) {
-                setError(error);
-            }
-        };
         fetchCategorias();
-        fetchData();
     }, []);
+
+    useEffect(() => {
+        fetchData();
+    }, [filtroCategoria, filtroText]);
 
     if (error) {
         return <div>Error: {error.message}</div>;
@@ -104,7 +99,6 @@ export default function ListaPublicacoes() {
                 <div style={{marginBottom:'20px', paddingTop: '20px'}}>
                     <AddButton caption='Adicionar' onclick={() => setNewModalOpen(true)} />
                     <Search onchange={(e) => setFiltroText(e.target.value)} />
-                    <ComboFilter options={opcoesFiltroEstado} value={filtroEstado} handleChange={(e) => setFiltroEstado(e.target.value)} />
                     <ComboFilter options={opcoesFiltroCat} value={filtroCategoria} handleChange={(e) => setFiltroCategoria(e.target.value)} />
                 </div>
                 <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px',border: 'none', boxShadow: 'none'}}>

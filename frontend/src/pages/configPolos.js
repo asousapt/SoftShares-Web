@@ -47,7 +47,7 @@ export default function ConfigPolos() {
                 }
             });
             const polos = response.data.data;
-            
+
             setTableRows(polos.map((polo) => ({
                 key: polo.poloid,
                 id: polo.poloid,

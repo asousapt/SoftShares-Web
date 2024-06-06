@@ -291,7 +291,7 @@ const controladorEventos = {
                 whereClause += ` AND e.subcategoriaid IN (SELECT subcategoriaid FROM subcategoria WHERE categoriaid = ${categoria}) `;
             }
 
-            const utilizadors = await sequelizeConn.query(
+            const eventos = await sequelizeConn.query(
                 `SELECT 
                     e.*, 
                     t.valor as valorpt,
@@ -309,7 +309,7 @@ const controladorEventos = {
                     `,
                 { type: QueryTypes.SELECT }
             );
-            res.status(200).json({ message: 'Consulta realizada com sucesso', data: utilizadors });
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: eventos });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
         }

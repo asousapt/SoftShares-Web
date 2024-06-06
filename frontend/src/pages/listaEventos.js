@@ -48,7 +48,6 @@ export default function ListaEventos() {
             }
         });
         const categorias = response.data;
-        console.log(categorias);
         
         setOpcoesSubcat([
             { value: 0, label: 'Sem Filtro' }, 
@@ -85,7 +84,7 @@ export default function ListaEventos() {
                 key: evento.eventoid,
                 id: evento.eventoid,
                 titulo: evento.titulo,
-                nParticipantes: `${evento.numinscritos} / ${evento.nmrmaxparticipantes}`,
+                nParticipantes: `${evento.numinscritos+evento.numconvidados} / ${evento.nmrmaxparticipantes}`,
                 dataHora: new Date(evento.datainicio),
                 localizacao: evento.localizacao,
                 subcategoria: evento.valorpt

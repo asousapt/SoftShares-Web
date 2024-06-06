@@ -1,4 +1,4 @@
-const { Sequelize, Op } = require('sequelize');
+const { Sequelize, QueryTypes } = require('sequelize');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
@@ -178,7 +178,41 @@ const controladorPontosInteresse = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar os pontos de interesse', details: error.message });
         }
-    }
+    },
+
+    consultarTodosComFiltro: async (req, res) => {
+        const { estado, categoria, descricao } = req.query;
+        try {
+            let whereClause = '';
+            if (estado !== undefined) {
+                whereClause += ` AND p.aprovado = ${estado}`;
+            }
+
+            if (categoria > 0){
+                whereClause += ` AND p.subcategoriaid IN (SELECT subcategoriaid FROM subcategoria WHERE categoriaid = ${categoria}) `;
+            }
+
+            const pontosInteresse = await sequelizeConn.query(
+                `SELECT 
+                    p.*, 
+                    t.valor as valorpt
+                FROM 
+                    pontointeresse p
+                INNER JOIN 
+                    chave ch ON p.subcategoriaid = ch.registoid AND ch.entidade = 'SUBCAT'
+                LEFT JOIN 
+                    traducao t ON ch.chaveid = t.chaveid AND t.idiomaid = 1
+                WHERE
+                    p.titulo LIKE '%${descricao}%'
+                ${whereClause}
+                    `,
+                { type: QueryTypes.SELECT }
+            );
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: pontosInteresse });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
+        }
+    }, 
 };
 
 module.exports = controladorPontosInteresse;

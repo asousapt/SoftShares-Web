@@ -1,7 +1,7 @@
 import React from 'react';
-import { Button, MenuItem, Select } from '@mui/material';
+import { MenuItem, Select } from '@mui/material';
 
-const QuestionTypes = ({ addQuestion }) => {
+const QuestionTypes = ({ onChange, idPergunta, valor }) => {
   const questionTypes = [
     { type: 'shortAnswer', label: 'Resposta curta' },
     { type: 'paragraph', label: 'Parágrafo' },
@@ -12,9 +12,9 @@ const QuestionTypes = ({ addQuestion }) => {
   return (
     <Select
       defaultValue=""
-      displayEmpty
-      onChange={(e) => addQuestion(e.target.value)}
-      style={{ marginBottom: '20px' }}
+      onChange={(e) => onChange(idPergunta, e.target.value)}
+      style={{ marginBottom: '10px' }}
+      value={valor}
     >
       <MenuItem value="" disabled>Adicionar pergunta</MenuItem>
       {questionTypes.map((qt) => (

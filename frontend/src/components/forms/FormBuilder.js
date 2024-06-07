@@ -6,6 +6,8 @@ import {
   Button,
   Box
 } from '@mui/material';
+import DeleteButton from '../buttons/deleteButton';
+import DeleteIcon from '@mui/icons-material/Delete';
 import QuestionTypes from './QuestionTypes';
 import Question from './Question';
 
@@ -16,9 +18,9 @@ const FormBuilder = () => {
   const addQuestion = (type) => {
     const newQuestion = {
       id: questions.length + 1,
-      type,
+      type: 'shortAnswer',
       text: '',
-      options: type === 'multipleChoice' || type === 'checkboxes' ? ['Opção 1'] : [],
+      options: [],
       required: false,
     };
     setQuestions([...questions, newQuestion]);
@@ -26,6 +28,10 @@ const FormBuilder = () => {
 
   const handleTextChange = (id, text) => {
     setQuestions(questions.map(q => q.id === id ? { ...q, text } : q));
+  };
+
+  const handleTypeChange = (id, type) => {
+    setQuestions(questions.map(q => q.id === id ? { ...q, type, options: type === 'multipleChoice' ? [] : q.options } : q));
   };
 
   const handleOptionChange = (id, optionIndex, optionText) => {
@@ -69,19 +75,20 @@ const FormBuilder = () => {
 
   return (
     <Container>
-      <Typography variant="h4" gutterBottom>Formulário sem título</Typography>
-      <Typography variant="subtitle1" gutterBottom>Descrição do formulário</Typography>
-      <QuestionTypes addQuestion={addQuestion} />
       <div>
         {questions.map((q) => (
           <Paper key={q.id} style={{ padding: '20px', marginBottom: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px', gap: 10 }}>
+              <QuestionTypes onChange={handleTypeChange} idPergunta={q.id} valor={q.type} />
+              <DeleteButton onclick={() => handleRemoveQuestion(q.id)} caption='Remover Pergunta'/>
+            </div>
+            
             <Question
               question={q}
               handleTextChange={handleTextChange}
               handleOptionChange={handleOptionChange}
               addOption={addOption}
               removeOption={removeOption}
-              handleRemoveQuestion={handleRemoveQuestion}
             />
           </Paper>
         ))}
@@ -89,6 +96,9 @@ const FormBuilder = () => {
       <Box mt={2}>
         <Button variant="contained" color="primary" onClick={generateJSON}>
           Gerar JSON
+        </Button>
+        <Button variant="contained" color="primary" onClick={addQuestion}>
+          Adicionar uma pergunta
         </Button>
       </Box>
       {formData && (

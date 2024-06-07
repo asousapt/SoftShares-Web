@@ -10,6 +10,7 @@ import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
 /* FIM COMPONENTES */
 import NovoEvento from '../modals/eventos/novoEvento';
+import FormBuilder from '../components/forms/FormBuilder';
 
 export default function StatsUtilizador() {
 
@@ -18,9 +19,10 @@ export default function StatsUtilizador() {
             <Header caption='Forms' />
             <div className="data-container">
                 <div style={{ marginBottom: '40px'}}>
+                    
                 </div>
                 <div style={{ height: '65vh', width: '98%', overflowY: 'auto', paddingBottom: '40px', border: 'none', boxShadow: 'none' }}>
-
+                    
                 </div>
             </div>
         </div>

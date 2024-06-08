@@ -82,7 +82,10 @@ const controladorDepartamentos = {
 
     atualizar: async (req, res) => {
         const { idDepartamento } = req.params;
-        const { descricaoPT, descricaoEN, descricaoES, inativo } = req.body;
+        const { descricaoPT, descricaoEN, descricaoES, inactivo } = req.body;
+
+        console.log('ID do Departamento:', idDepartamento);
+        console.log('Dados recebidos para atualização:', { descricaoPT, descricaoEN, descricaoES, inactivo });
 
         try {
             const idiomaPT = await models.idioma.findOne({ where: { icone: 'pt' } });
@@ -100,7 +103,9 @@ const controladorDepartamentos = {
                 return res.status(404).json({ error: 'Departamento não encontrado' });
             }
 
-            await models.departamento.update({ inativo: inativo }, { where: { departamentoid: idDepartamento } });
+            // Atualizar o campo inactivo
+            await departamento.update({ inactivo });
+            console.log('Departamento atualizado:', departamento);
 
             const chave = await models.chave.findOne({
                 where: {
@@ -131,6 +136,7 @@ const controladorDepartamentos = {
 
             res.status(200).json({ message: 'Departamento atualizado com sucesso' });
         } catch (error) {
+            console.error('Erro ao atualizar o departamento:', error);
             res.status(500).json({ error: 'Erro ao atualizar o departamento', details: error.message });
         }
     },

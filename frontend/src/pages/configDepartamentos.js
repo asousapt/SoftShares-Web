@@ -11,6 +11,7 @@ import Search from '../components/textFields/search';
 import StateChanger from '../components/stateChanger/stateChanger';
 /* FIM COMPONENTES */
 import NovoDepartamento from '../modals/departamentos/novoDepartamento';
+import EditDepartamento from '../modals/departamentos/editarDepartamento';
 
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},
@@ -20,6 +21,8 @@ const opcoesFiltro = [
 
 export default function Configtilizadores() {
     const [isNewModalOpen, setNewModalOpen] = useState(false);
+    const [isEditModalOpen, setEditModalOpen] = useState(false);
+    const [selectedDepartamentoId, setSelectedDepartamentoId] = useState(null);
     const [filtroText, setFiltroText] = useState('');
     const [filtroCombo, setFiltroCombo] = useState('Todos');
     const [tableRows, setTableRows] = useState([]);
@@ -29,7 +32,7 @@ export default function Configtilizadores() {
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left'},
         { field: 'descricao', headerName: 'Descrição', flex: 1, headerAlign: 'left' },
         { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => ( <StateChanger status={row.value} />) },
-        { field: 'edit', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
+        { field: 'edit', headerName: ' ', width: 100, headerAlign: 'left', sortable: false, renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEditClick(row.id)} />)},
     ];
 
     const fetchData = async () => {
@@ -64,6 +67,11 @@ export default function Configtilizadores() {
         }
     };
 
+    const handleEditClick = (id) => {
+        setSelectedDepartamentoId(id);
+        setEditModalOpen(true);
+    };
+
     useEffect(() => {
         fetchData();
     }, [filtroCombo, filtroText]);
@@ -72,7 +80,13 @@ export default function Configtilizadores() {
         if(!isNewModalOpen){
             fetchData();
         }
-    }, [isNewModalOpen])
+    }, [isNewModalOpen]);
+
+    useEffect(() => {
+        if(!isEditModalOpen){
+            fetchData();
+        }
+    }, [isEditModalOpen]);
 
     if (error) {
         return <div>Error: {error.message}</div>;
@@ -87,11 +101,12 @@ export default function Configtilizadores() {
                     <Search onchange={(e) => setFiltroText(e.target.value)} />
                     <ComboFilter options={opcoesFiltro} value={filtroCombo} handleChange={(e) => setFiltroCombo(e.target.value)} />
                 </div>
-                <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px',border: 'none', boxShadow: 'none'}}>
-                    <DataTable rows={tableRows || []} columns={tableColumns}/>
+                <div style={{ height: '65vh', width: '99%', overflowX: 'auto'}}>
+                    <DataTable rows={tableRows} columns={tableColumns} />
                 </div>
             </div>
-            <NovoDepartamento open={isNewModalOpen} onClose={() => setNewModalOpen(false)}/>
+            <NovoDepartamento open={isNewModalOpen} onClose={() => setNewModalOpen(false)} />
+            <EditDepartamento open={isEditModalOpen} onClose={() => setEditModalOpen(false)} departamentoId={selectedDepartamentoId} /> {/* Adicionar modal de edição */}
         </div>
-    )
+    );
 }

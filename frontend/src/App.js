@@ -23,7 +23,7 @@ import LandingPage from './pages/landingPage';
 
 function AppContent() {
     const location = useLocation();
-    const showSidebar = location.pathname !== "/landingpage";
+    const showSidebar = location.pathname !== "/";
 
     return (
         <div className="app-container">
@@ -32,10 +32,9 @@ function AppContent() {
                     <Sidebar />
                 </div>
             )}
-            <div className="content-container">
+            <div className="content-container" style={{ marginLeft: location.pathname === '/' ? 0 : '250px' }}>
                 <Routes>
-                    <Route path="/" element={<Navigate replace to="/landingpage" />} />
-                    <Route path="/landingpage" element={<LandingPage />} />
+                    <Route path="/" element={<LandingPage />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/estatisticas/utilizadores" element={<StatsUtilizador />} />
                     <Route path="/estatisticas/denuncias" element={<StatsDenuncias />} />

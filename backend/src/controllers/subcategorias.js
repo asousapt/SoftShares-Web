@@ -141,8 +141,7 @@ const controladorSubcategorias = {
 
     atualizar: async (req, res) => {
         const { idSubCat } = req.params;
-        const { descricaoPT, descricaoEN, descricaoES, inativo } = req.body;
-
+        const { categoria, descricaoPT, descricaoEN, descricaoES, inactivo } = req.body;
         try {
             const idiomaPT = await models.idioma.findOne({
                 where: { 
@@ -172,7 +171,8 @@ const controladorSubcategorias = {
             }
 
             await models.subcategoria.update({
-                inativo: inativo
+                categoriaid: categoria,
+                inactivo: inactivo
             }, {
                 where: {
                     subcategoriaid: idSubCat
@@ -281,6 +281,36 @@ const controladorSubcategorias = {
             res.status(200).json(subcategorias);
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar as subcategorias', details: error.message });
+        }
+    },
+
+    consultarPorID: async (req, res) => {
+        const { idSubcat } = req.params;
+        try {
+            const categoria = await sequelizeConn.query(
+                `SELECT 
+                    sc.*, 
+                    (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 1) as ValorPT, 
+                    (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 2) as ValorEN, 
+                    (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 3) as ValorES 
+                FROM 
+                    subcategoria sc 
+                INNER JOIN 
+                    chave ch ON sc.subcategoriaid = ch.registoid AND ch.entidade = 'SUBCAT'
+                WHERE sc.subcategoriaid = :idSubcat`,
+                {
+                    replacements: { idSubcat },
+                    type: QueryTypes.SELECT
+                }
+            );
+
+            if (categoria.length === 0) {
+                return res.status(404).json({ error: 'Subcategoria não encontrada' });
+            }
+
+            res.status(200).json(categoria[0]);
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar a subcategoria', details: error.message });
         }
     },
 

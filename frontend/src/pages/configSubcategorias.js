@@ -11,6 +11,7 @@ import Search from '../components/textFields/search';
 import StateChanger from '../components/stateChanger/stateChanger';
 /* FIM COMPONENTES */
 import NovaSubcategoria from '../modals/subcategorias/novaSubcategoria';
+import EditarSubcategoria from '../modals/subcategorias/editarSubcategoria';
 
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},
@@ -20,6 +21,8 @@ const opcoesFiltro = [
 
 export default function ConfigSubcategorias() {
     const [isNewModalOpen, setNewModalOpen] = useState(false);
+    const [isEditModalOpen, setEditModalOpen] = useState(false);
+    const [selectedSubcategoriaId, setSelectedSubcategoriaId] = useState(null);
     const [filtroText, setFiltroText] = useState('');
     const [filtroCombo, setFiltroCombo] = useState('Todos');
     const [filtroCategoria, setFiltroCategoria] = useState(0);
@@ -33,8 +36,13 @@ export default function ConfigSubcategorias() {
         { field: 'categoria', headerName: 'Categoria', flex: 0.5, headerAlign: 'left' },
         { field: 'dataHora', headerName: 'Data e Hora de Criação', type: 'dateTime', width: 300, headerAlign: 'left' },
         { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => ( <StateChanger status={row.value} />) },
-        { field: 'ver', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
+        { field: 'ver', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEdit(row.id)} />)},
     ];
+
+    const handleEdit = (id) => {
+        setSelectedSubcategoriaId(id);
+        setEditModalOpen(true);
+    };
 
     const fetchCategorias = async () => {
         try {
@@ -96,12 +104,18 @@ export default function ConfigSubcategorias() {
     useEffect(() => {
         fetchCategorias();
         fetchData();
-    }, []);
+    }, [filtroCombo, filtroText]);
+
+    useEffect(() => {
+        if (!isNewModalOpen && !isEditModalOpen) {
+            fetchData();
+        }
+    }, [isNewModalOpen, isEditModalOpen]);
 
     useEffect(() => {
         fetchData();
     }, [filtroCategoria, filtroCombo, filtroText]);
-
+    
     if (error) {
         return <div>Error: {error.message}</div>;
     }
@@ -121,6 +135,7 @@ export default function ConfigSubcategorias() {
                 </div>
             </div>
             <NovaSubcategoria open={isNewModalOpen} onClose={() => setNewModalOpen(false)}/>
+            <EditarSubcategoria open={isEditModalOpen} onClose={() => setEditModalOpen(false)} subcategoriaId={selectedSubcategoriaId} />
         </div>
     )
 }

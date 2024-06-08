@@ -19,5 +19,6 @@ router.delete('/fav/delete/:idSubCatFav', authenticate, subcategoriasControlador
 router.get('/', authenticate, subcategoriasControlador.consultarTudo);
 router.get('/filtro', authenticate, subcategoriasControlador.consultarTudoComFiltroPT);
 router.get('/categoria/:idCat', authenticate, subcategoriasControlador.consultarPorCategoria);
+router.get('/:idSubcat', authenticate, subcategoriasControlador.consultarPorID);
 
 module.exports = router;

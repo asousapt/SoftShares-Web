@@ -38,9 +38,10 @@ const NovoAlerta = ({ open, onClose }) => {
 
     const handleAddEvent = async () => {
         try {
+            const userid = sessionStorage.getItem('userid');
             const token = 'tokenFixo';
             await axios.post('http://localhost:8000/alerta/add', {
-                utilizadorID: 1,
+                utilizadorID: userid,
                 texto: descricao,
                 poloID: polo
             }, {

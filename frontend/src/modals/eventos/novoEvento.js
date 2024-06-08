@@ -144,6 +144,7 @@ const AddEventModal = ({ open, onClose }) => {
 
     const handleAddEvent = async () => {
         try {
+            const userid = sessionStorage.getItem('userid');
             const token = 'tokenFixo';
             const novoEvento = {
                 titulo: title,
@@ -156,7 +157,7 @@ const AddEventModal = ({ open, onClose }) => {
                 latitude: 0,
                 longitude: 0,
                 cidadeID: cidade ? cidade.value : '',
-                utilizadorCriou: 14,
+                utilizadorCriou: userid,
                 subcategoriaId: subcategoria ? subcategoria.value : '',
                 poloId: polo ? polo.value : '',
             };

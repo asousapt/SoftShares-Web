@@ -200,8 +200,8 @@ const AddUserModal = ({ open, onClose }) => {
                                         labelPlacement="start"
                                         control={<Switch checked={inactivo} onChange={handleChangeAtivo} />}
                                         label="Inativo"
-                                        sx={{ marginTop: '10px' }}
-                                    /></div>
+                                        sx={{ marginTop: '10px' }}/>
+                                </div>
                             </div>
                         </div>
                     </div>

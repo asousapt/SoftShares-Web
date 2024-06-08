@@ -6,8 +6,7 @@ const FIXED_TOKEN = 'tokenFixo';
 
 const generateToken = (user) => {
     const payload = {
-        id: user.id,
-        username: user.username,
+        id: user.utilizadorid,
         email: user.email
     };
 

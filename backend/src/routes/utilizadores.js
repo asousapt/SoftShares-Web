@@ -16,7 +16,9 @@ router.delete('/delete/:idUtilizador', authenticate, utilizadorControlador.remov
 router.get('/', authenticate, utilizadorControlador.consultarTodos);
 router.get('/filtro', authenticate, utilizadorControlador.consultarTodosComFiltro);
 router.get('/totalpolo', authenticate, utilizadorControlador.consultarTotalPorPolo);
+router.get('/email/:email', utilizadorControlador.consultarPorEmail);
 router.get('/:idUtilizador', authenticate, utilizadorControlador.consultarUtilizador);
+router.get('/token/:id', utilizadorControlador.novoToken);
 
 
 module.exports = router;

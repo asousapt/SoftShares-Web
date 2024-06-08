@@ -3,8 +3,10 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Logout from '@mui/icons-material/Logout';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import { useNavigate } from 'react-router-dom';
 
 export default function Perfil({ anchorEl, open, handleClose }) {
+    const navigate = useNavigate();
     return(
         <Menu
             anchorEl={anchorEl}
@@ -56,7 +58,7 @@ export default function Perfil({ anchorEl, open, handleClose }) {
                     alt='user' /> 
                 @username
             </MenuItem>
-            <MenuItem onClick={handleClose} style={{backgroundColor: '#1765E0'}}>
+            <MenuItem onClick={() => {navigate('/'); sessionStorage.clear();}} style={{backgroundColor: '#1765E0'}}>
                 <ListItemIcon>
                     <Logout fontSize="small" sx={{ color: 'white' }} />
                 </ListItemIcon>

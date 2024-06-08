@@ -2,6 +2,7 @@ const { Sequelize, QueryTypes } = require('sequelize');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
+const { generateToken } = require('../tokenUtils');
 
 const controladorUtilizadores = {
     adicionar: async (req, res) => {
@@ -145,6 +146,30 @@ const controladorUtilizadores = {
         }
     },
 
+    consultarPorEmail: async (req, res) => {
+        const { email } = req.params;
+    
+        try {
+            const utilizador = await models.utilizador.findOne({
+                where: {
+                    email: email
+                },
+                include: {
+                    model: models.perfil,
+                    as: 'perfil'
+                }
+            });
+    
+            if (!utilizador) {
+                return res.status(404).json({ error: 'Utilizador não encontrado' });
+            }
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: utilizador });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar utilizador', details: error.message });
+        }
+    },
+
     consultarTodos: async (req, res) => {
         try {
             const utilizadors = await sequelizeConn.query(
@@ -239,6 +264,19 @@ const controladorUtilizadores = {
                 { type: QueryTypes.SELECT }
             );
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: utilizadors });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
+        }
+    },  
+
+    novoToken: async (req, res) => {
+        const { id} = req.params;
+        try {
+            const utilizador = await models.utilizador.findByPk(id);
+
+            const token = generateToken(utilizador);
+            console.log(token);
+            res.status(200).json(token);
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
         }

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { Modal, Box, Typography, TextField, Button, Checkbox, FormControlLabel, IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Google, Facebook } from '@mui/icons-material';
@@ -17,6 +18,8 @@ const style = {
 };
 
 const LoginModal = ({ open, handleClose }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
@@ -24,36 +27,45 @@ const LoginModal = ({ open, handleClose }) => {
     setShowPassword(!showPassword);
   };
 
-  const handleLogin = () => {
-    // lógica de autenticação
-    // se o login for bem sucedido, redirecionar para a dashboard
-    navigate('/dashboard');
+  const handleLogin = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8000/utilizadores/email/${email}`);
+      console.log(response);
+
+      const utilizador = response.data.data;
+      if (password !== utilizador.passwd){
+        alert('Palavra-passe errada!');
+        return;
+      }
+
+      if (utilizador.perfil.descricao === 'User'){
+        alert('Sem acesso a backoffice!');
+        return;
+      }
+
+      sessionStorage.setItem('userid', utilizador.utilizadorid);
+      sessionStorage.setItem('nome', utilizador.pnome+' '+utilizador.unome);
+      
+      const tokenResponse = await axios.get(`http://localhost:8000/utilizadores/token/${utilizador.utilizadorid}`);
+      sessionStorage.setItem('token', tokenResponse.data);
+      navigate('/dashboard');
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+          alert('Utilizador não encontrado');
+      } else {
+          console.error('Erro ao fazer login:', error);
+      }
+    }
   };
 
   return (
     <Modal open={open} onClose={handleClose}>
       <Box sx={style}>
-        <Typography variant="h4" textAlign="center" gutterBottom>
-          SOFTSHARES
-        </Typography>
-        <Typography variant="h5" textAlign="center" gutterBottom>
-          Entrar na tua conta
-        </Typography>
-        <Typography variant="subtitle1" textAlign="center" gutterBottom>
-          Bem vindo de volta, introduz os teus dados!
-        </Typography>
-        <TextField
-          label="Email"
-          fullWidth
-          margin="normal"
-          variant="outlined"
-        />
-        <TextField
-          label="Password"
-          type={showPassword ? 'text' : 'password'}
-          fullWidth
-          margin="normal"
-          variant="outlined"
+        <Typography variant="h4" textAlign="center" gutterBottom> SOFTSHARES </Typography>
+        <Typography variant="h5" textAlign="center" gutterBottom> Entrar na tua conta </Typography>
+        <Typography variant="subtitle1" textAlign="center" gutterBottom> Bem vindo de volta, introduz os teus dados! </Typography>
+        <TextField label="Email" fullWidth margin="normal" variant="outlined" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <TextField label="Password" type={showPassword ? 'text' : 'password'} fullWidth margin="normal" variant="outlined" value={password} onChange={(e) => setPassword(e.target.value)}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">

@@ -5,10 +5,12 @@ import {
   Button,
   Radio,
   Checkbox,
+  Switch,
+  FormControlLabel,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const Question = ({ question, handleTextChange, handleOptionChange, addOption, removeOption }) => {
+const Question = ({ question, handleTextChange, handleOptionChange, addOption, removeOption, handleRequiredChange }) => {
   const renderOptions = () => {
     return question.options.map((opt, idx) => (
       <div key={idx} style={{ display: 'flex', alignItems: 'center' }}>
@@ -69,7 +71,7 @@ const Question = ({ question, handleTextChange, handleOptionChange, addOption, r
               style={{ marginBottom: '10px' }}
             />
             {renderOptions()}
-            <Button variant="contained" onClick={() => addOption(question.id)}>
+            <Button variant="contained" onClick={() => addOption(question.id)} style={{marginTop: 5, marginRight: 20}}>
               Adicionar opção
             </Button>
           </>
@@ -82,6 +84,17 @@ const Question = ({ question, handleTextChange, handleOptionChange, addOption, r
   return (
     <div>
       {renderQuestionInput()}
+      <FormControlLabel
+        control={
+          <Switch
+            checked={question.required}
+            onChange={() => handleRequiredChange(question.id)}
+            color="primary"
+          />
+        }
+        label="Obrigatório"
+        style={{ marginTop: '10px' }}
+      />
     </div>
   );
 };

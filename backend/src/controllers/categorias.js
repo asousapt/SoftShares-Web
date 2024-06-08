@@ -117,7 +117,7 @@ const controladorCategorias = {
 
     atualizar: async (req, res) => {
         const { idCat } = req.params;
-        const { descricaoPT, descricaoEN, descricaoES, inativo } = req.body;
+        const { descricaoPT, descricaoEN, descricaoES, inactivo } = req.body;
 
         try {
             const idiomaPT = await models.idioma.findOne({
@@ -148,7 +148,7 @@ const controladorCategorias = {
             }
 
             await models.categoria.update({
-                inativo: inativo
+                inactivo: inactivo
             }, {
                 where: {
                     categoriaid: idCat
@@ -189,6 +189,37 @@ const controladorCategorias = {
         }
     },
     
+    consultarPorID: async (req, res) => {
+        const { idCat } = req.params;
+        console.log('teste:', idCat);
+        try {
+            const categoria = await sequelizeConn.query(
+                `SELECT 
+                    c.*, 
+                    (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 1) as ValorPT, 
+                    (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 2) as ValorEN, 
+                    (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 3) as ValorES 
+                FROM 
+                    categoria c 
+                INNER JOIN 
+                    chave ch ON c.categoriaid = ch.registoid AND ch.entidade = 'CATEGORIA'
+                WHERE c.categoriaid = :idCat`,
+                {
+                    replacements: { idCat },
+                    type: QueryTypes.SELECT
+                }
+            );
+
+            if (categoria.length === 0) {
+                return res.status(404).json({ error: 'Categoria não encontrada' });
+            }
+
+            res.status(200).json(categoria[0]);
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar a categoria', details: error.message });
+        }
+    },
+
     remover: async (req, res) => {
         const { idCat } = req.params;
         

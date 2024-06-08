@@ -110,44 +110,25 @@ const funcoes = {
 
     atualizar: async (req, res) => {
         const { idFuncao } = req.params;
-        const { descricaoPT, descricaoEN, descricaoES, inativo } = req.body;
+        const { descricaoPT, descricaoEN, descricaoES, inactivo } = req.body;
 
         try {
-            const idiomaPT = await models.idioma.findOne({
-                where: { 
-                    icone: 'pt'
-                }
-            });
-            const idiomaEN = await models.idioma.findOne({
-                where: { 
-                    icone: 'en'
-                }
-            });
-            const idiomaES = await models.idioma.findOne({
-                where: { 
-                    icone: 'es'
-                }
-            });
-
-            const idiomas = {
-                pt: idiomaPT.idiomaid,
-                en: idiomaEN.idiomaid,
-                es: idiomaES.idiomaid,
-            };
-
+            const idiomas = {};
+            const idiomaPT = await models.idioma.findOne({ where: { icone: 'pt' } });
+            const idiomaEN = await models.idioma.findOne({ where: { icone: 'en' } });
+            const idiomaES = await models.idioma.findOne({ where: { icone: 'es' } });
+    
+            idiomas.pt = idiomaPT ? idiomaPT.idiomaid : null;
+            idiomas.en = idiomaEN ? idiomaEN.idiomaid : null;
+            idiomas.es = idiomaES ? idiomaES.idiomaid : null;
+    
             const funcao = await models.funcao.findByPk(idFuncao);
             if (!funcao) {
                 return res.status(404).json({ error: 'Função não encontrada' });
             }
-
-            await models.funcao.update({
-                inativo: inativo
-            }, {
-                where: {
-                    funcaoid: idFuncao
-                }
-            });
-
+    
+            await funcao.update({ inactivo });
+    
             const chave = await models.chave.findOne({
                 where: {
                     registoid: idFuncao,
@@ -157,17 +138,17 @@ const funcoes = {
             if (!chave) {
                 return res.status(404).json({ error: 'Chave não encontrada para a função' });
             }
-
+    
             const traducoes = [
                 { chaveid: chave.chaveid, idiomaid: idiomas.pt, valor: descricaoPT },
                 { chaveid: chave.chaveid, idiomaid: idiomas.en, valor: descricaoEN },
                 { chaveid: chave.chaveid, idiomaid: idiomas.es, valor: descricaoES }
             ];
+    
             await Promise.all(traducoes.map(async traducao => {
                 await models.traducao.update(
-                    { 
-                        valor: traducao.valor 
-                    },{
+                    { valor: traducao.valor },
+                    {
                         where: {
                             chaveid: traducao.chaveid,
                             idiomaid: traducao.idiomaid
@@ -175,10 +156,41 @@ const funcoes = {
                     }
                 );
             }));
-
+    
             res.status(200).json({ message: 'Função atualizada com sucesso' });
         } catch (error) {
-            res.status (500).json({ error: 'Erro ao atualizar a função', details: error.message });
+            console.error('Erro ao atualizar a função:', error);
+            res.status(500).json({ error: 'Erro ao atualizar a função', details: error.message });
+        }
+    },
+
+    consultarPorID: async (req, res) => {
+        const { idFuncao } = req.params;
+        try {
+            const funcao = await sequelizeConn.query(
+                `SELECT 
+                    f.*, 
+                    (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 1) as ValorPT, 
+                    (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 2) as ValorEN, 
+                    (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 3) as ValorES 
+                FROM 
+                    funcao f
+                INNER JOIN 
+                    chave ch ON f.funcaoid = ch.registoid AND ch.entidade = 'FUNCAO'
+                WHERE f.funcaoid = :idFuncao`,
+                {
+                    replacements: { idFuncao },
+                    type: QueryTypes.SELECT
+                }
+            );
+
+            if (funcao.length === 0) {
+                return res.status(404).json({ error: 'Função não encontrada' });
+            }
+
+            res.status(200).json(funcao[0]);
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar o função', details: error.message });
         }
     },
 

@@ -103,7 +103,6 @@ const controladorDepartamentos = {
                 return res.status(404).json({ error: 'Departamento não encontrado' });
             }
 
-            // Atualizar o campo inactivo
             await departamento.update({ inactivo });
             console.log('Departamento atualizado:', departamento);
 

@@ -7,7 +7,7 @@ const { authenticate } = require('../tokenUtils');
 router.post('/add', authenticate, funcoesControlador.adicionar);
 
 //ROUTES PUT
-router.put('/update/:idFuncao', authenticate, funcoesControlador.adicionar);
+router.put('/update/:idFuncao', authenticate, funcoesControlador.atualizar);
 
 //ROUTES DELETE
 router.delete('/delete/:idFuncao', authenticate, funcoesControlador.remover);
@@ -15,5 +15,6 @@ router.delete('/delete/:idFuncao', authenticate, funcoesControlador.remover);
 //ROUTES GET
 router.get('/', authenticate, funcoesControlador.consultarTudo);
 router.get('/filtro', authenticate, funcoesControlador.consultarTudoComFiltroPT);
+router.get('/:idFuncao', authenticate, funcoesControlador.consultarPorID);
 
 module.exports = router;

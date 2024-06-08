@@ -106,7 +106,7 @@ export default function Configtilizadores() {
                 </div>
             </div>
             <NovoDepartamento open={isNewModalOpen} onClose={() => setNewModalOpen(false)} />
-            <EditDepartamento open={isEditModalOpen} onClose={() => setEditModalOpen(false)} departamentoId={selectedDepartamentoId} /> {/* Adicionar modal de edição */}
+            <EditDepartamento open={isEditModalOpen} onClose={() => setEditModalOpen(false)} departamentoId={selectedDepartamentoId} />
         </div>
     );
 }

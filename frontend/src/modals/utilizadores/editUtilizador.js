@@ -33,7 +33,7 @@ const EditUserModal = ({ open, onClose, userId }) => {
                 const response = await axios.get(`http://localhost:8000/utilizadores/${userId}`, {
                     headers: { Authorization: `${token}` }
                 });
-                const userData = response.data;
+                const userData = response.data.data;
                 setPoloid(userData.poloid);
                 setPerfilid(userData.perfilid);
                 setPnome(userData.pnome);
@@ -41,6 +41,7 @@ const EditUserModal = ({ open, onClose, userId }) => {
                 setEmail(userData.email);
                 setDepartamentoid(userData.departamentoid);
                 setFuncaoid(userData.funcaoid);
+                setPasswd(userData.passwd);
                 setSobre(userData.sobre);
                 setInactivo(userData.inactivo);
                 setImage(userData.image || 'https://i0.wp.com/ctmirror-images.s3.amazonaws.com/wp-content/uploads/2021/01/dummy-man-570x570-1.png?fit=570%2C570&ssl=1');
@@ -126,7 +127,7 @@ const EditUserModal = ({ open, onClose, userId }) => {
 
                 setPerfil(perfilOptions);
             } catch (error) {
-                console.error('Erro ao buscar funções:', error);
+                console.error('Erro ao buscar perfis:', error);
             }
         };
 
@@ -218,8 +219,8 @@ const EditUserModal = ({ open, onClose, userId }) => {
                                         labelPlacement="start"
                                         control={<Switch checked={inactivo} onChange={handleChangeAtivo} />}
                                         label="Inativo"
-                                        sx={{ marginTop: '10px' }}
-                                    /></div>
+                                        sx={{ marginTop: '10px' }}/>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -1,17 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import {
-  Container,
-  Typography,
   Paper,
-  Button,
-  Box
+  Button
 } from '@mui/material';
 import DeleteButton from '../buttons/deleteButton';
-import DeleteIcon from '@mui/icons-material/Delete';
 import QuestionTypes from './QuestionTypes';
 import Question from './Question';
 
-const FormBuilder = () => {
+const FormBuilder = forwardRef((props, ref) => {
   const [questions, setQuestions] = useState([]);
   const [formData, setFormData] = useState(null);
 
@@ -62,23 +58,31 @@ const FormBuilder = () => {
     setQuestions(questions.filter(q => q.id !== id));
   };
 
-  const generateJSON = () => {
-    const data = questions.map(q => ({
-      id: q.id,
-      type: q.type,
-      text: q.text,
-      options: q.options,
-      required: q.required
-    }));
-    setFormData(JSON.stringify(data, null, 2));
+  const handleRequiredChange = (id) => {
+    setQuestions(questions.map(q => q.id === id ? { ...q, required: !q.required } : q));
   };
 
+  useImperativeHandle(ref, () => ({
+    generateJSON() {
+      const data = questions.map(q => ({
+        id: q.id,
+        type: q.type,
+        text: q.text,
+        options: q.options,
+        required: q.required
+      })); 
+      if (typeof props.onFormSubmit === 'function') {
+        props.onFormSubmit(JSON.stringify(data));
+      }
+    }
+  }));
+
   return (
-    <Container>
+    <div>
       <div>
         {questions.map((q) => (
-          <Paper key={q.id} style={{ padding: '20px', marginBottom: '20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px', gap: 10 }}>
+          <Paper key={q.id} style={{ padding: '10px', margin: 5, marginBottom: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px', gap: 10, marginTop: 10 }}>
               <QuestionTypes onChange={handleTypeChange} idPergunta={q.id} valor={q.type} />
               <DeleteButton onclick={() => handleRemoveQuestion(q.id)} caption='Remover Pergunta'/>
             </div>
@@ -89,26 +93,17 @@ const FormBuilder = () => {
               handleOptionChange={handleOptionChange}
               addOption={addOption}
               removeOption={removeOption}
+              handleRequiredChange={handleRequiredChange}
             />
           </Paper>
         ))}
       </div>
-      <Box mt={2}>
-        <Button variant="contained" color="primary" onClick={generateJSON}>
-          Gerar JSON
-        </Button>
-        <Button variant="contained" color="primary" onClick={addQuestion}>
-          Adicionar uma pergunta
-        </Button>
-      </Box>
-      {formData && (
-        <Box mt={2}>
-          <Typography variant="h6">JSON Gerado:</Typography>
-          <pre>{formData}</pre>
-        </Box>
-      )}
-    </Container>
+
+      <Button variant="contained" color="primary" onClick={addQuestion}>
+        Adicionar uma pergunta
+      </Button>
+    </div>
   );
-};
+});
 
 export default FormBuilder;

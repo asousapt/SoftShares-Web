@@ -19,7 +19,7 @@ const EditarSubcategoria = ({ open, onClose, subcategoriaId, onEdit }) => {
     useEffect(() => {
         const fetchCategorias = async () => {
             try {
-                const token = 'tokenFixo';
+                const token = sessionStorage.getItem('token');
                 const response = await axios.get('http://localhost:8000/categoria', {
                     headers: {
                         Authorization: `${token}`
@@ -34,7 +34,7 @@ const EditarSubcategoria = ({ open, onClose, subcategoriaId, onEdit }) => {
 
         const fetchSubcategoria = async () => {
             try {
-                const token = 'tokenFixo';
+                const token = sessionStorage.getItem('token');
                 const response = await axios.get(`http://localhost:8000/subcategoria/${subcategoriaId}`, {
                     headers: {
                         Authorization: `${token}`
@@ -62,7 +62,7 @@ const EditarSubcategoria = ({ open, onClose, subcategoriaId, onEdit }) => {
 
     const handleEditEvent = async () => {
         try {
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
             const response = await axios.put(`http://localhost:8000/subcategoria/update/${subcategoriaId}`, {
                 headers: {
                     Authorization: `${token}`

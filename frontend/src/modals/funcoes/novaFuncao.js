@@ -12,7 +12,7 @@ const NovaFuncao = ({ open, onClose }) => {
 
     const handleAddEvent = async () => {
         try {
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
             const response = await axios.post('http://localhost:8000/funcao/add', {
                 descricaoPT,
                 descricaoEN,

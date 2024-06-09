@@ -17,7 +17,7 @@ const EditarCategoria = ({ open, onClose, categoriaId }) => {
         if (categoriaId && open) {
             const fetchCategoria = async () => {
                 try {
-                    const token = 'tokenFixo';
+                    const token = sessionStorage.getItem('token');
                     const response = await axios.get(`http://localhost:8000/categoria/${categoriaId}`, {
                         headers: {
                             Authorization: `${token}`,
@@ -49,7 +49,7 @@ const EditarCategoria = ({ open, onClose, categoriaId }) => {
         }
 
         try {
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
             await axios.put(`http://localhost:8000/categoria/update/${categoriaId}`, {
                 descricaoPT: descricao,
                 descricaoEN: descricaoENG,

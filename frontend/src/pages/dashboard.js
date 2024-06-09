@@ -20,7 +20,7 @@ export default function Dashboard() {
         const fetchData = async () => {
             try {
                 const token = sessionStorage.getItem('token');
-    
+
                 const polosResponse = await axios.get('http://localhost:8000/utilizadores/totalpolo', {
                     headers: {
                         Authorization: `${token}`

@@ -32,7 +32,7 @@ const EditarPolo = ({ open, onClose, poloId }) => {
 
     const fetchPoloData = async (id) => {
         try {
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
             const response = await axios.get(`http://localhost:8000/polo/${id}`, {
                 headers: { Authorization: `${token}` }
             });
@@ -52,7 +52,7 @@ const EditarPolo = ({ open, onClose, poloId }) => {
     };
 
     const fetchDistritoByCidadeId = async (cidadeId) => {
-        const token = 'tokenFixo';
+        const token = sessionStorage.getItem('token');
         const response = await axios.get(`http://localhost:8000/cidades/${cidadeId}/distrito`, {
             headers: { Authorization: `${token}` }
         });
@@ -62,7 +62,7 @@ const EditarPolo = ({ open, onClose, poloId }) => {
 
     const fetchDistritos = async () => {
         try {
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
             const response = await axios.get('http://localhost:8000/cidades/distritos', {
                 headers: { Authorization: `${token}` }
             });
@@ -79,7 +79,7 @@ const EditarPolo = ({ open, onClose, poloId }) => {
 
     const fetchCidades = async (distritoId, cidadeId) => {
         try {
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
             const response = await axios.get(`http://localhost:8000/cidades/distrito/${distritoId}`, {
                 headers: { Authorization: `${token}` }
             });
@@ -107,7 +107,7 @@ const EditarPolo = ({ open, onClose, poloId }) => {
 
     const handleUpdateEvent = async () => {
         try {
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
             const novoPolo = {
                 descricao,
                 morada,

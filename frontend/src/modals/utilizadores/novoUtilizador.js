@@ -29,7 +29,7 @@ const AddUserModal = ({ open, onClose }) => {
     useEffect(() => {
         const fetchDepartamentos = async () => {
             try {
-                const token = 'tokenFixo';
+                const token = sessionStorage.getItem('token');
                 const response = await axios.get('http://localhost:8000/departamento', {
                     headers: { Authorization: `${token}` }
                 });
@@ -49,7 +49,7 @@ const AddUserModal = ({ open, onClose }) => {
 
         const fetchPolos = async () => {
             try {
-                const token = 'tokenFixo';
+                const token = sessionStorage.getItem('token');
                 const response = await axios.get('http://localhost:8000/polo', {
                     headers: { Authorization: `${token}` }
                 });
@@ -68,7 +68,7 @@ const AddUserModal = ({ open, onClose }) => {
 
         const fetchFuncao = async () => {
             try {
-                const token = 'tokenFixo';
+                const token = sessionStorage.getItem('token');
                 const response = await axios.get('http://localhost:8000/funcao', {
                     headers: { Authorization: `${token}` }
                 });
@@ -88,7 +88,7 @@ const AddUserModal = ({ open, onClose }) => {
 
         const fetchPerfil = async () => {
             try {
-                const token = 'tokenFixo';
+                const token = sessionStorage.getItem('token');
                 const response = await axios.get('http://localhost:8000/perfil', {
                     headers: { Authorization: `${token}` }
                 });
@@ -114,7 +114,7 @@ const AddUserModal = ({ open, onClose }) => {
 
     const handleAddUser = async () => {
         try {
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
             const newUser = {
                 poloid,
                 perfilid,
@@ -129,7 +129,6 @@ const AddUserModal = ({ open, onClose }) => {
                 sobre,
                 inactivo
             };
-            console.log(JSON.stringify(newUser));
             await axios.post('http://localhost:8000/utilizadores/add', newUser, {
                 headers: {
                     'Authorization': `${token}`,

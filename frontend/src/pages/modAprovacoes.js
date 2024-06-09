@@ -27,7 +27,7 @@ export default function ModAprov() {
 
     const fetchData = async () => {
         try {
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
             const responseEventos = await axios.get('http://localhost:8000/evento/porAprovar', {
                 headers: {
                     Authorization: `${token}`

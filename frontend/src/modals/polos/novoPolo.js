@@ -24,7 +24,7 @@ const NovoPolo = ({ open, onClose }) => {
     useEffect(() => {
         const fetchDistritos = async () => {
             try {
-                const token = 'tokenFixo';
+                const token = sessionStorage.getItem('token');
                 const response = await axios.get('http://localhost:8000/cidades/distritos', {
                     headers: { Authorization: `${token}` }
                 });
@@ -45,7 +45,7 @@ const NovoPolo = ({ open, onClose }) => {
 
     const fetchCidades = async (distritoId) => {
         try {
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
             const response = await axios.get(`http://localhost:8000/cidades/distrito/${distritoId}`, {
                 headers: { Authorization: `${token}` }
             });
@@ -73,7 +73,7 @@ const NovoPolo = ({ open, onClose }) => {
 
         const handleAddEvent = async () => {
             try {
-                const token = 'tokenFixo';
+                const token = sessionStorage.getItem('token');
                 const novoPolo = {
                     descricao: descricao,
                     morada: morada,
@@ -91,7 +91,6 @@ const NovoPolo = ({ open, onClose }) => {
                         'Content-Type': 'application/json',
                     }
                 });
-                console.log();
                 console.log('Evento Adicionado');
                 onClose();
             } catch (error) {

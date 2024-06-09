@@ -46,7 +46,7 @@ export default function ConfigSubcategorias() {
 
     const fetchCategorias = async () => {
         try {
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
             const response = await axios.get('http://localhost:8000/categoria', {
                     headers: {
                         Authorization: `${token}`
@@ -68,7 +68,7 @@ export default function ConfigSubcategorias() {
 
     const fetchData = async () => {
         try {
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
 
             let estado = undefined;
             if (filtroCombo === 'Ativos') {

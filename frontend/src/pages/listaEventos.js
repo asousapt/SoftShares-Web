@@ -40,7 +40,7 @@ export default function ListaEventos() {
     ];
 
     const fetchCategorias = async () => {
-        const token = 'tokenFixo';
+        const token = sessionStorage.getItem('token');
 
         const response = await axios.get('http://localhost:8000/categoria', {
             headers: {
@@ -60,7 +60,7 @@ export default function ListaEventos() {
 
     const fetchData = async () => {
         try {
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
 
             let estado = undefined;
             if (filtroEstado === 'Aprovados') {

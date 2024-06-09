@@ -30,7 +30,7 @@ export default function ModDen() {
 
     const fetchData = async () => {
         try {
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
 
             const response = await axios.get('http://localhost:8000/denuncia/filtro', {
                 headers: {

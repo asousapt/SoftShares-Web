@@ -17,7 +17,7 @@ const EditDepartamento = ({ open, onClose, departamentoId }) => {
         if (departamentoId && open) {
             const fetchData = async () => {
                 try {
-                    const token = 'tokenFixo';
+                    const token = sessionStorage.getItem('token');
                     const response = await axios.get(`http://localhost:8000/departamento/${departamentoId}`, {
                         headers: {
                             Authorization: `${token}`
@@ -44,7 +44,7 @@ const EditDepartamento = ({ open, onClose, departamentoId }) => {
 
     const handleUpdateEvent = async () => {
         try {
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
             const response = await axios.put(`http://localhost:8000/departamento/update/${departamentoId}`, {
                 valorpt: descricaoPT,
                 valoren: descricaoEN,

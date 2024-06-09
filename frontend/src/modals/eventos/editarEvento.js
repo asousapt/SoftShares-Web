@@ -107,10 +107,10 @@ const EditEventModal = ({ open, onClose, eventData }) => {
                 const distrito = await fetchDistritoByCidadeId(userData.cidadeid);
                 setDistrito(distrito);
                 fetchCidades(distrito.value, userData.cidadeid);
-                
-                setCategoria(opcoesFiltroCat.find(cat => cat.value === userData.subcategoria.categoriaid));//{ value: categoria.categoriaid, label: categoria.valorpt });
+
+                setCategoria(opcoesFiltroCat.find(cat => cat.value === userData.subcategoria.categoriaid));
                 fetchSubcategorias(userData.subcategoria.categoriaid);
-                setSubcategoria(opcoesFiltroSubcat.find(subcat => subcat.value === userData.subcategoria.subcategoriaid));//{ value: userData.subcategoriaid, label: userData.subcategoria.valorpt });
+                setSubcategoria(opcoesFiltroSubcat.find(subcat => subcat.value === userData.subcategoriaid));
             } catch (error) {
                 console.error('Erro ao buscar dados do evento:', error);
             }
@@ -121,7 +121,6 @@ const EditEventModal = ({ open, onClose, eventData }) => {
         fetchPolos();
         fetchCategorias();
         fetchEventData();
-        console.log('categoria',categoria);
     }, [eventData, open]);
 
         const fetchDistritoByCidadeId = async (cidadeId) => {

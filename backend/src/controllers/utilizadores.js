@@ -275,7 +275,6 @@ const controladorUtilizadores = {
             const utilizador = await models.utilizador.findByPk(id);
 
             const token = generateToken(utilizador);
-            console.log(token);
             res.status(200).json(token);
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });

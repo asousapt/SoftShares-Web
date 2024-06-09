@@ -29,17 +29,16 @@ const controladorAlertas = {
 
     atualizarAlerta: async (req, res) => {
         const { idAlerta } = req.params;
-        const { utilizadorID, texto, idiomaid, poloID, inactivo } = req.body;
-
+        const { texto, poloID, inactivo } = req.body;
+        console.log(inactivo);
         try {
             await models.alerta.update({
-                utilizadorid: utilizadorID,
                 texto: texto,
                 poloid: poloID,
                 inactivo: inactivo
             }, {
                 where: {
-                    alertaID: idAlerta
+                    alertaid: idAlerta
                 }
             });
 
@@ -49,6 +48,29 @@ const controladorAlertas = {
         }
     },
 
+    consultarAlerta: async (req, res) => {
+        const { idAlerta } = req.params;
+        console.log(idAlerta);
+
+        try {
+            const alerta = await models.alerta.findOne({
+                where: {
+                    alertaid: idAlerta
+                },
+                include: [
+                    {
+                        model: models.utilizador,
+                        as: 'utilizador',
+                        attributes: ['pnome', 'unome']
+                    }
+                ]
+            });
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: alerta });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar o alerta', details: error.message });
+        }
+    },
+    
     inativarAlerta: async (req, res) => {
         const { idAlerta } = req.params;
 

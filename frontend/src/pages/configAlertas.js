@@ -11,6 +11,7 @@ import Search from '../components/textFields/search';
 import StateChanger from '../components/stateChanger/stateChanger';
 /* FIM COMPONENTES */
 import NovoAlerta from '../modals/alertas/novoAlerta';
+import EditarAlerta from '../modals/alertas/editarAlerta';
 
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},
@@ -20,6 +21,8 @@ const opcoesFiltro = [
 
 export default function ConfigAlertas() {
     const [isNewModalOpen, setNewModalOpen] = useState(false);
+    const [isEditModalOpen, setEditModalOpen] = useState(false);
+    const [selectedAlertaId, setSelectedAlertaId] = useState(null);
     const [filtroText, setFiltroText] = useState('');
     const [filtroCombo, setFiltroCombo] = useState('Todos');
     const [tableRows, setTableRows] = useState([]);
@@ -31,8 +34,13 @@ export default function ConfigAlertas() {
         { field: 'dataHora', headerName: 'Data e Hora de Criação', type: 'dateTime', width: 300, headerAlign: 'left' },
         { field: 'criadoPor', headerName: 'Criado por', flex: 1, headerAlign: 'left' },
         { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => ( <StateChanger status={row.value} />) },
-        { field: 'ver', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
+        { field: 'ver', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEdit(row.id)} />)},
     ];
+
+    const handleEdit = (id) => {
+        setSelectedAlertaId(id);
+        setEditModalOpen(true);
+    };
 
     const fetchData = async () => {
         try {
@@ -73,10 +81,10 @@ export default function ConfigAlertas() {
     }, [filtroCombo, filtroText])
 
     useEffect(() => {
-        if(!isNewModalOpen){
+        if(!isNewModalOpen && !isEditModalOpen){
             fetchData();
         }
-    }, [isNewModalOpen]);
+    }, [isNewModalOpen, isEditModalOpen]);
 
     if (error) {
         return <div>Error: {error.message}</div>;
@@ -96,6 +104,7 @@ export default function ConfigAlertas() {
                 </div>
             </div>
             <NovoAlerta open={isNewModalOpen} onClose={() => setNewModalOpen(false)}/>
+            <EditarAlerta open={isEditModalOpen} onClose={() => setEditModalOpen(false)} alertaid={selectedAlertaId} />
         </div>
     )
 }

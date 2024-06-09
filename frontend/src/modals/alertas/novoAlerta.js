@@ -15,7 +15,6 @@ const NovoAlerta = ({ open, onClose }) => {
     const fetchPolos = async () => {
         try {
             const token = 'tokenFixo';
-
             const response = await axios.get('http://localhost:8000/polo', {
                 headers: {
                     Authorization: `${token}`

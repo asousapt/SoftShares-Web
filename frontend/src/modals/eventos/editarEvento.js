@@ -31,16 +31,69 @@ const EditEventModal = ({ open, onClose, eventData }) => {
     const [error, setError] = useState(null);
     const [image, setImage] = useState('https://i0.wp.com/ctmirror-images.s3.amazonaws.com/wp-content/uploads/2021/01/dummy-man-570x570-1.png?fit=570%2C570&ssl=1');
 
-    useEffect(() => {
-        const fetchEventData = async () => {
+    const fetchSubcategorias = async (idcat) => {
+        if (idcat){
+            try {
+                const token = sessionStorage.getItem('token');
+                const response = await axios.get(`http://localhost:8000/subcategoria/categoria/${idcat}`, {
+                    headers: { Authorization: `${token}` }
+                });
+                const subcategorias = response.data;
+
+                const subcategoriasOptions = subcategorias.map((subcat) => ({
+                    value: subcat.subcategoriaid,
+                    label: subcat.valorpt
+                }));
+                setOpcoesSubcat(subcategoriasOptions);
+            } catch (error) {
+                setError(error);
+            }
+        }
+    }
+
+    const fetchCategorias = async () => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get('http://localhost:8000/categoria', {
+                headers: { Authorization: `${token}` }
+            });
+            const categorias = response.data;
+
+            const categoriasOptions = categorias.map((cat) => ({
+                value: cat.categoriaid,
+                label: cat.valorpt
+            }));
+            setOpcoesCat(categoriasOptions);
+        } catch (error) {
+            setError(error);
+        }
+    };
+
+    const fetchPolos = async () => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get('http://localhost:8000/polo', {
+                headers: { Authorization: `${token}` }
+            });
+            const polosData = response.data.data;
+            const polosOptions = polosData.map(polo => ({
+                value: polo.poloid,
+                label: polo.descricao
+            }));
+            setPolos(polosOptions);
+        } catch (error) {
+            console.error('Erro ao buscar polos:', error);
+        }
+    };
+
+    const fetchEventData = async () => {
+        if (open) {
             try {
                 const token = sessionStorage.getItem('token');
                 const response = await axios.get(`http://localhost:8000/evento/${eventData}`, {
                     headers: { Authorization: `${token}` }
                 });
                 const userData = response.data.data;
-
-                console.log(userData);
                 
                 setTitle(userData.titulo);
                 setLocalizacao(userData.localizacao);
@@ -49,22 +102,32 @@ const EditEventModal = ({ open, onClose, eventData }) => {
                 setDataHoraInicio(userData.datainicio);
                 setDataHoraFim(userData.datafim);
                 setDataLimInscricao(userData.dataliminscricao);
+                setPolo(userData.poloid);
+
                 const distrito = await fetchDistritoByCidadeId(userData.cidadeid);
                 setDistrito(distrito);
                 fetchCidades(distrito.value, userData.cidadeid);
-                setPolo(userData.poloid);
-                
-                setCategoria(userData.categoriaid);
-                setSubcategoria(userData.subcategoriaid);
+
+                const catResponse = await axios.get(`http://localhost:8000/categoria/${userData.subcategoria.categoriaid}`, {
+                    headers: { Authorization: `${token}` }
+                });
+                const categoria = catResponse.data;
+
+                setCategoria(opcoesFiltroCat.find(cat => cat.value === userData.subcategoria.categoriaid));//{ value: categoria.categoriaid, label: categoria.valorpt });
+                fetchSubcategorias(userData.subcategoria.categoriaid);
+                setSubcategoria(opcoesFiltroSubcat.find(subcat => subcat.value === userData.subcategoria.subcategoriaid));//{ value: userData.subcategoriaid, label: userData.subcategoria.valorpt });
             } catch (error) {
                 console.error('Erro ao buscar dados do evento:', error);
             }
-        };
-
-        if (open) {
-            fetchEventData();
         }
-    }, [open, eventData]);
+    };
+
+    useEffect(() => {
+        fetchPolos();
+        fetchCategorias();
+        fetchEventData();
+        console.log('categoria',categoria);
+    }, [eventData, open]);
 
         const fetchDistritoByCidadeId = async (cidadeId) => {
             const token = sessionStorage.getItem('token');
@@ -74,46 +137,6 @@ const EditEventModal = ({ open, onClose, eventData }) => {
             const distritoData = response.data.data;
             return { value: distritoData.distritoid, label: distritoData.nome };
         };
-
-        useEffect(() => {
-        const fetchCategorias = async () => {
-            try {
-                const token = sessionStorage.getItem('token');
-                const response = await axios.get('http://localhost:8000/categoria', {
-                    headers: { Authorization: `${token}` }
-                });
-                const categorias = response.data;
-
-                const categoriasOptions = categorias.map((cat) => ({
-                    value: cat.categoriaid,
-                    label: cat.valorpt
-                }));
-                setOpcoesCat(categoriasOptions);
-            } catch (error) {
-                setError(error);
-            }
-        };
-
-        const fetchPolos = async () => {
-            try {
-                const token = sessionStorage.getItem('token');
-                const response = await axios.get('http://localhost:8000/polo', {
-                    headers: { Authorization: `${token}` }
-                });
-                const polosData = response.data.data;
-                const polosOptions = polosData.map(polo => ({
-                    value: polo.poloid,
-                    label: polo.descricao
-                }));
-                setPolos(polosOptions);
-            } catch (error) {
-                console.error('Erro ao buscar polos:', error);
-            }
-        };
-        fetchPolos();
-        fetchCategorias();
-    }, []);
-        
 
     const fetchCidades = async (distritoId, cidadeId) => {
         try {
@@ -147,20 +170,21 @@ const EditEventModal = ({ open, onClose, eventData }) => {
         setCategoria(newValue);
         setSubcategoria(null);
         if (newValue) {
-            try {
-                const token = sessionStorage.getItem('token');
-                const response = await axios.get(`http://localhost:8000/subcategoria/categoria/${newValue.value}`, {
-                    headers: { Authorization: `${token}` }
-                });
-                const subcategorias = response.data;
-                const subcategoriasOptions = subcategorias.map((subcat) => ({
-                    value: subcat.subcategoriaid,
-                    label: subcat.valorpt
-                }));
-                setOpcoesSubcat(subcategoriasOptions);
-            } catch (error) {
-                setError(error);
-            }
+            fetchSubcategorias(newValue.value);
+            // try {
+            //     const token = sessionStorage.getItem('token');
+            //     const response = await axios.get(`http://localhost:8000/subcategoria/categoria/${newValue.value}`, {
+            //         headers: { Authorization: `${token}` }
+            //     });
+            //     const subcategorias = response.data;
+            //     const subcategoriasOptions = subcategorias.map((subcat) => ({
+            //         value: subcat.subcategoriaid,
+            //         label: subcat.valorpt
+            //     }));
+            //     setOpcoesSubcat(subcategoriasOptions);
+            // } catch (error) {
+            //     setError(error);
+            // }
         } else {
             setOpcoesSubcat([]);
             setSubcategoria(null);
@@ -199,7 +223,7 @@ const EditEventModal = ({ open, onClose, eventData }) => {
     return (
         <Modal open={open} onClose={onClose}>
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px', overflow: 'auto' }}>
-                <h2 style={{ marginTop: 0, color: 'white' }}>Novo Evento</h2>
+                <h2 style={{ marginTop: 0, color: 'white' }}>Editar Evento</h2>
                 <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 20, borderRadius: 12 }}>
                     <div style={{ marginBottom: 15 }}>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>

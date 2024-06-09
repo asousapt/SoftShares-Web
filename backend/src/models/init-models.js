@@ -204,6 +204,8 @@ function initModels(sequelize) {
   comentario.hasMany(comentarioresposta, { as: "respostas", foreignKey: "comentariopaiid" });
   comentarioresposta.belongsTo(comentario, { as: "resposta", foreignKey: "respostaid" });
   comentario.hasMany(comentarioresposta, { as: "comentariorepostas", foreignKey: "respostaid" });
+  evento.belongsTo(subcategoria, { as: "subcategoria", foreignKey: "subcategoriaid" });
+  subcategoria.hasMany(evento, { as: "eventos", foreignKey: "subcategoriaid" });
 
   return {
     administrador_polo,

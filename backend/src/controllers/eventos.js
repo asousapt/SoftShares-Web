@@ -175,7 +175,12 @@ const controladorEventos = {
         const { idEvento } = req.params;
 
         try {
-            const evento = await models.evento.findByPk(idEvento);
+            const evento = await models.evento.findByPk(idEvento, {
+                include: {
+                    model: models.subcategoria,
+                    as: 'subcategoria'
+                }
+            });
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: evento });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar o evento' });

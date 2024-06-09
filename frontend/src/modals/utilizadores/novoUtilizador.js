@@ -24,7 +24,7 @@ const AddUserModal = ({ open, onClose }) => {
     const [funcaoid, setFuncaoid] = useState('');
     const [sobre, setSobre] = useState('');
     const [inactivo, setInactivo] = useState(false);
-    const [image, setImage] = useState('https://i0.wp.com/ctmirror-images.s3.amazonaws.com/wp-content/uploads/2021/01/dummy-man-570x570-1.png?fit=570%2C570&ssl=1');
+    const [image, setImage] = useState('');
 
     useEffect(() => {
         const fetchDepartamentos = async () => {
@@ -149,6 +149,30 @@ const AddUserModal = ({ open, onClose }) => {
         });
     };
 
+    const handleImage = async () => {
+        try {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*'; 
+    
+            fileInput.addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                if (!file) return; 
+                
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+        
+                reader.onload = async () => {
+                    const imageData = reader.result;
+                    setImage(imageData);
+                };
+            });
+            fileInput.click();
+        } catch (error) {
+            console.error('Error uploading image:', error.message);
+        }
+    };
+
     return (
         <Modal open={open} onClose={onClose}>
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px', overflow: 'auto' }}>
@@ -192,7 +216,7 @@ const AddUserModal = ({ open, onClose }) => {
                         <div style={{ display: 'flex' }}>
                             <div style={{ padding: '20px' }}>
                                 <div style={{ paddingLeft: '5%' }}>
-                                    <InputImage image={image} />
+                                    <InputImage image={image} onAddImage={handleImage} onChange={handleImage} />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                     <FormControlLabel

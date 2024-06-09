@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Logout from '@mui/icons-material/Logout';
@@ -7,6 +7,15 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Perfil({ anchorEl, open, handleClose }) {
     const navigate = useNavigate();
+    const [userName, setUserName] = useState('');
+
+    useEffect(() => {
+        const name = sessionStorage.getItem('nome');
+        if (name) {
+            setUserName(name);
+        }
+    }, []);
+
     return(
         <Menu
             anchorEl={anchorEl}
@@ -45,7 +54,7 @@ export default function Perfil({ anchorEl, open, handleClose }) {
             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
-            <MenuItem onClick={handleClose}>
+            <MenuItem onClick={handleClose} >
                 <img 
                     src='https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D' 
                     style={{
@@ -56,7 +65,7 @@ export default function Perfil({ anchorEl, open, handleClose }) {
                         borderRadius: 12
                     }} 
                     alt='user' /> 
-                @username
+                    {userName}
             </MenuItem>
             <MenuItem onClick={() => {navigate('/'); sessionStorage.clear();}} style={{backgroundColor: '#1765E0'}}>
                 <ListItemIcon>

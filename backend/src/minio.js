@@ -5,6 +5,7 @@ require('dotenv').config();
 var minioClient = new minio.Client({
     endPoint: process.env[`MINIO_ENDPOINT`],
     port: process.env[`MINIO_PORT`],
+    user: process.env[`MINIO_USER`],
     useSSL: true,
     accessKey: process.env[`MINIO_ACCESSKEY`],
     secretKey: process.env[`MINIO_SECRETKEY`],

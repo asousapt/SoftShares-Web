@@ -1,9 +1,11 @@
 import React from 'react';
 import { IconButton } from '@mui/material';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { LuSwitchCamera } from "react-icons/lu";
+import ImageListItemBar from '@mui/material/ImageListItemBar';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-const InputImage = ({ image, onAddImage }) => {
+const InputImage = ({ image, onAddImage, onChange, onDelete }) => {
     return(
         <div style={{ width: '200px', height: '200px', border: '1px solid black', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: 15 }}>
             {image ? (
@@ -12,10 +14,24 @@ const InputImage = ({ image, onAddImage }) => {
                     src={image}
                     alt="Imagem"
                     style={{ position: 'absolute', width: '200px', height: '200px', objectFit: 'cover', borderRadius: 'inherit' }}
-                    onClick={onAddImage} // Handle image click
+                    onClick={onAddImage}
                 />
                 <div style={{ position: 'absolute', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <LuSwitchCamera size="3em" style={{ color: 'rgba(255, 255, 255, 0.3)' }} />
+                    <IconButton onClick={onChange} style={{ padding: 0, color: 'rgba(255, 255, 255, 0.2)'}}>
+                        <LuSwitchCamera size="2em" />
+                    </IconButton>
+                    {/* <ImageListItemBar style={{borderRadius: 15, backgroundColor: 'transparent'}}
+                        actionIcon={
+                            <IconButton
+                                sx={{ 
+                                    color: 'rgba(255, 255, 255, 0.8)' 
+                                }}
+                                onClick={() => {onDelete(image.id);}}
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        }
+                    /> */}
                 </div>
             </>
             ) : (

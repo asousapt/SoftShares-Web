@@ -10,14 +10,16 @@ import EventIcon from '@mui/icons-material/Event';
 import { Grid } from '@mui/material';
 
 export default function Dashboard() {
-    const [numPoiAprovar, setNumPoiAprovar] = useState('13');
-    const [numEventoAprovar, setNumEventoAprovar] = useState('9');
+    const [numPoiAprovar, setNumPoiAprovar] = useState(0);
+    const [numEventoAprovar, setNumEventoAprovar] = useState(0);
     const [error, setError] = useState(null);
-    const [data, setData] = useState([]);
-    const [total, setTotal] = useState([]);
+    const [data1, setData1] = useState([]);
+    const [total1, setTotal1] = useState(0);
+    const [data3, setData3] = useState([]);
+    const [total3, setTotal3] = useState(0);
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchDataPieCharts = async () => {
             try {
                 const token = sessionStorage.getItem('token');
 
@@ -28,21 +30,90 @@ export default function Dashboard() {
                 });
                 const polosCount = polosResponse.data.data;
                 
-                setTotal(polosCount.reduce((acc, polo) => acc + parseFloat(polo.value), 0));
+                setTotal1(polosCount.reduce((acc, polo) => acc + parseFloat(polo.value), 0));
                 
                 const formattedData = polosCount.map((polo) => ({
-                    value: Math.round((parseFloat(polo.value) / parseFloat(total)) * 100),
+                    value: Math.round((parseFloat(polo.value) / parseFloat(total1)) * 100),
                     label: polo.label
                 }));
                 
-                setData(formattedData);
+                setData1(formattedData);
+                
+                const eventosResponse = await axios.get('http://localhost:8000/evento', {
+                    headers: {
+                        Authorization: `${token}`
+                    }
+                });
+                const eventosCount = eventosResponse.data.data.length;
+                
+                const poiResponse = await axios.get('http://localhost:8000/pontoInteresse', {
+                    headers: {
+                        Authorization: `${token}`
+                    }
+                });
+                const poiCount = poiResponse.data.data.length;
+
+                const publicacoesResponse = await axios.get('http://localhost:8000/thread', {
+                    headers: {
+                        Authorization: `${token}`
+                    }
+                });
+                const publicacoesCount = publicacoesResponse.data.data.length;
+
+                const total = eventosCount + poiCount + publicacoesCount
+                setTotal3(total);
+                
+                // const formattedData = polosCount.map((polo) => ({
+                //     value: Math.round((parseFloat(polo.value) / parseFloat(total1)) * 100),
+                //     label: polo.label
+                // }));
+                
+                setData3([
+                    {value: Math.round((parseFloat(poiCount) / parseFloat(total1)) * 100), label: 'Pontos de Interesse'},
+                    {value: Math.round((parseFloat(publicacoesCount) / parseFloat(total1)) * 100), label: 'Publicações no Fórum'},
+                    {value: Math.round((parseFloat(eventosCount) / parseFloat(total1)) * 100), label: 'Eventos'}
+                ]);
             } catch (error) {
                 setError(error);
             }
         };
     
-        fetchData();
-    }, [total]);
+        fetchDataPieCharts();
+    }, [total1, total3]);
+
+    useEffect(() => {
+        const fetchDataAprovar = async () => {
+            try {
+                const token = sessionStorage.getItem('token');
+
+                const eventosResponse = await axios.get('http://localhost:8000/evento/porAprovar', {
+                    headers: {
+                        Authorization: `${token}`
+                    },
+                    params: {
+                        descricao: ''
+                    }
+                });
+                const eventosCount = eventosResponse.data.data.length;
+                setNumEventoAprovar(eventosCount);
+                
+                const PoiResponse = await axios.get('http://localhost:8000/pontoInteresse/porAprovar', {
+                    headers: {
+                        Authorization: `${token}`
+                    },
+                    params: {
+                        descricao: ''
+                    }
+                });
+                const PoiCount = PoiResponse.data.data.length;
+                setNumPoiAprovar(PoiCount);
+            } catch (error) {
+                setError(error);
+            }
+        };
+
+        fetchDataAprovar();
+    }, [])
 
     return (
         <div className="page-container">
@@ -71,13 +142,13 @@ export default function Dashboard() {
                 <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px', border: 'none', boxShadow: 'none' }}>
                     <Grid container spacing={1} wrap="wrap">
                         <Grid item xs={12} md={4} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
-                            <ChartPie style={{ maxWidth: '100%' }} chartData={data} total={total} label='Utilizadores' />
+                            <ChartPie style={{ maxWidth: '100%' }} chartData={data1} total={total1} label='Utilizadores' />
                         </Grid>
                         <Grid item xs={12} md={4} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
                             <ChartPie style={{ maxWidth: '100%' }} chartData={[]} total={0} label='Registos' />
                         </Grid>
                         <Grid item xs={12} md={4} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
-                            <ChartPie style={{ maxWidth: '100%' }} chartData={[]} total={0} label='Registos' />
+                            <ChartPie style={{ maxWidth: '100%' }} chartData={data3} total={total3} label='Registos' />
                         </Grid>
                     </Grid>
                 </div>

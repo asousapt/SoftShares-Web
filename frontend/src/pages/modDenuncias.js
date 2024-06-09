@@ -6,10 +6,11 @@ import DataTable from '../components/tables/dataTable';
 import DetailButton from '../components/buttons/detailButton';
 import AprovButton from '../components/buttons/aproveButton';
 import RejButton from '../components/buttons/rejectButton';
+import AddButton from '../components/buttons/addButton';
 import Header from '../components/header/header';
 import Search from '../components/textFields/search';
 /* FIM COMPONENTES */
-import NovoEvento from '../modals/eventos/novoEvento';
+import VerComentario from '../modals/comentario/verComentario';
 
 export default function ModDen() {
     const [isNewModalOpen, setNewModalOpen] = useState(false);
@@ -25,7 +26,7 @@ export default function ModDen() {
         { field: 'denunciadopor', headerName: 'Denunciado Por', flex: 1, headerAlign: 'left' },
         { field: 'permitir', headerName: 'Permitir', width: 85, headerAlign: 'left', sortable: false , renderCell: (row) => ( <AprovButton /*onclick={} id={row.id}*/ />)},
         { field: 'remover', headerName: 'Remover', width: 85, headerAlign: 'left', sortable: false , renderCell: (row) => ( <RejButton /*onclick={} id={row.id}*/ />)},
-        { field: 'ver', headerName: 'Ver', width: 85, headerAlign: 'left', sortable: false , renderCell: (row) => ( <DetailButton /*onclick={} id={row.id}*/ />)},
+        { field: 'ver', headerName: 'Ver', width: 85, headerAlign: 'left', sortable: false , renderCell: (row) => ( <DetailButton onclick={() => setNewModalOpen(true)} /*id={row.id}*/ />)},
     ];
 
     const fetchData = async () => {
@@ -60,14 +61,6 @@ export default function ModDen() {
         fetchData();
     }, [filtroText]);
 
-    const handleOpenNewModal = () => {
-        setNewModalOpen(true);
-    };
-
-    const handleCloseNewModal = () => {
-        setNewModalOpen(false);
-    };
-    
     if (error) {
         return <div>Error: {error.message}</div>;
     }
@@ -77,13 +70,14 @@ export default function ModDen() {
             <Header caption='Denúncias' />
             <div className="data-container">
                 <div style={{marginBottom:'20px', paddingTop: '20px'}}>
-                    <Search onchange={(e) => setFiltroText(e.target.value)} />
+                     <Search onchange={(e) => setFiltroText(e.target.value)} /> {/*so para teste */}
+                    <AddButton caption='Adicionar' onclick={() => setNewModalOpen(true)} /> 
                 </div>
                 <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px',border: 'none', boxShadow: 'none'}}>
                     <DataTable rows={tableRows || []} columns={tableColumns}/>
                 </div>
             </div>
-            <NovoEvento open={isNewModalOpen} onClose={handleCloseNewModal}/>
+            <VerComentario open={isNewModalOpen} onClose={() => setNewModalOpen(false)}/>
         </div>
     )
 }

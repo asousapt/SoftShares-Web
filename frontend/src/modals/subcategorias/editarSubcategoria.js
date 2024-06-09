@@ -63,7 +63,7 @@ const EditarSubcategoria = ({ open, onClose, subcategoriaId, onEdit }) => {
     const handleEditEvent = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.put(`http://localhost:8000/subcategoria/update/${subcategoriaId}`, {
+            await axios.put(`http://localhost:8000/subcategoria/update/${subcategoriaId}`, {
                 headers: {
                     Authorization: `${token}`
                 },
@@ -77,7 +77,7 @@ const EditarSubcategoria = ({ open, onClose, subcategoriaId, onEdit }) => {
                     Authorization: `${token}`
                 }
             });
-            onClose(); 
+            onClose();
         } catch (error) {
             console.error("Erro ao encontrar a subcategoria", error);
         }
@@ -97,6 +97,12 @@ const EditarSubcategoria = ({ open, onClose, subcategoriaId, onEdit }) => {
                             <div style={{ width: '75%' }}>
                                 <ComboBox caption='Categoria' options={categories} value={categoria} handleChange={(e) => setCategoria(e.target.value)} />
                             </div>
+                            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+                                <FormControlLabel
+                                    control={<Switch checked={inactivo} onChange={handleChangeAtivo} />}
+                                    label="Inativo"
+                                />
+                            </div>
                         </div>
                         <BasicTextField caption='Descrição Português' valor={descricaoPT} onchange={(e) => setDescricaoPT(e.target.value)} fullwidth={true} />
                         <div style={{ marginBottom: 25 }}></div>
@@ -104,12 +110,6 @@ const EditarSubcategoria = ({ open, onClose, subcategoriaId, onEdit }) => {
                         <div style={{ marginBottom: 25 }}></div>
                         <BasicTextField caption='Descrição Espanhol' valor={descricaoES} onchange={(e) => setDescricaoES(e.target.value)} fullwidth={true} />
                         <div style={{ marginBottom: 25 }}></div>
-                    </div>
-                    <div style={{ marginBottom: 15 }}>
-                        <FormControlLabel
-                            control={<Switch checked={inactivo} onChange={handleChangeAtivo} />}
-                            label="Inativo"
-                        />
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
                         <CancelButton onclick={() => { onClose(); }} caption='Cancelar' />

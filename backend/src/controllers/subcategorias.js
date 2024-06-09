@@ -93,48 +93,38 @@ const controladorSubcategorias = {
 
     adicionar: async (req, res) => {
         const { categoriaID, descricaoPT, descricaoEN, descricaoES } = req.body;
-
+        console.log('Incoming request body:', req.body);
+    
         try {
-            const idiomaPT = await models.idioma.findOne({
-                where: { 
-                    icone: 'pt'
-                }
-            });
-            const idiomaEN = await models.idioma.findOne({
-                where: { 
-                    icone: 'en'
-                }
-            });
-            const idiomaES = await models.idioma.findOne({
-                where: { 
-                    icone: 'es'
-                }
-            });
-
+            const idiomaPT = await models.idioma.findOne({ where: { icone: 'pt' } });
+            const idiomaEN = await models.idioma.findOne({ where: { icone: 'en' } });
+            const idiomaES = await models.idioma.findOne({ where: { icone: 'es' } });
+    
             const idiomas = {
                 pt: idiomaPT.idiomaid,
                 en: idiomaEN.idiomaid,
                 es: idiomaES.idiomaid,
             };
-
+    
             const subcategoria = await models.subcategoria.create({
-                categoriaID: categoriaID
+                categoriaid: categoriaID
             });
-
+    
             const chave = await models.chave.create({
                 registoid: subcategoria.subcategoriaid,
                 entidade: 'SUBCAT'
             });
-
+    
             const traducoes = [
                 { chaveid: chave.chaveid, idiomaid: idiomas.pt, valor: descricaoPT },
                 { chaveid: chave.chaveid, idiomaid: idiomas.en, valor: descricaoEN },
                 { chaveid: chave.chaveid, idiomaid: idiomas.es, valor: descricaoES }
             ];
             await Promise.all(traducoes.map(traducao => models.traducao.create(traducao)));
-
+    
             res.status(201).json({ message: 'Subcategoria adicionada com sucesso' });
         } catch (error) {
+            console.error('Erro ao adicionar subcategoria:', error);
             res.status(500).json({ error: 'Erro ao adicionar subcategoria', details: error.message });
         }
     },

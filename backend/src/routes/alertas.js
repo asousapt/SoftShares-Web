@@ -7,8 +7,8 @@ const { authenticate } = require('../tokenUtils');
 router.post('/add', authenticate, alertaControlador.adicionarAlerta);
 
 //ROUTES PUT
-router.put('/update/:idPolo', authenticate, alertaControlador.atualizarAlerta);
-router.put('/inativar/:idPolo', authenticate, alertaControlador.inativarAlerta);
+router.put('/update/:idAlerta', authenticate, alertaControlador.atualizarAlerta);
+router.put('/inativar/:idAlerta', authenticate, alertaControlador.inativarAlerta);
 
 //ROUTES DELETE
 router.delete('/delete/:idPolo', authenticate, alertaControlador.removerAlerta);
@@ -17,5 +17,6 @@ router.delete('/delete/:idPolo', authenticate, alertaControlador.removerAlerta);
 router.get('/', authenticate, alertaControlador.consultarTudo);
 router.get('/filtro', authenticate, alertaControlador.consultarTudoComFiltros);
 router.get('/polo/:idPolo', authenticate, alertaControlador.consultarAlertaPorPolo);
+router.get('/:idAlerta', authenticate, alertaControlador.consultarAlerta);
 
 module.exports = router;

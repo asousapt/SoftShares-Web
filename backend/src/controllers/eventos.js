@@ -300,7 +300,7 @@ const controladorEventos = {
                     e.*, 
                     t.valor as valorpt,
                     (SELECT COUNT(pe.participantes_eventosid) FROM participantes_eventos pe WHERE pe.eventoid = e.eventoid ) as numinscritos,
-                    (SELECT SUM(convidadosadic) FROM participantes_eventos pe WHERE pe.eventoid = e.eventoid ) as numconvidados
+                    (SELECT COALESCE(SUM(pe.convidadosadic), 0) FROM participantes_eventos pe WHERE pe.eventoid = e.eventoid ) as numconvidados
                 FROM 
                     evento e
                 INNER JOIN 

@@ -80,17 +80,21 @@ export default function ListaEventos() {
             });
             const eventos = response.data.data;
 
-            const eventosTable = eventos.map((evento) => ({
-                key: evento.eventoid,
-                id: evento.eventoid,
-                titulo: evento.titulo,
-                nParticipantes: `${evento.numinscritos+evento.numconvidados} / ${evento.nmrmaxparticipantes}`,
-                dataHora: new Date(evento.datainicio),
-                localizacao: evento.localizacao,
-                subcategoria: evento.valorpt
-            }));
-
+            const eventosTable = eventos.map((evento) => {
+                const totalParticipantes = evento.numinscritos + evento.numconvidados;
+                return {
+                    key: evento.eventoid,
+                    id: evento.eventoid,
+                    titulo: evento.titulo,
+                    nParticipantes: `${totalParticipantes} / ${evento.nmrmaxparticipantes}`,
+                    dataHora: new Date(evento.datainicio),
+                    localizacao: evento.localizacao,
+                    subcategoria: evento.valorpt
+                };
+            });
+            
             setTableRows(eventosTable);
+            
         } catch (error) {
             setError(error);
         }

@@ -12,7 +12,7 @@ const NovoDepartamento = ({ open, onClose }) => {
 
     const handleAddEvent = async () => {
         try {
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
             const response = await axios.post('http://localhost:8000/departamento/add', {
                 descricaoPT,
                 descricaoEN,

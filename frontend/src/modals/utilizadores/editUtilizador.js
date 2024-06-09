@@ -29,7 +29,7 @@ const EditUserModal = ({ open, onClose, userId }) => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const token = 'tokenFixo';
+                const token = sessionStorage.getItem('token');
                 const response = await axios.get(`http://localhost:8000/utilizadores/${userId}`, {
                     headers: { Authorization: `${token}` }
                 });
@@ -58,7 +58,7 @@ const EditUserModal = ({ open, onClose, userId }) => {
     useEffect(() => {
         const fetchDepartamentos = async () => {
             try {
-                const token = 'tokenFixo';
+                const token = sessionStorage.getItem('token');
                 const response = await axios.get('http://localhost:8000/departamento', {
                     headers: { Authorization: `${token}` }
                 });
@@ -77,7 +77,7 @@ const EditUserModal = ({ open, onClose, userId }) => {
 
         const fetchPolos = async () => {
             try {
-                const token = 'tokenFixo';
+                const token = sessionStorage.getItem('token');
                 const response = await axios.get('http://localhost:8000/polo', {
                     headers: { Authorization: `${token}` }
                 });
@@ -95,7 +95,7 @@ const EditUserModal = ({ open, onClose, userId }) => {
 
         const fetchFuncao = async () => {
             try {
-                const token = 'tokenFixo';
+                const token = sessionStorage.getItem('token');
                 const response = await axios.get('http://localhost:8000/funcao', {
                     headers: { Authorization: `${token}` }
                 });
@@ -114,7 +114,7 @@ const EditUserModal = ({ open, onClose, userId }) => {
 
         const fetchPerfil = async () => {
             try {
-                const token = 'tokenFixo';
+                const token = sessionStorage.getItem('token');
                 const response = await axios.get('http://localhost:8000/perfil', {
                     headers: { Authorization: `${token}` }
                 });
@@ -139,7 +139,7 @@ const EditUserModal = ({ open, onClose, userId }) => {
 
     const handleEditUser = async () => {
         try {
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
             const updatedUser = {
                 poloid,
                 perfilid,

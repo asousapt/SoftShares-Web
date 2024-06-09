@@ -36,7 +36,7 @@ const NovoFormulario = ({ open, onClose }) => {
     };
 
     const fetchCategorias = async () => {
-        const token = 'tokenFixo';
+        const token = sessionStorage.getItem('token');
 
         const response = await axios.get('http://localhost:8000/categoria', {
             headers: {
@@ -54,7 +54,7 @@ const NovoFormulario = ({ open, onClose }) => {
     }
 
     const fetchSubcategorias = async (catID) => {
-        const token = 'tokenFixo';
+        const token = sessionStorage.getItem('token');
 
         const response = await axios.get('http://localhost:8000/subcategoria/categoria/'+catID, {
             headers: {

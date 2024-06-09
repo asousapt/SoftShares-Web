@@ -44,7 +44,7 @@ export default function ConfigAlertas() {
 
     const fetchData = async () => {
         try {
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
 
             let estado = undefined;
             if (filtroCombo === 'Ativos') {

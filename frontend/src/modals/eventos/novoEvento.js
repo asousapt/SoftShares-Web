@@ -35,7 +35,7 @@ const AddEventModal = ({ open, onClose }) => {
     useEffect(() => {
         const fetchDistritos = async () => {
             try {
-                const token = 'tokenFixo';
+                const token = sessionStorage.getItem('token');
                 const response = await axios.get('http://localhost:8000/cidades/distritos', {
                     headers: { Authorization: `${token}` }
                 });
@@ -53,7 +53,7 @@ const AddEventModal = ({ open, onClose }) => {
 
         const fetchCategorias = async () => {
             try {
-                const token = 'tokenFixo';
+                const token = sessionStorage.getItem('token');
                 const response = await axios.get('http://localhost:8000/categoria', {
                     headers: { Authorization: `${token}` }
                 });
@@ -70,7 +70,7 @@ const AddEventModal = ({ open, onClose }) => {
 
         const fetchPolos = async () => {
             try {
-                const token = 'tokenFixo';
+                const token = sessionStorage.getItem('token');
                 const response = await axios.get('http://localhost:8000/polo', {
                     headers: { Authorization: `${token}` }
                 });
@@ -92,7 +92,7 @@ const AddEventModal = ({ open, onClose }) => {
 
     const fetchCidades = async (distritoId) => {
         try {
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
             const response = await axios.get(`http://localhost:8000/cidades/distrito/${distritoId}`, {
                 headers: { Authorization: `${token}` }
             });
@@ -123,7 +123,7 @@ const AddEventModal = ({ open, onClose }) => {
         setSubcategoria(null);
         if (newValue) {
             try {
-                const token = 'tokenFixo';
+                const token = sessionStorage.getItem('token');
                 const response = await axios.get(`http://localhost:8000/subcategoria/categoria/${newValue.value}`, {
                     headers: { Authorization: `${token}` }
                 });
@@ -145,7 +145,7 @@ const AddEventModal = ({ open, onClose }) => {
     const handleAddEvent = async () => {
         try {
             const userid = sessionStorage.getItem('userid');
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
             const novoEvento = {
                 titulo: title,
                 descricao: description,

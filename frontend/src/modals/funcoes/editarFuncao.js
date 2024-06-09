@@ -17,7 +17,7 @@ const EditFuncao = ({ open, onClose, funcaoId }) => {
         if (funcaoId && open) {
             const fetchFuncao = async () => {
                 try {
-                    const token = 'tokenFixo';
+                    const token = sessionStorage.getItem('token');
                     const response = await axios.get(`http://localhost:8000/funcao/${funcaoId}`, {
                         headers: {
                             Authorization: `${token}`
@@ -44,7 +44,7 @@ const EditFuncao = ({ open, onClose, funcaoId }) => {
 
     const handleUpdateEvent = async () => {
         try {
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
             const response = await axios.put(`http://localhost:8000/funcao/update/${funcaoId}`, {
                 descricaoPT: descricaoPT,
                 descricaoEN: descricaoEN,

@@ -14,7 +14,8 @@ const NovoAlerta = ({ open, onClose }) => {
 
     const fetchPolos = async () => {
         try {
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
+
             const response = await axios.get('http://localhost:8000/polo', {
                 headers: {
                     Authorization: `${token}`
@@ -38,7 +39,7 @@ const NovoAlerta = ({ open, onClose }) => {
     const handleAddEvent = async () => {
         try {
             const userid = sessionStorage.getItem('userid');
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
             await axios.post('http://localhost:8000/alerta/add', {
                 utilizadorID: userid,
                 texto: descricao,

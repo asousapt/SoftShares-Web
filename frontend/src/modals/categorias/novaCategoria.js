@@ -17,7 +17,7 @@ const NovaCategoria = ({ open, onClose }) => {
         }
 
         try {
-            const token = 'tokenFixo';
+            const token = sessionStorage.getItem('token');
             await axios.post('http://localhost:8000/categoria/add', {
                 descricaoPT: descricao,
                 descricaoEN: descricaoENG,

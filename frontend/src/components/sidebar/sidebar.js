@@ -26,6 +26,15 @@ const Sidebar = () => {
     const [hoveredItems, setHoveredItems] = useState({});
     const [selectedItem, setSelectedItem] = useState(location.pathname);
 
+    const [userName, setUserName] = useState('');
+
+    useEffect(() => {
+        const name = sessionStorage.getItem('nome');
+        if (name) {
+            setUserName(name);
+        }
+    }, []);
+
     useEffect(() => {
         setSelectedItem(location.pathname);
     }, [location.pathname]);
@@ -95,7 +104,7 @@ const Sidebar = () => {
             <List style={{ width: '250px', backgroundColor: 'rgba(42, 67, 97, 1)', height: '100%', overflowY: 'scroll' }}>
                 <div className="regiao">@Polo</div>
                 <div className="bemvindo">Bem-vindo</div>
-                <div className="User">@user</div>
+                <div className="User">{userName}</div>
 
                 {menuItems.map((item, index) => (
                     <div key={index}>

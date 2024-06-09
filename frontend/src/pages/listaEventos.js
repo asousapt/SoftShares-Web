@@ -9,7 +9,8 @@ import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
 import ComboFilter from '../components/combobox/comboFilter';
 /* FIM COMPONENTES */
-import NovoEvento from '../modals/eventos/novoEvento'; 
+import NovoEvento from '../modals/eventos/novoEvento';
+import EditarEvento from '../modals/eventos/editarEvento';
 
 const opcoesFiltroEstado = [
     { value: 'Todos', label: 'Todos' },
@@ -24,6 +25,8 @@ export default function ListaEventos() {
     const [opcoesFiltroSubcat, setOpcoesSubcat] = useState([]);
     const [filtroCategoria, setFiltroCategoria] = useState(0);
     const [tableRows, setTableRows] = useState([]);
+    const [isEditModalOpen, setEditModalOpen] = useState(false);
+    const [selectedEventoId, setSelectedEventoId] = useState(null);
     const [error, setError] = useState(null);
 
     const tableColumns = [
@@ -33,8 +36,7 @@ export default function ListaEventos() {
         { field: 'dataHora', headerName: 'Data e Hora de Começo', type: 'dateTime', width: 250, headerAlign: 'left' },
         { field: 'localizacao', headerName: 'Localização', flex: 1, headerAlign: 'left' },
         { field: 'subcategoria', headerName: 'Subcategoria', flex: 1, headerAlign: 'left' },
-        { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false, renderCell: (row) => (
-                <EditButton caption=' ' /*onclick={} id={row.id}*/ />
+        { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false, renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEditClick(row.id)} />
             )
         },
     ];
@@ -100,6 +102,11 @@ export default function ListaEventos() {
         }
     };
 
+    const handleEditClick = (id) => {
+        setSelectedEventoId(id);
+        setEditModalOpen(true);
+    };
+
     useEffect(() => {
         fetchCategorias();
     }, []);
@@ -127,6 +134,7 @@ export default function ListaEventos() {
                 </div>
             </div>
             <NovoEvento open={isNewModalOpen} onClose={() => setNewModalOpen(false)} />
+            <EditarEvento open={isEditModalOpen} onClose={() => setEditModalOpen(false)} eventData={selectedEventoId} />
         </div>
     );
 }

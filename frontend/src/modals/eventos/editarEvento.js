@@ -107,12 +107,7 @@ const EditEventModal = ({ open, onClose, eventData }) => {
                 const distrito = await fetchDistritoByCidadeId(userData.cidadeid);
                 setDistrito(distrito);
                 fetchCidades(distrito.value, userData.cidadeid);
-
-                const catResponse = await axios.get(`http://localhost:8000/categoria/${userData.subcategoria.categoriaid}`, {
-                    headers: { Authorization: `${token}` }
-                });
-                const categoria = catResponse.data;
-
+                
                 setCategoria(opcoesFiltroCat.find(cat => cat.value === userData.subcategoria.categoriaid));//{ value: categoria.categoriaid, label: categoria.valorpt });
                 fetchSubcategorias(userData.subcategoria.categoriaid);
                 setSubcategoria(opcoesFiltroSubcat.find(subcat => subcat.value === userData.subcategoria.subcategoriaid));//{ value: userData.subcategoriaid, label: userData.subcategoria.valorpt });

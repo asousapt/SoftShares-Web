@@ -36,9 +36,7 @@ export default function ListaEventos() {
         { field: 'dataHora', headerName: 'Data e Hora de Começo', type: 'dateTime', width: 250, headerAlign: 'left' },
         { field: 'localizacao', headerName: 'Localização', flex: 1, headerAlign: 'left' },
         { field: 'subcategoria', headerName: 'Subcategoria', flex: 1, headerAlign: 'left' },
-        { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false, renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEditClick(row.id)} />
-            )
-        },
+        { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false, renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEditClick(row.id)} />)},
     ];
 
     const fetchCategorias = async () => {

@@ -277,7 +277,7 @@ const controladorSubcategorias = {
     consultarPorID: async (req, res) => {
         const { idSubcat } = req.params;
         try {
-            const categoria = await sequelizeConn.query(
+            const subcategoria = await sequelizeConn.query(
                 `SELECT 
                     sc.*, 
                     (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 1) as ValorPT, 
@@ -294,11 +294,11 @@ const controladorSubcategorias = {
                 }
             );
 
-            if (categoria.length === 0) {
+            if (subcategoria.length === 0) {
                 return res.status(404).json({ error: 'Subcategoria não encontrada' });
             }
 
-            res.status(200).json(categoria[0]);
+            res.status(200).json(subcategoria[0]);
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar a subcategoria', details: error.message });
         }

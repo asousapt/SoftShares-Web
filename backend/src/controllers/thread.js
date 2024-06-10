@@ -128,6 +128,36 @@ const controladorThread = {
         }
     },
 
+    consultarPorID: async (req, res) => {
+        const { id } = req.params;
+        try {
+            const threads = await sequelizeConn.query(
+                `SELECT 
+                    t.*, 
+                    (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 1) AS ValorPT, 
+                    (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 2) AS ValorEN, 
+                    (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 3) AS ValorES,
+                    s.categoriaid
+                FROM 
+                    thread t
+                INNER JOIN 
+                    chave ch ON t.subcategoriaid = ch.registoid AND ch.entidade = 'SUBCAT'
+                INNER JOIN
+                    subcategoria s ON s.subcategoriaid = t.subcategoriaid
+                WHERE
+                    t.threadid = ${id}
+                `,
+                {
+                    type: QueryTypes.SELECT
+                }
+            );
+
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: threads });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar threads', details: error.message });
+        }
+    },
+
     consultarTodosComFiltro: async (req, res) => {
         const { categoria, descricao } = req.query;
         try {
@@ -153,8 +183,8 @@ const controladorThread = {
                 WHERE
                     t.titulo LIKE '%${descricao}%'
                 ${whereClause}
-                ORDER BY t.threadid
-                    `,
+                ORDER BY 
+                    t.threadid `,
                 { type: QueryTypes.SELECT }
             );
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: threads });

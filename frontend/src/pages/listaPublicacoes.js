@@ -11,10 +11,12 @@ import StateChanger from '../components/stateChanger/stateChanger';
 import ComboFilter from '../components/combobox/comboFilter';
 /* FIM COMPONENTES */
 import NovaPub from '../modals/publicacoes/novaPub';
+import EditPub from '../modals/publicacoes/editPub';
 
 export default function ListaPublicacoes() {
     const [isNewModalOpen, setNewModalOpen] = useState(false);
     const [isEditModalOpen, setEditModalOpen] = useState(false);
+    const [selectedId, setSelectedId] = useState(null);
     const [filtroText, setFiltroText] = useState('');
     const [opcoesFiltroCat, setOpcoesCat] = useState([]);
     const [filtroCategoria, setFiltroCategoria] = useState(0);
@@ -28,7 +30,7 @@ export default function ListaPublicacoes() {
         { field: 'criadoPor', headerName: 'Criado por', flex: 1, headerAlign: 'left' },
         { field: 'subcategoria', headerName: 'Subcategoria', flex: 1, headerAlign: 'left' },
         { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'left', renderCell: (row) => ( <StateChanger status={row.value} />) },
-        { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
+        { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEditClick(row.id)}/>)},
     ];
 
     const fetchCategorias = async () => {
@@ -82,6 +84,11 @@ export default function ListaPublicacoes() {
         }
     };
 
+    const handleEditClick = (id) => {
+        setSelectedId(id);
+        setEditModalOpen(true);
+    };
+
     useEffect(() => {
         fetchCategorias();
     }, []);
@@ -120,6 +127,7 @@ export default function ListaPublicacoes() {
                 </div>
             </div>
             <NovaPub open={isNewModalOpen} onClose={() => setNewModalOpen(false)}/>
+            {isEditModalOpen && (<EditPub open={isEditModalOpen} onClose={() => setEditModalOpen(false)} idPub={selectedId}/>)}
         </div>
     )
 }

@@ -15,6 +15,6 @@ router.delete('/delete/:idCat', authenticate, categoriasControlador.remover);
 //ROUTES GET
 router.get('/', authenticate, categoriasControlador.consultarTudo);
 router.get('/filtro', authenticate, categoriasControlador.consultarTudoComFiltroPT);
-router.get('/:idCat', categoriasControlador.consultarPorID);
+router.get('/:idCat', authenticate, categoriasControlador.consultarPorID);
 
 module.exports = router;

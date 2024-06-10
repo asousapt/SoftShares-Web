@@ -114,7 +114,19 @@ export default function ListaEventos() {
     useEffect(() => {
         fetchData();
     }, [filtroEstado, filtroCategoria, filtroText]);
-    
+
+    useEffect(() => {
+        if (!isNewModalOpen) {
+            fetchData();
+        }
+    }, [isNewModalOpen]);
+
+    useEffect(() => {
+        if (!isEditModalOpen) {
+            fetchData();
+        }
+    }, [isEditModalOpen]);
+
     if (error) {
         return <div>Error: {error.message}</div>;
     }

@@ -3,6 +3,8 @@ import axios from 'axios';
 import Modal from '@mui/material/Modal';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import BasicTextField from '../../components/textFields/basic';
 import SubmitButton from '../../components/buttons/submitButton';
 import CancelButton from '../../components/buttons/cancelButton';
@@ -107,23 +109,22 @@ const EditPublicacao = ({ open, onClose, idPub }) => {
         }
     }
 
-    const handleAddEvent = async () => {
+    const handleSaveEvent = async () => {
         try {
             if (!subcategoria || !title.trim() || !description.trim()) {
                 alert('Preencha todos os campos!');
                 return;
             }
             
-            const userid = sessionStorage.getItem('userid');
             const token = sessionStorage.getItem('token');
-            const novaPublicacao = {
+            const editarPublicacao = {
                 subcategoriaid: subcategoria.value,
-                utilizadorid: userid,
                 titulo: title,
                 mensagem: description,
-                idiomaid: 1
+                inactivo: inativo
             };
-            await axios.post('http://localhost:8000/thread/add', novaPublicacao, {
+            console.log(editarPublicacao);
+            await axios.put('http://localhost:8000/thread/update/'+idPub, editarPublicacao, {
                 headers: {
                     Authorization: `${token}`,
                     'Content-Type': 'application/json',
@@ -131,8 +132,13 @@ const EditPublicacao = ({ open, onClose, idPub }) => {
             });
             onClose();
         } catch (error) {
-            console.error('Erro ao adicionar evento:', error);
+            console.error('Erro ao editar a publicação:', error);
         }
+    };
+
+    const handleChangeAtivo = (e) => {
+        console.log(e.target.checked);
+        setInativo(e.target.checked);
     };
 
     useEffect(() => {
@@ -175,12 +181,18 @@ const EditPublicacao = ({ open, onClose, idPub }) => {
                             <BasicTextField multiline={true} caption='Descrição' valor={description} onchange={(e) => setDescription(e.target.value)} fullwidth={true}/>
                         </div>
                         <div style={{marginBottom: 20}}>
+                            <FormControlLabel
+                                control={<Switch checked={inativo} onChange={handleChangeAtivo} />}
+                                label="Inativo"
+                            />
+                        </div>
+                        <div style={{marginBottom: 20}}>
                             <ImageTable images={[]}/>
                         </div>
                     </div>
                     <div style={{display: 'flex', justifyContent: 'center', gap: '20px'}}>
                         <CancelButton onclick={() => onClose()} caption='Cancelar' />
-                        <SubmitButton onclick={handleAddEvent} caption='Guardar' />
+                        <SubmitButton onclick={handleSaveEvent} caption='Guardar' />
                     </div>
                 </div>
             </div>

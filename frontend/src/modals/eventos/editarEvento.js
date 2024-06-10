@@ -202,7 +202,7 @@ const EditEventModal = ({ open, onClose, eventData }) => {
                 subcategoria,
                 poloid,
             };
-            await axios.put(`http://localhost:8000/evento/${eventData.id}`, eventoEditado, {
+            await axios.put(`http://localhost:8000/evento/update/${eventData.id}`, eventoEditado, {
                 headers: {
                     Authorization: `${token}`,
                     'Content-Type': 'application/json',

@@ -30,7 +30,7 @@ const controladorThread = {
 
     atualizar: async (req, res) => {
         const { id } = req.params;
-        const { titulo, mensagem, aprovado, utilizadoraprovou, dataaprovacao, inactivo } = req.body;
+        const { subcategoriaid, titulo, mensagem, inactivo } = req.body;
 
         try {
             const thread = await models.thread.findByPk(id);
@@ -41,8 +41,7 @@ const controladorThread = {
             await models.thread.update({
                 titulo: titulo,
                 mensagem: mensagem,
-                utilizadoraprovou: utilizadoraprovou,
-                dataaprovacao: dataaprovacao,
+                subcategoriaid: subcategoriaid,
                 inactivo: inactivo
             }, {
                 where: {

@@ -67,6 +67,7 @@ export default function ListaPublicacoes() {
                 }
             });
             const threads = response.data.data;
+            console.log(threads);
             
             setTableRows(
                 threads.map((thread) => ({
@@ -76,7 +77,7 @@ export default function ListaPublicacoes() {
                     dataHora: new Date(thread.datacriacao),
                     criadoPor: thread.pnome+' '+thread.unome,
                     subcategoria: thread.valorpt,
-                    estado: thread.estado ? 'Inativo' : 'Ativo'
+                    estado: thread.inactivo ? 'Inativo' : 'Ativo'
                 }))
             );
         } catch (error) {

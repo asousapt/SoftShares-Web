@@ -14,6 +14,7 @@ import NovaPub from '../modals/publicacoes/novaPub';
 
 export default function ListaPublicacoes() {
     const [isNewModalOpen, setNewModalOpen] = useState(false);
+    const [isEditModalOpen, setEditModalOpen] = useState(false);
     const [filtroText, setFiltroText] = useState('');
     const [opcoesFiltroCat, setOpcoesCat] = useState([]);
     const [filtroCategoria, setFiltroCategoria] = useState(0);
@@ -64,6 +65,7 @@ export default function ListaPublicacoes() {
                 }
             });
             const threads = response.data.data;
+            
             setTableRows(
                 threads.map((thread) => ({
                     key: thread.threadid,
@@ -72,7 +74,7 @@ export default function ListaPublicacoes() {
                     dataHora: new Date(thread.datacriacao),
                     criadoPor: thread.pnome+' '+thread.unome,
                     subcategoria: thread.valorpt,
-                    estado: thread.estado ? 'Ativo' : 'Inativo'
+                    estado: thread.estado ? 'Inativo' : 'Ativo'
                 }))
             );
         } catch (error) {
@@ -87,6 +89,18 @@ export default function ListaPublicacoes() {
     useEffect(() => {
         fetchData();
     }, [filtroCategoria, filtroText]);
+
+    useEffect(() => {
+        if (!isNewModalOpen) {
+            fetchData();
+        }
+    }, [isNewModalOpen]);
+
+    useEffect(() => {
+        if (!isEditModalOpen) {
+            fetchData();
+        }
+    }, [isEditModalOpen]);
 
     if (error) {
         return <div>Error: {error.message}</div>;

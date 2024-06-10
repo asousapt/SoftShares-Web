@@ -1,32 +1,95 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import Modal from '@mui/material/Modal';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 import BasicTextField from '../../components/textFields/basic';
 import SubmitButton from '../../components/buttons/submitButton';
 import CancelButton from '../../components/buttons/cancelButton';
 import ImageTable from '../../components/tables/imageTable';
-import ComboBox from '../../components/combobox/comboboxBasic';
 
-const AddPubModal = ({ open, onClose }) => {
+const AddPublicacao = ({ open, onClose }) => {
     const [title, setTitle] = useState('');
-    const [localizacao, setLocalizacao] = useState('');
     const [description, setDescription] = useState('');
-    const [subcategoria, setSubcategoria] = useState('');
+    const [opcoesCat, setOpcoesCat] = useState([]);
+    const [categoria, setCategoria] = useState(null);
+    const [opcoesSubcat, setOpcoesSubcat] = useState([]);
+    const [subcategoria, setSubcategoria] = useState(null);
+    const [error, setError] = useState(null);
 
-    const handleAddEvent = () => {
-        console.log('Publicação Adicionada');
-        onClose(); 
+    const fetchCategorias = async () => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get(`http://localhost:8000/categoria`, {
+                headers: { Authorization: `${token}` }
+            });
+            const categorias = response.data;
+
+            setOpcoesCat(categorias.map((cat) => ({
+                value: cat.categoriaid,
+                label: cat.valorpt
+            })));
+        } catch (error) {
+            setError(error);
+        }
+    }
+
+    const handleCategoriaChange = async (event, newValue) => {
+        setCategoria(newValue);
+        setSubcategoria(null);
+        if (newValue) {
+            try {
+                const token = sessionStorage.getItem('token');
+                const response = await axios.get(`http://localhost:8000/subcategoria/categoria/${newValue.value}`, {
+                    headers: { Authorization: `${token}` }
+                });
+                const subcategorias = response.data;
+                const subcategoriasOptions = subcategorias.map((subcat) => ({
+                    value: subcat.subcategoriaid,
+                    label: subcat.valorpt
+                }));
+                setOpcoesSubcat(subcategoriasOptions);
+            } catch (error) {
+                setError(error);
+            }
+        } else {
+            setOpcoesSubcat([]);
+            setSubcategoria(null);
+        }
     };
 
-    const imgs = [
-        {src: 'https://i1.sndcdn.com/artworks-000537542583-dr2w2s-t500x500.jpg', alt: 'testas'},
-        {src: 'https://i1.sndcdn.com/artworks-000537542583-dr2w2s-t500x500.jpg', alt: 'testas'},
-        {src: 'https://i1.sndcdn.com/artworks-000537542583-dr2w2s-t500x500.jpg', alt: 'testas'},
-    ];
+    const handleAddEvent = async () => {
+        try {
+            if (!subcategoria || !title.trim() || !description.trim()) {
+                alert('Preencha todos os campos!');
+                return;
+            }
+            
+            const userid = sessionStorage.getItem('userid');
+            const token = sessionStorage.getItem('token');
+            const novaPublicacao = {
+                subcategoriaid: subcategoria.value,
+                utilizadorid: userid,
+                titulo: title,
+                mensagem: description,
+                idiomaid: 1
+            };
+            console.log(novaPublicacao);
+            await axios.post('http://localhost:8000/thread/add', novaPublicacao, {
+                headers: {
+                    Authorization: `${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+            onClose();
+        } catch (error) {
+            console.error('Erro ao adicionar evento:', error);
+        }
+    };
 
-    const opcoes = [
-        {value: '1', label: 'teste'},
-        {value: '2', label: 'teste2'},
-    ];
+    useEffect(() => {
+        fetchCategorias();
+    }, []);
 
     return (
         <Modal open={open} onClose={onClose} >
@@ -34,24 +97,40 @@ const AddPubModal = ({ open, onClose }) => {
                 <h2 style={{marginTop: 0, color: 'white'}}>Nova Publicação</h2>
                 <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 20 ,borderRadius: 12}}>
                     <div style={{marginBottom: 15}}>
-                    <div style={{ display: 'flex', marginBottom: 10 }}>
-                            <div style={{ marginRight: 15}}>
-                                <BasicTextField caption='Titulo' valor={title} onchange={(e) => setTitle(e.target.value)} style={{ width:"500px"}}/>
+                        <div style={{ display: 'flex', marginBottom: 10, gap: 10 }}>
+                            <div style={{ width: '50%'}} >
+                                <BasicTextField caption='Titulo' valor={title} onchange={(e) => setTitle(e.target.value)} fullwidth={true} />
                             </div>
-                            <div style={{ width:"55%"}} >
-                            <ComboBox caption='Subcategoria' options={opcoes} value={subcategoria} handleChange={(e) => setSubcategoria(e.target.value)}/>
+                            <div style={{ width: '25%' }}>
+                                <Autocomplete
+                                    options={opcoesCat}
+                                    getOptionLabel={(option) => option.label}
+                                    renderInput={(params) => <TextField {...params} label="Categoria" variant="outlined" />}
+                                    value={categoria}
+                                    onChange={handleCategoriaChange}
+                                    fullWidth={true}
+                                />
+                            </div>
+                            <div style={{ width: '25%' }}>
+                                <Autocomplete
+                                    options={opcoesSubcat}
+                                    getOptionLabel={(option) => option.label}
+                                    renderInput={(params) => <TextField {...params} label="Subcategoria" variant="outlined" />}
+                                    value={subcategoria}
+                                    onChange={(event, newValue) => { setSubcategoria(newValue); }}
+                                    fullWidth={true}
+                                />
                             </div>
                         </div>
-                        <div style={{marginBottom: 20}}></div>
-                        <BasicTextField caption='Sub-Título' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} />
-                        {/* <BasicTextField caption='Sub-Título' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} /> */}
-                        <div style={{marginBottom: 20}}></div>
-                        <BasicTextField multiline={true} caption='Descrição' valor={description} onchange={(e) => setDescription(e.target.value)} fullwidth={true}/>
-                        <div style={{marginBottom: 20}}></div>
-                        <ImageTable images={imgs}/>
+                        <div style={{marginBottom: 20}}>
+                            <BasicTextField multiline={true} caption='Descrição' valor={description} onchange={(e) => setDescription(e.target.value)} fullwidth={true}/>
+                        </div>
+                        <div style={{marginBottom: 20}}>
+                            <ImageTable images={[]}/>
+                        </div>
                     </div>
                     <div style={{display: 'flex', justifyContent: 'center', gap: '20px'}}>
-                        <CancelButton onclick={() => { onClose(); }} caption='Cancelar' />
+                        <CancelButton onclick={() => onClose()} caption='Cancelar' />
                         <SubmitButton onclick={handleAddEvent} caption='Guardar' />
                     </div>
                 </div>
@@ -59,4 +138,4 @@ const AddPubModal = ({ open, onClose }) => {
         </Modal>
     );
 }
-export default AddPubModal;
+export default AddPublicacao;

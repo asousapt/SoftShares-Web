@@ -139,16 +139,21 @@ const controladorThread = {
             const threads = await sequelizeConn.query(
                 `SELECT 
                     t.*, 
-                    tr.valor as valorpt
+                    tr.valor as valorpt,
+                    u.pnome, 
+                    u.unome
                 FROM 
                     thread t
                 INNER JOIN 
                     chave ch ON t.subcategoriaid = ch.registoid AND ch.entidade = 'SUBCAT'
                 LEFT JOIN 
                     traducao tr ON ch.chaveid = tr.chaveid AND tr.idiomaid = 1
+                INNER JOIN
+                    utilizador u ON t.utilizadorid = u.utilizadorid
                 WHERE
                     t.titulo LIKE '%${descricao}%'
                 ${whereClause}
+                ORDER BY t.threadid
                     `,
                 { type: QueryTypes.SELECT }
             );

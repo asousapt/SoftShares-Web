@@ -19,6 +19,6 @@ router.get('/', authenticate, pontosInteresseControlador.consultarTudo);
 router.get('/filtro', authenticate, pontosInteresseControlador.consultarTodosComFiltro);
 router.get('/subcategoria/:idSubCat', authenticate, pontosInteresseControlador.consultarPorSubcategoria);
 router.get('/porAprovar', authenticate, pontosInteresseControlador.consultarPorAprovar);
-router.get('/:idPontoInteresse', authenticate, pontosInteresseControlador.consultarTudo);
+router.get('/:idPontoInteresse', authenticate, pontosInteresseControlador.consultarPorID);
 
 module.exports = router;

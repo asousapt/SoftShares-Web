@@ -9,14 +9,8 @@ import CancelButton from '../../components/buttons/cancelButton';
 import FormBuilder from '../../components/forms/FormBuilder';
 /* FIM COMPONENTES */
 
-const tiposFormulario =[
-    { value:'SUBCAT', label: 'Subcategoria (Pontos de Interesse)'},
-    { value:'satisfacao', label: 'Satisfação de Eventos'}
-];
-
 const NovoFormulario = ({ open, onClose }) => {
     const [desc, setDesc] = useState('');
-    const [tipo, setTipo] = useState('');
     const [categoria, setCategoria] = useState('');
     const [opcoesCat, setOpcoesCat] = useState([]);
     const [subcategoria, setSubcategoria] = useState('');
@@ -24,15 +18,54 @@ const NovoFormulario = ({ open, onClose }) => {
     const [formData, setFormData] = useState(null);
 
     const componentRef = useRef();
-
+ // Exemplo JSON: [{"id":1,"type":"shortAnswer","text":"","options":[],"required":false},{"id":2,"type":"multipleChoice","text":"","options":["Opção 1","Opção 2"],"required":false}]
+    
     const executeFunction = () => {
         componentRef.current.generateJSON();
     };
-
-    const handleFormSubmit = (data) => {
+    
+    const handleFormSubmit = async (data) => {
         setFormData(data);
-        console.log('Generated JSON:', data);
-        // You can also make an API call here to submit the form data
+
+        data = JSON.parse(data);
+
+        if (data.length === 0) {
+            alert('Adicione alguma pergunta!');
+            return;
+        }
+
+        for (let question of data) {
+            console.log('question',question);
+            if (!question.text.trim()) {
+                alert('Preencha o texto de todas as perguntas!');
+                return;
+            }
+        }
+
+        if(!desc.trim() || !subcategoria){
+            alert('Preencha todos os campos!')
+            return
+        }
+        
+        try{
+            const token = sessionStorage.getItem('token');
+            const novoForm = {
+                idRegisto: subcategoria,
+                tipoConfig: 'SUBCAT',
+                tipoForm: 'GENERICO',
+                descForm: desc,
+                perguntas: data
+            };
+            await axios.post('http://localhost:8000/formulario/add', novoForm, {
+                headers: {
+                    Authorization: `${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+            onClose();
+        }catch(e){
+            console.error('Erro ao adicionar evento:', e);
+        }
     };
 
     const fetchCategorias = async () => {
@@ -93,24 +126,14 @@ const NovoFormulario = ({ open, onClose }) => {
                     <div style={{ marginBottom: 15 }}>
                         <BasicTextField caption='Descrição' valor={desc} onchange={(e) => setDesc(e.target.value)} fullwidth={true} />
                         <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
-                            <div style={{ width: '50%' }}>
-                                <ComboBox caption='Tipo de Formulário' options={tiposFormulario} value={tipo} handleChange={(e) => setTipo(e.target.value)} />
+                            <div style={{ display: 'flex', gap: 10, width: '100%' }}>
+                                <div style={{width: '50%'}}>
+                                    <ComboBox caption='Categoria' options={opcoesCat} value={categoria} handleChange={handleCategoriaChange} />
+                                </div>
+                                <div style={{width: '50%'}}>
+                                    <ComboBox caption='Subcategoria' options={opcoesSubcat} value={subcategoria} handleChange={(e) => setSubcategoria(e.target.value)} />
+                                </div>
                             </div>
-                            {tipo === 'SUBCAT' && (
-                                <div style={{ display: 'flex', gap: 10, width: '50%' }}>
-                                    <div style={{width: '50%'}}>
-                                        <ComboBox caption='Categoria' options={opcoesCat} value={categoria} handleChange={handleCategoriaChange} />
-                                    </div>
-                                    <div style={{width: '50%'}}>
-                                        <ComboBox caption='Subcategoria' options={opcoesSubcat} value={subcategoria} handleChange={(e) => setSubcategoria(e.target.value)} />
-                                    </div>
-                                </div>
-                            )}
-                            {tipo === 'satisfacao' && (
-                                <div style={{ width: '25%' }}>
-                                    <ComboBox caption='Evento' options={tiposFormulario} value={tipo} handleChange={(e) => setTipo(e.target.value)} />
-                                </div>
-                            )}
                         </div>
                         <div style={{ overflowY: 'auto', maxHeight: '50vh', marginTop: 20 }}>
                             <FormBuilder ref={componentRef} onFormSubmit={handleFormSubmit} />

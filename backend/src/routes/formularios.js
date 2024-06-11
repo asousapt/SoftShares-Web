@@ -4,7 +4,7 @@ const controladorFormularios = require('../controllers/formularios');
 const { authenticate } = require('../tokenUtils');
 
 //ROUTES POST
-router.post('/', authenticate, controladorFormularios.adicionar);
+router.post('/add', authenticate, controladorFormularios.adicionar);
 
 router.post('/:formularioid/versoes', authenticate, controladorFormularios.adicionarVersao);
 

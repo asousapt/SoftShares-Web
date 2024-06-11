@@ -8,6 +8,8 @@ const controladorFormularios = {
         const { idRegisto, tipoConfig, tipoForm, descForm, perguntas } = req.body;
 
         try {
+            console.log(perguntas);
+
             const cfgFormulario = await models.itemcfgformulario.create({
                 registoid: idRegisto,
                 tipo: tipoConfig
@@ -24,15 +26,31 @@ const controladorFormularios = {
             });
 
             await Promise.all(perguntas.map(async pergunta => {
-                await models.formulariodetalhes.create({
-                    formularioversaoid: versao.formularioversaoid,
-                    pergunta: pergunta.pergunta,
-                    tipodados: pergunta.tipoDados,
-                    obrigatorio: Boolean(pergunta.obrigatorio),
-                    minimo: pergunta.minimo,
-                    maximo: pergunta.maximo,
-                    ordem: pergunta.ordem
-                });
+                // await models.formulariodetalhes.create({
+                //     formularioversaoid: versao.formularioversaoid,
+                //     pergunta: pergunta.text,
+                //     tipodados: pergunta.type,
+                //     obrigatorio: pergunta.required,
+                //     minimo: pergunta.minValue,
+                //     maximo: pergunta.maxValue,
+                //     ordem: pergunta.order,
+                //     // respostaspossiveis: pergunta.options.join(", ")
+                // });
+                try {
+                    await models.formulariodetalhes.create({
+                        formularioversaoid: versao.formularioversaoid,
+                        pergunta: pergunta.text,
+                        tipodados: pergunta.type,
+                        obrigatorio: pergunta.required,
+                        minimo: pergunta.minValue,
+                        maximo: pergunta.maxValue,
+                        ordem: pergunta.order,
+                        respostaspossiveis: pergunta.options.join(", ")
+                    });
+                } catch (error) {
+                    console.error(`Erro ao adicionar a pergunta com ordem ${pergunta.order}:`, error);
+                    throw error;
+                }
             }));
 
             res.status(201).json({ message: 'Formulario adicionado com sucesso' });

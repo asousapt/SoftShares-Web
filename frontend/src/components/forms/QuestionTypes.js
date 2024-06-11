@@ -3,10 +3,11 @@ import { MenuItem, Select } from '@mui/material';
 
 const QuestionTypes = ({ onChange, idPergunta, valor }) => {
   const questionTypes = [
-    { type: 'shortAnswer', label: 'Resposta curta' },
-    { type: 'paragraph', label: 'Parágrafo' },
-    { type: 'multipleChoice', label: 'Escolha múltipla' },
-    { type: 'checkboxes', label: 'Caixas de verificação' },
+    { type: 'TEXTO', label: 'Texto' },
+    { type: 'LOGICO', label: 'Lógico' },
+    { type: 'NUMERICO', label: 'Numérico' },
+    { type: 'ESCOLHA_MULTIPLA', label: 'Escolha múltipla' },
+    { type: 'SELECAO', label: 'Caixas de Seleção' }
   ];
 
   return (

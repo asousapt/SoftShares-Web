@@ -14,10 +14,10 @@ const Question = ({ question, handleTextChange, handleOptionChange, addOption, r
   const renderOptions = () => {
     return question.options.map((opt, idx) => (
       <div key={idx} style={{ display: 'flex', alignItems: 'center' }}>
-        {question.type === 'multipleChoice' && (
+        {question.type === 'ESCOLHA_MULTIPLA' && (
           <Radio disabled />
         )}
-        {question.type === 'checkboxes' && (
+        {question.type === 'SELECAO' && (
           <Checkbox disabled />
         )}
         <TextField
@@ -36,35 +36,33 @@ const Question = ({ question, handleTextChange, handleOptionChange, addOption, r
 
   const renderQuestionInput = () => {
     switch (question.type) {
-      case 'shortAnswer':
+      case 'TEXTO':
         return (
           <TextField
             placeholder="Texto de resposta curta"
             value={question.text}
-            onChange={(e) => handleTextChange(question.id, e.target.value)}
+            onChange={(e) => handleTextChange(question.id, 'text', e.target.value)}
             variant="outlined"
             fullWidth
           />
         );
-      case 'paragraph':
+      case 'LOGICO':
         return (
           <TextField
-            placeholder="Parágrafo"
+            placeholder="Texto do campo lógico"
             value={question.text}
-            onChange={(e) => handleTextChange(question.id, e.target.value)}
+            onChange={(e) => handleTextChange(question.id, 'text', e.target.value)}
             variant="outlined"
             fullWidth
-            multiline
-            rows={4}
           />
         );
-      case 'multipleChoice':
-      case 'checkboxes':
+      case 'ESCOLHA_MULTIPLA':
+      case 'SELECAO':
         return (
           <>
             <TextField
               value={question.text}
-              onChange={(e) => handleTextChange(question.id, e.target.value)}
+              onChange={(e) => handleTextChange(question.id, 'text', e.target.value)}
               variant="outlined"
               fullWidth
               placeholder="Texto da pergunta"
@@ -74,6 +72,35 @@ const Question = ({ question, handleTextChange, handleOptionChange, addOption, r
             <Button variant="contained" onClick={() => addOption(question.id)} style={{marginTop: 5, marginRight: 20}}>
               Adicionar opção
             </Button>
+          </>
+        );
+      case 'NUMERICO':
+        return (
+          <>
+            <TextField
+              value={question.text}
+              onChange={(e) => handleTextChange(question.id, 'text', e.target.value)}
+              variant="outlined"
+              fullWidth
+              placeholder="Texto da pergunta"
+              style={{ marginBottom: '10px' }}
+            />
+            <TextField
+              label="Valor mínimo"
+              type="number"
+              value={question.minValue || ''}
+              onChange={(e) => handleTextChange(question.id, 'minValue', e.target.value)}
+              variant="outlined"
+              style={{ marginRight: '10px', width: '48%' }}
+            />
+            <TextField
+              label="Valor máximo"
+              type="number"
+              value={question.maxValue || ''}
+              onChange={(e) => handleTextChange(question.id, 'maxValue', e.target.value)}
+              variant="outlined"
+              style={{ width: '48%' }}
+            />
           </>
         );
       default:

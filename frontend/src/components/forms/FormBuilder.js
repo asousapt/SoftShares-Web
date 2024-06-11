@@ -14,17 +14,20 @@ const FormBuilder = forwardRef((props, ref) => {
   const addQuestion = (type) => {
     const newQuestion = {
       id: questions.length + 1,
-      type: 'shortAnswer',
+      type: 'TEXTO',
       text: '',
       options: [],
       required: false,
+      order: questions.length + 1,
+      minValue: 0,
+      maxValue: 0
     };
     setQuestions([...questions, newQuestion]);
   };
 
-  const handleTextChange = (id, text) => {
-    setQuestions(questions.map(q => q.id === id ? { ...q, text } : q));
-  };
+  const handleTextChange = (id, field, value) => {
+    setQuestions(questions.map(q => q.id === id ? { ...q, [field]: value } : q));
+  };  
 
   const handleTypeChange = (id, type) => {
     setQuestions(questions.map(q => q.id === id ? { ...q, type, options: type === 'multipleChoice' ? [] : q.options } : q));
@@ -69,7 +72,10 @@ const FormBuilder = forwardRef((props, ref) => {
         type: q.type,
         text: q.text,
         options: q.options,
-        required: q.required
+        required: q.required,
+        order: q.order,
+        minValue: parseFloat(q.minValue),
+        maxValue: parseFloat(q.maxValue)
       })); 
       if (typeof props.onFormSubmit === 'function') {
         props.onFormSubmit(JSON.stringify(data));

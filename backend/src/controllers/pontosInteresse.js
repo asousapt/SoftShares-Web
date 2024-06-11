@@ -140,10 +140,31 @@ const controladorPontosInteresse = {
 
     consultarTudo: async (req, res) => {
         try {
-            const pontosInteresse = await models.pontointeresse.findAll();
+            const pontosInteresse = await models.pontointeresse.findAll({
+                include: {
+                    model: models.utilizador,
+                    as: 'utilizadorcriou_utilizador'
+                },
+            });
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: pontosInteresse });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar os pontos de interesse', details: error.message });
+        }
+    },
+
+    consultarPorID: async (req, res) => {
+        const { idPontoInteresse } = req.params;
+
+        try {
+            const evento = await models.pontointeresse.findByPk(idPontoInteresse, {
+                include: {
+                    model: models.utilizador,
+                    as: 'utilizadorcriou_utilizador'
+                },
+            });
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: evento });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar o evento' });
         }
     },
 
@@ -174,6 +195,10 @@ const controladorPontosInteresse = {
 
         try {
             const pontosInteresse = await models.pontointeresse.findAll({
+                include: {
+                    model: models.utilizador,
+                    as: 'utilizadorcriou_utilizador'
+                },
                 where:{
                     subcategoriaid: idSubCat
                 }

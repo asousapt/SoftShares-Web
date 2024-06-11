@@ -26,31 +26,16 @@ const controladorFormularios = {
             });
 
             await Promise.all(perguntas.map(async pergunta => {
-                // await models.formulariodetalhes.create({
-                //     formularioversaoid: versao.formularioversaoid,
-                //     pergunta: pergunta.text,
-                //     tipodados: pergunta.type,
-                //     obrigatorio: pergunta.required,
-                //     minimo: pergunta.minValue,
-                //     maximo: pergunta.maxValue,
-                //     ordem: pergunta.order,
-                //     // respostaspossiveis: pergunta.options.join(", ")
-                // });
-                try {
-                    await models.formulariodetalhes.create({
-                        formularioversaoid: versao.formularioversaoid,
-                        pergunta: pergunta.text,
-                        tipodados: pergunta.type,
-                        obrigatorio: pergunta.required,
-                        minimo: pergunta.minValue,
-                        maximo: pergunta.maxValue,
-                        ordem: pergunta.order,
-                        respostaspossiveis: pergunta.options.join(", ")
-                    });
-                } catch (error) {
-                    console.error(`Erro ao adicionar a pergunta com ordem ${pergunta.order}:`, error);
-                    throw error;
-                }
+                await models.formulariodetalhes.create({
+                    formularioversaoid: versao.formularioversaoid,
+                    pergunta: pergunta.text,
+                    tipodados: pergunta.type,
+                    obrigatorio: pergunta.required,
+                    minimo: pergunta.minValue,
+                    maximo: pergunta.maxValue,
+                    ordem: pergunta.order,
+                    respostaspossiveis: pergunta.options.join(", ")
+                });
             }));
 
             res.status(201).json({ message: 'Formulario adicionado com sucesso' });

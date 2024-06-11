@@ -194,8 +194,6 @@ function initModels(sequelize) {
   utilizador.hasMany(sessao, { as: "sessaos", foreignKey: "utilizadorid"});
   subcategoria_fav_util.belongsTo(utilizador, { as: "utilizador", foreignKey: "utilizadorid"});
   utilizador.hasMany(subcategoria_fav_util, { as: "subcategoria_fav_utils", foreignKey: "utilizadorid"});
-  thread.belongsTo(utilizador, { as: "utilizadoraprovou_utilizador", foreignKey: "utilizadoraprovou"});
-  utilizador.hasMany(thread, { as: "threads", foreignKey: "utilizadoraprovou"});
   thread.belongsTo(utilizador, { as: "utilizador", foreignKey: "utilizadorid"});
   utilizador.hasMany(thread, { as: "utilizador_threads", foreignKey: "utilizadorid"});
   utilizador_grupo.belongsTo(utilizador, { as: "utilizador", foreignKey: "utilizadorid"});

@@ -31,18 +31,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: false
     },
-    utilizadoraprovou: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'utilizador',
-        key: 'utilizadorid'
-      }
-    },
-    dataaprovacao: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
     datacriacao: {
       type: DataTypes.DATE,
       allowNull: false,

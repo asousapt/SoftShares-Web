@@ -1,4 +1,4 @@
-const { Sequelize, Op } = require('sequelize');
+const { Sequelize, Op, QueryTypes } = require('sequelize');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
@@ -8,8 +8,6 @@ const controladorFormularios = {
         const { idRegisto, tipoConfig, tipoForm, descForm, perguntas } = req.body;
 
         try {
-            console.log(perguntas);
-
             const cfgFormulario = await models.itemcfgformulario.create({
                 registoid: idRegisto,
                 tipo: tipoConfig
@@ -139,6 +137,52 @@ const controladorFormularios = {
             });
 
             res.status(200).json(detalhes);
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar formulario', details: error.message });
+        }
+    },
+
+    consultarGenericosComFiltro: async (req, res) => {
+        const { categoria, descricao } = req.query;
+
+        try{
+            let whereClause = '';
+    
+            if (categoria > 0) {
+                whereClause += ` AND cfg.registoid IN (SELECT subcategoriaid FROM subcategoria WHERE categoriaid = ${categoria})`;
+            }
+
+            const forms = await sequelizeConn.query(
+                `SELECT 
+                    f.formularioid,
+                    count(fv.formularioversaoID) AS versao,
+                    fv.descricao,
+                    (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 1) as valorpt
+                FROM 
+                    formulario f 
+                INNER JOIN
+                    formularioversao fv on fv.formularioid = f.formularioid
+                INNER JOIN
+                    itemcfgformulario cfg on cfg.itemcfgformularioid = f.itemcfgformularioid AND tipo = 'SUBCAT'
+                INNER JOIN 
+                    chave ch ON cfg.registoid = ch.registoid AND ch.entidade = 'SUBCAT'
+                WHERE 
+                    f.tipoformulario = 'GENERICO'
+                    AND fv.descricao LIKE '%${descricao}%'
+                    ${whereClause}
+                GROUP BY
+                    valorpt,
+                    descricao,
+                    f.formularioid
+                ORDER BY 
+                    f.formularioid
+                `,
+                {
+                    type: QueryTypes.SELECT
+                }
+            );
+
+            res.status(200).json(forms);
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar formulario', details: error.message });
         }

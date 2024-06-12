@@ -20,5 +20,6 @@ router.get('/', authenticate, subcategoriasControlador.consultarTudo);
 router.get('/filtro', authenticate, subcategoriasControlador.consultarTudoComFiltroPT);
 router.get('/categoria/:idCat', authenticate, subcategoriasControlador.consultarPorCategoria);
 router.get('/:idSubcat', authenticate, subcategoriasControlador.consultarPorID);
+router.get('/sub/:idSubCat', authenticate, subcategoriasControlador.consultarCategoriaPorSubcategoria);
 
 module.exports = router;

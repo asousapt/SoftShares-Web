@@ -144,7 +144,7 @@ export default function ListaEventos() {
                 </div>
             </div>
             <NovoEvento open={isNewModalOpen} onClose={() => setNewModalOpen(false)} />
-            <EditarEvento open={isEditModalOpen} onClose={() => setEditModalOpen(false)} eventData={selectedEventoId} />
+            {isEditModalOpen && (<EditarEvento open={isEditModalOpen} onClose={() => setEditModalOpen(false)} eventData={selectedEventoId}/>)}
         </div>
     );
 }

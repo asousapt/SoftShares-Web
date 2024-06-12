@@ -55,7 +55,8 @@ const controladorEventos = {
     atualizarEvento: async (req, res) => {
         const { idEvento } = req.params;
         const { titulo, descricao, dataInicio, dataFim, dataLimInscricao, nmrMaxParticipantes, localizacao, latitude, longitude, cidadeID, subcategoriaId, poloId } = req.body;
-
+        console.log(req.body);
+        
         try {
             await models.evento.update({
                 titulo: titulo,
@@ -67,7 +68,7 @@ const controladorEventos = {
                 localizacao: localizacao,
                 latitude: latitude,
                 longitude: longitude,
-                cidadeID: cidadeID,
+                cidadeid: cidadeID,
                 subcategoriaid: subcategoriaId,
                 poloid: poloId
             }, {

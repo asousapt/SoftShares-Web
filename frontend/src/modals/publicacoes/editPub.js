@@ -97,7 +97,7 @@ const EditPublicacao = ({ open, onClose, idPub }) => {
             });
             const cat = catResponse.data;
             setCategoria({value: threads.categoriaid, label: cat.valorpt});
-            fetchSubcategoria(categoria);
+            fetchSubcategoria(threads.categoriaid);
 
             const subcatResponse = await axios.get(`http://localhost:8000/subcategoria/${threads.subcategoriaid}`, {
                 headers: { Authorization: `${token}` }

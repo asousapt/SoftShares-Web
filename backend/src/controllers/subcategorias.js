@@ -274,6 +274,41 @@ const controladorSubcategorias = {
         }
     },
 
+    consultarCategoriaPorSubcategoria: async (req, res) => {
+        const { idSubCat } = req.params;
+    
+        try {
+            const categoria = await sequelizeConn.query(
+                `SELECT 
+                    c.*, 
+                    (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaID = 1) as ValorPT, 
+                    (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaID = 2) as ValorEN, 
+                    (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaID = 3) as ValorES
+                FROM 
+                    subcategoria s 
+                INNER JOIN 
+                    categoria c ON s.categoriaid = c.categoriaid 
+                INNER JOIN 
+                    chave ch ON s.subcategoriaid = ch.registoid AND ch.entidade = 'SUBCAT'
+                INNER JOIN 
+                    chave ch ON c.categoriaid = ch.registoid AND ch.entidade = 'CATEGORIA'
+                WHERE
+                    s.subcategoriaid = ${idSubCat}`,
+                {
+                    type: QueryTypes.SELECT
+                }
+            );
+    
+            if (categoria.length === 0) {
+                return res.status(404).json({ error: 'Subcategoria não encontrada' });
+            }
+    
+            res.status(200).json(categoria[0]);
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar a categoria pela subcategoria', details: error.message });
+        }
+    },
+
     consultarPorID: async (req, res) => {
         const { idSubcat } = req.params;
         try {

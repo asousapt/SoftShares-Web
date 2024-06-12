@@ -11,35 +11,73 @@ import InputImage from '../../components/image/imageInput';
 import axios from 'axios';
 
 const EditEventModal = ({ open, onClose, eventData }) => {
+    console.log(eventData);
     const [titulo, setTitle] = useState('');
     const [localizacao, setLocalizacao] = useState('');
     const [descricao, setDescription] = useState('');
-    const [numParticipantes, setNumParticipantes] = useState('');
+    const [nmrMaxParticipantes, setNumParticipantes] = useState('');
     const [dataInicio, setDataHoraInicio] = useState('');
     const [dataFim, setDataHoraFim] = useState('');
     const [dataLimInscricao, setDataLimInscricao] = useState('');
-    const [cidade, setCidade] = useState(null);
+    const [cidadeID, setCidade] = useState(null);
     const [cidades, setCidades] = useState([]);
     const [distrito, setDistrito] = useState(null);
     const [distritos, setDistritos] = useState([]);
-    const [poloid, setPolo] = useState('');
+    const [poloId, setPolo] = useState('');
     const [polos, setPolos] = useState([]);
-    const [categoria, setCategoria] = useState(null);
-    const [opcoesFiltroCat, setOpcoesCat] = useState([]);
-    const [subcategoria, setSubcategoria] = useState(null);
-    const [opcoesFiltroSubcat, setOpcoesSubcat] = useState([]);
     const [error, setError] = useState(null);
     const [image, setImage] = useState('https://i0.wp.com/ctmirror-images.s3.amazonaws.com/wp-content/uploads/2021/01/dummy-man-570x570-1.png?fit=570%2C570&ssl=1');
+    const [opcoesCat, setOpcoesCat] = useState([]);
+    const [categoria, setCategoria] = useState(null);
+    const [opcoesSubcat, setOpcoesSubcat] = useState([]);
+    const [subcategoria, setSubcategoria] = useState(null);
 
-    const fetchSubcategorias = async (idcat) => {
-        if (idcat){
-            try {
+    const fetchCategorias = async () => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get(`http://localhost:8000/categoria`, {
+                headers: { Authorization: `${token}` }
+            });
+            const categorias = response.data;
+
+            setOpcoesCat(categorias.map((cat) => ({
+                value: cat.categoriaid,
+                label: cat.valorpt
+            })));
+        } catch (error) {
+            setError(error);
+        }
+    }
+
+    const fetchSubcategoria = async (idcat) => {
+        try {
+            if (idcat){
                 const token = sessionStorage.getItem('token');
                 const response = await axios.get(`http://localhost:8000/subcategoria/categoria/${idcat}`, {
                     headers: { Authorization: `${token}` }
                 });
                 const subcategorias = response.data;
+                const subcategoriasOptions = subcategorias.map((subcat) => ({
+                    value: subcat.subcategoriaid,
+                    label: subcat.valorpt
+                }));
+                setOpcoesSubcat(subcategoriasOptions);
+            }
+        } catch (error) {
+            setError(error);
+        }
+    }
 
+    const handleCategoriaChange = async (event, newValue) => {
+        setCategoria(newValue);
+        setSubcategoria(null);
+        if (newValue) {
+            try {
+                const token = sessionStorage.getItem('token');
+                const response = await axios.get(`http://localhost:8000/subcategoria/categoria/${newValue.value}`, {
+                    headers: { Authorization: `${token}` }
+                });
+                const subcategorias = response.data;
                 const subcategoriasOptions = subcategorias.map((subcat) => ({
                     value: subcat.subcategoriaid,
                     label: subcat.valorpt
@@ -48,24 +86,9 @@ const EditEventModal = ({ open, onClose, eventData }) => {
             } catch (error) {
                 setError(error);
             }
-        }
-    }
-
-    const fetchCategorias = async () => {
-        try {
-            const token = sessionStorage.getItem('token');
-            const response = await axios.get('http://localhost:8000/categoria', {
-                headers: { Authorization: `${token}` }
-            });
-            const categorias = response.data;
-
-            const categoriasOptions = categorias.map((cat) => ({
-                value: cat.categoriaid,
-                label: cat.valorpt
-            }));
-            setOpcoesCat(categoriasOptions);
-        } catch (error) {
-            setError(error);
+        } else {
+            setOpcoesSubcat([]);
+            setSubcategoria(null);
         }
     };
 
@@ -86,51 +109,14 @@ const EditEventModal = ({ open, onClose, eventData }) => {
         }
     };
 
-    const fetchEventData = async () => {
-        if (open) {
-            try {
-                const token = sessionStorage.getItem('token');
-                const response = await axios.get(`http://localhost:8000/evento/${eventData}`, {
-                    headers: { Authorization: `${token}` }
-                });
-                const userData = response.data.data;
-                
-                setTitle(userData.titulo);
-                setLocalizacao(userData.localizacao);
-                setDescription(userData.descricao);
-                setNumParticipantes(userData.nmrmaxparticipantes);
-                setDataHoraInicio(userData.datainicio);
-                setDataHoraFim(userData.datafim);
-                setDataLimInscricao(userData.dataliminscricao);
-                setPolo(userData.poloid);
-
-                const distrito = await fetchDistritoByCidadeId(userData.cidadeid);
-                setDistrito(distrito);
-                fetchCidades(distrito.value, userData.cidadeid);
-
-                setCategoria(opcoesFiltroCat.find(cat => cat.value === userData.subcategoria.categoriaid));
-                fetchSubcategorias(userData.subcategoria.categoriaid);
-                setSubcategoria(opcoesFiltroSubcat.find(subcat => subcat.value === userData.subcategoriaid));
-            } catch (error) {
-                console.error('Erro ao buscar dados do evento:', error);
-            }
-        }
+    const fetchDistritoByCidadeId = async (cidadeId) => {
+        const token = sessionStorage.getItem('token');
+        const response = await axios.get(`http://localhost:8000/cidades/${cidadeId}/distrito`, {
+            headers: { Authorization: `${token}` }
+        });
+        const distritoData = response.data.data;
+        return { value: distritoData.distritoid, label: distritoData.nome };
     };
-
-    useEffect(() => {
-        fetchPolos();
-        fetchCategorias();
-        fetchEventData();
-    }, [eventData, open]);
-
-        const fetchDistritoByCidadeId = async (cidadeId) => {
-            const token = sessionStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8000/cidades/${cidadeId}/distrito`, {
-                headers: { Authorization: `${token}` }
-            });
-            const distritoData = response.data.data;
-            return { value: distritoData.distritoid, label: distritoData.nome };
-        };
 
     const fetchCidades = async (distritoId, cidadeId) => {
         try {
@@ -150,6 +136,23 @@ const EditEventModal = ({ open, onClose, eventData }) => {
         }
     };
 
+    const fetchDistritos = async () => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get('http://localhost:8000/cidades/distritos', {
+                headers: { Authorization: `${token}` }
+            });
+            const distritoData = response.data.data;
+            const distritosOptions = distritoData.map(distrito => ({
+                value: distrito.distritoid,
+                label: distrito.nome
+            }));
+            setDistritos(distritosOptions);
+        } catch (error) {
+            console.error('Erro ao buscar distritos:', error);
+        }
+    };
+
     const handleDistritoChange = (event, newValue) => {
         setDistrito(newValue);
         setCidade(null);
@@ -160,30 +163,51 @@ const EditEventModal = ({ open, onClose, eventData }) => {
         }
     };
 
-    const handleCategoriaChange = async (event, newValue) => {
-        setCategoria(newValue);
-        setSubcategoria(null);
-        if (newValue) {
-            fetchSubcategorias(newValue.value);
-            // try {
-            //     const token = sessionStorage.getItem('token');
-            //     const response = await axios.get(`http://localhost:8000/subcategoria/categoria/${newValue.value}`, {
-            //         headers: { Authorization: `${token}` }
-            //     });
-            //     const subcategorias = response.data;
-            //     const subcategoriasOptions = subcategorias.map((subcat) => ({
-            //         value: subcat.subcategoriaid,
-            //         label: subcat.valorpt
-            //     }));
-            //     setOpcoesSubcat(subcategoriasOptions);
-            // } catch (error) {
-            //     setError(error);
-            // }
-        } else {
-            setOpcoesSubcat([]);
-            setSubcategoria(null);
-        }
+    const fetchEventData = async () => {
+            try {
+                const token = sessionStorage.getItem('token');
+                const response = await axios.get(`http://localhost:8000/evento/${eventData}`, {
+                    headers: { Authorization: `${token}` }
+                });
+                const userData = response.data.data;
+                console.log(userData);
+
+                setTitle(userData.titulo);
+                setLocalizacao(userData.localizacao);
+                setDescription(userData.descricao);
+                setNumParticipantes(userData.nmrmaxparticipantes);
+                setDataHoraInicio(dataFormatada(userData.datainicio));
+                setDataHoraFim(dataFormatada(userData.datafim));
+                setDataLimInscricao(dataFormatada(userData.dataliminscricao));
+                setPolo(userData.poloid);
+
+                const distrito = await fetchDistritoByCidadeId(userData.cidadeid);
+                setDistrito(distrito);
+                fetchCidades(distrito.value, userData.cidadeid);
+                
+                const catResponse = await axios.get(`http://localhost:8000/categoria/${userData.subcategoria.categoriaid}`, {
+                    headers: { Authorization: `${token}` }
+                });
+                const cat = catResponse.data;
+                setCategoria({value: userData.subcategoria.categoriaid, label: cat.valorpt});
+                fetchSubcategoria(userData.subcategoria.categoriaid);
+    
+                const subcatResponse = await axios.get(`http://localhost:8000/subcategoria/${userData.subcategoriaid}`, {
+                    headers: { Authorization: `${token}` }
+                });
+                const subcat = subcatResponse.data;
+                setSubcategoria({value: userData.subcategoriaid, label: subcat.valorpt});
+            } catch (error) {
+                console.error('Erro ao buscar dados do evento:', error);
+            }
     };
+
+    useEffect(() => {
+        fetchDistritos();
+        fetchPolos();
+        fetchCategorias();
+        fetchEventData();
+    }, [eventData]);
 
     const handleEditEvent = async () => {
         try {
@@ -194,15 +218,16 @@ const EditEventModal = ({ open, onClose, eventData }) => {
                 dataInicio,
                 dataFim,
                 dataLimInscricao,
-                numParticipantes,
+                nmrMaxParticipantes,
                 localizacao,
                 latitude: 0,
                 longitude: 0,
-                cidade,
-                subcategoria,
-                poloid,
+                cidadeID: cidadeID.value,
+                subcategoriaId: subcategoria.value,
+                poloId,
             };
-            await axios.put(`http://localhost:8000/evento/update/${eventData.id}`, eventoEditado, {
+            console.log('edit:', eventoEditado);
+            await axios.put(`http://localhost:8000/evento/update/${eventData}`, eventoEditado, {
                 headers: {
                     Authorization: `${token}`,
                     'Content-Type': 'application/json',
@@ -212,6 +237,13 @@ const EditEventModal = ({ open, onClose, eventData }) => {
         } catch (error) {
             console.error('Erro ao editar evento:', error);
         }
+    };
+
+    const dataFormatada = (dateTimeString) => {
+        const date = new Date(dateTimeString);
+        const pad = (num) => num.toString().padStart(2, '0');
+        const formatted = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours()+ 1)}:${pad(date.getMinutes())}`;
+        return formatted;
     };
 
     return (
@@ -228,7 +260,7 @@ const EditEventModal = ({ open, onClose, eventData }) => {
                                 <BasicTextField caption='Localização' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} />
                             </div>
                             <div style={{ width: '25%' }}>
-                                <BasicTextField caption='Nº Participantes Máximo' type='number' valor={numParticipantes} onchange={(e) => setNumParticipantes(e.target.value)} fullwidth={true} />
+                                <BasicTextField caption='Nº Participantes Máximo' type='number' valor={nmrMaxParticipantes} onchange={(e) => setNumParticipantes(e.target.value)} fullwidth={true} />
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>
@@ -237,7 +269,7 @@ const EditEventModal = ({ open, onClose, eventData }) => {
                                 <BasicTextField caption='Descrição' valor={descricao} onchange={(e) => setDescription(e.target.value)} fullwidth={true} />
                             </div>
                             <div style={{ width: '24.9%' }}>
-                                <ComboBox caption='Polo' options={polos} value={poloid} handleChange={(e) => setPolo(e.target.value)} />
+                                <ComboBox caption='Polo' options={polos} value={poloId} handleChange={(e) => setPolo(e.target.value)} />
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>
@@ -269,14 +301,14 @@ const EditEventModal = ({ open, onClose, eventData }) => {
                                     options={cidades}
                                     getOptionLabel={(option) => option.label}
                                     renderInput={(params) => <TextField {...params} label="Cidade" variant="outlined" />}
-                                    value={cidade}
+                                    value={cidadeID}
                                     onChange={(event, newValue) => { setCidade(newValue); }}
                                     fullWidth={true}
                                 />
                             </div>
                             <div style={{ width: '25%' }}>
                                 <Autocomplete
-                                    options={opcoesFiltroCat}
+                                    options={opcoesCat}
                                     getOptionLabel={(option) => option.label}
                                     renderInput={(params) => <TextField {...params} label="Categoria" variant="outlined" />}
                                     value={categoria}
@@ -286,7 +318,7 @@ const EditEventModal = ({ open, onClose, eventData }) => {
                             </div>
                             <div style={{ width: '25%' }}>
                                 <Autocomplete
-                                    options={opcoesFiltroSubcat}
+                                    options={opcoesSubcat}
                                     getOptionLabel={(option) => option.label}
                                     renderInput={(params) => <TextField {...params} label="Subcategoria" variant="outlined" />}
                                     value={subcategoria}
@@ -299,8 +331,8 @@ const EditEventModal = ({ open, onClose, eventData }) => {
                         <InputImage image={image} />
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
-                        <SubmitButton onClick={handleEditEvent} caption='Guardar' />
-                        <CancelButton onClick={onClose} caption='Cancelar' />
+                        <CancelButton onclick={() => { onClose(); }} caption='Cancelar' />
+                        <SubmitButton onclick={handleEditEvent} caption='Guardar' />
                     </div>
                 </div>
             </div>
@@ -309,3 +341,4 @@ const EditEventModal = ({ open, onClose, eventData }) => {
 };
 
 export default EditEventModal;
+

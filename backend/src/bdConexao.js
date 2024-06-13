@@ -13,7 +13,7 @@ function getConfig(env) {
             max: parseInt(process.env[`${env}_PGCONNECTIONLIMIT`], 10) || 10,
             min: 0,
             acquire: 30000,
-            idle: 10000
+            idle: 100000000
         },
         dialectOptions: {
             ssl: {

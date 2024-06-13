@@ -5,6 +5,7 @@ const models = initModels(sequelizeConn);
 
 const controladorPontosInteresse = {
     adicionar: async (req, res) => {
+        console.log('req.body', req.body);
         const {
             subcategoriaid,
             titulo,
@@ -32,11 +33,12 @@ const controladorPontosInteresse = {
 
             await models.objecto.create({
                 registoid: pontointeresse.pontointeresseid,
-                entidade: 'PONTOINTERESSE'
+                entidade: 'POI'
             });
 
             res.status(201).json({ message: 'Ponto de interesse adicionado com sucesso' });
         } catch (error) {
+            console.error('Erro ao adicionar ponto de interesse', error);
             res.status(500).json({ error: 'Erro ao adicionar ponto de interesse', details: error.message });
         }
     },

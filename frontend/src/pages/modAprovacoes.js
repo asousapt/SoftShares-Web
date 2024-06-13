@@ -160,7 +160,7 @@ export default function ModAprov() {
                     <DataTable rows={tableRows || []} columns={tableColumns} />
                 </div>
             </div>
-            <VerEvento open={isModalOpen1} onClose={handleCloseModal} eventoId={selectedRegisto.id} />
+            <VerEvento open={isModalOpen1} onClose={handleCloseModal} eventoId={selectedRegisto.id} isEditable={false}/>
             <VerPontoInteresse open={isModalOpen2} onClose={handleCloseModal} registoId={selectedRegisto.id} />
         </div>
     );

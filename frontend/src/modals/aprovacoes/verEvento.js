@@ -1,155 +1,342 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 import Modal from '@mui/material/Modal';
 import BasicTextField from '../../components/textFields/basic';
 import DataHora from '../../components/textFields/dataHora';
+import SubmitButton from '../../components/buttons/submitButton';
+import ComboBox from '../../components/combobox/comboboxBasic';
+import CancelButton from '../../components/buttons/cancelButton';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import CancelButton from '../../components/buttons/cancelButton';
+import InputImage from '../../components/image/imageInput';
+import axios from 'axios';
 
-const VerEvento = ({ open, onClose, eventoId }) => {
-    console.log('id ver evento', eventoId);
-    const [title, setTitle] = useState('');
+const VerEventModal = ({ open, onClose, eventoId, isEditable = true }) => {
+    console.log(eventoId);
+    const [titulo, setTitle] = useState('');
     const [localizacao, setLocalizacao] = useState('');
-    const [description, setDescription] = useState('');
-    const [numParticipantes, setNumParticipantes] = useState('');
-    const [dataHoraInicio, setDataHoraInicio] = useState('');
-    const [dataHoraFim, setDataHoraFim] = useState('');
+    const [descricao, setDescription] = useState('');
+    const [nmrMaxParticipantes, setNumParticipantes] = useState('');
+    const [dataInicio, setDataHoraInicio] = useState('');
+    const [dataFim, setDataHoraFim] = useState('');
     const [dataLimInscricao, setDataLimInscricao] = useState('');
-    const [cidade, setCidade] = useState('');
-    const [distrito, setDistrito] = useState('');
-    const [polo, setPolo] = useState('');
-    const [categoria, setCategoria] = useState('');
-    const [subcategoria, setSubcategoria] = useState('');
+    const [cidadeID, setCidade] = useState(null);
+    const [cidades, setCidades] = useState([]);
+    const [distrito, setDistrito] = useState(null);
+    const [distritos, setDistritos] = useState([]);
+    const [poloId, setPolo] = useState('');
+    const [polos, setPolos] = useState([]);
     const [error, setError] = useState(null);
+    const [image, setImage] = useState('https://i0.wp.com/ctmirror-images.s3.amazonaws.com/wp-content/uploads/2021/01/dummy-man-570x570-1.png?fit=570%2C570&ssl=1');
+    const [opcoesCat, setOpcoesCat] = useState([]);
+    const [categoria, setCategoria] = useState(null);
+    const [opcoesSubcat, setOpcoesSubcat] = useState([]);
+    const [subcategoria, setSubcategoria] = useState(null);
 
-    const fetchEvento = async () => {
+    const fetchCategorias = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8000/evento/${eventoId}`, {
-                headers: {
-                    Authorization: `${token}`
-                }
+            const response = await axios.get(`http://localhost:8000/categoria`, {
+                headers: { Authorization: `${token}` }
             });
-            const evento = response.data.data;
-            setTitle(evento.titulo);
-            setDescription(evento.descricao);
-            setLocalizacao(evento.localizacao);
-            setNumParticipantes(evento.nmrmaxparticipantes);
-            setDataHoraInicio(evento.datainicio);
-            setDataHoraFim(evento.datafim);
-            setDataLimInscricao(evento.dataliminscricao);
-            setCidade(evento.cidadeID);
-            setDistrito(evento.distritoID);
-            setPolo(evento.poloID);
-            setCategoria(evento.categoriaID);
-            setSubcategoria(evento.subcategoriaID);
+            const categorias = response.data;
+
+            setOpcoesCat(categorias.map((cat) => ({
+                value: cat.categoriaid,
+                label: cat.valorpt
+            })));
         } catch (error) {
             setError(error);
         }
+    }
+
+    const fetchSubcategoria = async (idcat) => {
+        try {
+            if (idcat){
+                const token = sessionStorage.getItem('token');
+                const response = await axios.get(`http://localhost:8000/subcategoria/categoria/${idcat}`, {
+                    headers: { Authorization: `${token}` }
+                });
+                const subcategorias = response.data;
+                const subcategoriasOptions = subcategorias.map((subcat) => ({
+                    value: subcat.subcategoriaid,
+                    label: subcat.valorpt
+                }));
+                setOpcoesSubcat(subcategoriasOptions);
+            }
+        } catch (error) {
+            setError(error);
+        }
+    }
+
+    const handleCategoriaChange = async (event, newValue) => {
+        setCategoria(newValue);
+        setSubcategoria(null);
+        if (newValue) {
+            try {
+                const token = sessionStorage.getItem('token');
+                const response = await axios.get(`http://localhost:8000/subcategoria/categoria/${newValue.value}`, {
+                    headers: { Authorization: `${token}` }
+                });
+                const subcategorias = response.data;
+                const subcategoriasOptions = subcategorias.map((subcat) => ({
+                    value: subcat.subcategoriaid,
+                    label: subcat.valorpt
+                }));
+                setOpcoesSubcat(subcategoriasOptions);
+            } catch (error) {
+                setError(error);
+            }
+        } else {
+            setOpcoesSubcat([]);
+            setSubcategoria(null);
+        }
+    };
+
+    const fetchPolos = async () => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get('http://localhost:8000/polo', {
+                headers: { Authorization: `${token}` }
+            });
+            const polosData = response.data.data;
+            const polosOptions = polosData.map(polo => ({
+                value: polo.poloid,
+                label: polo.descricao
+            }));
+            setPolos(polosOptions);
+        } catch (error) {
+            console.error('Erro ao buscar polos:', error);
+        }
+    };
+
+    const fetchDistritoByCidadeId = async (cidadeId) => {
+        const token = sessionStorage.getItem('token');
+        const response = await axios.get(`http://localhost:8000/cidades/${cidadeId}/distrito`, {
+            headers: { Authorization: `${token}` }
+        });
+        const distritoData = response.data.data;
+        return { value: distritoData.distritoid, label: distritoData.nome };
+    };
+
+    const fetchCidades = async (distritoId, cidadeId) => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get(`http://localhost:8000/cidades/distrito/${distritoId}`, {
+                headers: { Authorization: `${token}` }
+            });
+            const cidadesData = response.data.data;
+            const cidadesOptions = cidadesData.map(cidade => ({
+                value: cidade.cidadeid,
+                label: cidade.nome
+            }));
+            setCidades(cidadesOptions);
+            setCidade(cidadesOptions.find(cidade => cidade.value === cidadeId));
+        } catch (error) {
+            console.error('Erro ao buscar cidades:', error);
+        }
+    };
+
+    const fetchDistritos = async () => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get('http://localhost:8000/cidades/distritos', {
+                headers: { Authorization: `${token}` }
+            });
+            const distritoData = response.data.data;
+            const distritosOptions = distritoData.map(distrito => ({
+                value: distrito.distritoid,
+                label: distrito.nome
+            }));
+            setDistritos(distritosOptions);
+        } catch (error) {
+            console.error('Erro ao buscar distritos:', error);
+        }
+    };
+
+    const handleDistritoChange = (event, newValue) => {
+        setDistrito(newValue);
+        setCidade(null);
+        if (newValue) {
+            fetchCidades(newValue.value);
+        } else {
+            setCidades([]);
+        }
+    };
+
+    const fetchEventData = async () => {
+            try {
+                const token = sessionStorage.getItem('token');
+                const response = await axios.get(`http://localhost:8000/evento/${eventoId}`, {
+                    headers: { Authorization: `${token}` }
+                });
+                const userData = response.data.data;
+                console.log(userData);
+
+                setTitle(userData.titulo);
+                setLocalizacao(userData.localizacao);
+                setDescription(userData.descricao);
+                setNumParticipantes(userData.nmrmaxparticipantes);
+                setDataHoraInicio(dataFormatada(userData.datainicio));
+                setDataHoraFim(dataFormatada(userData.datafim));
+                setDataLimInscricao(dataFormatada(userData.dataliminscricao));
+                setPolo(userData.poloid);
+
+                const distrito = await fetchDistritoByCidadeId(userData.cidadeid);
+                setDistrito(distrito);
+                fetchCidades(distrito.value, userData.cidadeid);
+                
+                const catResponse = await axios.get(`http://localhost:8000/categoria/${userData.subcategoria.categoriaid}`, {
+                    headers: { Authorization: `${token}` }
+                });
+                const cat = catResponse.data;
+                setCategoria({value: userData.subcategoria.categoriaid, label: cat.valorpt});
+                fetchSubcategoria(userData.subcategoria.categoriaid);
+    
+                const subcatResponse = await axios.get(`http://localhost:8000/subcategoria/${userData.subcategoriaid}`, {
+                    headers: { Authorization: `${token}` }
+                });
+                const subcat = subcatResponse.data;
+                setSubcategoria({value: userData.subcategoriaid, label: subcat.valorpt});
+            } catch (error) {
+                console.error('Erro ao buscar dados do evento:', error);
+            }
     };
 
     useEffect(() => {
-        if (eventoId) {
-            fetchEvento();
-        }
+        fetchDistritos();
+        fetchPolos();
+        fetchCategorias();
+        fetchEventData();
     }, [eventoId]);
 
-    if (error) {
-        return <div>Error: {error.message}</div>;
-    }
+    const handleEditEvent = async () => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const eventoEditado = {
+                titulo,
+                descricao,
+                dataInicio,
+                dataFim,
+                dataLimInscricao,
+                nmrMaxParticipantes,
+                localizacao,
+                latitude: 0,
+                longitude: 0,
+                cidadeID: cidadeID.value,
+                subcategoriaId: subcategoria.value,
+                poloId,
+            };
+            console.log('edit:', eventoEditado);
+            await axios.put(`http://localhost:8000/evento/update/${eventoId}`, eventoEditado, {
+                headers: {
+                    Authorization: `${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+            onClose();
+        } catch (error) {
+            console.error('Erro ao editar evento:', error);
+        }
+    };
+
+    const dataFormatada = (dateTimeString) => {
+        const date = new Date(dateTimeString);
+        const pad = (num) => num.toString().padStart(2, '0');
+        const formatted = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours()+ 1)}:${pad(date.getMinutes())}`;
+        return formatted;
+    };
 
     return (
         <Modal open={open} onClose={onClose}>
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px', overflow: 'auto' }}>
-                <h2 style={{ marginTop: 0, color: 'white' }}>Detalhes do Evento</h2>
+                <h2 style={{ marginTop: 0, color: 'white' }}>Editar Evento</h2>
                 <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 20, borderRadius: 12 }}>
                     <div style={{ marginBottom: 15 }}>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                             <div style={{ width: '40%' }}>
-                                <BasicTextField caption='Titulo' valor={title} fullwidth={true} disabled={true} />
+                                <BasicTextField caption='Titulo' valor={titulo} onchange={(e) => setTitle(e.target.value)} fullwidth={true} disabled={!isEditable} />
                             </div>
                             <div style={{ width: '33.9%' }}>
-                                <BasicTextField caption='Localização' valor={localizacao} fullwidth={true} disabled={true} />
+                                <BasicTextField caption='Localização' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} disabled={!isEditable} />
                             </div>
                             <div style={{ width: '25%' }}>
-                                <BasicTextField caption='Nº Participantes Máximo' type='number' valor={numParticipantes} fullwidth={true} disabled={true} />
+                                <BasicTextField caption='Nº Participantes Máximo' type='number' valor={nmrMaxParticipantes} onchange={(e) => setNumParticipantes(e.target.value)} fullwidth={true} disabled={!isEditable} />
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                             <div style={{ width: '74.5%' }}>
-                                <BasicTextField caption='Descrição' valor={description} fullwidth={true} disabled={true} />
+                                <BasicTextField caption='Descrição' valor={descricao} onchange={(e) => setDescription(e.target.value)} fullwidth={true} disabled={!isEditable} />
                             </div>
                             <div style={{ width: '24.9%' }}>
-                                <Autocomplete
-                                    options={[{ label: 'Polo 1', value: 1 }, { label: 'Polo 2', value: 2 }]}
-                                    getOptionLabel={(option) => option.label}
-                                    renderInput={(params) => <TextField {...params} label="Polo" variant="outlined" />}
-                                    value={polo}
-                                    disabled={true}
-                                    fullWidth={true}
-                                />
+                                <ComboBox caption='Polo' options={polos} value={poloId} handleChange={(e) => setPolo(e.target.value)} disabled={!isEditable} />
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                             <div style={{ width: '32.9%' }}>
-                                <DataHora caption="Data e Hora Início" value={dataHoraInicio} fullwidth={true} disabled={true} />
+                                <DataHora caption="Data e Hora Início" value={dataInicio} onChange={(newValue) => setDataHoraInicio(newValue)} fullwidth={true} disabled={!isEditable} />
                             </div>
                             <div style={{ width: '33%' }}>
-                                <DataHora caption="Data e Hora Fim" value={dataHoraFim} fullwidth={true} disabled={true} />
+                                <DataHora caption="Data e Hora Fim" value={dataFim} onChange={(newValue) => setDataHoraFim(newValue)} fullwidth={true} disabled={!isEditable} />
                             </div>
                             <div style={{ width: '33%' }}>
-                                <DataHora caption="Data Limite de Inscrição" value={dataLimInscricao} fullwidth={true} disabled={true} />
+                                <DataHora caption="Data Limite de Inscrição" value={dataLimInscricao} onChange={(newValue) => setDataLimInscricao(newValue)} fullwidth={true} disabled={!isEditable} />
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                             <div style={{ width: '25%' }}>
                                 <Autocomplete
-                                    options={[{ label: 'Distrito 1', value: 1 }, { label: 'Distrito 2', value: 2 }]}
+                                    options={distritos}
                                     getOptionLabel={(option) => option.label}
                                     renderInput={(params) => <TextField {...params} label="Distrito" variant="outlined" />}
                                     value={distrito}
-                                    disabled={true}
+                                    onChange={handleDistritoChange}
                                     fullWidth={true}
+                                    disabled={!isEditable}
                                 />
                             </div>
                             <div style={{ width: '23.4%' }}>
                                 <Autocomplete
-                                    options={[{ label: 'Cidade 1', value: 1 }, { label: 'Cidade 2', value: 2 }]}
+                                    options={cidades}
                                     getOptionLabel={(option) => option.label}
                                     renderInput={(params) => <TextField {...params} label="Cidade" variant="outlined" />}
-                                    value={cidade}
-                                    disabled={true}
+                                    value={cidadeID}
+                                    onChange={(event, newValue) => { setCidade(newValue); }}
                                     fullWidth={true}
+                                    disabled={!isEditable}
                                 />
                             </div>
                             <div style={{ width: '25%' }}>
                                 <Autocomplete
-                                    options={[{ label: 'Categoria 1', value: 1 }, { label: 'Categoria 2', value: 2 }]}
+                                    options={opcoesCat}
                                     getOptionLabel={(option) => option.label}
                                     renderInput={(params) => <TextField {...params} label="Categoria" variant="outlined" />}
                                     value={categoria}
-                                    disabled={true}
+                                    onChange={handleCategoriaChange}
                                     fullWidth={true}
+                                    disabled={!isEditable}
                                 />
                             </div>
                             <div style={{ width: '25%' }}>
                                 <Autocomplete
-                                    options={[{ label: 'Subcategoria 1', value: 1 }, { label: 'Subcategoria 2', value: 2 }]}
+                                    options={opcoesSubcat}
                                     getOptionLabel={(option) => option.label}
                                     renderInput={(params) => <TextField {...params} label="Subcategoria" variant="outlined" />}
                                     value={subcategoria}
-                                    disabled={true}
+                                    onChange={(event, newValue) => { setSubcategoria(newValue); }}
                                     fullWidth={true}
+                                    disabled={!isEditable}
                                 />
                             </div>
                         </div>
+                        <div style={{ marginBottom: 20 }}></div>
+                        <InputImage image={image} />
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
-                        <CancelButton onClick={onClose} caption='Fechar' />
+                        <CancelButton onclick={() => { onClose(); }} caption='Cancelar' />
+                        <SubmitButton onclick={handleEditEvent} caption='Guardar' disabled={!isEditable} />
                     </div>
                 </div>
             </div>
@@ -157,4 +344,4 @@ const VerEvento = ({ open, onClose, eventoId }) => {
     );
 };
 
-export default VerEvento;
+export default VerEventModal;

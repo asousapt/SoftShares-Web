@@ -100,6 +100,18 @@ export default function ListaPontosInt() {
         fetchData();
     }, [filtroEstado, filtroCategoria, filtroText]);
 
+    useEffect(() => {
+        if (!isNewModalOpen) {
+            fetchData();
+        }
+    }, [isNewModalOpen]);
+
+    /* useEffect(() => {
+        if (!isEditModalOpen) {
+            fetchData();
+        }
+    }, [isEditModalOpen]); */
+
     if (error) {
         return <div>Error: {error.message}</div>;
     }

@@ -10,7 +10,7 @@ import TextField from '@mui/material/TextField';
 import InputImage from '../../components/image/imageInput';
 import axios from 'axios';
 
-const VerEventModal = ({ open, onClose, eventoId, isEditable = true }) => {
+const VerEventModal = ({ open, onClose, eventoId}) => {
     console.log(eventoId);
     const [titulo, setTitle] = useState('');
     const [localizacao, setLocalizacao] = useState('');
@@ -249,39 +249,39 @@ const VerEventModal = ({ open, onClose, eventoId, isEditable = true }) => {
     return (
         <Modal open={open} onClose={onClose}>
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px', overflow: 'auto' }}>
-                <h2 style={{ marginTop: 0, color: 'white' }}>Editar Evento</h2>
+                <h2 style={{ marginTop: 0, color: 'white' }}>Ver Evento</h2>
                 <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 20, borderRadius: 12 }}>
                     <div style={{ marginBottom: 15 }}>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                             <div style={{ width: '40%' }}>
-                                <BasicTextField caption='Titulo' valor={titulo} onchange={(e) => setTitle(e.target.value)} fullwidth={true} disabled={!isEditable} />
+                                <BasicTextField caption='Titulo' valor={titulo} onchange={(e) => setTitle(e.target.value)} fullwidth={true} disabled={true} />
                             </div>
                             <div style={{ width: '33.9%' }}>
-                                <BasicTextField caption='Localização' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} disabled={!isEditable} />
+                                <BasicTextField caption='Localização' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} disabled={true} />
                             </div>
                             <div style={{ width: '25%' }}>
-                                <BasicTextField caption='Nº Participantes Máximo' type='number' valor={nmrMaxParticipantes} onchange={(e) => setNumParticipantes(e.target.value)} fullwidth={true} disabled={!isEditable} />
+                                <BasicTextField caption='Nº Participantes Máximo' type='number' valor={nmrMaxParticipantes} onchange={(e) => setNumParticipantes(e.target.value)} fullwidth={true} disabled={true} />
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                             <div style={{ width: '74.5%' }}>
-                                <BasicTextField caption='Descrição' valor={descricao} onchange={(e) => setDescription(e.target.value)} fullwidth={true} disabled={!isEditable} />
+                                <BasicTextField caption='Descrição' valor={descricao} onchange={(e) => setDescription(e.target.value)} fullwidth={true} disabled={true} />
                             </div>
                             <div style={{ width: '24.9%' }}>
-                                <ComboBox caption='Polo' options={polos} value={poloId} handleChange={(e) => setPolo(e.target.value)} disabled={!isEditable} />
+                                <ComboBox caption='Polo' options={polos} value={poloId} handleChange={(e) => setPolo(e.target.value)} disabled={true} />
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                             <div style={{ width: '32.9%' }}>
-                                <DataHora caption="Data e Hora Início" value={dataInicio} onChange={(newValue) => setDataHoraInicio(newValue)} fullwidth={true} disabled={!isEditable} />
+                                <DataHora caption="Data e Hora Início" value={dataInicio} onChange={(newValue) => setDataHoraInicio(newValue)} fullwidth={true} disabled={true} />
                             </div>
                             <div style={{ width: '33%' }}>
-                                <DataHora caption="Data e Hora Fim" value={dataFim} onChange={(newValue) => setDataHoraFim(newValue)} fullwidth={true} disabled={!isEditable} />
+                                <DataHora caption="Data e Hora Fim" value={dataFim} onChange={(newValue) => setDataHoraFim(newValue)} fullwidth={true} disabled={true} />
                             </div>
                             <div style={{ width: '33%' }}>
-                                <DataHora caption="Data Limite de Inscrição" value={dataLimInscricao} onChange={(newValue) => setDataLimInscricao(newValue)} fullwidth={true} disabled={!isEditable} />
+                                <DataHora caption="Data Limite de Inscrição" value={dataLimInscricao} onChange={(newValue) => setDataLimInscricao(newValue)} fullwidth={true} disabled={true} />
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>
@@ -294,7 +294,7 @@ const VerEventModal = ({ open, onClose, eventoId, isEditable = true }) => {
                                     value={distrito}
                                     onChange={handleDistritoChange}
                                     fullWidth={true}
-                                    disabled={!isEditable}
+                                    disabled={true}
                                 />
                             </div>
                             <div style={{ width: '23.4%' }}>
@@ -305,7 +305,7 @@ const VerEventModal = ({ open, onClose, eventoId, isEditable = true }) => {
                                     value={cidadeID}
                                     onChange={(event, newValue) => { setCidade(newValue); }}
                                     fullWidth={true}
-                                    disabled={!isEditable}
+                                    disabled={true}
                                 />
                             </div>
                             <div style={{ width: '25%' }}>
@@ -316,7 +316,7 @@ const VerEventModal = ({ open, onClose, eventoId, isEditable = true }) => {
                                     value={categoria}
                                     onChange={handleCategoriaChange}
                                     fullWidth={true}
-                                    disabled={!isEditable}
+                                    disabled={true}
                                 />
                             </div>
                             <div style={{ width: '25%' }}>
@@ -327,7 +327,7 @@ const VerEventModal = ({ open, onClose, eventoId, isEditable = true }) => {
                                     value={subcategoria}
                                     onChange={(event, newValue) => { setSubcategoria(newValue); }}
                                     fullWidth={true}
-                                    disabled={!isEditable}
+                                    disabled={true}
                                 />
                             </div>
                         </div>
@@ -335,8 +335,7 @@ const VerEventModal = ({ open, onClose, eventoId, isEditable = true }) => {
                         <InputImage image={image} />
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
-                        <CancelButton onclick={() => { onClose(); }} caption='Cancelar' />
-                        <SubmitButton onclick={handleEditEvent} caption='Guardar' disabled={!isEditable} />
+                        <CancelButton onclick={() => { onClose(); }} caption='Voltar' />
                     </div>
                 </div>
             </div>

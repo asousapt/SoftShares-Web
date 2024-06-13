@@ -8,7 +8,7 @@ import TextField from '@mui/material/TextField';
 import InputImage from '../../components/image/imageInput';
 import axios from 'axios';
 
-const EditPontoIntModal = ({ open, onClose, registoId}) => {
+const EditPontoIntModal = ({ open, onClose, eventData }) => {
     const [titulo, setTitle] = useState('');
     const [localizacao, setLocalizacao] = useState('');
     const [descricao, setDescription] = useState('');
@@ -140,7 +140,7 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
     const fetchEventData = async () => {
             try {
                 const token = sessionStorage.getItem('token');
-                const response = await axios.get(`http://localhost:8000/pontoInteresse/${registoId}`, {
+                const response = await axios.get(`http://localhost:8000/pontoInteresse/${eventData}`, {
                     headers: { Authorization: `${token}` }
                 });
                 const userData = response.data.data;
@@ -176,7 +176,7 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
         fetchDistritos();
         fetchCategorias();
         fetchEventData();
-    }, [registoId]);
+    }, [eventData]);
 
     const handleEditPontoInt = async () => {
         try {
@@ -191,7 +191,7 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
                 subcategoriaid: subcategoria.value,
             };
 
-            await axios.put(`http://localhost:8000/pontoInteresse/update/${registoId}`, eventoEditado, {
+            await axios.put(`http://localhost:8000/pontoInteresse/update/${eventData}`, eventoEditado, {
                 headers: {
                     Authorization: `${token}`,
                     'Content-Type': 'application/json',
@@ -211,16 +211,16 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
                     <div style={{ marginBottom: 15 }}>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                             <div style={{ width: '50%' }}>
-                                <BasicTextField caption='Titulo' valor={titulo} onchange={(e) => setTitle(e.target.value)} fullwidth={true} disabled={true}/>
+                                <BasicTextField caption='Titulo' valor={titulo} onchange={(e) => setTitle(e.target.value)} fullwidth={true} />
                             </div>
                             <div style={{ width: '49.4%' }}>
-                                <BasicTextField caption='Localização' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} disabled={true}/>
+                                <BasicTextField caption='Localização' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} />
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                         <div style={{ width: '100%' }}>
-                                <BasicTextField caption='Descrição' valor={descricao} onchange={(e) => setDescription(e.target.value)} fullwidth={true} disabled={true}/>
+                                <BasicTextField caption='Descrição' valor={descricao} onchange={(e) => setDescription(e.target.value)} fullwidth={true} />
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>
@@ -233,7 +233,6 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
                                     value={distrito}
                                     onChange={handleDistritoChange}
                                     fullWidth={true}
-                                    disabled={true}
                                 />
                             </div>
                             <div style={{ width: '23.4%' }}>
@@ -244,7 +243,6 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
                                     value={cidadeID}
                                     onChange={(event, newValue) => { setCidade(newValue); }}
                                     fullWidth={true}
-                                    disabled={true}
                                 />
                             </div>
                             <div style={{ width: '25%' }}>
@@ -255,7 +253,6 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
                                     value={categoria}
                                     onChange={handleCategoriaChange}
                                     fullWidth={true}
-                                    disabled={true}
                                 />
                             </div>
                             <div style={{ width: '25%' }}>
@@ -266,7 +263,6 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
                                     value={subcategoria}
                                     onChange={(event, newValue) => { setSubcategoria(newValue); }}
                                     fullWidth={true}
-                                    disabled={true}
                                 />
                             </div>
                         </div>

@@ -45,6 +45,7 @@ const controladorPontosInteresse = {
 
     atualizar: async (req, res) => {
         const { idPontoInteresse } = req.params;
+        console.log('idPontoInteresse', idPontoInteresse);
         const {
             subcategoriaid,
             titulo,
@@ -156,16 +157,23 @@ const controladorPontosInteresse = {
 
     consultarPorID: async (req, res) => {
         const { idPontoInteresse } = req.params;
-
+        console.log('idPontoInteresse', idPontoInteresse);
         try {
             const evento = await models.pontointeresse.findByPk(idPontoInteresse, {
-                include: {
-                    model: models.utilizador,
-                    as: 'utilizadorcriou_utilizador'
-                },
+                include: [
+                    {
+                        model: models.utilizador,
+                        as: 'utilizadorcriou_utilizador'
+                    },
+                    {
+                        model: models.subcategoria,
+                        as: 'subcategorium'
+                    }
+                ]
             });
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: evento });
         } catch (error) {
+            console.error('Erro ao adicionar ponto de interesse', error);
             res.status(500).json({ error: 'Erro ao consultar o evento' });
         }
     },

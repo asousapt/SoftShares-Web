@@ -6,10 +6,10 @@ import Select from '@mui/material/Select';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Source } from '@mui/icons-material';
 
-export default function ComboBasic({caption, value, handleChange, options, fullwidth = false, mostraOpcaoVazia = false}) {
+export default function ComboBasic({caption, value, handleChange, options, fullwidth = false, mostraOpcaoVazia = false, disabled = false}) {
     return (
-        <FormControl variant="outlined" fullWidth={fullwidth} sx={{marginTop: 0, width: '100%'}}>
-            <InputLabel id="demo-simple-select-standard-label" shrink={true} style={{color:'black'}}>{caption}</InputLabel>
+        <FormControl variant="outlined" fullWidth={fullwidth} sx={{marginTop: 0, width: '100%'}} disabled={disabled} >
+            <InputLabel id="demo-simple-select-standard-label" shrink={true}>{caption}</InputLabel>
             <Select value={value} onChange={handleChange} label={caption} startAdornment={(<InputAdornment > </InputAdornment>)} >
                 {mostraOpcaoVazia && (<MenuItem value=" "> </MenuItem> )}
                 {options.map((option) => (<MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>))}

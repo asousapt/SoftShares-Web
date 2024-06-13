@@ -10,6 +10,7 @@ import Search from '../components/textFields/search';
 import ComboFilter from '../components/combobox/comboFilter';
 /* FIM COMPONENTES */
 import NovoPontoInt from '../modals/pontosInteresse/novoPontoInt';
+import EditPontoInt from '../modals/pontosInteresse/editPontoInt';
 
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},
@@ -24,6 +25,8 @@ export default function ListaPontosInt() {
     const [opcoesFiltroSubcat, setOpcoesSubcat] = useState([]);
     const [filtroCategoria, setFiltroCategoria] = useState(0);
     const [tableRows, setTableRows] = useState([]);
+    const [isEditModalOpen, setEditModalOpen] = useState(false);
+    const [selectedPontoIntId, setSelectedPontoIntId] = useState(null);
     const [error, setError] = useState(null);
 
     const tableColumns = [
@@ -32,7 +35,7 @@ export default function ListaPontosInt() {
         { field: 'dataHora', headerName: 'Data e Hora de Começo', type: 'dateTime', width: 300, headerAlign: 'left' },
         { field: 'localizacao', headerName: 'Localização', flex: 0.5, headerAlign: 'left' },
         { field: 'subcategoria', headerName: 'Subcategoria', flex: 1, headerAlign: 'left' },
-        { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
+        { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEditClick(row.id)} />)},
     ];
 
     const fetchCategorias = async () => {
@@ -92,6 +95,11 @@ export default function ListaPontosInt() {
         }
     };
 
+    const handleEditClick = (id) => {
+        setSelectedPontoIntId(id);
+        setEditModalOpen(true);
+    };
+
     useEffect(() => {
         fetchCategorias();
     }, []);
@@ -106,11 +114,11 @@ export default function ListaPontosInt() {
         }
     }, [isNewModalOpen]);
 
-    /* useEffect(() => {
+    useEffect(() => {
         if (!isEditModalOpen) {
             fetchData();
         }
-    }, [isEditModalOpen]); */
+    }, [isEditModalOpen]);
 
     if (error) {
         return <div>Error: {error.message}</div>;
@@ -131,6 +139,7 @@ export default function ListaPontosInt() {
                 </div>
             </div>
             <NovoPontoInt open={isNewModalOpen} onClose={() => setNewModalOpen(false)}/>
+            {isEditModalOpen && (<EditPontoInt open={isEditModalOpen} onClose={() => setEditModalOpen(false)} eventData={selectedPontoIntId}/>)}
         </div>
     )
 }

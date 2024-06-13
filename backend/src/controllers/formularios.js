@@ -55,12 +55,13 @@ const controladorFormularios = {
             await Promise.all(perguntas.map(async pergunta => {
                 await models.formulariodetalhes.create({
                     formularioversaoid: versao.formularioversaoid,
-                    pergunta: pergunta.pergunta,
-                    tipodados: pergunta.tipoDados,
-                    obrigatorio: Boolean(pergunta.obrigatorio),
-                    minimo: pergunta.minimo,
-                    maximo: pergunta.maximo,
-                    ordem: pergunta.ordem
+                    pergunta: pergunta.text,
+                    tipodados: pergunta.type,
+                    obrigatorio: pergunta.required,
+                    minimo: pergunta.minValue,
+                    maximo: pergunta.maxValue,
+                    ordem: pergunta.order,
+                    respostaspossiveis: pergunta.options.join(", ")
                 });
             }));
             res.status(201).json({ message: 'Formulario adicionado com sucesso' });
@@ -97,7 +98,7 @@ const controladorFormularios = {
         }
     },
 
-    consultarFormulario: async (req, res) => {
+    consultarPerguntas: async (req, res) => {
         const { id, tabela } = req.params;
 
         try{
@@ -185,6 +186,55 @@ const controladorFormularios = {
             res.status(200).json(forms);
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar formulario', details: error.message });
+        }
+    },
+
+    consultarGenericoPorIDVersaoMaisRecente: async (req, res) => {
+        const { idForm } = req.params;
+
+        try{
+            const results = await sequelizeConn.query(
+                `SELECT 
+                    f.formularioid,
+                    fv.descricao,
+                    fd.*,
+                    cfg.registoid as subcategoriaid,
+                    (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 1) as valorpt
+                FROM 
+                    FormularioDetalhes fd 
+                INNER JOIN
+                    formularioversao fv ON fv.formularioversaoid = fd.formularioversaoid
+                INNER JOIN
+                    formulario f ON f.formularioid = fv.formularioid
+                INNER JOIN
+                    itemcfgformulario cfg ON cfg.itemcfgformularioid = f.itemcfgformularioid AND tipo = 'SUBCAT'
+                INNER JOIN 
+                    chave ch ON cfg.registoid = ch.registoid AND ch.entidade = 'SUBCAT'
+                WHERE 
+                    f.formularioid = ${idForm}
+                    AND fv.formularioversaoid = (SELECT max(formularioversaoid) from formularioversao WHERE formularioid = ${idForm})
+                `,
+                {
+                    type: QueryTypes.SELECT
+                }
+            );
+
+            const formDetails = results.map(row => {
+                const { formularioid, descricao, subcategoriaid, valorpt, ...detailColumns } = row;
+                return detailColumns;
+            });
+    
+            const response = {
+                formularioid: results[0].formularioid,
+                descricao: results[0].descricao,
+                subcategoriaid: results[0].subcategoriaid,
+                valorpt: results[0].valorpt,
+                formDetails
+            };
+    
+            res.status(200).json(response);
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar formulario', details: error });
         }
     },
 

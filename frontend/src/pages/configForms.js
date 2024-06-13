@@ -10,6 +10,7 @@ import Search from '../components/textFields/search';
 import ComboFilter from '../components/combobox/comboFilter';
 /* FIM COMPONENTES */
 import NovoForm from '../modals/formulario/novoFormulario';
+import EditForm from '../modals/formulario/editFormulario';
 
 export default function ConfigForms() {
     const [isNewModalOpen, setNewModalOpen] = useState(false);
@@ -17,6 +18,8 @@ export default function ConfigForms() {
     const [opcoesFiltroCat, setOpcoesCat] = useState([]);
     const [filtroCategoria, setFiltroCategoria] = useState(0);
     const [tableRows, setTableRows] = useState([]);
+    const [isEditModalOpen, setEditModalOpen] = useState(false);
+    const [selectedEventoId, setSelectedEventoId] = useState(null);
     const [error, setError] = useState('');
 
     const tableColumns = [
@@ -24,7 +27,7 @@ export default function ConfigForms() {
         { field: 'titulo', headerName: 'Título', flex: 1, headerAlign: 'left' },
         { field: 'subcategoria', headerName: 'Subcategoria', flex: 1, headerAlign: 'left' },
         { field: 'versao', headerName: 'Versão', flex: 0.5, headerAlign: 'left' },
-        { field: 'edit', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' /*onclick={} id={row.id}*/ />)},
+        { field: 'edit', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' onclick={() => {setSelectedEventoId(row.id); setEditModalOpen(true);}} />)},
     ];
 
     const fetchCategorias = async () => {
@@ -83,6 +86,18 @@ export default function ConfigForms() {
         fetchData();
     }, [filtroCategoria, filtroText]);
 
+    useEffect(() => {
+        if (!isNewModalOpen){
+            fetchData();
+        }
+    }, [isNewModalOpen]);
+
+    useEffect(() => {
+        if (!isEditModalOpen){
+            fetchData();
+        }
+    }, [isEditModalOpen]);
+
     return(
         <div className="page-container">
             <Header caption='Formulários' />
@@ -97,6 +112,7 @@ export default function ConfigForms() {
                 </div>
             </div>
             <NovoForm open={isNewModalOpen} onClose={() => setNewModalOpen(false)}/>
+            {isEditModalOpen && ( <EditForm open={isEditModalOpen} onClose={() => setEditModalOpen(false)} idForm={selectedEventoId} /> )}
         </div>
     )
 }

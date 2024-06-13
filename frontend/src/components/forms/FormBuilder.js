@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import {
   Paper,
   Button
@@ -8,8 +8,24 @@ import QuestionTypes from './QuestionTypes';
 import Question from './Question';
 
 const FormBuilder = forwardRef((props, ref) => {
+  const { initialQuestions } = props;
   const [questions, setQuestions] = useState([]);
-  const [formData, setFormData] = useState(null);
+
+  useEffect(() => {
+    if (initialQuestions && initialQuestions.length > 0) {
+      const newQuestions = initialQuestions.map((question, index) => ({
+        id: question.id || index + 1, 
+        type: question.type || 'TEXTO',
+        text: question.text || '',
+        options: question.options || [],
+        required: question.required || false,
+        order: question.order || index + 1,
+        minValue: question.minValue || 0,
+        maxValue: question.maxValue || 0
+      }));
+      setQuestions(newQuestions);
+    }
+  }, [initialQuestions]);
 
   const addQuestion = (type) => {
     const newQuestion = {

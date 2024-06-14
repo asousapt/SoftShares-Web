@@ -25,6 +25,8 @@ const AddUserModal = ({ open, onClose }) => {
     const [sobre, setSobre] = useState('');
     const [inactivo, setInactivo] = useState(false);
     const [image, setImage] = useState('');
+    const [imageName, setImageName] = useState('');
+    const [imageSize, setImageSize] = useState(0);
 
     useEffect(() => {
         const fetchDepartamentos = async () => {
@@ -115,6 +117,11 @@ const AddUserModal = ({ open, onClose }) => {
     const handleAddUser = async () => {
         try {
             const token = sessionStorage.getItem('token');
+            const imagem = [{
+                nome: imageName,
+                base64: image,
+                tamanho: imageSize
+            }];
             const newUser = {
                 poloid,
                 perfilid,
@@ -127,8 +134,10 @@ const AddUserModal = ({ open, onClose }) => {
                 departamentoid,
                 funcaoid,
                 sobre,
-                inactivo
+                inactivo,
+                imagem
             };
+            console.log(newUser);
             await axios.post('http://localhost:8000/utilizadores/add', newUser, {
                 headers: {
                     'Authorization': `${token}`,
@@ -158,12 +167,15 @@ const AddUserModal = ({ open, onClose }) => {
             fileInput.addEventListener('change', async (event) => {
                 const file = event.target.files[0];
                 if (!file) return; 
+                setImageName(file.name);
+                setImageSize(file.size);
                 
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
         
                 reader.onload = async () => {
                     const imageData = reader.result;
+                    console.log('reader',reader);
                     setImage(imageData);
                 };
             });

@@ -27,14 +27,14 @@ const controladorFicheiros = {
                 album = await models.album.create({
                     objectoid: objecto.objectoid,
                     utilizadorid: userID,
-                    descricao: `${entidade}_${id}`
+                    descricao: `${entidade}${id}`
                 });
             }
 
             for (const file of files){
                 await models.ficheiro.create({
                     albumid: album.albumid,
-                    caminho: file.caminho,
+                    caminho: '',
                     nome: file.nome,
                     extensao: file.nome.split('.')[1],
                     tamanho: file.tamanho

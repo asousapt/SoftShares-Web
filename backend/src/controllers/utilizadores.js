@@ -3,6 +3,7 @@ const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
 const { generateToken } = require('../tokenUtils');
+const ficheirosController = require('./ficheiros');
 
 const controladorUtilizadores = {
     adicionar: async (req, res) => {
@@ -18,7 +19,8 @@ const controladorUtilizadores = {
             departamentoid,
             funcaoid,
             sobre,
-            inactivo
+            inactivo,
+            imagem
         } = req.body;
 
         try {
@@ -43,13 +45,15 @@ const controladorUtilizadores = {
             });
 
             await models.objecto.create({
-                registoid: user.userid,
-                entidade: 'USER'
+                registoid: user.utilizadorid,
+                entidade: 'UTIL'
             });
+
+            ficheirosController.adicionar(user.utilizadorid, 'UTIL', imagem, user.utilizadorid);
 
             res.status(201).json({ message: 'Utilizador adicionado com sucesso' });
         } catch (error) {
-            res.status(500).json({ error: 'Erro ao adicionar utilizador', details: error.message });
+            res.status(500).json({ error: 'Erro ao adicionar utilizador', details: error });
         }
     },
 

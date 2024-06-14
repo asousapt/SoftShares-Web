@@ -10,6 +10,7 @@ import Search from '../components/textFields/search';
 import VerEvento from '../modals/aprovacoes/verEvento';
 import VerPontoInteresse from '../modals/aprovacoes/verPontoInteresse';
 import ConfirmarAprov from '../modals/aprovacoes/confirmarAprov';
+import RejeitarAprov from '../modals/aprovacoes/rejeitarAprov';
 
 export default function ModAprov() {
     const [filtroText, setFiltroText] = useState('');
@@ -18,6 +19,7 @@ export default function ModAprov() {
     const [isModalOpen1, setIsModalOpen1] = useState(false);
     const [isModalOpen2, setIsModalOpen2] = useState(false);
     const [isModalOpen3, setIsModalOpen3] = useState(false);
+    const [isModalOpen4, setIsModalOpen4] = useState(false);
     const [selectedRegisto, setSelectedRegisto] = useState({ id: null, tipo: null });
 
     const tableColumns = [
@@ -26,7 +28,7 @@ export default function ModAprov() {
         { field: 'titulo', headerName: 'Título', flex: 2, headerAlign: 'left' },
         { field: 'criadoPor', headerName: 'Criado Por', flex: 1, headerAlign: 'left' },
         { field: 'permitir', headerName: 'Permitir', width: 85, headerAlign: 'left', sortable: false, renderCell: (params) => (<AprovButton onclick={() => handleOpenConfirmarAprov(params.row)} />) },
-        { field: 'remover', headerName: 'Remover', width: 85, headerAlign: 'left', sortable: false, renderCell: (params) => (<RejButton onClick={() => rejeitarRegisto(params.row)} />) },
+        { field: 'remover', headerName: 'Remover', width: 85, headerAlign: 'left', sortable: false, renderCell: (params) => (<RejButton onclick={() => handleOpenRejeitarAprov(params.row)} />) },
         { field: 'ver', headerName: 'Ver', width: 85, headerAlign: 'left', sortable: false, renderCell: (params) => (<DetailButton onclick={() => handleOpenModal(params.row)} />) },
     ];
 
@@ -76,17 +78,22 @@ export default function ModAprov() {
         }
     };
 
-    const aprovarRegisto = async (row) => {
+    const aprovarRegisto = async (id, tipo) => {
         try {
+            const userid = sessionStorage.getItem('userid');
             const token = sessionStorage.getItem('token');
-            if (row.tipo === 'Ponto de Interesse') {
-                await axios.put(`http://localhost:8000/pontoInteresse/aprovar/${row.id}`, {}, {
+            const aprovacao = {
+                userAprovacao: userid
+            };
+
+            if (tipo === 'Ponto de Interesse') {
+                await axios.put(`http://localhost:8000/pontoInteresse/aprovar/${id}`, aprovacao, {
                     headers: {
                         Authorization: `${token}`
                     }
                 });
-            } else if (row.tipo === 'Evento') {
-                await axios.put(`http://localhost:8000/evento/aprovar/${row.id}`, {}, {
+            } else if (tipo === 'Evento') {
+                await axios.put(`http://localhost:8000/evento/aprovar/${id}`, aprovacao, {
                     headers: {
                         Authorization: `${token}`
                     }
@@ -98,17 +105,22 @@ export default function ModAprov() {
         }
     };
 
-    const rejeitarRegisto = async (row) => {
+    const rejeitarRegisto = async (id, tipo) => {
         try {
+            const userid = sessionStorage.getItem('userid');
             const token = sessionStorage.getItem('token');
-            if (row.tipo === 'Ponto de Interesse') {
-                await axios.put(`http://localhost:8000/pontoInteresse/rejeitar/${row.id}`, {}, {
+            const aprovacao = {
+                userAprovacao: userid
+            };
+
+            if (tipo === 'Ponto de Interesse') {
+                await axios.put(`http://localhost:8000/pontoInteresse/rejeitar/${id}`, aprovacao, {
                     headers: {
                         Authorization: `${token}`
                     }
                 });
-            } else if (row.tipo === 'Evento') {
-                await axios.put(`http://localhost:8000/evento/rejeitar/${row.id}`, {}, {
+            } else if (tipo === 'Evento') {
+                await axios.put(`http://localhost:8000/evento/rejeitar/${id}`, aprovacao, {
                     headers: {
                         Authorization: `${token}`
                     }
@@ -122,23 +134,23 @@ export default function ModAprov() {
 
     const handleOpenModal = (row) => {
         setSelectedRegisto({ id: row.id, tipo: row.tipo });
+        if (row.tipo === 'Evento') {
+            setIsModalOpen1(true);
+        } else if (row.tipo === 'Ponto de Interesse') {
+            setIsModalOpen2(true);
+        }
     };
 
     const handleOpenConfirmarAprov = (row) => {
-        //setSelectedRegisto({ id: row.id, tipo: row.tipo });
+        setSelectedRegisto({ id: row.id, tipo: row.tipo });
         setIsModalOpen3(true);
     };
-    
-    useEffect(() => {
-        if (selectedRegisto.id && selectedRegisto.tipo) {
-            if (selectedRegisto.tipo === 'Evento') {
-                setIsModalOpen1(true);
-            } else {
-                setIsModalOpen2(true);
-            }
-        }
-    }, [selectedRegisto]);
 
+    const handleOpenRejeitarAprov = (row) => {
+        setSelectedRegisto({ id: row.id, tipo: row.tipo });
+        setIsModalOpen4(true);
+    };
+    
     const handleCloseModal = () => {
         setIsModalOpen1(false);
         setIsModalOpen2(false);
@@ -165,9 +177,10 @@ export default function ModAprov() {
                     <DataTable rows={tableRows || []} columns={tableColumns} />
                 </div>
             </div>
-            <VerEvento open={isModalOpen1} onClose={handleCloseModal} eventoId={selectedRegisto.id}/>
-            <VerPontoInteresse open={isModalOpen2} onClose={handleCloseModal} registoId={selectedRegisto.id} />
-            <ConfirmarAprov open={isModalOpen3} onClose={handleCloseModal} onConfirm={() => aprovarRegisto(selectedRegisto)} />
+            {isModalOpen1 && (<VerEvento open={isModalOpen1} onClose={handleCloseModal} eventoId={selectedRegisto.id}/>)}
+            {isModalOpen2 && (<VerPontoInteresse open={isModalOpen2} onClose={handleCloseModal} registoId={selectedRegisto.id} />)}
+            {isModalOpen3 && (<ConfirmarAprov open={isModalOpen3} onClose={handleCloseModal} dados={selectedRegisto} onConfirm={aprovarRegisto}/>)}
+            {isModalOpen4 && (<RejeitarAprov open={isModalOpen4} onClose={handleCloseModal} dados={selectedRegisto} onConfirm={rejeitarRegisto}/>)}
         </div>
     );
 }

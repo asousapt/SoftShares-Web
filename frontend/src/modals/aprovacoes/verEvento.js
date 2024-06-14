@@ -169,7 +169,6 @@ const VerEventModal = ({ open, onClose, eventoId}) => {
                     headers: { Authorization: `${token}` }
                 });
                 const userData = response.data.data;
-                console.log(userData);
 
                 setTitle(userData.titulo);
                 setLocalizacao(userData.localizacao);
@@ -225,7 +224,6 @@ const VerEventModal = ({ open, onClose, eventoId}) => {
                 subcategoriaId: subcategoria.value,
                 poloId,
             };
-            console.log('edit:', eventoEditado);
             await axios.put(`http://localhost:8000/evento/update/${eventoId}`, eventoEditado, {
                 headers: {
                     Authorization: `${token}`,

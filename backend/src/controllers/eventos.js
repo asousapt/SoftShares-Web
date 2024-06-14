@@ -141,9 +141,12 @@ const controladorEventos = {
 
     rejeitarEvento: async (req, res) => {
         const { idEvento } = req.params;
+        const { userAprovacao } = req.body;
         try {
             await models.evento.update({
-                aprovado: false
+                aprovado: false,
+                utilizadoraprovou: userAprovacao,
+                dataaprovacao: Sequelize.literal('CURRENT_DATE')
             }, {
                 where: {
                     eventoid: idEvento

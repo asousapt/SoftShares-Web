@@ -103,9 +103,12 @@ const controladorPontosInteresse = {
 
     rejeitar: async (req, res) => {
         const { idPontoInteresse } = req.params;
+        const { userAprovacao } = req.body;
         try {
             await models.pontointeresse.update({
-                aprovado: false
+                aprovado: false,
+                dataaprovacao: Sequelize.literal('CURRENT_DATE'),
+                utilizadoraprova: userAprovacao
             }, {
                 where: {
                     pontointeresseid: idPontoInteresse

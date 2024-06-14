@@ -132,7 +132,6 @@ const AddPontoIntModal = ({ open, onClose }) => {
                 utilizadorcriou: userid,
                 subcategoriaid: subcategoria ? subcategoria.value : '',
             };
-            console.log(novoEvento);
 
             await axios.post('http://localhost:8000/pontoInteresse/add', novoEvento, {
                 headers: {

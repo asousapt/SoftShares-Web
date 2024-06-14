@@ -155,6 +155,7 @@ export default function ModAprov() {
         setIsModalOpen1(false);
         setIsModalOpen2(false);
         setIsModalOpen3(false);
+        setIsModalOpen4(false);
         setSelectedRegisto({ id: null, tipo: null });
     };
     

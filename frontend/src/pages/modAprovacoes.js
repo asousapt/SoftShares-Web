@@ -9,6 +9,7 @@ import Header from '../components/header/header';
 import Search from '../components/textFields/search';
 import VerEvento from '../modals/aprovacoes/verEvento';
 import VerPontoInteresse from '../modals/aprovacoes/verPontoInteresse';
+import ConfirmarAprov from '../modals/aprovacoes/confirmarAprov';
 
 export default function ModAprov() {
     const [filtroText, setFiltroText] = useState('');
@@ -16,6 +17,7 @@ export default function ModAprov() {
     const [error, setError] = useState('');
     const [isModalOpen1, setIsModalOpen1] = useState(false);
     const [isModalOpen2, setIsModalOpen2] = useState(false);
+    const [isModalOpen3, setIsModalOpen3] = useState(false);
     const [selectedRegisto, setSelectedRegisto] = useState({ id: null, tipo: null });
 
     const tableColumns = [
@@ -23,7 +25,7 @@ export default function ModAprov() {
         { field: 'tipo', headerName: 'Tipo', flex: 1, headerAlign: 'left' },
         { field: 'titulo', headerName: 'Título', flex: 2, headerAlign: 'left' },
         { field: 'criadoPor', headerName: 'Criado Por', flex: 1, headerAlign: 'left' },
-        { field: 'permitir', headerName: 'Permitir', width: 85, headerAlign: 'left', sortable: false, renderCell: (params) => (<AprovButton onClick={() => aprovarRegisto(params.row)} />) },
+        { field: 'permitir', headerName: 'Permitir', width: 85, headerAlign: 'left', sortable: false, renderCell: (params) => (<AprovButton onclick={() => handleOpenConfirmarAprov(params.row)} />) },
         { field: 'remover', headerName: 'Remover', width: 85, headerAlign: 'left', sortable: false, renderCell: (params) => (<RejButton onClick={() => rejeitarRegisto(params.row)} />) },
         { field: 'ver', headerName: 'Ver', width: 85, headerAlign: 'left', sortable: false, renderCell: (params) => (<DetailButton onclick={() => handleOpenModal(params.row)} />) },
     ];
@@ -122,10 +124,12 @@ export default function ModAprov() {
         setSelectedRegisto({ id: row.id, tipo: row.tipo });
     };
 
+    const handleOpenConfirmarAprov = (row) => {
+        //setSelectedRegisto({ id: row.id, tipo: row.tipo });
+        setIsModalOpen3(true);
+    };
     
     useEffect(() => {
-        console.log('selectedRegisto', selectedRegisto);
-        console.log('id', selectedRegisto.id);
         if (selectedRegisto.id && selectedRegisto.tipo) {
             if (selectedRegisto.tipo === 'Evento') {
                 setIsModalOpen1(true);
@@ -138,9 +142,10 @@ export default function ModAprov() {
     const handleCloseModal = () => {
         setIsModalOpen1(false);
         setIsModalOpen2(false);
+        setIsModalOpen3(false);
         setSelectedRegisto({ id: null, tipo: null });
     };
-
+    
     useEffect(() => {
         fetchData();
     }, [filtroText]);
@@ -160,8 +165,9 @@ export default function ModAprov() {
                     <DataTable rows={tableRows || []} columns={tableColumns} />
                 </div>
             </div>
-            <VerEvento open={isModalOpen1} onClose={handleCloseModal} eventoId={selectedRegisto.id} isEditable={false}/>
+            <VerEvento open={isModalOpen1} onClose={handleCloseModal} eventoId={selectedRegisto.id}/>
             <VerPontoInteresse open={isModalOpen2} onClose={handleCloseModal} registoId={selectedRegisto.id} />
+            <ConfirmarAprov open={isModalOpen3} onClose={handleCloseModal} onConfirm={() => aprovarRegisto(selectedRegisto)} />
         </div>
     );
 }

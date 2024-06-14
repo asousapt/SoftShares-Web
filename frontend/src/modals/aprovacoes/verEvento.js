@@ -11,7 +11,6 @@ import InputImage from '../../components/image/imageInput';
 import axios from 'axios';
 
 const VerEventModal = ({ open, onClose, eventoId}) => {
-    console.log(eventoId);
     const [titulo, setTitle] = useState('');
     const [localizacao, setLocalizacao] = useState('');
     const [descricao, setDescription] = useState('');

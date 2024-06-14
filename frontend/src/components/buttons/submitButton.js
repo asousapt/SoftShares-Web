@@ -2,11 +2,11 @@ import * as React from 'react';
 import Button from '@mui/material/Button';
 import { IoSaveOutline } from "react-icons/io5";
 
-export default function SubmitButton({caption, onclick}) {
+export default function SubmitButton({caption, onclick, showIcon = true }) {
     return (
         <Button 
             variant="contained" 
-            endIcon={<IoSaveOutline color='white'/>} 
+            endIcon={showIcon && <IoSaveOutline color='white'/>}
             onClick={onclick} 
             style={{
                 borderRadius: '24px', 

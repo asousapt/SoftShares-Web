@@ -12,6 +12,7 @@ import StateChanger from '../components/stateChanger/stateChanger';
 /* FIM COMPONENTES */
 import NovoUser from '../modals/utilizadores/novoUtilizador';
 import EditUser from '../modals/utilizadores/editUtilizador';
+import Alert from '../components/alerts/alert';
 
 const opcoesFiltro = [
     { value: 'Todos', label: 'Todos' },
@@ -27,6 +28,8 @@ export default function Configtilizadores() {
     const [tableRows, setTableRows] = useState([]);
     const [error, setError] = useState(null);
     const [selectedUserId, setSelectedUserId] = useState(null);
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
@@ -113,8 +116,9 @@ export default function Configtilizadores() {
                     <DataTable rows={tableRows || []} columns={tableColumns} />
                 </div>
             </div>
-            <NovoUser open={isNewModalOpen} onClose={() => setNewModalOpen(false)} />
+            <NovoUser open={isNewModalOpen} onClose={() => setNewModalOpen(false)} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
             <EditUser open={isEditModalOpen} onClose={() => {setEditModalOpen(false); setSelectedUserId(null);}} userId={selectedUserId} />
+            <Alert open={alertOpen} setOpen={setAlertOpen} title={alertProps.title} label={alertProps.label} severity={alertProps.severity} />
         </div>
     )
 }

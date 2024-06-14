@@ -127,7 +127,7 @@ const controladorEventos = {
             await models.evento.update({
                 aprovado: true,
                 utilizadoraprovou: userAprovacao,
-                dataaprovacao: Sequelize.literal('CURRENT_DATE')
+                dataaprovacao: Sequelize.literal('CURRENT_TIMESTAMP')
             }, {
                 where: {
                     eventoid: idEvento
@@ -146,7 +146,7 @@ const controladorEventos = {
             await models.evento.update({
                 aprovado: false,
                 utilizadoraprovou: userAprovacao,
-                dataaprovacao: Sequelize.literal('CURRENT_DATE')
+                dataaprovacao: Sequelize.literal('CURRENT_TIMESTAMP')
             }, {
                 where: {
                     eventoid: idEvento

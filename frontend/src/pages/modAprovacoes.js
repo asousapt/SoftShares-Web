@@ -11,6 +11,7 @@ import VerEvento from '../modals/aprovacoes/verEvento';
 import VerPontoInteresse from '../modals/aprovacoes/verPontoInteresse';
 import ConfirmarAprov from '../modals/aprovacoes/confirmarAprov';
 import RejeitarAprov from '../modals/aprovacoes/rejeitarAprov';
+import Alert from '../components/alerts/alert';
 
 export default function ModAprov() {
     const [filtroText, setFiltroText] = useState('');
@@ -21,6 +22,8 @@ export default function ModAprov() {
     const [isModalOpen3, setIsModalOpen3] = useState(false);
     const [isModalOpen4, setIsModalOpen4] = useState(false);
     const [selectedRegisto, setSelectedRegisto] = useState({ id: null, tipo: null });
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
@@ -100,8 +103,12 @@ export default function ModAprov() {
                 });
             }
             fetchData();
+            setAlertProps({ title: 'Sucesso', label: `O ${tipo} foi aprovado com sucesso.`, severity: 'success' });
+            setAlertOpen(true);
         } catch (error) {
             console.error('Erro ao aprovar registo:', error.message);
+            setAlertProps({ title: 'Erro', label: `Ocorreu um erro ao aprovar o ${tipo}.`, severity: 'error' });
+            setAlertOpen(true);
         }
     };
 
@@ -127,8 +134,12 @@ export default function ModAprov() {
                 });
             }
             fetchData();
+            setAlertProps({ title: 'Sucesso', label: 'O registro foi rejeitado com sucesso.', severity: 'success' });
+            setAlertOpen(true);
         } catch (error) {
             console.error('Erro ao rejeitar registo:', error.message);
+            setAlertProps({ title: 'Erro', label: 'Ocorreu um erro ao rejeitar o registro.', severity: 'error' });
+            setAlertOpen(true);
         }
     };
 
@@ -182,6 +193,7 @@ export default function ModAprov() {
             {isModalOpen2 && (<VerPontoInteresse open={isModalOpen2} onClose={handleCloseModal} registoId={selectedRegisto.id} />)}
             {isModalOpen3 && (<ConfirmarAprov open={isModalOpen3} onClose={handleCloseModal} dados={selectedRegisto} onConfirm={aprovarRegisto}/>)}
             {isModalOpen4 && (<RejeitarAprov open={isModalOpen4} onClose={handleCloseModal} dados={selectedRegisto} onConfirm={rejeitarRegisto}/>)}
+            <Alert open={alertOpen} setOpen={setAlertOpen} title={alertProps.title} label={alertProps.label} severity={alertProps.severity} />
         </div>
     );
 }

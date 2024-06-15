@@ -16,63 +16,95 @@ const objectStorage = {
         const exists = await minioClient.bucketExists(bucketName.toLowerCase());
 
         if (!exists) {
-            minioClient.makeBucket(bucketName.toLowerCase(), { ObjectLocking: true }, function (err) {
+            minioClient.makeBucket(bucketName.toLowerCase(), function (err) {
                 if (err) return console.log('Error creating bucket with object lock.', err)
                 console.log('Bucket created successfully and enabled object lock')
             });
+            const versioningConfig = { Status: 'Enabled' }
+            await minioClient.setBucketVersioning(bucketName.toLowerCase(), versioningConfig)
         }
 
-        const buffer = Buffer.from(file, 'base64');
-            
+        // let mimeType;
+        // if (file.startsWith('data:')) {
+        //     const regex = /^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+)?(;base64,)/;
+        //     const match = file.match(regex);
+        //     if (match && match.length > 1) {
+        //         mimeType = match[1] || 'application/octet-stream'; // Default to binary if type is not provided
+        //         file = file.replace(/^data:image\/\w+;base64,/, ''); // Remove the data URI prefix for images
+        //     }
+        // }
+        // const base64Data = file.replace(/^data:image\/\w+;base64,/, '');
+        const base64Data = file.split(";base64,")[1];
+        const buffer = Buffer.from(base64Data, 'base64');
+        // const buffer = Buffer.from(file, 'base64');
         const readStream = new stream.PassThrough();
         readStream.end(buffer);
 
         minioClient.putObject(bucketName.toLowerCase(), fileName, readStream, buffer.length, (err, objInfo) => {
             if (err) {
-                return console.log('Error uploading object', err);
+                console.log('Error uploading object', err);
+            } else {
+                console.log('Success', objInfo);
             }
-            console.log('Success', objInfo);
         });
     },
 
-    deleteFiles: async function(bucketName, fileNames){
-        minioClient.removeObjects(bucketName.toLowerCase(), fileNames, function (e) {
-            if (e) {
-                return console.log('Unable to remove Objects ', e);
-            }
-            console.log('Removed the objects successfully');
-        });
-    },
+    deleteAllFiles: async function(bucketName){
+        try{
+            const objectNames = [];
+            const objectsStream = minioClient.listObjects(bucketName.toLowerCase(), '', true)
 
-    deleteBucket: async function(bucketName){
-        try {
-            await minioClient.removeBucket(bucketName.toLowerCase());
-            console.log('Bucket removed successfully.');
-        } catch (err) {
-            console.log('unable to remove bucket.');
+            objectsStream.on('data', function (obj) {
+                objectNames.push(obj.name)
+            })
+            
+            objectsStream.on('error', function (e) {
+                console.log(e)
+            })
+
+            objectsStream.on('end', function () {
+                minioClient.removeObjects(bucketName.toLowerCase(), objectNames, function (e) {
+                    if (e) {
+                        return console.log('Unable to remove Objects ', e)
+                    }
+                    console.log('Removed the objects successfully')
+                })
+            })
+        } catch (err){
+            console.log('unable to remove all files.', err);
         }
     },
 
     getFilesByBucket: async function(bucketName){
         const data = [];
-        const stream = minioClient.listObjects(bucketName.toLowerCase(), '', true, { IncludeVersion: true });
-        stream.on('data', function (obj) {
-            data.push(obj);
-        })
-        return data;
-    },
+        const exists = await minioClient.bucketExists(bucketName.toLowerCase());
+        if (exists){
+            var stream = minioClient.listObjects(bucketName.toLowerCase(), '', true);
 
-    getAllUrlByBucket: async function(bucketName){
-        const files = this.getFilesByBucket(bucketName.toLowerCase());
+            return new Promise((resolve, reject) => {
+                const objects = [];
+                stream.on('data', function (obj) {
+                    minioClient.presignedGetObject(bucketName.toLowerCase(), obj.name, 24 * 60 * 60, function (err, presignedUrl) {
+                        if (err) return console.log(err);
+                        obj.url = presignedUrl;
+                    });
+                    objects.push(obj);
+                });
 
-        const urls = [];
-        for (const file of files){
-            minioClient.presignedGetObject(bucketName.toLowerCase(), file.name, 24 * 60 * 60, function (err, presignedUrl) {
-                if (err) return console.log(err);
-                urls.push(presignedUrl);
+                stream.on('end', function () {
+                    if (objects.length < 1) {
+                        console.log('No objects found in the bucket.');
+                    }
+                    resolve(objects);
+                });
+
+                stream.on('error', function (err) {
+                    console.log('Error listing objects:', err);
+                    reject(err);
+                });
             });
         }
-        return urls;
+        return data;
     }
 }
 

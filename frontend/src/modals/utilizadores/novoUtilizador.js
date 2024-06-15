@@ -9,7 +9,6 @@ import SubmitButton from '../../components/buttons/submitButton';
 import CancelButton from '../../components/buttons/cancelButton';
 import InputImage from '../../components/image/imageInput';
 
-
 const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     const [poloid, setPoloid] = useState('');
     const [perfilid, setPerfilid] = useState('');
@@ -44,7 +43,6 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 }));
 
                 setDepartamentos(departamentosOptions);
-                console.log(departamentosOptions);
             } catch (error) {
                 console.error('Erro ao buscar departamentos:', error);
             }
@@ -63,7 +61,6 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 }));
 
                 setPolos(polosOptions);
-                console.log(polosOptions);
             } catch (error) {
                 console.error('Erro ao buscar polos:', error);
             }
@@ -76,14 +73,12 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                     headers: { Authorization: `${token}` }
                 });
                 const funcaoData = response.data;
-                console.log(funcaoData);
                 const funcaoOptions = funcaoData.map(funcao => ({
                     value: funcao.funcaoid,
                     label: funcao.valorpt
                 }));
 
                 setFuncao(funcaoOptions);
-                console.log(funcaoOptions);
             } catch (error) {
                 console.error('Erro ao buscar funções:', error);
             }
@@ -96,14 +91,13 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                     headers: { Authorization: `${token}` }
                 });
                 const perfilData = response.data.data;
-                console.log(perfilData);
+                
                 const perfilOptions = perfilData.map(perfil => ({
                     value: perfil.perfilid,
                     label: perfil.descricao
                 }));
 
                 setPerfil(perfilOptions);
-                console.log(perfilOptions);
             } catch (error) {
                 console.error('Erro ao buscar funções:', error);
             }
@@ -189,6 +183,12 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         }
     };
 
+    const resetImage = async () => {
+        setImageName('');
+        setImageSize(0);
+        setImage('');
+    }
+
     return (
         <Modal open={open} onClose={onClose}>
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px', overflow: 'auto' }}>
@@ -232,7 +232,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                         <div style={{ display: 'flex' }}>
                             <div style={{ padding: '20px' }}>
                                 <div style={{ paddingLeft: '5%' }}>
-                                    <InputImage image={image} onAddImage={handleImage} onChange={handleImage} />
+                                    <InputImage image={image} onAddImage={handleImage} onDelete={resetImage} />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                     <FormControlLabel

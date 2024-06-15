@@ -7,6 +7,7 @@ const models = initModels(sequelizeConn);
 const controladorFicheiros = {
     adicionar: async (id, entidade, files, userID) => {
         try {
+            console.log('teste3');
             const objecto = await models.objecto.findOne({
                 where:{
                     registoid: id,
@@ -34,7 +35,6 @@ const controladorFicheiros = {
             for (const file of files){
                 await models.ficheiro.create({
                     albumid: album.albumid,
-                    caminho: '',
                     nome: file.nome,
                     extensao: file.nome.split('.')[1],
                     tamanho: file.tamanho
@@ -49,8 +49,9 @@ const controladorFicheiros = {
         }
     },
 
-    remover: async (id, entidade, files) => {
+    removerTodosFicheirosAlbum: async (id, entidade, files) => {
         try {
+            console.log('teste1');
             const objecto = await models.objecto.findOne({
                 where:{
                     registoid: id,
@@ -72,23 +73,51 @@ const controladorFicheiros = {
                 return false;
             }
 
-            let fileNames = [];
-            for (const file of files){
-                await models.ficheiro.destroy({
-                    where: {
-                        albumid: album.albumid,
-                        nome: file.nome
-                    }
-                });
-                fileNames.push(file.nome);
-            }
-            objStorage.deleteFiles(album.descricao, fileNames);
+            objStorage.deleteAllFiles(album.descricao);
+
+            await models.ficheiro.destroy({
+                where: {
+                    albumid: album.albumid
+                }
+            });
+
             return true;
         } catch (error) {
             console.error('Não foi possível remover os ficheiros!', error);
             return false;
         }
-    }
+    },
+
+    getAllFilesByAlbum: async (id, entidade) => {
+        try {
+            const objecto = await models.objecto.findOne({
+                where:{
+                    registoid: id,
+                    entidade: entidade
+                }
+            });
+            if (!objecto){
+                console.error('O objeto não existe!');
+                return [];
+            }
+
+            const album = await models.album.findOne({
+                where:{
+                    objectoid: objecto.objectoid
+                }
+            });
+            if (!album){
+                console.error('O album não existe!');
+                return [];
+            }
+
+            const objects = await objStorage.getFilesByBucket(album.descricao);
+            return objects;
+        } catch (error) {
+            console.error('Não foi possível remover os ficheiros!', error);
+            return false;
+        }
+    },
 }
 
 module.exports = controladorFicheiros

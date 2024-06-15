@@ -117,7 +117,7 @@ export default function Configtilizadores() {
                 </div>
             </div>
             <NovoUser open={isNewModalOpen} onClose={() => setNewModalOpen(false)} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
-            <EditUser open={isEditModalOpen} onClose={() => {setEditModalOpen(false); setSelectedUserId(null);}} userId={selectedUserId} />
+            <EditUser open={isEditModalOpen} onClose={() => {setEditModalOpen(false); setSelectedUserId(null);}} userId={selectedUserId} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
             <Alert open={alertOpen} setOpen={setAlertOpen} title={alertProps.title} label={alertProps.label} severity={alertProps.severity} />
         </div>
     )

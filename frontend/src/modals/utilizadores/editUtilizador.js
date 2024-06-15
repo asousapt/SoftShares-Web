@@ -9,7 +9,7 @@ import SubmitButton from '../../components/buttons/submitButton';
 import CancelButton from '../../components/buttons/cancelButton';
 import InputImage from '../../components/image/imageInput';
 
-const EditUserModal = ({ open, onClose, userId }) => {
+const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) => {
     console.log('id ver utilizador', userId);
     const [poloid, setPoloid] = useState('');
     const [perfilid, setPerfilid] = useState('');
@@ -188,8 +188,12 @@ const EditUserModal = ({ open, onClose, userId }) => {
             });
             console.log('Utilizador atualizado com sucesso');
             onClose();
+            setAlertProps({ title: 'Sucesso', label: `O utilizador ${pnome} ${unome} foi atualizado com sucesso.`, severity: 'success' });
+            setAlertOpen(true);
         } catch (error) {
             console.error('Erro ao atualizar utilizador:', error);
+            setAlertProps({ title: 'Erro', label: `Ocorreu um erro ao atualizar o utilizador.`, severity: 'error' });
+            setAlertOpen(true);
         }
     };
 

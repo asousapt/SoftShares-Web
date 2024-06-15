@@ -137,7 +137,6 @@ const AddUserModal = ({ open, onClose }) => {
                 inactivo,
                 imagem
             };
-            console.log(newUser);
             await axios.post('http://localhost:8000/utilizadores/add', newUser, {
                 headers: {
                     'Authorization': `${token}`,

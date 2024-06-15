@@ -30,6 +30,11 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     const [emailError, setEmailError] = useState(false);
     const [pnomeError, setPnomeError] = useState(false);
     const [unomeError, setUnomeError] = useState(false);
+    const [passError, setPassError] = useState(false);
+    const [poloError, setPoloError] = useState(false);
+    const [perfilError, setPerfilError] = useState(false);
+    const [departamentoError, setDepartamentoError] = useState(false);
+    const [funcaoError, setFuncaoError] = useState(false);
 
     useEffect(() => {
         const fetchDepartamentos = async () => {
@@ -137,6 +142,26 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
             errors.unomeError = true;
         }
 
+        if (!passwd) {
+            errors.passError = true;
+        }
+
+        if (!poloid) {
+            errors.poloError = true;
+        }
+
+        if (!perfilid) {
+            errors.perfilError = true;
+        }
+
+        if (!departamentoid) {
+            errors.departamentoError = true;
+        }
+
+        if (!funcaoid) {
+            errors.funcaoError = true;
+        }
+
         return errors;
     };
 
@@ -146,6 +171,11 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         setEmailError(errors.emailError || false);
         setPnomeError(errors.pnomeError || false);
         setUnomeError(errors.unomeError || false);
+        setPassError(errors.passError || false);
+        setPoloError(errors.poloError || false);
+        setPerfilError(errors.perfilError || false);
+        setDepartamentoError(errors.departamentoError || false);
+        setFuncaoError(errors.funcaoError || false);
 
         if (Object.keys(errors).length > 0) {
             return;
@@ -246,6 +276,11 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         setEmailError(false);
         setPnomeError(false);
         setUnomeError(false);
+        setPassError(false);
+        setPoloError(false);
+        setPerfilError(false);
+        setDepartamentoError(false);
+        setFuncaoError(false);
         onClose();
     };
     return (
@@ -268,25 +303,30 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <BasicTextField caption='Email' valor={email} onchange={(e) => setEmail(e.target.value)} fullwidth={true} type="email" error={emailError}
-                                        helperText={emailError ? "Endereço de e-mail inválido." : ""} />
+                                        helperText={emailError ? "Introduza um e-mail válido." : ""} />
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
-                                    <BasicTextField caption='Senha' valor={passwd} onchange={(e) => setPasswd(e.target.value)} fullwidth={true} type="password" />
+                                    <BasicTextField caption='Senha' valor={passwd} onchange={(e) => setPasswd(e.target.value)} fullwidth={true} type="password" error={passError}
+                                        helperText={passError ? "Introduza uma password válida" : ""} />
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <div style={{ width: "50%" }}>
-                                        <ComboBox caption='Polo' options={polos} value={poloid} handleChange={(e) => setPoloid(e.target.value)} />
+                                        <ComboBox caption='Polo' options={polos} value={poloid} handleChange={(e) => { setPoloid(e.target.value); setPoloError(false); }} error={poloError}
+                                            helperText={poloError ? "Selecione um polo válido" : ""} />
                                     </div>
                                     <div style={{ width: "50%" }}>
-                                        <ComboBox caption='Perfil' options={perfil} value={perfilid} handleChange={(e) => setPerfilid(e.target.value)} />
+                                        <ComboBox caption='Perfil' options={perfil} value={perfilid} handleChange={(e) => { setPerfilid(e.target.value); setPerfilError(false); }} error={perfilError}
+                                            helperText={perfilError ? "Selecione um perfil válido" : ""} />
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <div style={{ width: "50%" }}>
-                                        <ComboBox caption='Departamento' options={departamentos} value={departamentoid} handleChange={(e) => setDepartamentoid(e.target.value)} />
+                                        <ComboBox caption='Departamento' options={departamentos} value={departamentoid} handleChange={(e) => { setDepartamentoid(e.target.value); setDepartamentoError(false); }}
+                                            error={departamentoError} helperText={departamentoError ? "Selecione um departamento válido" : ""} />
                                     </div>
                                     <div style={{ width: "50%" }} >
-                                        <ComboBox caption='Função' options={funcao} value={funcaoid} handleChange={(e) => setFuncaoid(e.target.value)} />
+                                        <ComboBox caption='Função' options={funcao} value={funcaoid} handleChange={(e) => { setFuncaoid(e.target.value); setFuncaoError(false); }} error={funcaoError}
+                                            helperText={funcaoError ? "Selecione uma função válida" : ""} />
                                     </div>
                                 </div>
                             </div>

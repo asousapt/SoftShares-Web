@@ -9,7 +9,6 @@ import SubmitButton from '../../components/buttons/submitButton';
 import CancelButton from '../../components/buttons/cancelButton';
 import InputImage from '../../components/image/imageInput';
 
-
 const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     const [poloid, setPoloid] = useState('');
     const [perfilid, setPerfilid] = useState('');
@@ -28,6 +27,9 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     const [image, setImage] = useState('');
     const [imageName, setImageName] = useState('');
     const [imageSize, setImageSize] = useState(0);
+    const [emailError, setEmailError] = useState(false);
+    const [pnomeError, setPnomeError] = useState(false);
+    const [unomeError, setUnomeError] = useState(false);
 
     useEffect(() => {
         const fetchDepartamentos = async () => {
@@ -115,7 +117,39 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         fetchDepartamentos();
     }, []);
 
+    const validateEmail = (email) => {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(String(email).toLowerCase());
+    };
+
+    const validateForm = () => {
+        let errors = {};
+
+        if (!validateEmail(email)) {
+            errors.emailError = true;
+        }
+
+        if (!pnome) {
+            errors.pnomeError = true;
+        }
+
+        if (!unome) {
+            errors.unomeError = true;
+        }
+
+        return errors;
+    };
+
     const handleAddUser = async () => {
+        const errors = validateForm();
+
+        setEmailError(errors.emailError || false);
+        setPnomeError(errors.pnomeError || false);
+        setUnomeError(errors.unomeError || false);
+
+        if (Object.keys(errors).length > 0) {
+            return;
+        }
         try {
             const token = sessionStorage.getItem('token');
             const imagem = [{
@@ -147,6 +181,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
             console.log('Utilizador Adicionado com sucesso');
             setAlertProps({ title: 'Sucesso', label: `O utilizador ${pnome} ${unome} foi criado com sucesso.`, severity: 'success' });
             setAlertOpen(true);
+            resetForm();
             onClose();
         } catch (error) {
             console.error('Erro ao adicionar utilizador:', error);
@@ -166,20 +201,20 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         try {
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
-            fileInput.accept = 'image/*'; 
-    
+            fileInput.accept = 'image/*';
+
             fileInput.addEventListener('change', async (event) => {
                 const file = event.target.files[0];
-                if (!file) return; 
+                if (!file) return;
                 setImageName(file.name);
                 setImageSize(file.size);
-                
+
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
-        
+
                 reader.onload = async () => {
                     const imageData = reader.result;
-                    console.log('reader',reader);
+                    console.log('reader', reader);
                     setImage(imageData);
                 };
             });
@@ -189,6 +224,30 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         }
     };
 
+    const resetForm = () => {
+        setPoloid('');
+        setPerfilid('');
+        setPnome('');
+        setUnome('');
+        setEmail('');
+        setPasswd('');
+        setDepartamentoid('');
+        setFuncaoid('');
+        setSobre('');
+        setInactivo(false);
+        setImage('');
+        setImageName('');
+        setImageSize(0);
+        setEmailError(false);
+    };
+
+    const handleCancel = () => {
+        resetForm();
+        setEmailError(false);
+        setPnomeError(false);
+        setUnomeError(false);
+        onClose();
+    };
     return (
         <Modal open={open} onClose={onClose}>
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px', overflow: 'auto' }}>
@@ -199,14 +258,17 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                             <div style={{ marginBottom: 15 }}>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <div style={{ width: "50%" }} >
-                                        <BasicTextField caption='Primeiro Nome' valor={pnome} onchange={(e) => setPnome(e.target.value)} fullwidth={true} />
+                                        <BasicTextField caption='Primeiro Nome' valor={pnome} onchange={(e) => setPnome(e.target.value)} fullwidth={true} type="text" error={pnomeError}
+                                            helperText={pnomeError ? "Introduza um nome válido" : ""} />
                                     </div>
                                     <div style={{ width: "50%" }} >
-                                        <BasicTextField caption='Último Nome' valor={unome} onchange={(e) => setUnome(e.target.value)} fullwidth={true} />
+                                        <BasicTextField caption='Último Nome' valor={unome} onchange={(e) => setUnome(e.target.value)} fullwidth={true} type="text" error={unomeError}
+                                            helperText={unomeError ? "Introduza um nome válido" : ""} />
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
-                                    <BasicTextField caption='Email' valor={email} onchange={(e) => setEmail(e.target.value)} fullwidth={true} />
+                                    <BasicTextField caption='Email' valor={email} onchange={(e) => setEmail(e.target.value)} fullwidth={true} type="email" error={emailError}
+                                        helperText={emailError ? "Endereço de e-mail inválido." : ""} />
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <BasicTextField caption='Senha' valor={passwd} onchange={(e) => setPasswd(e.target.value)} fullwidth={true} type="password" />
@@ -239,13 +301,13 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                                         labelPlacement="start"
                                         control={<Switch checked={inactivo} onChange={handleChangeAtivo} />}
                                         label="Inativo"
-                                        sx={{ marginTop: '10px' }}/>
+                                        sx={{ marginTop: '10px' }} />
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
-                        <CancelButton onclick={onClose} caption='Cancelar' />
+                        <CancelButton onclick={handleCancel} caption='Cancelar' />
                         <SubmitButton onclick={handleAddUser} caption='Guardar' />
                     </div>
                 </div>

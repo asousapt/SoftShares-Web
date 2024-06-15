@@ -24,19 +24,8 @@ const objectStorage = {
             await minioClient.setBucketVersioning(bucketName.toLowerCase(), versioningConfig)
         }
 
-        // let mimeType;
-        // if (file.startsWith('data:')) {
-        //     const regex = /^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+)?(;base64,)/;
-        //     const match = file.match(regex);
-        //     if (match && match.length > 1) {
-        //         mimeType = match[1] || 'application/octet-stream'; // Default to binary if type is not provided
-        //         file = file.replace(/^data:image\/\w+;base64,/, ''); // Remove the data URI prefix for images
-        //     }
-        // }
-        // const base64Data = file.replace(/^data:image\/\w+;base64,/, '');
         const base64Data = file.split(";base64,")[1];
         const buffer = Buffer.from(base64Data, 'base64');
-        // const buffer = Buffer.from(file, 'base64');
         const readStream = new stream.PassThrough();
         readStream.end(buffer);
 

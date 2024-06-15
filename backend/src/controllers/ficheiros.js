@@ -7,7 +7,6 @@ const models = initModels(sequelizeConn);
 const controladorFicheiros = {
     adicionar: async (id, entidade, files, userID) => {
         try {
-            console.log('teste3');
             const objecto = await models.objecto.findOne({
                 where:{
                     registoid: id,

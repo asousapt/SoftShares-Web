@@ -10,6 +10,8 @@ import CancelButton from '../../components/buttons/cancelButton';
 import InputImage from '../../components/image/imageInput';
 
 const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
+    //VARS
+    //FIELDS
     const [poloid, setPoloid] = useState('');
     const [perfilid, setPerfilid] = useState('');
     const [pnome, setPnome] = useState('');
@@ -27,6 +29,8 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     const [image, setImage] = useState('');
     const [imageName, setImageName] = useState('');
     const [imageSize, setImageSize] = useState(0);
+
+    //ERRORS
     const [emailError, setEmailError] = useState(false);
     const [pnomeError, setPnomeError] = useState(false);
     const [unomeError, setUnomeError] = useState(false);

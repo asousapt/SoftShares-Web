@@ -8,11 +8,7 @@ const InputImage = ({ image, onAddImage, onDelete }) => {
         <div style={{ width: '200px', height: '200px', border: '1px solid black', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: 15, position: 'relative' }}>
             {image ? (
                 <>
-                    <img
-                        src={image}
-                        alt="Imagem"
-                        style={{ width: '200px', height: '200px', objectFit: 'cover', borderRadius: 'inherit' }}
-                    />
+                    <img src={image} alt="Imagem" style={{ width: '200px', height: '200px', objectFit: 'cover', borderRadius: 'inherit' }} />
                     <div style={{ position: 'absolute', bottom: 5, right: 5 }}>
                         <IconButton onClick={onDelete} style={{ padding: 0, color: 'rgba(255, 255, 255, 1)' }}>
                             <DeleteIcon />

@@ -2,10 +2,11 @@ const { Sequelize, Op, QueryTypes } = require('sequelize');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
+const ficheirosController = require('./ficheiros');
 
 const controladorPolos = {
     adicionarPolo: async (req, res) => {
-        const { cidadeID, descricao, morada, email, telefone, coordenador } = req.body;
+        const { cidadeID, descricao, morada, email, telefone, coordenador, imagem, utilizadorid } = req.body;
 
         try {
             const polo = await models.polo.create({
@@ -21,6 +22,9 @@ const controladorPolos = {
                 registoid: polo.poloid,
                 entidade: 'POLO'
             });
+
+            console.log(polo);
+            ficheirosController.adicionar(polo.poloid, 'POLO', imagem, utilizadorid);
 
             res.status(201).json({ message: 'Polo adicionado com sucesso' });
         } catch (error) {
@@ -79,6 +83,13 @@ const controladorPolos = {
 
         try {
             const polo = await models.polo.findByPk(idPolo);
+            
+            if (!polo) {
+                return res.status(404).json({ error: 'Polo não encontrado' });
+            }
+
+            const ficheiros = await ficheirosController.getAllFilesByAlbum(idPolo, 'POLO');
+            polo.dataValues.imagem = ficheiros[0];
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: polo });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar o polo' });

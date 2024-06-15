@@ -14,12 +14,14 @@ const NovoPolo = ({ open, onClose }) => {
     const [email, setEmail] = useState('');
     const [telefone, setTelefone] = useState('');
     const [responsavel, setResponsavel] = useState(null);
-    const [image, setImage] = useState('https://blog.even3.com.br/wp-content/uploads/2016/12/regra-de-ouro-para-a-organizaao-de-equipes-em-eventos-dividir-para-conquistar.png');
     const [cidade, setCidade] = useState(null);
     const [cidades, setCidades] = useState([]);
     const [distrito, setDistrito] = useState(null);
     const [distritos, setDistritos] = useState([]);
     const [utilizadores, setUtilizadores] = useState([]);
+    const [image, setImage] = useState('');
+    const [imageName, setImageName] = useState('');
+    const [imageSize, setImageSize] = useState(0);
 
     useEffect(() => {
         const fetchDistritos = async () => {
@@ -71,33 +73,72 @@ const NovoPolo = ({ open, onClose }) => {
         }
     };
 
-        const handleAddEvent = async () => {
-            try {
-                const token = sessionStorage.getItem('token');
-                const novoPolo = {
-                    descricao: descricao,
-                    morada: morada,
-                    email: email,
-                    telefone: telefone,
-                    coordenador: responsavel,
-                    cidadeID: cidade.value
+    const handleAddEvent = async () => {
+        try {
+            const userid = sessionStorage.getItem('userid');
+            const token = sessionStorage.getItem('token');
+            const imagem = [{
+                nome: imageName,
+                base64: image,
+                tamanho: imageSize
+            }];
+            const novoPolo = {
+                descricao: descricao,
+                morada: morada,
+                email: email,
+                telefone: telefone,
+                coordenador: responsavel,
+                cidadeID: cidade.value,
+                imagem: imagem, 
+                utilizadorid: userid
+            };
+
+            await axios.post('http://localhost:8000/polo/add', novoPolo, {
+                headers: {
+                    Authorization: `${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+            console.log('Evento Adicionado');
+            onClose();
+        } catch (error) {
+            console.error('Erro ao adicionar evento:', error);
+        }
+    };
+
+    const handleImage = async () => {
+        try {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+
+            fileInput.addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+                setImageName(file.name);
+                setImageSize(file.size);
+
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+
+                reader.onload = async () => {
+                    const imageData = reader.result;
+                    console.log('reader', reader);
+                    setImage(imageData);
                 };
+            });
+            fileInput.click();
+        } catch (error) {
+            console.error('Error uploading image:', error.message);
+        }
+    };
 
-                console.log(JSON.stringify(novoPolo, null, 2));
+    const resetImage = async () => {
+        setImageName('');
+        setImageSize(0);
+        setImage('');
+    }
 
-                await axios.post('http://localhost:8000/polo/add', novoPolo, {
-                    headers: {
-                        Authorization: `${token}`,
-                        'Content-Type': 'application/json',
-                    }
-                });
-                console.log('Evento Adicionado');
-                onClose();
-            } catch (error) {
-                console.error('Erro ao adicionar evento:', error);
-            }
-        };
-        
     return (
         <Modal open={open} onClose={onClose} >
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px', overflow: 'auto' }}>
@@ -142,7 +183,7 @@ const NovoPolo = ({ open, onClose }) => {
                             </div>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>
-                            <InputImage image={image} />
+                            <InputImage image={image} onAddImage={handleImage} onDelete={resetImage}/>
                         </div>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>

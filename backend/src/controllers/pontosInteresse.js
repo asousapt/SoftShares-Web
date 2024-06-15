@@ -87,7 +87,7 @@ const controladorPontosInteresse = {
         try {
             await models.pontointeresse.update({
                 aprovado: true,
-                dataaprovacao: Sequelize.literal('CURRENT_DATE'),
+                dataaprovacao: Sequelize.literal('CURRENT_TIMESTAMP'),
                 utilizadoraprova: userAprovacao
             }, {
                 where: {
@@ -107,7 +107,7 @@ const controladorPontosInteresse = {
         try {
             await models.pontointeresse.update({
                 aprovado: false,
-                dataaprovacao: Sequelize.literal('CURRENT_DATE'),
+                dataaprovacao: Sequelize.literal('CURRENT_TIMESTAMP'),
                 utilizadoraprova: userAprovacao
             }, {
                 where: {

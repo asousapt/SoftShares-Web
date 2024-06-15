@@ -9,7 +9,8 @@ import SubmitButton from '../../components/buttons/submitButton';
 import CancelButton from '../../components/buttons/cancelButton';
 import InputImage from '../../components/image/imageInput';
 
-const AddUserModal = ({ open, onClose }) => {
+
+const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     const [poloid, setPoloid] = useState('');
     const [perfilid, setPerfilid] = useState('');
     const [pnome, setPnome] = useState('');
@@ -144,9 +145,13 @@ const AddUserModal = ({ open, onClose }) => {
                 },
             });
             console.log('Utilizador Adicionado com sucesso');
+            setAlertProps({ title: 'Sucesso', label: `O utilizador ${pnome} ${unome} foi criado com sucesso.`, severity: 'success' });
+            setAlertOpen(true);
             onClose();
         } catch (error) {
             console.error('Erro ao adicionar utilizador:', error);
+            setAlertProps({ title: 'Erro', label: `Ocorreu um erro ao adicionar o utilizador.`, severity: 'error' });
+            setAlertOpen(true);
         }
     };
 

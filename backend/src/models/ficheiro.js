@@ -15,10 +15,6 @@ module.exports = function(sequelize, DataTypes) {
         key: 'albumid'
       }
     },
-    caminho: {
-      type: DataTypes.STRING(60),
-      allowNull: false
-    },
     nome: {
       type: DataTypes.STRING(100),
       allowNull: false

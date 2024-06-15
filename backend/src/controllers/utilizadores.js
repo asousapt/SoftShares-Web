@@ -70,7 +70,8 @@ const controladorUtilizadores = {
             idiomaid,
             departamentoid,
             funcaoid,
-            sobre
+            sobre,
+            imagem
         } = req.body;
 
         try {
@@ -91,6 +92,9 @@ const controladorUtilizadores = {
                     utilizadorid: idUtilizador
                 }
             });
+            
+            ficheirosController.removerTodosFicheirosAlbum(idUtilizador, 'UTIL')
+            ficheirosController.adicionar(idUtilizador, 'UTIL', imagem, idUtilizador);
 
             res.status(200).json({ message: 'Utilizador atualizado com sucesso' });
         } catch (error) {
@@ -128,7 +132,7 @@ const controladorUtilizadores = {
         }
     },
 
-    consultarUtilizador: async (req, res) => {
+    consultarPorID: async (req, res) => {
         const { idUtilizador } = req.params;
 
         try {
@@ -143,6 +147,9 @@ const controladorUtilizadores = {
             if (!utilizador) {
                 return res.status(404).json({ error: 'Utilizador não encontrado' });
             }
+
+            const ficheiros = await ficheirosController.getAllFilesByAlbum(utilizador.utilizadorid, 'UTIL');
+            utilizador.dataValues.imagem = ficheiros[0];
 
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: utilizador });
         } catch (error) {

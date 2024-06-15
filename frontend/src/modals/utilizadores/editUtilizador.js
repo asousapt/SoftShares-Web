@@ -25,32 +25,53 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
     const [funcaoid, setFuncaoid] = useState('');
     const [sobre, setSobre] = useState('');
     const [inactivo, setInactivo] = useState(false);
-    const [image, setImage] = useState('https://i0.wp.com/ctmirror-images.s3.amazonaws.com/wp-content/uploads/2021/01/dummy-man-570x570-1.png?fit=570%2C570&ssl=1');
+    const [image, setImage] = useState('');
+    const [imageName, setImageName] = useState('');
+    const [imageSize, setImageSize] = useState(0);
+
+    const getBase64FromUrl = async (url) => {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                resolve(reader.result);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    };
+
+    const fetchUserData = async () => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get(`http://localhost:8000/utilizadores/${userId}`, {
+                headers: { Authorization: `${token}` }
+            });
+            const userData = response.data.data;
+            console.log('userData',userData);
+
+            setPoloid(userData.poloid);
+            setPerfilid(userData.perfilid);
+            setPnome(userData.pnome);
+            setUnome(userData.unome);
+            setEmail(userData.email);
+            setDepartamentoid(userData.departamentoid);
+            setFuncaoid(userData.funcaoid);
+            setPasswd(userData.passwd);
+            setSobre(userData.sobre);
+            setInactivo(userData.inactivo);
+            const base64String = await getBase64FromUrl(userData.imagem.url);
+            setImage(base64String);
+            setImageName(userData.imagem.name);
+            setImageSize(userData.imagem.size);
+        } catch (error) {
+            console.error('Erro ao buscar dados do utilizador:', error);
+        }
+    };
 
     useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const token = sessionStorage.getItem('token');
-                const response = await axios.get(`http://localhost:8000/utilizadores/${userId}`, {
-                    headers: { Authorization: `${token}` }
-                });
-                const userData = response.data.data;
-                setPoloid(userData.poloid);
-                setPerfilid(userData.perfilid);
-                setPnome(userData.pnome);
-                setUnome(userData.unome);
-                setEmail(userData.email);
-                setDepartamentoid(userData.departamentoid);
-                setFuncaoid(userData.funcaoid);
-                setPasswd(userData.passwd);
-                setSobre(userData.sobre);
-                setInactivo(userData.inactivo);
-                setImage(userData.image || 'https://i0.wp.com/ctmirror-images.s3.amazonaws.com/wp-content/uploads/2021/01/dummy-man-570x570-1.png?fit=570%2C570&ssl=1');
-            } catch (error) {
-                console.error('Erro ao buscar dados do utilizador:', error);
-            }
-        };
-
         if (open) {
             fetchUserData();
         }
@@ -141,6 +162,11 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
     const handleEditUser = async () => {
         try {
             const token = sessionStorage.getItem('token');
+            const imagem = [{
+                nome: imageName,
+                base64: image,
+                tamanho: imageSize
+            }];
             const updatedUser = {
                 poloid,
                 perfilid,
@@ -151,7 +177,8 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
                 departamentoid,
                 funcaoid,
                 sobre,
-                inactivo
+                inactivo,
+                imagem
             };
             await axios.put(`http://localhost:8000/utilizadores/update/${userId}`, updatedUser, {
                 headers: {
@@ -173,6 +200,39 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
     const handleChangeAtivo = () => {
         setInactivo((prevInactivo) => !prevInactivo);
     };
+
+    const handleImage = async () => {
+        try {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*'; 
+    
+            fileInput.addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                if (!file) return; 
+                setImageName(file.name);
+                setImageSize(file.size);
+                
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+        
+                reader.onload = async () => {
+                    const imageData = reader.result;
+                    console.log('reader',reader);
+                    setImage(imageData);
+                };
+            });
+            fileInput.click();
+        } catch (error) {
+            console.error('Error uploading image:', error.message);
+        }
+    };
+
+    const resetImage = async () => {
+        setImageName('');
+        setImageSize(0);
+        setImage('');
+    }
 
     return (
         <Modal open={open} onClose={onClose}>
@@ -217,7 +277,7 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
                         <div style={{ display: 'flex' }}>
                             <div style={{ padding: '20px' }}>
                                 <div style={{ paddingLeft: '5%' }}>
-                                    <InputImage image={image} />
+                                    <InputImage image={image} onAddImage={handleImage} onDelete={resetImage} />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                     <FormControlLabel

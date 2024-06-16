@@ -8,7 +8,9 @@ import SubmitButton from '../../components/buttons/submitButton';
 import CancelButton from '../../components/buttons/cancelButton';
 import axios from 'axios';
 
-const NovoPolo = ({ open, onClose }) => {
+const NovoPolo = ({ open, onClose, setAlertOpen, setAlertProps }) => {
+    //VARS
+    //FIELDS
     const [descricao, setDescricao] = useState('');
     const [morada, setMorada] = useState('');
     const [email, setEmail] = useState('');
@@ -22,6 +24,15 @@ const NovoPolo = ({ open, onClose }) => {
     const [image, setImage] = useState('');
     const [imageName, setImageName] = useState('');
     const [imageSize, setImageSize] = useState(0);
+
+    //ERRORS
+    const [emailError, setEmailError] = useState(false);
+    const [descError, setDescError] = useState(false);
+    const [distritoError, setDistritoError] = useState(false);
+    const [cidadeError, setCidadeError] = useState(false);
+    const [moradaError, setMoradaError] = useState(false);
+    const [telefoneError, setTelefoneError] = useState(false);
+    const [coordError, setCoordError] = useState(false);
 
     useEffect(() => {
         const fetchDistritos = async () => {
@@ -66,6 +77,7 @@ const NovoPolo = ({ open, onClose }) => {
     const handleDistritoChange = (event, newValue) => {
         setDistrito(newValue);
         setCidade(null);
+        setDistritoError(false);
         if (newValue) {
             fetchCidades(newValue.value);
         } else {
@@ -73,7 +85,59 @@ const NovoPolo = ({ open, onClose }) => {
         }
     };
 
+    const validateEmail = (email) => {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(String(email).toLowerCase());
+    };
+
+    const validateForm = () => {
+        let errors = {};
+
+        if (!validateEmail(email)) {
+            errors.emailError = true;
+        }
+
+        if (!descricao) {
+            errors.descError = true;
+        }
+
+        if (!morada) {
+            errors.moradaError = true;
+        }
+
+        if (!telefone) {
+            errors.telefoneError = true;
+        }
+
+        if (!responsavel) {
+            errors.coordError = true;
+        }
+
+        if (!cidade) {
+            errors.cidadeError = true;
+        }
+
+        if (!distrito) {
+            errors.distritoError = true;
+        }
+
+        return errors;
+    };
+
     const handleAddEvent = async () => {
+        const errors = validateForm();
+        setEmailError(errors.emailError || false);
+        setCidadeError(errors.cidadeError || false);
+        setCoordError(errors.coordError || false);
+        setDescError(errors.descError || false);
+        setDistritoError(errors.distritoError || false);
+        setMoradaError(errors.moradaError || false);
+        setTelefoneError(errors.telefoneError || false);
+
+        if (Object.keys(errors).length > 0) {
+            return;
+        }
+
         try {
             const userid = sessionStorage.getItem('userid');
             const token = sessionStorage.getItem('token');
@@ -89,7 +153,7 @@ const NovoPolo = ({ open, onClose }) => {
                 telefone: telefone,
                 coordenador: responsavel,
                 cidadeID: cidade.value,
-                imagem: imagem, 
+                imagem: imagem,
                 utilizadorid: userid
             };
 
@@ -101,8 +165,13 @@ const NovoPolo = ({ open, onClose }) => {
             });
             console.log('Evento Adicionado');
             onClose();
+            setAlertProps({ title: 'Sucesso', label: `Polo criado com sucesso.`, severity: 'success' });
+            setAlertOpen(true);
+            resetForm();
         } catch (error) {
             console.error('Erro ao adicionar evento:', error);
+            setAlertProps({ title: 'Erro', label: `Ocorreu um erro ao criar o polo.`, severity: 'error' });
+            setAlertOpen(true);
         }
     };
 
@@ -133,61 +202,85 @@ const NovoPolo = ({ open, onClose }) => {
         }
     };
 
+    const resetForm = () => {
+        setDescricao('');
+        setMorada('');
+        setEmail('');
+        setTelefone('');
+        setResponsavel('');
+        setDistrito(null);
+        setCidade(null);
+        setImageName('');
+        setImageSize(0);
+        setImage('');
+    };
+
     const resetImage = async () => {
         setImageName('');
         setImageSize(0);
         setImage('');
     }
 
+    const handleCancel = () => {
+        resetForm();
+        setEmailError(false);
+        setCidadeError(false);
+        setCoordError(false);
+        setDescError(false);
+        setDistritoError(false);
+        setMoradaError(false);
+        setTelefoneError(false);
+        onClose();
+    };
+
     return (
-        <Modal open={open} onClose={onClose} >
+        <Modal open={open} onClose={handleCancel} >
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px', overflow: 'auto' }}>
                 <h2 style={{ marginTop: 0, color: 'white' }}>Novo Polo</h2>
                 <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 20, borderRadius: 12 }}>
                     <div style={{ marginBottom: 15 }}>
-                        <BasicTextField caption='Descrição' valor={descricao} onchange={(e) => setDescricao(e.target.value)} fullwidth={true} />
+                        <BasicTextField caption='Descrição' valor={descricao} onchange={(e) => setDescricao(e.target.value)} fullwidth={true} type="text" error={descError}
+                            helperText={descError ? "Introduza uma descrição válida" : ""} />
                         <div style={{ display: 'flex', marginTop: 20, gap: 5 }}>
                             <div style={{ width: '50%' }}>
-                                <Autocomplete
-                                    options={distritos}
-                                    getOptionLabel={(option) => option.label}
-                                    renderInput={(params) => <TextField {...params} label="Distrito" variant="outlined" />}
+                                <Autocomplete options={distritos} getOptionLabel={(option) => option.label} renderInput={(params) => (
+                                        <TextField {...params} label="Distrito" variant="outlined" type="text" error={distritoError} helperText={distritoError ? "Escolha um distrito" : ""} /> )}
                                     value={distrito}
                                     onChange={handleDistritoChange}
-                                    fullWidth={true}
-                                />
+                                    fullWidth={true} />
                             </div>
                             <div style={{ width: '50%' }}>
-                                <Autocomplete
-                                    options={cidades}
-                                    getOptionLabel={(option) => option.label}
-                                    renderInput={(params) => <TextField {...params} label="Cidade" variant="outlined" />}
+                                <Autocomplete options={cidades} getOptionLabel={(option) => option.label} renderInput={(params) => (
+                                    <TextField {...params} label="Cidade" variant="outlined" error={cidadeError} helperText={cidadeError ? "Escolha uma cidade" : ""} />)}
                                     value={cidade}
-                                    onChange={(event, newValue) => { setCidade(newValue); }}
-                                    fullWidth={true}
-                                />
+                                    onChange={(event, newValue) => { setCidade(newValue); setCidadeError(false); }}
+                                    fullWidth={true} />
                             </div>
                         </div>
                         <div style={{ marginTop: 20 }}>
-                            <BasicTextField caption='Morada' valor={morada} onchange={(e) => setMorada(e.target.value)} fullwidth={true} />
+                            <BasicTextField caption='Morada' valor={morada} onchange={(e) => setMorada(e.target.value)} fullwidth={true} type="text" error={moradaError}
+                                helperText={moradaError ? "Introduza uma morada válida" : ""} />
                         </div>
                         <div style={{ display: 'flex', marginTop: 20, gap: 5 }}>
                             <div style={{ width: '34%' }}>
-                                <BasicTextField caption='Email' valor={email} onchange={(e) => setEmail(e.target.value)} fullwidth={true} />
+                                <BasicTextField caption='Email' valor={email} onchange={(e) => setEmail(e.target.value)} fullwidth={true} type="email" error={emailError}
+                                    helperText={emailError ? "Introduza uma email válido" : ""} />
                             </div>
                             <div style={{ width: '25%' }}>
-                                <BasicTextField caption='Telefone' valor={telefone} onchange={(e) => setTelefone(e.target.value)} fullwidth={true} />
+                                <BasicTextField caption='Telefone' valor={telefone} onchange={(e) => setTelefone(e.target.value)} fullwidth={true} type="numeric" error={telefoneError}
+                                    helperText={telefoneError ? "Introduza uma nº telefone válido" : ""} />
                             </div>
                             <div style={{ width: '40%' }}>
-                                <BasicTextField caption='Coordenador'  valor={responsavel} onchange={(e) => setResponsavel(e.target.value)} fullwidth={true} />
+                                <BasicTextField caption='Coordenador' valor={responsavel} onchange={(e) => setResponsavel(e.target.value)} fullwidth={true} type="text" error={coordError}
+                                    helperText={coordError ? "Introduza um nome válido" : ""} />
                             </div>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>
-                            <InputImage image={image} onAddImage={handleImage} onDelete={resetImage}/>
+                            <InputImage image={image} onAddImage={handleImage} onDelete={resetImage} />
                         </div>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
-                        <CancelButton onclick={() => { onClose(); }} caption='Cancelar' />
+                        <CancelButton onclick={handleCancel} caption='Cancelar' />
                         <SubmitButton onclick={handleAddEvent} caption='Guardar' />
                     </div>
                 </div>

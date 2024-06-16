@@ -12,6 +12,7 @@ import ComboFilter from '../components/combobox/comboFilter';
 /* FIM COMPONENTES */
 import NovoPolo from '../modals/polos/novoPolo';
 import EditarPolo from '../modals/polos/editarPolo';
+import Alert from '../components/alerts/alert';
 
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},
@@ -26,6 +27,8 @@ export default function ConfigPolos() {
     const [filtroText, setFiltroText] = useState('');
     const [tableRows, setTableRows] = useState([]);
     const [error, setError] = useState('');
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
@@ -90,14 +93,14 @@ export default function ConfigPolos() {
                 <div style={{ marginBottom:'20px', paddingTop: '20px'}}>
                     <AddButton caption='Adicionar' onclick={() => setNewModalOpen(true)} />
                     <Search onchange={(e) => setFiltroText(e.target.value)} />
-                    {/* <ComboFilter options={opcoesFiltro} value={filtroCombo} handleChange={(e) => setFiltroCombo(e.target.value)} /> */}
                 </div>
                 <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px',border: 'none', boxShadow: 'none'}}>
                     <DataTable rows={tableRows || []} columns={tableColumns}/>
                 </div>
             </div>
-            <NovoPolo open={isNewModalOpen} onClose={() => setNewModalOpen(false)}/>
-            <EditarPolo open={isEditModalOpen} onClose={() => setEditModalOpen(false)} poloId={selectedPoloId} />
+            <NovoPolo open={isNewModalOpen} onClose={() => setNewModalOpen(false)} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
+            <EditarPolo open={isEditModalOpen} onClose={() => setEditModalOpen(false)} poloId={selectedPoloId} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
+            <Alert open={alertOpen} setOpen={setAlertOpen} title={alertProps.title} label={alertProps.label} severity={alertProps.severity} />
         </div>
     )
 }

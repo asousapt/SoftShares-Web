@@ -14,11 +14,27 @@ const EditarPolo = ({ open, onClose, poloId }) => {
     const [email, setEmail] = useState('');
     const [telefone, setTelefone] = useState('');
     const [responsavel, setResponsavel] = useState('');
-    const [image, setImage] = useState('https://blog.even3.com.br/wp-content/uploads/2016/12/regra-de-ouro-para-a-organizaao-de-equipes-em-eventos-dividir-para-conquistar.png');
     const [cidade, setCidade] = useState(null);
     const [cidades, setCidades] = useState([]);
     const [distrito, setDistrito] = useState(null);
     const [distritos, setDistritos] = useState([]);
+    const [image, setImage] = useState('');
+    const [imageName, setImageName] = useState('');
+    const [imageSize, setImageSize] = useState(0);
+
+    const getBase64FromUrl = async (url) => {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                resolve(reader.result);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    };
 
     useEffect(() => {
         if (poloId) {
@@ -46,6 +62,16 @@ const EditarPolo = ({ open, onClose, poloId }) => {
             const distrito = await fetchDistritoByCidadeId(polo.cidadeid);
             setDistrito(distrito);
             fetchCidades(distrito.value, polo.cidadeid);
+            if (polo.imagem.url === '' || polo.imagem.url === null) {
+                setImageName('');
+                setImageSize(0);
+                setImage('');
+            }else {
+                const base64String = await getBase64FromUrl(polo.imagem.url);
+                setImage(base64String);
+                setImageName(polo.imagem.name);
+                setImageSize(polo.imagem.size);
+            }
         } catch (error) {
             console.error('Erro ao buscar dados do polo:', error);
         }
@@ -107,14 +133,22 @@ const EditarPolo = ({ open, onClose, poloId }) => {
 
     const handleUpdateEvent = async () => {
         try {
+            const userid = sessionStorage.getItem('userid');
             const token = sessionStorage.getItem('token');
+            const imagem = [{
+                nome: imageName,
+                base64: image,
+                tamanho: imageSize
+            }];
             const novoPolo = {
                 descricao,
                 morada,
                 email,
                 telefone,
                 coordenador: responsavel,
-                cidadeID: cidade.value
+                cidadeID: cidade.value,
+                imagem: imagem, 
+                utilizadorid: userid
             };
 
             await axios.put(`http://localhost:8000/polo/update/${poloId}`, novoPolo, {
@@ -128,6 +162,39 @@ const EditarPolo = ({ open, onClose, poloId }) => {
             console.error('Erro ao atualizar polo:', error);
         }
     };
+
+    const handleImage = async () => {
+        try {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+
+            fileInput.addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+                setImageName(file.name);
+                setImageSize(file.size);
+
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+
+                reader.onload = async () => {
+                    const imageData = reader.result;
+                    console.log('reader', reader);
+                    setImage(imageData);
+                };
+            });
+            fileInput.click();
+        } catch (error) {
+            console.error('Error uploading image:', error.message);
+        }
+    };
+
+    const resetImage = async () => {
+        setImageName('');
+        setImageSize(0);
+        setImage('');
+    }
 
     return (
         <Modal open={open} onClose={onClose} >
@@ -173,7 +240,7 @@ const EditarPolo = ({ open, onClose, poloId }) => {
                             </div>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>
-                            <InputImage image={image} />
+                            <InputImage image={image} onAddImage={handleImage} onDelete={resetImage} />
                         </div>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>

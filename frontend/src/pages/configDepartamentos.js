@@ -80,16 +80,10 @@ export default function Configtilizadores() {
     }, [filtroCombo, filtroText]);
 
     useEffect(() => {
-        if(!isNewModalOpen){
+        if (!isNewModalOpen && !isEditModalOpen) {
             fetchData();
         }
-    }, [isNewModalOpen]);
-
-    useEffect(() => {
-        if(!isEditModalOpen){
-            fetchData();
-        }
-    }, [isEditModalOpen]);
+    }, [isNewModalOpen, isEditModalOpen]);
 
     if (error) {
         return <div>Error: {error.message}</div>;

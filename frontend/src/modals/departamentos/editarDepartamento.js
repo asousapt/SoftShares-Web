@@ -32,8 +32,6 @@ const EditDepartamento = ({ open, onClose, departamentoId, setAlertOpen, setAler
                     });
                     const departamento = response.data;
 
-                    console.log('Dados recebidos:', departamento);
-
                     if (departamento) {
                         setDescricaoPT(departamento.valorpt || '');
                         setDescricaoEN(departamento.valoren || '');

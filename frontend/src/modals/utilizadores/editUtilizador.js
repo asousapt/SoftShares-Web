@@ -77,7 +77,7 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
                 setImageName('');
                 setImageSize(0);
                 setImage('');
-            }else {
+            } else {
                 const base64String = await getBase64FromUrl(userData.imagem.url);
                 setImage(base64String);
                 setImageName(userData.imagem.name);

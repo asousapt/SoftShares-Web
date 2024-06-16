@@ -50,7 +50,6 @@ const controladorFicheiros = {
 
     removerTodosFicheirosAlbum: async (id, entidade, files) => {
         try {
-            console.log('teste1');
             const objecto = await models.objecto.findOne({
                 where:{
                     registoid: id,

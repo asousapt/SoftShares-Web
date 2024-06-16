@@ -16,7 +16,7 @@ app.use(cors());
 app.options('*', cors());
 
 //Use bodyParser middleware
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' }));
 
 //Init Data
 distritos.init();
@@ -80,5 +80,5 @@ app.use('/idioma', idiomaRoutes);
 // Start server
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
-console.log('Server is listening on port '+PORT);
+    console.log('Server is listening on port '+PORT);
 });

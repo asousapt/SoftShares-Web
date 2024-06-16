@@ -21,12 +21,27 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
     const [subcategoria, setSubcategoria] = useState(null);
     const [inativo, setInativo] = useState(null);
     const [error, setError] = useState(null);
+    const [images, setImages] = useState([]);
 
     //ERRORS
     const [titleError, setTitleError] = useState(false);
     const [descriptionError, setDescriptionError] = useState(false);
     const [catError, setCatError] = useState(false);
     const [subcatError, setSubcatError] = useState(false);
+
+    const getBase64FromUrl = async (url) => {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                resolve(reader.result);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    };
 
     const fetchCategorias = async () => {
         try {
@@ -112,6 +127,18 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
             });
             const subcat = subcatResponse.data;
             setSubcategoria({ value: threads.subcategoriaid, label: subcat.valorpt });
+
+            const transformedImages = await Promise.all(
+                threads.imagens.map(async (imagem) => {
+                    const base64String = await getBase64FromUrl(imagem.url);
+                    return {
+                        src: base64String,
+                        alt: imagem.name,
+                        size: imagem.size,
+                    };
+                })
+            );
+            setImages(transformedImages);
         } catch (error) {
             setError(error);
         }
@@ -156,12 +183,21 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
                 return;
             }
 
+            const imagesRtn = images.map(image => ({
+                nome: image.alt,
+                base64: image.src,
+                tamanho: image.size
+            }));
+            
+            const userid = sessionStorage.getItem('userid');
             const token = sessionStorage.getItem('token');
             const editarPublicacao = {
                 subcategoriaid: subcategoria.value,
                 titulo: title,
                 mensagem: description,
-                inactivo: inativo
+                inactivo: inativo,
+                imagens: imagesRtn,
+                utilizadorid: userid
             };
             console.log(editarPublicacao);
             await axios.put('http://localhost:8000/thread/update/' + idPub, editarPublicacao, {
@@ -197,6 +233,48 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
         setSubcatError(false);
         onClose();
     };
+
+    const handleImage = async () => {
+        try {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*'; 
+    
+            fileInput.addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                if (!file) return; 
+                console.log(file);
+                const fileName = file.name;
+                const fileSize = file.size;
+                
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+        
+                reader.onload = async () => {
+                    const imageData = reader.result;
+                    console.log('reader',reader);
+                    const fileData = imageData;
+                    const image = {
+                        src: fileData,
+                        alt: fileName,
+                        size: fileSize
+                    }
+                    setImages(prevImages => [...prevImages, image]);
+                };
+            });
+            fileInput.click();
+        } catch (error) {
+            console.error('Error uploading image:', error.message);
+        }
+    };
+
+    const resetImage = async (index) => {
+        setImages(prevImages => {
+            const newImages = [...prevImages];
+            newImages.splice(index, 1);
+            return newImages;
+        });
+    }
 
     return (
         <Modal open={open} onClose={handleCancel} >
@@ -235,7 +313,7 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
                             />
                         </div>
                         <div style={{ marginBottom: 20 }}>
-                            <ImageTable images={[]} />
+                            <ImageTable images={images} onAddImage={handleImage} onDelete={resetImage}/>
                         </div>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>

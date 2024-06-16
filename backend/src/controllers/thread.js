@@ -51,7 +51,7 @@ const controladorThread = {
                 }
             });
 
-            ficheirosController.removerTodosFicheirosAlbum(id, 'THREAD');
+            await ficheirosController.removerTodosFicheirosAlbum(id, 'THREAD');
             ficheirosController.adicionar(id, 'THREAD', imagens, utilizadorid);
 
             res.status(200).json({ message: 'Thread atualizada com sucesso' });
@@ -155,6 +155,9 @@ const controladorThread = {
                     type: QueryTypes.SELECT
                 }
             );
+
+            const ficheiros = await ficheirosController.getAllFilesByAlbum(id, 'THREAD');
+            threads[0].imagens = ficheiros;
 
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: threads });
         } catch (error) {

@@ -166,7 +166,6 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
 
     const handleAddUser = async () => {
         const errors = validateForm();
-
         setEmailError(errors.emailError || false);
         setPnomeError(errors.pnomeError || false);
         setUnomeError(errors.unomeError || false);
@@ -309,7 +308,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <BasicTextField caption='Email' valor={email} onchange={(e) => setEmail(e.target.value)} fullwidth={true} type="email" error={emailError}
-                                        helperText={emailError ? "Introduza um e-mail válido." : ""} />
+                                        helperText={emailError ? "Introduza um e-mail válido" : ""} />
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <BasicTextField caption='Senha' valor={passwd} onchange={(e) => setPasswd(e.target.value)} fullwidth={true} type="password" error={passError}

@@ -12,6 +12,7 @@ import StateChanger from '../components/stateChanger/stateChanger';
 /* FIM COMPONENTES */
 import NovoDepartamento from '../modals/departamentos/novoDepartamento';
 import EditDepartamento from '../modals/departamentos/editarDepartamento';
+import Alert from '../components/alerts/alert';
 
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},
@@ -27,6 +28,8 @@ export default function Configtilizadores() {
     const [filtroCombo, setFiltroCombo] = useState('Todos');
     const [tableRows, setTableRows] = useState([]);
     const [error, setError] = useState('');
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left'},
@@ -105,8 +108,9 @@ export default function Configtilizadores() {
                     <DataTable rows={tableRows} columns={tableColumns} />
                 </div>
             </div>
-            <NovoDepartamento open={isNewModalOpen} onClose={() => setNewModalOpen(false)} />
-            <EditDepartamento open={isEditModalOpen} onClose={() => setEditModalOpen(false)} departamentoId={selectedDepartamentoId} />
+            <NovoDepartamento open={isNewModalOpen} onClose={() => setNewModalOpen(false)} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
+            <EditDepartamento open={isEditModalOpen} onClose={() => setEditModalOpen(false)} departamentoId={selectedDepartamentoId} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
+            <Alert open={alertOpen} setOpen={setAlertOpen} title={alertProps.title} label={alertProps.label} severity={alertProps.severity} />
         </div>
     );
 }

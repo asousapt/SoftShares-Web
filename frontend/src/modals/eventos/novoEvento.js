@@ -11,12 +11,13 @@ import TextField from '@mui/material/TextField';
 
 const imgs = [];
 
-const AddEventModal = ({ open, onClose }) => {
+const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
+    //VARS
+    //FIELDS
     const [title, setTitle] = useState('');
     const [localizacao, setLocalizacao] = useState('');
     const [description, setDescription] = useState('');
     const [numParticipantes, setNumParticipantes] = useState('');
-    const [numConvidados, setNumConvidados] = useState('');
     const [dataHoraInicio, setDataHoraInicio] = useState('');
     const [dataHoraFim, setDataHoraFim] = useState('');
     const [dataLimInscricao, setDataLimInscricao] = useState('');
@@ -31,6 +32,20 @@ const AddEventModal = ({ open, onClose }) => {
     const [subcategoria, setSubcategoria] = useState(null);
     const [opcoesFiltroSubcat, setOpcoesSubcat] = useState([]);
     const [error, setError] = useState(null);
+
+    //ERRORS
+    const [titleError, setTitleError] = useState(false);
+    const [localizacaoError, setLocalizacaoError] = useState(false);
+    const [descError, setDescError] = useState(false);
+    const [distritoError, setDistritoError] = useState(false);
+    const [cidadeError, setCidadeError] = useState(false);
+    const [categoriaError, setCategoriaError] = useState(false);
+    const [subcategoriaError, setSubcategoriaError] = useState(false);
+    const [poloError, setPoloError] = useState(false);
+    const [dataHoraInicioError, setDataHoraInicioError] = useState(false);
+    const [dataHoraFimError, setDataHoraFimError] = useState(false);
+    const [dataLimInscricaoError, setDataLimInscricaoError] = useState(false);
+    const [numParticipantesError, setNumParticipantesError] = useState(false);
 
     useEffect(() => {
         const fetchDistritos = async () => {
@@ -142,7 +157,68 @@ const AddEventModal = ({ open, onClose }) => {
         }
     };
 
+    const validateForm = () => {
+        let errors = {};
+
+        if (!title) {
+            errors.titleError = true;
+        }
+        if (!localizacao) {
+            errors.localizacaoError = true;
+        }
+        if (!description) {
+            errors.descError = true;
+        }
+        if (!distrito) {
+            errors.distritoError = true;
+        }
+        if (!cidade) {
+            errors.cidadeError = true;
+        }
+        if (!categoria) {
+            errors.categoriaError = true;
+        }
+        if (!subcategoria) {
+            errors.subcategoriaError = true;
+        }
+        if (!polo) {
+            errors.poloError = true;
+        }
+        if (!dataHoraInicio) {
+            errors.dataHoraInicioError = true;
+        }
+        if (!dataHoraFim) {
+            errors.dataHoraFimError = true;
+        }
+        if (!dataLimInscricao) {
+            errors.dataLimInscricaoError = true;
+        }
+        if (!numParticipantes) {
+            errors.numParticipantesError = true;
+        }
+
+        return errors;
+    };
+
     const handleAddEvent = async () => {
+        const errors = validateForm();
+        setTitleError(errors.titleError || false);
+        setLocalizacaoError(errors.localizacaoError || false);
+        setDescError(errors.descError || false);
+        setDistritoError(errors.distritoError || false);
+        setCidadeError(errors.cidadeError || false);
+        setCategoriaError(errors.categoriaError || false);
+        setSubcategoriaError(errors.subcategoriaError || false);
+        setPoloError(errors.poloError || false);
+        setDataHoraInicioError(errors.dataHoraInicioError || false);
+        setDataHoraFimError(errors.dataHoraFimError || false);
+        setDataLimInscricaoError(errors.dataLimInscricaoError || false);
+        setNumParticipantesError(errors.numParticipantesError || false);
+
+        if (Object.keys(errors).length > 0) {
+            return;
+        }
+
         try {
             const userid = sessionStorage.getItem('userid');
             const token = sessionStorage.getItem('token');
@@ -168,103 +244,132 @@ const AddEventModal = ({ open, onClose }) => {
                 }
             });
             onClose();
+            setAlertProps({ title: 'Sucesso', label: `Evento criado com sucesso.`, severity: 'success' });
+            setAlertOpen(true);
+            resetForm();
         } catch (error) {
             console.error('Erro ao adicionar evento:', error);
+            setAlertProps({ title: 'Erro', label: `Ocorreu um erro ao criar o evento.`, severity: 'error' });
+            setAlertOpen(true);
         }
     };
 
+    const resetForm = () => {
+        setTitle('');
+        setDescription('');
+        setDataHoraInicio('');
+        setDataHoraFim('');
+        setDataLimInscricao('');
+        setNumParticipantes('');
+        setLocalizacao('');
+        setDistrito(null);
+        setCidade(null);
+        setCategoria(null);
+        setSubcategoria(null);
+        setPolo(null);
+    };
+
+    const handleCancel = () => {
+        resetForm();
+        setTitleError(false);
+        setLocalizacaoError(false);
+        setDescError(false);
+        setDistritoError(false);
+        setCidadeError(false);
+        setCategoriaError(false);
+        setSubcategoriaError(false);
+        setPoloError(false);
+        setDataHoraInicioError(false);
+        setDataHoraFimError(false);
+        setDataLimInscricaoError(false);
+        setNumParticipantesError(false);
+        onClose();
+    };
+
     return (
-        <Modal open={open} onClose={onClose}>
+        <Modal open={open} onClose={handleCancel}>
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px', overflow: 'auto' }}>
                 <h2 style={{ marginTop: 0, color: 'white' }}>Novo Evento</h2>
                 <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 20, borderRadius: 12 }}>
                     <div style={{ marginBottom: 15 }}>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                             <div style={{ width: '40%' }}>
-                                <BasicTextField caption='Titulo' valor={title} onchange={(e) => setTitle(e.target.value)} fullwidth={true} />
+                                <BasicTextField caption='Titulo' valor={title} onchange={(e) => setTitle(e.target.value)} fullwidth={true} type="text" error={titleError}
+                            helperText={titleError ? "Introduza um título válido" : ""} />
                             </div>
                             <div style={{ width: '33.9%' }}>
-                                <BasicTextField caption='Localização' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} />
+                                <BasicTextField caption='Localização' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} type="text" error={localizacaoError}
+                            helperText={localizacaoError ? "Introduza uma localização válida" : ""} />
                             </div>
                             <div style={{ width: '25%' }}>
-                                <BasicTextField caption='Nº Participantes Máximo' type='number' valor={numParticipantes} onchange={(e) => setNumParticipantes(e.target.value)} fullwidth={true} />
+                                <BasicTextField caption='Nº Participantes Máximo' type='number' valor={numParticipantes} onchange={(e) => setNumParticipantes(e.target.value)} fullwidth={true} error={numParticipantesError}
+                            helperText={numParticipantesError ? "Introduza um nº válido" : ""} />
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                             <div style={{ width: '74.5%' }}>
-                                <BasicTextField caption='Descrição' valor={description} onchange={(e) => setDescription(e.target.value)} fullwidth={true} />
+                                <BasicTextField caption='Descrição' valor={description} onchange={(e) => setDescription(e.target.value)} fullwidth={true} type="text" error={descError}
+                            helperText={descError ? "Introduza uma descrição válida" : ""} />
                             </div>
                             <div style={{ width: '24.9%' }}>
-                                <Autocomplete
-                                    options={polos}
-                                    getOptionLabel={(option) => option.label}
-                                    renderInput={(params) => <TextField {...params} label="Polo" variant="outlined" />}
+                                <Autocomplete options={polos} getOptionLabel={(option) => option.label} renderInput={(params) => (
+                                        <TextField {...params} label="Polo" variant="outlined" type="text" error={poloError} helperText={poloError ? "Escolha um Polo" : ""} /> )}
                                     value={polo}
                                     onChange={(event, newValue) => { setPolo(newValue); }}
-                                    fullWidth={true}
-                                />
+                                    fullWidth={true} />
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                             <div style={{ width: '32.9%' }}>
-                                <DataHora caption="Data e Hora Início" value={dataHoraInicio} onChange={(newValue) => setDataHoraInicio(newValue)} fullwidth={true} />
+                                <DataHora caption="Data e Hora Início" value={dataHoraInicio} onChange={(newValue) => setDataHoraInicio(newValue)} fullwidth={true} error={dataHoraInicioError}
+                            helperText={dataHoraInicioError ? "Introduza uma data e hora válida" : ""} />
                             </div>
                             <div style={{ width: '33%' }}>
-                                <DataHora caption="Data e Hora Fim" value={dataHoraFim} onChange={(newValue) => setDataHoraFim(newValue)} fullwidth={true} />
+                                <DataHora caption="Data e Hora Fim" value={dataHoraFim} onChange={(newValue) => setDataHoraFim(newValue)} fullwidth={true} error={dataHoraFimError}
+                            helperText={dataHoraFimError ? "Introduza uma data e hora válida" : ""} />
                             </div>
                             <div style={{ width: '33%' }}>
-                                <DataHora caption="Data Limite de Inscrição" value={dataLimInscricao} onChange={(newValue) => setDataLimInscricao(newValue)} fullwidth={true} />
+                                <DataHora caption="Data Limite de Inscrição" value={dataLimInscricao} onChange={(newValue) => setDataLimInscricao(newValue)} fullwidth={true} error={dataLimInscricaoError}
+                            helperText={dataLimInscricaoError ? "Introduza uma data e hora válida" : ""} />
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                             <div style={{ width: '25%' }}>
-                                <Autocomplete
-                                    options={distritos}
-                                    getOptionLabel={(option) => option.label}
-                                    renderInput={(params) => <TextField {...params} label="Distrito" variant="outlined" />}
+                                <Autocomplete options={distritos} getOptionLabel={(option) => option.label} renderInput={(params) => (
+                                        <TextField {...params} label="Distrito" variant="outlined" type="text" error={distritoError} helperText={distritoError ? "Escolha um distrito" : ""} /> )}
                                     value={distrito}
                                     onChange={handleDistritoChange}
-                                    fullWidth={true}
-                                />
+                                    fullWidth={true} />
                             </div>
                             <div style={{ width: '23.4%' }}>
-                                <Autocomplete
-                                    options={cidades}
-                                    getOptionLabel={(option) => option.label}
-                                    renderInput={(params) => <TextField {...params} label="Cidade" variant="outlined" />}
+                                <Autocomplete options={cidades} getOptionLabel={(option) => option.label} renderInput={(params) => (
+                                    <TextField {...params} label="Cidade" variant="outlined" error={cidadeError} helperText={cidadeError ? "Escolha uma cidade" : ""} />)}
                                     value={cidade}
-                                    onChange={(event, newValue) => { setCidade(newValue); }}
-                                    fullWidth={true}
-                                />
+                                    onChange={(event, newValue) => { setCidade(newValue); setCidadeError(false); }}
+                                    fullWidth={true} />
                             </div>
                             <div style={{ width: '25%' }}>
-                                <Autocomplete
-                                    options={opcoesFiltroCat}
-                                    getOptionLabel={(option) => option.label}
-                                    renderInput={(params) => <TextField {...params} label="Categoria" variant="outlined" />}
+                                <Autocomplete options={opcoesFiltroCat} getOptionLabel={(option) => option.label} renderInput={(params) => (
+                                        <TextField {...params} label="Categoria" variant="outlined" type="text" error={categoriaError} helperText={categoriaError ? "Escolha uma categoria" : ""} /> )}
                                     value={categoria}
                                     onChange={handleCategoriaChange}
-                                    fullWidth={true}
-                                />
+                                    fullWidth={true} />
                             </div>
                             <div style={{ width: '25%' }}>
-                                <Autocomplete
-                                    options={opcoesFiltroSubcat}
-                                    getOptionLabel={(option) => option.label}
-                                    renderInput={(params) => <TextField {...params} label="Subcategoria" variant="outlined" />}
+                                <Autocomplete options={opcoesFiltroSubcat} getOptionLabel={(option) => option.label} renderInput={(params) => (
+                                    <TextField {...params} label="Subcategoria" variant="outlined" error={subcategoriaError} helperText={subcategoriaError ? "Escolha uma subcategoria" : ""} />)}
                                     value={subcategoria}
                                     onChange={(event, newValue) => { setSubcategoria(newValue); }}
-                                    fullWidth={true}
-                                />
+                                    fullWidth={true} />
                             </div>
                         </div>
                         <ImageTable images={imgs} styleProp={{ paddingTop: 10 }} />
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
-                        <CancelButton onclick={onClose} caption='Cancelar' />
+                        <CancelButton onclick={handleCancel} caption='Cancelar' />
                         <SubmitButton onclick={handleAddEvent} caption='Guardar' />
                     </div>
                 </div>

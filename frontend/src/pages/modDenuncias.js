@@ -43,7 +43,9 @@ export default function ModDen() {
             });
             const denuncias = response.data.data;
 
-            const formattedData = denuncias.map(denuncia => ({
+            const sortedDen = denuncias.sort((a, b) => a.denunciaid - b.denunciaid);
+
+            const formattedData = sortedDen.map(denuncia => ({
                 id: denuncia.denunciaid,
                 motivo: denuncia.texto,
                 dataHora: new Date(denuncia.datacriacao),

@@ -67,10 +67,11 @@ export default function ListaPublicacoes() {
                 }
             });
             const threads = response.data.data;
-            console.log(threads);
+            
+            const sortedPub= threads.sort((a, b) => a.threadid - b.threadid);
             
             setTableRows(
-                threads.map((thread) => ({
+                sortedPub.map((thread) => ({
                     key: thread.threadid,
                     id: thread.threadid,
                     titulo: thread.titulo,

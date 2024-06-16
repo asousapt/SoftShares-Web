@@ -58,15 +58,18 @@ export default function ModAprov() {
             });
             const pontosinteresse = responsePontosInteresse.data.data;
 
+            const sortedPint = pontosinteresse.sort((a, b) => a.pontointeresseid - b.pontointeresseid);
+            const sortedEvent = eventos.sort((a, b) => a.eventoid - b.eventoid);
+
             const linhatemp = [
-                ...pontosinteresse.map((ponto) => ({
+                ...sortedPint.map((ponto) => ({
                     key: 'PDI' + ponto.pontointeresseid,
                     id: ponto.pontointeresseid,
                     tipo: 'Ponto de Interesse',
                     titulo: ponto.titulo,
                     criadoPor: ponto.utilizadorcriou_utilizador.pnome + ' ' + ponto.utilizadorcriou_utilizador.unome
                 })),
-                ...eventos.map((evento) => ({
+                ...sortedEvent.map((evento) => ({
                     key: 'evento' + evento.eventoid,
                     id: evento.eventoid,
                     tipo: 'Evento',

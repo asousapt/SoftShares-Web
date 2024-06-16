@@ -66,7 +66,9 @@ export default function ConfigAlertas() {
             });
             const alertas = response.data.data;
             
-            setTableRows(alertas.map((alerta) => ({
+            const sortedAlert = alertas.sort((a, b) => a.alertaid - b.alertaid);
+
+            setTableRows(sortedAlert.map((alerta) => ({
                 key: alerta.alertaid,
                 id: alerta.alertaid,
                 alerta: alerta.texto,

@@ -52,8 +52,10 @@ export default function ConfigPolos() {
                 }
             });
             const polos = response.data.data;
+            
+            const sortedPolos = polos.sort((a, b) => a.poloid - b.poloid);
 
-            setTableRows(polos.map((polo) => ({
+            setTableRows(sortedPolos.map((polo) => ({
                 key: polo.poloid,
                 id: polo.poloid,
                 descricao: polo.descricao,

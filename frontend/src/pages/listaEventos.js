@@ -80,7 +80,9 @@ export default function ListaEventos() {
             });
             const eventos = response.data.data;
 
-            const eventosTable = eventos.map((evento) => {
+            const sortedEvent = eventos.sort((a, b) => a.eventoid - b.eventoid);
+
+            const eventosTable = sortedEvent.map((evento) => {
                 const totalParticipantes = evento.numinscritos + evento.numconvidados;
                 return {
                     key: evento.eventoid,

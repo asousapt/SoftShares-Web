@@ -91,7 +91,9 @@ export default function ConfigSubcategorias() {
             });
             const subcategorias = response.data;
             
-            setTableRows(subcategorias.map((subcategoria) => ({
+            const sortedSucat = subcategorias.sort((a, b) => a.subcategoriaid - b.subcategoriaid);
+
+            setTableRows(sortedSucat.map((subcategoria) => ({
                 key: subcategoria.subcategoriaid,
                 id: subcategoria.subcategoriaid,
                 subcategoria: subcategoria.valorpt,

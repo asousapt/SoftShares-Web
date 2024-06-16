@@ -78,9 +78,11 @@ export default function ListaPontosInt() {
                     descricao: filtroText
                 }
             });
-            const eventos = response.data.data;
+            const pontosInt = response.data.data;
 
-            const pontosInteresseTable = eventos.map((ponto) => ({
+            const sortedPint = pontosInt.sort((a, b) => a.pontointeresseid - b.pontointeresseid);
+
+            const pontosInteresseTable = sortedPint.map((ponto) => ({
                 key: ponto.pontointeresseid,
                 id: ponto.pontointeresseid,
                 titulo: ponto.titulo,

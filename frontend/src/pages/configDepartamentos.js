@@ -59,7 +59,9 @@ export default function Configtilizadores() {
             });
             const departamentos = response.data;
 
-            setTableRows(departamentos.map((departamento) => ({
+            const sortedDepart = departamentos.sort((a, b) => a.departamentoid - b.departamentoid);
+
+            setTableRows(sortedDepart.map((departamento) => ({
                 key: departamento.departamentoid,
                 id: departamento.departamentoid,
                 descricao: departamento.valorpt,

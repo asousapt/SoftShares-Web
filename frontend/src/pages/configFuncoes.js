@@ -58,8 +58,10 @@ export default function Configtilizadores() {
                 }
             });
             const funcoes = response.data;
-            
-            setTableRows(funcoes.map((funcao) => ({
+
+            const sortedFunc = funcoes.sort((a, b) => a.funcaoid - b.funcaoid);
+
+            setTableRows(sortedFunc.map((funcao) => ({
                 key: funcao.funcaoid,
                 id: funcao.funcaoid,
                 descricao: funcao.valorpt,

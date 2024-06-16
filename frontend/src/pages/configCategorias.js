@@ -60,7 +60,9 @@ export default function ConfigCategorias() {
             });
             const categorias = response.data;
             
-            setTableRows(categorias.map((categoria) => ({
+            const sortedCat = categorias.sort((a, b) => a.categoriaid - b.categoriaid);
+
+            setTableRows(sortedCat.map((categoria) => ({
                 key: categoria.categoriaid,
                 id: categoria.categoriaid,
                 categoria: categoria.valorpt,

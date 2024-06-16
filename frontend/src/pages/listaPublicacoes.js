@@ -9,6 +9,7 @@ import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
 import StateChanger from '../components/stateChanger/stateChanger';
 import ComboFilter from '../components/combobox/comboFilter';
+import Alert from '../components/alerts/alert';
 /* FIM COMPONENTES */
 import NovaPub from '../modals/publicacoes/novaPub';
 import EditPub from '../modals/publicacoes/editPub';
@@ -22,6 +23,8 @@ export default function ListaPublicacoes() {
     const [filtroCategoria, setFiltroCategoria] = useState(0);
     const [tableRows, setTableRows] = useState([]);
     const [error, setError] = useState(null);
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
@@ -128,8 +131,9 @@ export default function ListaPublicacoes() {
                     <DataTable rows={tableRows || []} columns={tableColumns}/>
                 </div>
             </div>
-            <NovaPub open={isNewModalOpen} onClose={() => setNewModalOpen(false)}/>
-            {isEditModalOpen && (<EditPub open={isEditModalOpen} onClose={() => setEditModalOpen(false)} idPub={selectedId}/>)}
+            <NovaPub open={isNewModalOpen} onClose={() => setNewModalOpen(false)} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
+            {isEditModalOpen && (<EditPub open={isEditModalOpen} onClose={() => setEditModalOpen(false)} idPub={selectedId} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />)}
+            <Alert open={alertOpen} setOpen={setAlertOpen} title={alertProps.title} label={alertProps.label} severity={alertProps.severity} />
         </div>
     )
 }

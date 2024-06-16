@@ -272,14 +272,14 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                             </div>
                             <div style={{ width: '25%' }}>
                                 <Autocomplete options={opcoesFiltroCat} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                        <TextField {...params} label="Categoria" variant="outlined" type="text" error={categoriaError} helperText={categoriaError ? "Escolha um distrito" : ""} /> )}
+                                        <TextField {...params} label="Categoria" variant="outlined" type="text" error={categoriaError} helperText={categoriaError ? "Escolha uma categoria" : ""} /> )}
                                     value={categoria}
                                     onChange={handleCategoriaChange}
                                     fullWidth={true} />
                             </div>
                             <div style={{ width: '25%' }}>
                                 <Autocomplete options={opcoesFiltroSubcat} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                    <TextField {...params} label="Subcategoria" variant="outlined" error={subcategoriaError} helperText={subcategoriaError ? "Escolha uma cidade" : ""} />)}
+                                    <TextField {...params} label="Subcategoria" variant="outlined" error={subcategoriaError} helperText={subcategoriaError ? "Escolha uma categoria subcategoria" : ""} />)}
                                     value={subcategoria}
                                     onChange={(event, newValue) => { setSubcategoria(newValue); setSubcategoriaError(false); }}
                                     fullWidth={true} />

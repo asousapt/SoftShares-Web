@@ -20,7 +20,7 @@ const objectStorage = {
                 if (err) return console.log('Error creating bucket with object lock.', err)
                 console.log('Bucket created successfully and enabled object lock')
             });
-            const versioningConfig = { Status: 'Disabled' }
+            const versioningConfig = { Status: 'Suspended' }
             await minioClient.setBucketVersioning(bucketName.toLowerCase(), versioningConfig)
         }
 

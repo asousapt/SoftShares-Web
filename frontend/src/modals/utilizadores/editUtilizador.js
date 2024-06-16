@@ -10,6 +10,7 @@ import CancelButton from '../../components/buttons/cancelButton';
 import InputImage from '../../components/image/imageInput';
 
 const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) => {
+    // console.log('id ver utilizador', userId);
     //VARS
     //FIELDS
     const [poloid, setPoloid] = useState('');

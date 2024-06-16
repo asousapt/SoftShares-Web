@@ -16,6 +16,7 @@ const AddPublicacao = ({ open, onClose }) => {
     const [opcoesSubcat, setOpcoesSubcat] = useState([]);
     const [subcategoria, setSubcategoria] = useState(null);
     const [error, setError] = useState(null);
+    const [images, setImages] = useState([]);
 
     const fetchCategorias = async () => {
         try {
@@ -64,6 +65,12 @@ const AddPublicacao = ({ open, onClose }) => {
                 alert('Preencha todos os campos!');
                 return;
             }
+
+            const imagesRtn = images.map(image => ({
+                nome: image.alt,
+                base64: image.src,
+                tamanho: image.size
+            }));
             
             const userid = sessionStorage.getItem('userid');
             const token = sessionStorage.getItem('token');
@@ -72,7 +79,8 @@ const AddPublicacao = ({ open, onClose }) => {
                 utilizadorid: userid,
                 titulo: title,
                 mensagem: description,
-                idiomaid: 1
+                idiomaid: 1,
+                imagens: imagesRtn
             };
             console.log(novaPublicacao);
             await axios.post('http://localhost:8000/thread/add', novaPublicacao, {
@@ -90,6 +98,47 @@ const AddPublicacao = ({ open, onClose }) => {
     useEffect(() => {
         fetchCategorias();
     }, []);
+
+    const handleImage = async () => {
+        try {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*'; 
+    
+            fileInput.addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                if (!file) return; 
+                const fileName = file.name;
+                const fileSize = file.size;
+                
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+        
+                reader.onload = async () => {
+                    const imageData = reader.result;
+                    console.log('reader',reader);
+                    const fileData = imageData;
+                    const image = {
+                        src: fileData,
+                        alt: fileName,
+                        size: fileSize
+                    }
+                    setImages(prevImages => [...prevImages, image]);
+                };
+            });
+            fileInput.click();
+        } catch (error) {
+            console.error('Error uploading image:', error.message);
+        }
+    };
+
+    const resetImage = async (index) => {
+        setImages(prevImages => {
+            const newImages = [...prevImages];
+            newImages.splice(index, 1);
+            return newImages;
+        });
+    }
 
     return (
         <Modal open={open} onClose={onClose} >
@@ -126,7 +175,7 @@ const AddPublicacao = ({ open, onClose }) => {
                             <BasicTextField multiline={true} caption='Descrição' valor={description} onchange={(e) => setDescription(e.target.value)} fullwidth={true}/>
                         </div>
                         <div style={{marginBottom: 20}}>
-                            <ImageTable images={[]}/>
+                            <ImageTable images={images} onAddImage={handleImage} onDelete={resetImage}/>
                         </div>
                     </div>
                     <div style={{display: 'flex', justifyContent: 'center', gap: '20px'}}>

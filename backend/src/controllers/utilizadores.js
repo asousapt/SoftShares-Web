@@ -93,7 +93,7 @@ const controladorUtilizadores = {
                 }
             });
             
-            ficheirosController.removerTodosFicheirosAlbum(idUtilizador, 'UTIL')
+            ficheirosController.removerTodosFicheirosAlbum(idUtilizador, 'UTIL');
             ficheirosController.adicionar(idUtilizador, 'UTIL', imagem, idUtilizador);
 
             res.status(200).json({ message: 'Utilizador atualizado com sucesso' });

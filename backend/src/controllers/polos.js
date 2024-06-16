@@ -23,7 +23,6 @@ const controladorPolos = {
                 entidade: 'POLO'
             });
 
-            console.log(polo);
             ficheirosController.adicionar(polo.poloid, 'POLO', imagem, utilizadorid);
 
             res.status(201).json({ message: 'Polo adicionado com sucesso' });
@@ -34,7 +33,7 @@ const controladorPolos = {
 
     atualizarPolo: async (req, res) => {
         const { idPolo } = req.params;
-        const { cidadeID, descricao, morada, email, telefone, coordenador } = req.body;
+        const { cidadeID, descricao, morada, email, telefone, coordenador, imagem, utilizadorid } = req.body;
         try {
             await models.polo.update({
                 cidadeid: cidadeID,
@@ -48,6 +47,9 @@ const controladorPolos = {
                     poloid: idPolo
                 }
             });
+
+            ficheirosController.removerTodosFicheirosAlbum(idPolo, 'POLO')
+            ficheirosController.adicionar(idPolo, 'POLO', imagem, utilizadorid);
 
             res.status(200).json({ message: 'Polo atualizado com sucesso' });
         } catch (error) {

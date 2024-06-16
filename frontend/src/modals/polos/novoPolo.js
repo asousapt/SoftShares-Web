@@ -13,7 +13,7 @@ const NovoPolo = ({ open, onClose }) => {
     const [morada, setMorada] = useState('');
     const [email, setEmail] = useState('');
     const [telefone, setTelefone] = useState('');
-    const [responsavel, setResponsavel] = useState(null);
+    const [responsavel, setResponsavel] = useState('');
     const [cidade, setCidade] = useState(null);
     const [cidades, setCidades] = useState([]);
     const [distrito, setDistrito] = useState(null);

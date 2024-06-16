@@ -50,7 +50,6 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
                 headers: { Authorization: `${token}` }
             });
             const userData = response.data.data;
-            console.log('userData',userData);
 
             setPoloid(userData.poloid);
             setPerfilid(userData.perfilid);
@@ -62,10 +61,16 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
             setPasswd(userData.passwd);
             setSobre(userData.sobre);
             setInactivo(userData.inactivo);
-            const base64String = await getBase64FromUrl(userData.imagem.url);
-            setImage(base64String);
-            setImageName(userData.imagem.name);
-            setImageSize(userData.imagem.size);
+            if (userData.imagem.url === '' || userData.imagem.url === null) {
+                setImageName('');
+                setImageSize(0);
+                setImage('');
+            }else {
+                const base64String = await getBase64FromUrl(userData.imagem.url);
+                setImage(base64String);
+                setImageName(userData.imagem.name);
+                setImageSize(userData.imagem.size);
+            }
         } catch (error) {
             console.error('Erro ao buscar dados do utilizador:', error);
         }

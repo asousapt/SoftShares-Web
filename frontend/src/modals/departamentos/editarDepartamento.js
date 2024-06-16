@@ -94,9 +94,9 @@ const EditDepartamento = ({ open, onClose, departamentoId, setAlertOpen, setAler
 
             if (response.status === 200) {
                 console.log('Departamento atualizado com sucesso');
+                onClose();
                 setAlertProps({ title: 'Sucesso', label: `Departamento ${descricaoPT} editado com sucesso.`, severity: 'success' });
                 setAlertOpen(true);
-                onClose();
             }
         } catch (error) {
             console.error('Erro ao atualizar departamento:', error);

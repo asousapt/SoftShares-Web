@@ -147,11 +147,20 @@ const EditarPolo = ({ open, onClose, poloId, setAlertOpen, setAlertProps }) => {
         return re.test(String(email).toLowerCase());
     };
 
+    const validateTelefone = (telefone) => {
+        const re = /^232\d{6}$/;
+        return re.test(telefone);
+    };
+
     const validateForm = () => {
         let errors = {};
 
         if (!validateEmail(email)) {
             errors.emailError = true;
+        }
+
+        if (!validateTelefone(telefone)) {
+            errors.telefoneError = true;
         }
 
         if (!descricao) {
@@ -160,10 +169,6 @@ const EditarPolo = ({ open, onClose, poloId, setAlertOpen, setAlertProps }) => {
 
         if (!morada) {
             errors.moradaError = true;
-        }
-
-        if (!telefone) {
-            errors.telefoneError = true;
         }
 
         if (!responsavel) {

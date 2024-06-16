@@ -8,11 +8,10 @@ import Header from '../components/header/header';
 import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
 import StateChanger from '../components/stateChanger/stateChanger';
-import ComboFilter from '../components/combobox/comboFilter';
+import Alert from '../components/alerts/alert';
 /* FIM COMPONENTES */
 import NovoPolo from '../modals/polos/novoPolo';
 import EditarPolo from '../modals/polos/editarPolo';
-import Alert from '../components/alerts/alert';
 
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},

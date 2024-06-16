@@ -8,12 +8,18 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import SubmitButton from '../../components/buttons/submitButton';
 import CancelButton from '../../components/buttons/cancelButton';
 
-const EditarAlerta = ({ open, onClose, alertaid }) => {
+const EditarAlerta = ({ open, onClose, alertaid, setAlertOpen, setAlertProps }) => {
+    //VARS
+    //FIELDS
     const [descricao, setDescricao] = useState('');
     const [polo, setPolo] = useState('');
     const [inactivo, setInactivo] = useState(false);
     const [opcoesPolo, setOpcoesPolo] = useState([]);
     const [error, setError] = useState(null);
+
+    //ERRORS
+    const [descError, setDescError] = useState(false);
+    const [poloError, setPoloError] = useState(false);
 
     useEffect(() => {
         const fetchPolos = async () => {
@@ -60,9 +66,32 @@ const EditarAlerta = ({ open, onClose, alertaid }) => {
             fetchAlertData();
             fetchPolos();
         }
-    }, [alertaid]);
+    }, [alertaid, open]);
+
+    const validateForm = () => {
+        let errors = {};
+
+        if (!descricao) {
+            errors.descError = true;
+        }
+
+        if (!polo) {
+            errors.poloError = true;
+        }
+
+        return errors;
+    };
 
     const handleEditEvent = async () => {
+        const errors = validateForm();
+
+        setDescError(errors.descError || false);
+        setPoloError(errors.poloError || false);
+
+        if (Object.keys(errors).length > 0) {
+            return;
+        }
+
         try {
             const token = 'tokenFixo';
             await axios.put(`http://localhost:8000/alerta/update/${alertaid}`, {
@@ -75,8 +104,12 @@ const EditarAlerta = ({ open, onClose, alertaid }) => {
                 }
             });
             onClose();
+            setAlertProps({ title: 'Sucesso', label: `Alerta editado com sucesso.`, severity: 'success' });
+            setAlertOpen(true);
         } catch (error) {
             console.error('Erro ao editar alerta:', error);
+            setAlertProps({ title: 'Erro', label: `Ocorreu um erro ao editar o alerta.`, severity: 'error' });
+            setAlertOpen(true);
         }
     };
 
@@ -84,15 +117,22 @@ const EditarAlerta = ({ open, onClose, alertaid }) => {
         setInactivo(event.target.checked);
     };
 
+    const handleCancel = () => {
+        setDescError(false);
+        setPoloError(false);
+        onClose();
+    };
+
     return (
-        <Modal open={open} onClose={onClose}>
+        <Modal open={open} onClose={handleCancel}>
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '800px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px' }}>
                 <h2 style={{ marginTop: 0, color: 'white' }}>Editar Alerta</h2>
                 <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 20, borderRadius: 12 }}>
                     <div style={{ marginBottom: 15 }}>
                         <div style={{ display: 'flex', marginBottom: 20 }}>
                             <div style={{ width: '75%' }}>
-                                <ComboBox caption='Polo' options={opcoesPolo} value={polo} handleChange={(e) => setPolo(e.target.value)} position="start" />
+                                <ComboBox caption='Polo' options={opcoesPolo} value={polo} handleChange={(e) => { setPolo(e.target.value); setPoloError(false); }} error={poloError}
+                                    helperText={poloError ? "Selecione um polo" : ""} />
                             </div>
                             <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
                                 <FormControlLabel
@@ -101,10 +141,11 @@ const EditarAlerta = ({ open, onClose, alertaid }) => {
                                 />
                             </div>
                         </div>
-                        <BasicTextField caption='Descrição' valor={descricao} onchange={(e) => setDescricao(e.target.value)} fullwidth={true} />
+                        <BasicTextField caption='Descrição' valor={descricao} onchange={(e) => setDescricao(e.target.value)} fullwidth={true} type="text" error={descError}
+                                helperText={descError ? "Introduza uma descrição válida" : ""} />
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
-                        <CancelButton onclick={() => { onClose(); }} caption='Cancelar' />
+                        <CancelButton onclick={handleCancel} caption='Cancelar' />
                         <SubmitButton onclick={handleEditEvent} caption='Guardar' />
                     </div>
                 </div>

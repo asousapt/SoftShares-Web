@@ -9,6 +9,7 @@ import Header from '../components/header/header';
 import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
 import StateChanger from '../components/stateChanger/stateChanger';
+import Alert from '../components/alerts/alert';
 /* FIM COMPONENTES */
 import NovoAlerta from '../modals/alertas/novoAlerta';
 import EditarAlerta from '../modals/alertas/editarAlerta';
@@ -27,6 +28,8 @@ export default function ConfigAlertas() {
     const [filtroCombo, setFiltroCombo] = useState('Todos');
     const [tableRows, setTableRows] = useState([]);
     const [error, setError] = useState(null);
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
@@ -103,8 +106,9 @@ export default function ConfigAlertas() {
                     <DataTable rows={tableRows || []} columns={tableColumns}/>
                 </div>
             </div>
-            <NovoAlerta open={isNewModalOpen} onClose={() => setNewModalOpen(false)}/>
-            <EditarAlerta open={isEditModalOpen} onClose={() => setEditModalOpen(false)} alertaid={selectedAlertaId} />
+            <NovoAlerta open={isNewModalOpen} onClose={() => setNewModalOpen(false)} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
+            <EditarAlerta open={isEditModalOpen} onClose={() => setEditModalOpen(false)} alertaid={selectedAlertaId} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
+            <Alert open={alertOpen} setOpen={setAlertOpen} title={alertProps.title} label={alertProps.label} severity={alertProps.severity} />
         </div>
     )
 }

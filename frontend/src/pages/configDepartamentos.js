@@ -9,10 +9,10 @@ import Header from '../components/header/header';
 import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
 import StateChanger from '../components/stateChanger/stateChanger';
+import Alert from '../components/alerts/alert';
 /* FIM COMPONENTES */
 import NovoDepartamento from '../modals/departamentos/novoDepartamento';
 import EditDepartamento from '../modals/departamentos/editarDepartamento';
-import Alert from '../components/alerts/alert';
 
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},

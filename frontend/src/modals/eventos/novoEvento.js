@@ -9,8 +9,6 @@ import ImageTable from '../../components/tables/imageTable';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 
-const imgs = [];
-
 const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
     //VARS
     //FIELDS
@@ -32,6 +30,7 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
     const [subcategoria, setSubcategoria] = useState(null);
     const [opcoesFiltroSubcat, setOpcoesSubcat] = useState([]);
     const [error, setError] = useState(null);
+    const [images, setImages] = useState([]);
 
     //ERRORS
     const [titleError, setTitleError] = useState(false);
@@ -220,6 +219,12 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
         }
 
         try {
+            const imagesRtn = images.map(image => ({
+                nome: image.alt,
+                base64: image.src,
+                tamanho: image.size
+            }));
+
             const userid = sessionStorage.getItem('userid');
             const token = sessionStorage.getItem('token');
             const novoEvento = {
@@ -236,6 +241,7 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
                 utilizadorCriou: userid,
                 subcategoriaId: subcategoria ? subcategoria.value : '',
                 poloId: polo ? polo.value : '',
+                imagens: imagesRtn
             };
             await axios.post('http://localhost:8000/evento/add', novoEvento, {
                 headers: {
@@ -254,6 +260,47 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
         }
     };
 
+    const handleImage = async () => {
+        try {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*'; 
+    
+            fileInput.addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                if (!file) return; 
+                const fileName = file.name;
+                const fileSize = file.size;
+                
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+        
+                reader.onload = async () => {
+                    const imageData = reader.result;
+                    console.log('reader',reader);
+                    const fileData = imageData;
+                    const image = {
+                        src: fileData,
+                        alt: fileName,
+                        size: fileSize
+                    }
+                    setImages(prevImages => [...prevImages, image]);
+                };
+            });
+            fileInput.click();
+        } catch (error) {
+            console.error('Error uploading image:', error.message);
+        }
+    };
+
+    const resetImage = async (index) => {
+        setImages(prevImages => {
+            const newImages = [...prevImages];
+            newImages.splice(index, 1);
+            return newImages;
+        });
+    }
+
     const resetForm = () => {
         setTitle('');
         setDescription('');
@@ -267,6 +314,7 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
         setCategoria(null);
         setSubcategoria(null);
         setPolo(null);
+        setImages([]);
     };
 
     const handleCancel = () => {
@@ -366,7 +414,9 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
                                     fullWidth={true} />
                             </div>
                         </div>
-                        <ImageTable images={imgs} styleProp={{ paddingTop: 10 }} />
+                        <div style={{marginTop: 20}}>
+                            <ImageTable images={images} onAddImage={handleImage} onDelete={resetImage}/>
+                        </div>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
                         <CancelButton onclick={handleCancel} caption='Cancelar' />

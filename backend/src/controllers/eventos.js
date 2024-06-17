@@ -1,12 +1,27 @@
 const { Sequelize, Op, QueryTypes } = require('sequelize');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
-const subcategoria = require('../models/subcategoria');
 const models = initModels(sequelizeConn);
+const ficheirosController = require('./ficheiros');
 
 const controladorEventos = {
     adicionarEvento: async (req, res) => {
-        const { titulo, descricao, dataInicio, dataFim, dataLimInscricao, nmrMaxParticipantes, localizacao, latitude, longitude, cidadeID, utilizadorCriou, subcategoriaId, poloId } = req.body;
+        const { 
+            titulo, 
+            descricao, 
+            dataInicio, 
+            dataFim, 
+            dataLimInscricao, 
+            nmrMaxParticipantes, 
+            localizacao, 
+            latitude, 
+            longitude, 
+            cidadeID, 
+            utilizadorCriou, 
+            subcategoriaId, 
+            poloId,
+            imagens
+        } = req.body;
 
         try {
             const evento = await models.evento.create({
@@ -22,13 +37,15 @@ const controladorEventos = {
                 cidadeid: cidadeID,
                 utilizadorcriou: utilizadorCriou,
                 subcategoriaid: subcategoriaId,
-                poloid: poloId
+                poloid: poloId,
             });
 
             await models.objecto.create({
                 registoid: evento.eventoid,
                 entidade: 'EVENTO'
             });
+
+            ficheirosController.adicionar(evento.eventoid, 'EVENTO', imagens, utilizadorCriou);
 
             res.status(201).json({ message: 'Evento adicionado com sucesso' });
         } catch (error) {
@@ -54,8 +71,22 @@ const controladorEventos = {
 
     atualizarEvento: async (req, res) => {
         const { idEvento } = req.params;
-        const { titulo, descricao, dataInicio, dataFim, dataLimInscricao, nmrMaxParticipantes, localizacao, latitude, longitude, cidadeID, subcategoriaId, poloId } = req.body;
-        console.log(req.body);
+        const { 
+            titulo, 
+            descricao, 
+            dataInicio, 
+            dataFim, 
+            dataLimInscricao, 
+            nmrMaxParticipantes, 
+            localizacao, 
+            latitude, 
+            longitude, 
+            cidadeID, 
+            subcategoriaId, 
+            poloId,
+            utilizadorid,
+            imagens
+        } = req.body;
         
         try {
             await models.evento.update({
@@ -76,6 +107,9 @@ const controladorEventos = {
                     eventoid: idEvento
                 }
             });
+
+            await ficheirosController.removerTodosFicheirosAlbum(idEvento, 'EVENTO');
+            ficheirosController.adicionar(idEvento, 'EVENTO', imagens, utilizadorid);
 
             res.status(200).json({ message: 'Evento atualizado com sucesso' });
         } catch (error) {
@@ -185,6 +219,10 @@ const controladorEventos = {
                     as: 'subcategoria'
                 }
             });
+
+            const ficheiros = await ficheirosController.getAllFilesByAlbum(idEvento, 'EVENTO');
+            evento.dataValues.imagens = ficheiros;
+
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: evento });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar o evento' });

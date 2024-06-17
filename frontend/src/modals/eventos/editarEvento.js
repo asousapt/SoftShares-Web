@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Modal from '@mui/material/Modal';
 import BasicTextField from '../../components/textFields/basic';
 import DataHora from '../../components/textFields/dataHora';
@@ -7,8 +8,7 @@ import ComboBox from '../../components/combobox/comboboxBasic';
 import CancelButton from '../../components/buttons/cancelButton';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import InputImage from '../../components/image/imageInput';
-import axios from 'axios';
+import ImageTable from '../../components/tables/imageTable';
 
 const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps  }) => {
     //VARS
@@ -27,11 +27,11 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
     const [poloId, setPolo] = useState('');
     const [polos, setPolos] = useState([]);
     const [error, setError] = useState(null);
-    const [image, setImage] = useState('https://i0.wp.com/ctmirror-images.s3.amazonaws.com/wp-content/uploads/2021/01/dummy-man-570x570-1.png?fit=570%2C570&ssl=1');
     const [opcoesCat, setOpcoesCat] = useState([]);
     const [categoria, setCategoria] = useState(null);
     const [opcoesSubcat, setOpcoesSubcat] = useState([]);
     const [subcategoria, setSubcategoria] = useState(null);
+    const [images, setImages] = useState([]);
 
     //ERRORS
     const [titleError, setTitleError] = useState(false);
@@ -46,6 +46,20 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
     const [dataHoraFimError, setDataHoraFimError] = useState(false);
     const [dataLimInscricaoError, setDataLimInscricaoError] = useState(false);
     const [numParticipantesError, setNumParticipantesError] = useState(false);
+
+    const getBase64FromUrl = async (url) => {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                resolve(reader.result);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    };
 
     const fetchCategorias = async () => {
         try {
@@ -179,42 +193,54 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
     };
 
     const fetchEventData = async () => {
-            try {
-                const token = sessionStorage.getItem('token');
-                const response = await axios.get(`http://localhost:8000/evento/${eventData}`, {
-                    headers: { Authorization: `${token}` }
-                });
-                const userData = response.data.data;
-                console.log(userData);
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get(`http://localhost:8000/evento/${eventData}`, {
+                headers: { Authorization: `${token}` }
+            });
+            const userData = response.data.data;
+            console.log(userData);
 
-                setTitle(userData.titulo);
-                setLocalizacao(userData.localizacao);
-                setDescription(userData.descricao);
-                setNumParticipantes(userData.nmrmaxparticipantes);
-                setDataHoraInicio(dataFormatada(userData.datainicio));
-                setDataHoraFim(dataFormatada(userData.datafim));
-                setDataLimInscricao(dataFormatada(userData.dataliminscricao));
-                setPolo(userData.poloid);
+            setTitle(userData.titulo);
+            setLocalizacao(userData.localizacao);
+            setDescription(userData.descricao);
+            setNumParticipantes(userData.nmrmaxparticipantes);
+            setDataHoraInicio(dataFormatada(userData.datainicio));
+            setDataHoraFim(dataFormatada(userData.datafim));
+            setDataLimInscricao(dataFormatada(userData.dataliminscricao));
+            setPolo(userData.poloid);
 
-                const distrito = await fetchDistritoByCidadeId(userData.cidadeid);
-                setDistrito(distrito);
-                fetchCidades(distrito.value, userData.cidadeid);
-                
-                const catResponse = await axios.get(`http://localhost:8000/categoria/${userData.subcategoria.categoriaid}`, {
-                    headers: { Authorization: `${token}` }
-                });
-                const cat = catResponse.data;
-                setCategoria({value: userData.subcategoria.categoriaid, label: cat.valorpt});
-                fetchSubcategoria(userData.subcategoria.categoriaid);
-    
-                const subcatResponse = await axios.get(`http://localhost:8000/subcategoria/${userData.subcategoriaid}`, {
-                    headers: { Authorization: `${token}` }
-                });
-                const subcat = subcatResponse.data;
-                setSubcategoria({value: userData.subcategoriaid, label: subcat.valorpt});
-            } catch (error) {
-                console.error('Erro ao buscar dados do evento:', error);
-            }
+            const distrito = await fetchDistritoByCidadeId(userData.cidadeid);
+            setDistrito(distrito);
+            fetchCidades(distrito.value, userData.cidadeid);
+            
+            const catResponse = await axios.get(`http://localhost:8000/categoria/${userData.subcategoria.categoriaid}`, {
+                headers: { Authorization: `${token}` }
+            });
+            const cat = catResponse.data;
+            setCategoria({value: userData.subcategoria.categoriaid, label: cat.valorpt});
+            fetchSubcategoria(userData.subcategoria.categoriaid);
+
+            const subcatResponse = await axios.get(`http://localhost:8000/subcategoria/${userData.subcategoriaid}`, {
+                headers: { Authorization: `${token}` }
+            });
+            const subcat = subcatResponse.data;
+            setSubcategoria({value: userData.subcategoriaid, label: subcat.valorpt});
+
+            const transformedImages = await Promise.all(
+                userData.imagens.map(async (imagem) => {
+                    const base64String = await getBase64FromUrl(imagem.url);
+                    return {
+                        src: base64String,
+                        alt: imagem.name,
+                        size: imagem.size,
+                    };
+                })
+            );
+            setImages(transformedImages);
+        } catch (error) {
+            console.error('Erro ao buscar dados do evento:', error);
+        }
     };
 
     useEffect(() => {
@@ -287,6 +313,13 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
         }
 
         try {
+            const imagesRtn = images.map(image => ({
+                nome: image.alt,
+                base64: image.src,
+                tamanho: image.size
+            }));
+
+            const userid = sessionStorage.getItem('userid');
             const token = sessionStorage.getItem('token');
             const eventoEditado = {
                 titulo,
@@ -301,6 +334,8 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
                 cidadeID: cidadeID.value,
                 subcategoriaId: subcategoria.value,
                 poloId,
+                utilizadorid: userid,
+                imagens: imagesRtn
             };
             console.log('edit:', eventoEditado);
             await axios.put(`http://localhost:8000/evento/update/${eventData}`, eventoEditado, {
@@ -339,8 +374,51 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
         setDataHoraFimError(false);
         setDataLimInscricaoError(false);
         setNumParticipantesError(false);
+        setImages([]);
         onClose();
     };
+
+    const handleImage = async () => {
+        try {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*'; 
+    
+            fileInput.addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                if (!file) return; 
+                console.log(file);
+                const fileName = file.name;
+                const fileSize = file.size;
+                
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+        
+                reader.onload = async () => {
+                    const imageData = reader.result;
+                    console.log('reader',reader);
+                    const fileData = imageData;
+                    const image = {
+                        src: fileData,
+                        alt: fileName,
+                        size: fileSize
+                    }
+                    setImages(prevImages => [...prevImages, image]);
+                };
+            });
+            fileInput.click();
+        } catch (error) {
+            console.error('Error uploading image:', error.message);
+        }
+    };
+
+    const resetImage = async (index) => {
+        setImages(prevImages => {
+            const newImages = [...prevImages];
+            newImages.splice(index, 1);
+            return newImages;
+        });
+    }
 
     return (
         <Modal open={open} onClose={handleCancel}>
@@ -419,8 +497,9 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
                                     fullWidth={true} />
                             </div>
                         </div>
-                        <div style={{ marginBottom: 20 }}></div>
-                        <InputImage image={image} />
+                        <div style={{marginTop: 20}}>
+                            <ImageTable images={images} onAddImage={handleImage} onDelete={resetImage}/>
+                        </div>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
                         <CancelButton onclick={handleCancel} caption='Cancelar' />

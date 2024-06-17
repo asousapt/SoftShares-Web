@@ -30,7 +30,6 @@ const LoginModal = ({ open, handleClose }) => {
   const handleLogin = async () => {
     try {
       const response = await axios.get(`http://localhost:8000/utilizadores/email/${email}`);
-      console.log(response);
 
       const utilizador = response.data.data;
       if (password !== utilizador.passwd){
@@ -46,6 +45,8 @@ const LoginModal = ({ open, handleClose }) => {
       sessionStorage.setItem('userid', utilizador.utilizadorid);
       sessionStorage.setItem('nome', utilizador.pnome+' '+utilizador.unome);
       
+      console.log(utilizador);
+
       const tokenResponse = await axios.get(`http://localhost:8000/utilizadores/token/${utilizador.utilizadorid}`);
       sessionStorage.setItem('token', tokenResponse.data);
       navigate('/dashboard');

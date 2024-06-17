@@ -13,6 +13,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     //VARS
     //FIELDS
     const [poloid, setPoloid] = useState('');
+    const [poloadmid, setPoloAdmid] = useState('');
     const [perfilid, setPerfilid] = useState('');
     const [pnome, setPnome] = useState('');
     const [unome, setUnome] = useState('');
@@ -36,6 +37,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     const [unomeError, setUnomeError] = useState(false);
     const [passError, setPassError] = useState(false);
     const [poloError, setPoloError] = useState(false);
+    const [poloAdmError, setPoloAdmError] = useState(false);
     const [perfilError, setPerfilError] = useState(false);
     const [departamentoError, setDepartamentoError] = useState(false);
     const [funcaoError, setFuncaoError] = useState(false);
@@ -161,6 +163,10 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
             errors.funcaoError = true;
         }
 
+        if (!poloadmid) {
+            errors.poloAdmError = true;
+        }
+
         return errors;
     };
 
@@ -174,6 +180,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         setPerfilError(errors.perfilError || false);
         setDepartamentoError(errors.departamentoError || false);
         setFuncaoError(errors.funcaoError || false);
+        setPoloAdmError(errors.poloAdmError || false);
 
         if (Object.keys(errors).length > 0) {
             return;
@@ -198,8 +205,12 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 funcaoid,
                 sobre,
                 inactivo,
-                imagem
+                imagem,
+                administrador_poloid: poloadmid
             };
+
+            console.log('newUser', newUser);
+
             await axios.post('http://localhost:8000/utilizadores/add', newUser, {
                 headers: {
                     'Authorization': `${token}`,
@@ -260,6 +271,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
 
     const resetForm = () => {
         setPoloid('');
+        setPoloAdmid('');
         setPerfilid('');
         setPnome('');
         setUnome('');
@@ -285,6 +297,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         setPerfilError(false);
         setDepartamentoError(false);
         setFuncaoError(false);
+        setPoloAdmError(false);
         onClose();
     };
     
@@ -311,17 +324,23 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                                         helperText={emailError ? "Introduza um e-mail válido" : ""} />
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
+                                    <div style={{ width: "50%" }}>
                                     <BasicTextField caption='Senha' valor={passwd} onchange={(e) => setPasswd(e.target.value)} fullwidth={true} type="password" error={passError}
                                         helperText={passError ? "Introduza uma password válida" : ""} />
-                                </div>
-                                <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
+                                    </div>
                                     <div style={{ width: "50%" }}>
                                         <ComboBox caption='Polo' options={polos} value={poloid} handleChange={(e) => { setPoloid(e.target.value); setPoloError(false); }} error={poloError}
                                             helperText={poloError ? "Selecione um polo válido" : ""} />
                                     </div>
+                                </div>
+                                <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <div style={{ width: "50%" }}>
                                         <ComboBox caption='Perfil' options={perfil} value={perfilid} handleChange={(e) => { setPerfilid(e.target.value); setPerfilError(false); }} error={perfilError}
                                             helperText={perfilError ? "Selecione um perfil válido" : ""} />
+                                    </div>
+                                    <div style={{ width: "50%" }}>
+                                        <ComboBox caption='Polo a Administrar' options={polos} value={poloadmid} handleChange={(e) => { setPoloAdmid(e.target.value); setPoloAdmError(false); }} error={poloAdmError}
+                                            helperText={poloAdmError ? "Selecione um polo válido" : ""} />
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>

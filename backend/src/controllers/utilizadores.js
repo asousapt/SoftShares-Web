@@ -7,6 +7,7 @@ const ficheirosController = require('./ficheiros');
 
 const controladorUtilizadores = {
     adicionar: async (req, res) => {
+        
         const {
             poloid,
             perfilid,
@@ -20,9 +21,10 @@ const controladorUtilizadores = {
             funcaoid,
             sobre,
             inactivo,
-            imagem
+            imagem,
+            administrador_poloid
         } = req.body;
-
+        
         try {
             const user = await models.utilizador.create({
                 poloid,
@@ -38,7 +40,7 @@ const controladorUtilizadores = {
                 sobre,
                 inactivo
             });
-
+            
             await models.destinatario.create({
                 itemdestinatario: user.utilizadorid,
                 tipo: 'UT'
@@ -48,6 +50,13 @@ const controladorUtilizadores = {
                 registoid: user.utilizadorid,
                 entidade: 'UTIL'
             });
+
+            await models.administrador_polo.create({
+                utilizadorid: user.utilizadorid,
+                poloid: administrador_poloid
+            });
+
+            console.log('depois ', user.utilizadorid);
 
             ficheirosController.adicionar(user.utilizadorid, 'UTIL', imagem, user.utilizadorid);
 
@@ -92,7 +101,7 @@ const controladorUtilizadores = {
                     utilizadorid: idUtilizador
                 }
             });
-            
+
             ficheirosController.removerTodosFicheirosAlbum(idUtilizador, 'UTIL');
             ficheirosController.adicionar(idUtilizador, 'UTIL', imagem, idUtilizador);
 
@@ -159,22 +168,28 @@ const controladorUtilizadores = {
 
     consultarPorEmail: async (req, res) => {
         const { email } = req.params;
-    
+
         try {
             const utilizador = await models.utilizador.findOne({
                 where: {
                     email: email
                 },
-                include: {
-                    model: models.perfil,
-                    as: 'perfil'
-                }
+                include: [
+                    {
+                        model: models.perfil,
+                        as: 'perfil'
+                    },
+                    {
+                        model: models.administrador_polo,
+                        as: 'administrador_polos',
+                        include: [{ model: models.polo, as: 'polo' }]
+                    }]
             });
-    
+
             if (!utilizador) {
                 return res.status(404).json({ error: 'Utilizador não encontrado' });
             }
-    
+
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: utilizador });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar utilizador', details: error.message });
@@ -226,13 +241,13 @@ const controladorUtilizadores = {
                     pol.descricao`,
                 { type: QueryTypes.SELECT }
             );
-    
+
             // atribuir cores aos polos
             const colors = ['#7cb342', '#ffca28', '#ff7043', '#ab47bc', '#42a5f5', '#66bb6a', '#26a69a', '#ef5350', '#ec407a', '#ab47bc'];
             totalPorPolo.forEach((item, index) => {
                 item.color = colors[index % colors.length];
             });
-    
+
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: totalPorPolo });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar utilizadores por polo', details: error.message });
@@ -278,10 +293,10 @@ const controladorUtilizadores = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
         }
-    },  
+    },
 
     novoToken: async (req, res) => {
-        const { id} = req.params;
+        const { id } = req.params;
         try {
             const utilizador = await models.utilizador.findByPk(id);
 
@@ -290,7 +305,7 @@ const controladorUtilizadores = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
         }
-    },    
+    },
 };
 
 module.exports = controladorUtilizadores;

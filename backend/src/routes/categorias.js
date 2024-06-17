@@ -14,6 +14,7 @@ router.delete('/delete/:idCat', authenticate, categoriasControlador.remover);
 
 //ROUTES GET
 router.get('/', authenticate, categoriasControlador.consultarTudo);
+router.get('/mobile/', authenticate, categoriasControlador.consultarTudoMobile);
 router.get('/filtro', authenticate, categoriasControlador.consultarTudoComFiltroPT);
 router.get('/:idCat', authenticate, categoriasControlador.consultarPorID);
 

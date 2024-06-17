@@ -284,6 +284,37 @@ const controladorCategorias = {
         }
     },
 
+    consultarTudoMobile: async (req, res) => {
+        try {
+            const categorias = await sequelizeConn.query(
+                `SELECT 
+                    c.categoriaid AS "categoriaId",
+                    c.cor AS "cor",
+                    c.icone AS "icone",
+                    t.valor AS "descricao",
+                    t.idiomaid AS "idiomaId"
+                FROM 
+                    categoria c 
+                INNER JOIN 
+                    chave ch ON c.categoriaid = ch.registoid AND ch.entidade = 'CATEGORIA'
+                INNER JOIN 
+                    traducao t ON t.chaveid = ch.chaveid
+                WHERE 
+                    c.inactivo = false
+                ORDER BY 
+                    c.categoriaid ASC, t.idiomaid ASC;
+                `,
+                {
+                    type: QueryTypes.SELECT
+                }
+            );
+            
+            res.status(200).json(categorias);
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar as categorias', details: error.message });
+        }
+    },
+
     consultarTudoComFiltroPT: async (req, res) => {
         const { estado, descricao } = req.query;
         try {

@@ -199,7 +199,6 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
                 imagens: imagesRtn,
                 utilizadorid: userid
             };
-            console.log(editarPublicacao);
             await axios.put('http://localhost:8000/thread/update/' + idPub, editarPublicacao, {
                 headers: {
                     Authorization: `${token}`,

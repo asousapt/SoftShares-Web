@@ -111,7 +111,7 @@ const AddPublicacao = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 base64: image.src,
                 tamanho: image.size
             }));
-            
+
             const userid = sessionStorage.getItem('userid');
             const token = sessionStorage.getItem('token');
             const novaPublicacao = {
@@ -122,7 +122,6 @@ const AddPublicacao = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 idiomaid: 1,
                 imagens: imagesRtn
             };
-            console.log(novaPublicacao);
             await axios.post('http://localhost:8000/thread/add', novaPublicacao, {
                 headers: {
                     Authorization: `${token}`,
@@ -184,6 +183,7 @@ const AddPublicacao = ({ open, onClose, setAlertOpen, setAlertProps }) => {
             return newImages;
         });
     }
+
     const resetForm = () => {
         setTitle('');
         setDescription('');

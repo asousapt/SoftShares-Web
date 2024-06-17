@@ -2,10 +2,10 @@ const { Sequelize, Op, QueryTypes } = require('sequelize');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
+const ficheirosController = require('./ficheiros');
 
 const controladorPontosInteresse = {
     adicionar: async (req, res) => {
-        console.log('req.body', req.body);
         const {
             subcategoriaid,
             titulo,
@@ -15,7 +15,8 @@ const controladorPontosInteresse = {
             longitude,
             idiomaid,
             cidadeid,
-            utilizadorcriou
+            utilizadorcriou,
+            imagens
         } = req.body;
 
         try {
@@ -36,6 +37,8 @@ const controladorPontosInteresse = {
                 entidade: 'POI'
             });
 
+            ficheirosController.adicionar(pontointeresse.pontointeresseid, 'POI', imagens, utilizadorcriou);
+
             res.status(201).json({ message: 'Ponto de interesse adicionado com sucesso' });
         } catch (error) {
             console.error('Erro ao adicionar ponto de interesse', error);
@@ -45,7 +48,6 @@ const controladorPontosInteresse = {
 
     atualizar: async (req, res) => {
         const { idPontoInteresse } = req.params;
-        console.log('idPontoInteresse', idPontoInteresse);
         const {
             subcategoriaid,
             titulo,
@@ -55,7 +57,8 @@ const controladorPontosInteresse = {
             longitude,
             idiomaid,
             cidadeid,
-            utilizadorcriou
+            utilizadorid,
+            imagens
         } = req.body;
 
         try {
@@ -67,13 +70,15 @@ const controladorPontosInteresse = {
                 latitude: latitude,
                 longitude: longitude,
                 idiomaid: idiomaid,
-                cidadeid: cidadeid,
-                utilizadorcriou: utilizadorcriou
+                cidadeid: cidadeid
             }, {
                 where: {
                     pontointeresseid: idPontoInteresse
                 }
             });
+
+            await ficheirosController.removerTodosFicheirosAlbum(idPontoInteresse, 'POI');
+            ficheirosController.adicionar(idPontoInteresse, 'POI', imagens, utilizadorid);
 
             res.status(200).json({ message: 'Ponto de interesse atualizado com sucesso' });
         } catch (error) {
@@ -160,9 +165,8 @@ const controladorPontosInteresse = {
 
     consultarPorID: async (req, res) => {
         const { idPontoInteresse } = req.params;
-        console.log('idPontoInteresse', idPontoInteresse);
         try {
-            const evento = await models.pontointeresse.findByPk(idPontoInteresse, {
+            const POI = await models.pontointeresse.findByPk(idPontoInteresse, {
                 include: [
                     {
                         model: models.utilizador,
@@ -174,7 +178,11 @@ const controladorPontosInteresse = {
                     }
                 ]
             });
-            res.status(200).json({ message: 'Consulta realizada com sucesso', data: evento });
+
+            const ficheiros = await ficheirosController.getAllFilesByAlbum(idPontoInteresse, 'POI');
+            POI.dataValues.imagens = ficheiros;
+
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: POI });
         } catch (error) {
             console.error('Erro ao adicionar ponto de interesse', error);
             res.status(500).json({ error: 'Erro ao consultar o evento' });

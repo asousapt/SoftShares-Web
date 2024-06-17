@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Modal from '@mui/material/Modal';
 import BasicTextField from '../../components/textFields/basic';
 import SubmitButton from '../../components/buttons/submitButton';
 import CancelButton from '../../components/buttons/cancelButton';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import InputImage from '../../components/image/imageInput';
-import axios from 'axios';
+import ImageTable from '../../components/tables/imageTable';
 
 const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps }) => {
     //VARS
@@ -19,7 +19,7 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
     const [distrito, setDistrito] = useState(null);
     const [distritos, setDistritos] = useState([]);
     const [error, setError] = useState(null);
-    const [image, setImage] = useState('https://i0.wp.com/ctmirror-images.s3.amazonaws.com/wp-content/uploads/2021/01/dummy-man-570x570-1.png?fit=570%2C570&ssl=1');
+    const [images, setImages] = useState([]);
     const [opcoesCat, setOpcoesCat] = useState([]);
     const [categoria, setCategoria] = useState(null);
     const [opcoesSubcat, setOpcoesSubcat] = useState([]);
@@ -33,6 +33,20 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
     const [distritoError, setDistritoError] = useState(false);
     const [categoriaError, setCategoriaError] = useState(false);
     const [subcategoriaError, setSubcategoriaError] = useState(false);
+
+    const getBase64FromUrl = async (url) => {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                resolve(reader.result);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    };
 
     const validateForm = () => {
         let errors = {};
@@ -210,8 +224,19 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
 
             setCategoria({ value: subcat.categoriaid, label: cat.valorpt });
             fetchSubcategoria(subcat.categoriaid);
-
             setSubcategoria({ value: userData.subcategoriaid, label: subcat.valorpt });
+
+            const transformedImages = await Promise.all(
+                userData.imagens.map(async (imagem) => {
+                    const base64String = await getBase64FromUrl(imagem.url);
+                    return {
+                        src: base64String,
+                        alt: imagem.name,
+                        size: imagem.size,
+                    };
+                })
+            );
+            setImages(transformedImages);
         } catch (error) {
             console.error('Erro ao receber dados do Ponto de Interesse:', error);
         }
@@ -239,8 +264,15 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
         }
 
         try {
+            const imagesRtn = images.map(image => ({
+                nome: image.alt,
+                base64: image.src,
+                tamanho: image.size
+            }));
+
+            const userid = sessionStorage.getItem('userid');
             const token = sessionStorage.getItem('token');
-            const eventoEditado = {
+            const poiEditado = {
                 titulo: titulo,
                 descricao: descricao,
                 localizacao: localizacao,
@@ -248,9 +280,11 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
                 longitude: 0,
                 cidadeid: cidadeID.value,
                 subcategoriaid: subcategoria.value,
+                imagens: imagesRtn,
+                utilizadorid: userid
             };
 
-            await axios.put(`http://localhost:8000/pontoInteresse/update/${eventData}`, eventoEditado, {
+            await axios.put(`http://localhost:8000/pontoInteresse/update/${eventData}`, poiEditado, {
                 headers: {
                     Authorization: `${token}`,
                     'Content-Type': 'application/json',
@@ -274,8 +308,50 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
         setDistritoError(false);
         setCategoriaError(false);
         setSubcategoriaError(false);
+        setImages([]);
         onClose();
     };
+
+    const handleImage = async () => {
+        try {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*'; 
+    
+            fileInput.addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                if (!file) return; 
+                console.log(file);
+                const fileName = file.name;
+                const fileSize = file.size;
+                
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+        
+                reader.onload = async () => {
+                    const imageData = reader.result;
+                    const fileData = imageData;
+                    const image = {
+                        src: fileData,
+                        alt: fileName,
+                        size: fileSize
+                    }
+                    setImages(prevImages => [...prevImages, image]);
+                };
+            });
+            fileInput.click();
+        } catch (error) {
+            console.error('Error uploading image:', error.message);
+        }
+    };
+
+    const resetImage = async (index) => {
+        setImages(prevImages => {
+            const newImages = [...prevImages];
+            newImages.splice(index, 1);
+            return newImages;
+        });
+    }
 
     return (
         <Modal open={open} onClose={handleCancel}>
@@ -331,8 +407,9 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
                                     fullWidth={true} />
                             </div>
                         </div>
-                        <div style={{ marginBottom: 20 }}></div>
-                        <InputImage image={image} />
+                        <div style={{ marginTop: 20 }}>
+                            <ImageTable images={images} onAddImage={handleImage} onDelete={resetImage}/>
+                        </div>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
                         <CancelButton onclick={handleCancel} caption='Cancelar' />

@@ -12,7 +12,7 @@ const ImageTable = ({ images, onAddImage, styleProp, onDelete }) => {
                         <img key={index} src={image.src} alt={image.alt} style={{ width: 'auto', height: '200px', marginRight: '10px' }} />
                         <ImageListItemBar style={{borderRadius: 15, backgroundColor: 'transparent'}}
                             actionIcon={
-                                <IconButton sx={{  color: 'rgba(255, 255, 255, 1)' }} onClick={onDelete} >
+                                <IconButton sx={{  color: 'rgba(255, 255, 255, 1)' }} onClick={() => {onDelete(index);}} >
                                     <DeleteIcon />
                                 </IconButton>
                             }

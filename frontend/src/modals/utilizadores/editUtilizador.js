@@ -10,7 +10,9 @@ import CancelButton from '../../components/buttons/cancelButton';
 import InputImage from '../../components/image/imageInput';
 
 const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) => {
-    console.log('id ver utilizador', userId);
+    // console.log('id ver utilizador', userId);
+    //VARS
+    //FIELDS
     const [poloid, setPoloid] = useState('');
     const [perfilid, setPerfilid] = useState('');
     const [pnome, setPnome] = useState('');
@@ -28,6 +30,16 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
     const [image, setImage] = useState('');
     const [imageName, setImageName] = useState('');
     const [imageSize, setImageSize] = useState(0);
+
+    //ERRORS
+    const [emailError, setEmailError] = useState(false);
+    const [pnomeError, setPnomeError] = useState(false);
+    const [unomeError, setUnomeError] = useState(false);
+    const [passError, setPassError] = useState(false);
+    const [poloError, setPoloError] = useState(false);
+    const [perfilError, setPerfilError] = useState(false);
+    const [departamentoError, setDepartamentoError] = useState(false);
+    const [funcaoError, setFuncaoError] = useState(false);
 
     const getBase64FromUrl = async (url) => {
         const response = await fetch(url);
@@ -50,7 +62,6 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
                 headers: { Authorization: `${token}` }
             });
             const userData = response.data.data;
-            console.log('userData',userData);
 
             setPoloid(userData.poloid);
             setPerfilid(userData.perfilid);
@@ -62,10 +73,16 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
             setPasswd(userData.passwd);
             setSobre(userData.sobre);
             setInactivo(userData.inactivo);
-            const base64String = await getBase64FromUrl(userData.imagem.url);
-            setImage(base64String);
-            setImageName(userData.imagem.name);
-            setImageSize(userData.imagem.size);
+            if (userData.imagem.url === '' || userData.imagem.url === null) {
+                setImageName('');
+                setImageSize(0);
+                setImage('');
+            } else {
+                const base64String = await getBase64FromUrl(userData.imagem.url);
+                setImage(base64String);
+                setImageName(userData.imagem.name);
+                setImageSize(userData.imagem.size);
+            }
         } catch (error) {
             console.error('Erro ao buscar dados do utilizador:', error);
         }
@@ -159,7 +176,64 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
         fetchDepartamentos();
     }, []);
 
+    const validateEmail = (email) => {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(String(email).toLowerCase());
+    };
+
+    const validateForm = () => {
+        let errors = {};
+
+        if (!validateEmail(email)) {
+            errors.emailError = true;
+        }
+
+        if (!pnome) {
+            errors.pnomeError = true;
+        }
+
+        if (!unome) {
+            errors.unomeError = true;
+        }
+
+        if (!passwd) {
+            errors.passError = true;
+        }
+
+        if (!poloid) {
+            errors.poloError = true;
+        }
+
+        if (!perfilid) {
+            errors.perfilError = true;
+        }
+
+        if (!departamentoid) {
+            errors.departamentoError = true;
+        }
+
+        if (!funcaoid) {
+            errors.funcaoError = true;
+        }
+
+        return errors;
+    };
+
     const handleEditUser = async () => {
+        const errors = validateForm();
+        setEmailError(errors.emailError || false);
+        setPnomeError(errors.pnomeError || false);
+        setUnomeError(errors.unomeError || false);
+        setPassError(errors.passError || false);
+        setPoloError(errors.poloError || false);
+        setPerfilError(errors.perfilError || false);
+        setDepartamentoError(errors.departamentoError || false);
+        setFuncaoError(errors.funcaoError || false);
+
+        if (Object.keys(errors).length > 0) {
+            return;
+        }
+
         try {
             const token = sessionStorage.getItem('token');
             const imagem = [{
@@ -234,8 +308,20 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
         setImage('');
     }
 
+    const handleCancel = () => {
+        setEmailError(false);
+        setPnomeError(false);
+        setUnomeError(false);
+        setPassError(false);
+        setPoloError(false);
+        setPerfilError(false);
+        setDepartamentoError(false);
+        setFuncaoError(false);
+        onClose();
+    };
+
     return (
-        <Modal open={open} onClose={onClose}>
+        <Modal open={open} onClose={handleCancel}>
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px', overflow: 'auto' }}>
                 <h2 style={{ marginTop: 0, color: 'white' }}>Editar Utilizador</h2>
                 <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 20, borderRadius: 12 }}>
@@ -244,32 +330,40 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
                             <div style={{ marginBottom: 15 }}>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <div style={{ width: "50%" }}>
-                                        <BasicTextField caption='Primeiro Nome' valor={pnome} onchange={(e) => setPnome(e.target.value)} fullwidth={true} />
+                                        <BasicTextField caption='Primeiro Nome' valor={pnome} onchange={(e) => setPnome(e.target.value)} fullwidth={true} error={pnomeError}
+                                            helperText={pnomeError ? "Introduza um nome válido" : ""} />
                                     </div>
                                     <div style={{ width: "50%" }}>
-                                        <BasicTextField caption='Último Nome' valor={unome} onchange={(e) => setUnome(e.target.value)} fullwidth={true} />
-                                    </div>
-                                </div>
-                                <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
-                                    <BasicTextField caption='Email' valor={email} onchange={(e) => setEmail(e.target.value)} fullwidth={true} />
-                                </div>
-                                <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
-                                    <BasicTextField caption='Senha' valor={passwd} onchange={(e) => setPasswd(e.target.value)} fullwidth={true} type="password" />
-                                </div>
-                                <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
-                                    <div style={{ width: "50%" }}>
-                                        <ComboBox caption='Polo' options={polos} value={poloid} handleChange={(e) => setPoloid(e.target.value)} />
-                                    </div>
-                                    <div style={{ width: "50%" }}>
-                                        <ComboBox caption='Perfil' options={perfil} value={perfilid} handleChange={(e) => setPerfilid(e.target.value)} />
+                                        <BasicTextField caption='Último Nome' valor={unome} onchange={(e) => setUnome(e.target.value)} fullwidth={true} type="text" error={unomeError}
+                                            helperText={unomeError ? "Introduza um nome válido" : ""} />
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
+                                    <BasicTextField caption='Email' valor={email} onchange={(e) => setEmail(e.target.value)} fullwidth={true} type="email" error={emailError}
+                                        helperText={emailError ? "Introduza um e-mail válido" : ""} />
+                                </div>
+                                <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
+                                    <BasicTextField caption='Senha' valor={passwd} onchange={(e) => setPasswd(e.target.value)} fullwidth={true} type="password" error={passError}
+                                        helperText={passError ? "Introduza uma password válida" : ""} />
+                                </div>
+                                <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <div style={{ width: "50%" }}>
-                                        <ComboBox caption='Departamento' options={departamentos} value={departamentoid} handleChange={(e) => setDepartamentoid(e.target.value)} />
+                                        <ComboBox caption='Polo' options={polos} value={poloid} handleChange={(e) => { setPoloid(e.target.value); setPoloError(false); }} error={poloError}
+                                            helperText={poloError ? "Selecione um polo válido" : ""} />
                                     </div>
                                     <div style={{ width: "50%" }}>
-                                        <ComboBox caption='Função' options={funcao} value={funcaoid} handleChange={(e) => setFuncaoid(e.target.value)} />
+                                        <ComboBox caption='Perfil' options={perfil} value={perfilid} handleChange={(e) => { setPerfilid(e.target.value); setPerfilError(false); }} error={perfilError}
+                                            helperText={perfilError ? "Selecione um perfil válido" : ""} />
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
+                                    <div style={{ width: "50%" }}>
+                                        <ComboBox caption='Departamento' options={departamentos} value={departamentoid} handleChange={(e) => { setDepartamentoid(e.target.value); setDepartamentoError(false); }}
+                                            error={departamentoError} helperText={departamentoError ? "Selecione um departamento válido" : ""} />
+                                    </div>
+                                    <div style={{ width: "50%" }}>
+                                        <ComboBox caption='Função' options={funcao} value={funcaoid} handleChange={(e) => { setFuncaoid(e.target.value); setFuncaoError(false); }} error={funcaoError}
+                                            helperText={funcaoError ? "Selecione uma função válida" : ""} />
                                     </div>
                                 </div>
                             </div>
@@ -290,7 +384,7 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
                         </div>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
-                        <CancelButton onclick={onClose} caption='Cancelar' />
+                        <CancelButton onclick={handleCancel} caption='Cancelar' />
                         <SubmitButton onclick={handleEditUser} caption='Guardar' />
                     </div>
                 </div>

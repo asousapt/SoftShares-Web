@@ -1,12 +1,12 @@
 const { Sequelize, QueryTypes } = require('sequelize');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
-const utilizador = require('../models/utilizador');
 const models = initModels(sequelizeConn);
+const ficheirosController = require('./ficheiros');
 
 const controladorThread = {
     adicionar: async (req, res) => {
-        const { subcategoriaid, utilizadorid, titulo, mensagem, idiomaid } = req.body;
+        const { subcategoriaid, utilizadorid, titulo, mensagem, idiomaid, imagens } = req.body;
 
         try {
             const thread = await models.thread.create({
@@ -21,6 +21,8 @@ const controladorThread = {
                 registoid: thread.threadid,
                 entidade: 'THREAD'
             });
+            
+            ficheirosController.adicionar(thread.threadid, 'THREAD', imagens, utilizadorid);
 
             res.status(201).json({ message: 'Thread adicionada com sucesso', data: thread });
         } catch (error) {
@@ -30,7 +32,7 @@ const controladorThread = {
 
     atualizar: async (req, res) => {
         const { id } = req.params;
-        const { subcategoriaid, titulo, mensagem, inactivo } = req.body;
+        const { subcategoriaid, titulo, mensagem, inactivo, imagens, utilizadorid } = req.body;
 
         try {
             const thread = await models.thread.findByPk(id);
@@ -48,6 +50,9 @@ const controladorThread = {
                     threadid: id
                 }
             });
+
+            await ficheirosController.removerTodosFicheirosAlbum(id, 'THREAD');
+            ficheirosController.adicionar(id, 'THREAD', imagens, utilizadorid);
 
             res.status(200).json({ message: 'Thread atualizada com sucesso' });
         } catch (error) {
@@ -150,6 +155,9 @@ const controladorThread = {
                     type: QueryTypes.SELECT
                 }
             );
+
+            const ficheiros = await ficheirosController.getAllFilesByAlbum(id, 'THREAD');
+            threads[0].imagens = ficheiros;
 
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: threads });
         } catch (error) {

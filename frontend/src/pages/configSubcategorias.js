@@ -9,6 +9,7 @@ import Header from '../components/header/header';
 import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
 import StateChanger from '../components/stateChanger/stateChanger';
+import Alert from '../components/alerts/alert';
 /* FIM COMPONENTES */
 import NovaSubcategoria from '../modals/subcategorias/novaSubcategoria';
 import EditarSubcategoria from '../modals/subcategorias/editarSubcategoria';
@@ -29,6 +30,8 @@ export default function ConfigSubcategorias() {
     const [opcoesFiltroSubcat, setOpcoesSubcat] = useState([]);
     const [tableRows, setTableRows] = useState([]);
     const [error, setError] = useState('');
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
@@ -88,7 +91,9 @@ export default function ConfigSubcategorias() {
             });
             const subcategorias = response.data;
             
-            setTableRows(subcategorias.map((subcategoria) => ({
+            const sortedSucat = subcategorias.sort((a, b) => a.subcategoriaid - b.subcategoriaid);
+
+            setTableRows(sortedSucat.map((subcategoria) => ({
                 key: subcategoria.subcategoriaid,
                 id: subcategoria.subcategoriaid,
                 subcategoria: subcategoria.valorpt,
@@ -134,8 +139,9 @@ export default function ConfigSubcategorias() {
                     <DataTable rows={tableRows || []} columns={tableColumns}/>
                 </div>
             </div>
-            <NovaSubcategoria open={isNewModalOpen} onClose={() => setNewModalOpen(false)}/>
-            <EditarSubcategoria open={isEditModalOpen} onClose={() => setEditModalOpen(false)} subcategoriaId={selectedSubcategoriaId} />
+            <NovaSubcategoria open={isNewModalOpen} onClose={() => setNewModalOpen(false)} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
+            <EditarSubcategoria open={isEditModalOpen} onClose={() => setEditModalOpen(false)} subcategoriaId={selectedSubcategoriaId} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
+            <Alert open={alertOpen} setOpen={setAlertOpen} title={alertProps.title} label={alertProps.label} severity={alertProps.severity} />
         </div>
     )
 }

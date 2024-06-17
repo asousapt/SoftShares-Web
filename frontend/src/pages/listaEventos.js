@@ -8,6 +8,7 @@ import Header from '../components/header/header';
 import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
 import ComboFilter from '../components/combobox/comboFilter';
+import Alert from '../components/alerts/alert';
 /* FIM COMPONENTES */
 import NovoEvento from '../modals/eventos/novoEvento';
 import EditarEvento from '../modals/eventos/editarEvento';
@@ -28,6 +29,8 @@ export default function ListaEventos() {
     const [isEditModalOpen, setEditModalOpen] = useState(false);
     const [selectedEventoId, setSelectedEventoId] = useState(null);
     const [error, setError] = useState(null);
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
@@ -80,7 +83,9 @@ export default function ListaEventos() {
             });
             const eventos = response.data.data;
 
-            const eventosTable = eventos.map((evento) => {
+            const sortedEvent = eventos.sort((a, b) => a.eventoid - b.eventoid);
+
+            const eventosTable = sortedEvent.map((evento) => {
                 const totalParticipantes = evento.numinscritos + evento.numconvidados;
                 return {
                     key: evento.eventoid,
@@ -143,8 +148,9 @@ export default function ListaEventos() {
                     <DataTable rows={tableRows || []} columns={tableColumns} />
                 </div>
             </div>
-            <NovoEvento open={isNewModalOpen} onClose={() => setNewModalOpen(false)} />
-            {isEditModalOpen && (<EditarEvento open={isEditModalOpen} onClose={() => setEditModalOpen(false)} eventData={selectedEventoId}/>)}
+            <NovoEvento open={isNewModalOpen} onClose={() => setNewModalOpen(false)} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
+            {isEditModalOpen && (<EditarEvento open={isEditModalOpen} onClose={() => setEditModalOpen(false)} eventData={selectedEventoId} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />)}
+            <Alert open={alertOpen} setOpen={setAlertOpen} title={alertProps.title} label={alertProps.label} severity={alertProps.severity} />
         </div>
     );
 }

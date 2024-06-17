@@ -8,6 +8,7 @@ import Header from '../components/header/header';
 import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
 import ComboFilter from '../components/combobox/comboFilter';
+import Alert from '../components/alerts/alert';
 /* FIM COMPONENTES */
 import NovoPontoInt from '../modals/pontosInteresse/novoPontoInt';
 import EditPontoInt from '../modals/pontosInteresse/editPontoInt';
@@ -28,6 +29,8 @@ export default function ListaPontosInt() {
     const [isEditModalOpen, setEditModalOpen] = useState(false);
     const [selectedPontoIntId, setSelectedPontoIntId] = useState(null);
     const [error, setError] = useState(null);
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
@@ -78,9 +81,11 @@ export default function ListaPontosInt() {
                     descricao: filtroText
                 }
             });
-            const eventos = response.data.data;
+            const pontosInt = response.data.data;
 
-            const pontosInteresseTable = eventos.map((ponto) => ({
+            const sortedPint = pontosInt.sort((a, b) => a.pontointeresseid - b.pontointeresseid);
+
+            const pontosInteresseTable = sortedPint.map((ponto) => ({
                 key: ponto.pontointeresseid,
                 id: ponto.pontointeresseid,
                 titulo: ponto.titulo,
@@ -138,8 +143,9 @@ export default function ListaPontosInt() {
                     <DataTable rows={tableRows || []} columns={tableColumns}/>
                 </div>
             </div>
-            <NovoPontoInt open={isNewModalOpen} onClose={() => setNewModalOpen(false)}/>
-            {isEditModalOpen && (<EditPontoInt open={isEditModalOpen} onClose={() => setEditModalOpen(false)} eventData={selectedPontoIntId}/>)}
+            <NovoPontoInt open={isNewModalOpen} onClose={() => setNewModalOpen(false)} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
+            {isEditModalOpen && (<EditPontoInt open={isEditModalOpen} onClose={() => setEditModalOpen(false)} eventData={selectedPontoIntId} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps}/>)}
+            <Alert open={alertOpen} setOpen={setAlertOpen} title={alertProps.title} label={alertProps.label} severity={alertProps.severity} />
         </div>
     )
 }

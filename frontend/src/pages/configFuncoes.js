@@ -12,6 +12,7 @@ import StateChanger from '../components/stateChanger/stateChanger';
 /* FIM COMPONENTES */
 import NovaFuncao from '../modals/funcoes/novaFuncao';
 import EditFuncao from '../modals/funcoes/editarFuncao';
+import Alert from '../components/alerts/alert';
 
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},
@@ -27,6 +28,8 @@ export default function Configtilizadores() {
     const [filtroCombo, setFiltroCombo] = useState('Todos');
     const [tableRows, setTableRows] = useState([]);
     const [error, setError] = useState('');
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left'},
@@ -55,8 +58,10 @@ export default function Configtilizadores() {
                 }
             });
             const funcoes = response.data;
-            
-            setTableRows(funcoes.map((funcao) => ({
+
+            const sortedFunc = funcoes.sort((a, b) => a.funcaoid - b.funcaoid);
+
+            setTableRows(sortedFunc.map((funcao) => ({
                 key: funcao.funcaoid,
                 id: funcao.funcaoid,
                 descricao: funcao.valorpt,
@@ -105,8 +110,9 @@ export default function Configtilizadores() {
                     <DataTable rows={tableRows} columns={tableColumns}/>
                 </div>
             </div>
-            <NovaFuncao open={isNewModalOpen} onClose={() => setNewModalOpen(false)}/>
-            <EditFuncao open={isEditModalOpen} onClose={() => setEditModalOpen(false)} funcaoId={selectedFuncaoId} />
+            <NovaFuncao open={isNewModalOpen} onClose={() => setNewModalOpen(false)} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
+            <EditFuncao open={isEditModalOpen} onClose={() => setEditModalOpen(false)} funcaoId={selectedFuncaoId} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
+            <Alert open={alertOpen} setOpen={setAlertOpen} title={alertProps.title} label={alertProps.label} severity={alertProps.severity} />
         </div>
     )
 }

@@ -9,6 +9,7 @@ import Header from '../components/header/header';
 import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
 import StateChanger from '../components/stateChanger/stateChanger';
+import Alert from '../components/alerts/alert';
 /* FIM COMPONENTES */
 import NovoDepartamento from '../modals/departamentos/novoDepartamento';
 import EditDepartamento from '../modals/departamentos/editarDepartamento';
@@ -27,6 +28,8 @@ export default function Configtilizadores() {
     const [filtroCombo, setFiltroCombo] = useState('Todos');
     const [tableRows, setTableRows] = useState([]);
     const [error, setError] = useState('');
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left'},
@@ -56,7 +59,9 @@ export default function Configtilizadores() {
             });
             const departamentos = response.data;
 
-            setTableRows(departamentos.map((departamento) => ({
+            const sortedDepart = departamentos.sort((a, b) => a.departamentoid - b.departamentoid);
+
+            setTableRows(sortedDepart.map((departamento) => ({
                 key: departamento.departamentoid,
                 id: departamento.departamentoid,
                 descricao: departamento.valorpt,
@@ -77,16 +82,10 @@ export default function Configtilizadores() {
     }, [filtroCombo, filtroText]);
 
     useEffect(() => {
-        if(!isNewModalOpen){
+        if (!isNewModalOpen && !isEditModalOpen) {
             fetchData();
         }
-    }, [isNewModalOpen]);
-
-    useEffect(() => {
-        if(!isEditModalOpen){
-            fetchData();
-        }
-    }, [isEditModalOpen]);
+    }, [isNewModalOpen, isEditModalOpen]);
 
     if (error) {
         return <div>Error: {error.message}</div>;
@@ -105,8 +104,9 @@ export default function Configtilizadores() {
                     <DataTable rows={tableRows} columns={tableColumns} />
                 </div>
             </div>
-            <NovoDepartamento open={isNewModalOpen} onClose={() => setNewModalOpen(false)} />
-            <EditDepartamento open={isEditModalOpen} onClose={() => setEditModalOpen(false)} departamentoId={selectedDepartamentoId} />
+            <NovoDepartamento open={isNewModalOpen} onClose={() => setNewModalOpen(false)} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
+            <EditDepartamento open={isEditModalOpen} onClose={() => setEditModalOpen(false)} departamentoId={selectedDepartamentoId} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
+            <Alert open={alertOpen} setOpen={setAlertOpen} title={alertProps.title} label={alertProps.label} severity={alertProps.severity} />
         </div>
     );
 }

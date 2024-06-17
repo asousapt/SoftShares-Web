@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TextField } from '@mui/material';
 
-export default function DataHora({ caption, value, onChange, fullwidth = true, disabled = false }) {
+export default function DataHora({ caption, value, onChange, fullwidth = true, disabled = false, error = false, helperText = '' }) {
     const handleChange = (event) => {
         onChange(event.target.value);
         console.log(`${caption} value:`, event.target.value);
@@ -17,6 +17,7 @@ export default function DataHora({ caption, value, onChange, fullwidth = true, d
             label={caption}
             InputLabelProps={{ shrink: true }}
             disabled={disabled}
+            error={error} helperText={helperText}
         />
     );
 }

@@ -8,6 +8,7 @@ import Header from '../components/header/header';
 import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
 import ComboFilter from '../components/combobox/comboFilter';
+import Alert from '../components/alerts/alert';
 /* FIM COMPONENTES */
 import NovoForm from '../modals/formulario/novoFormulario';
 import EditForm from '../modals/formulario/editFormulario';
@@ -21,6 +22,8 @@ export default function ConfigForms() {
     const [isEditModalOpen, setEditModalOpen] = useState(false);
     const [selectedEventoId, setSelectedEventoId] = useState(null);
     const [error, setError] = useState('');
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
@@ -111,8 +114,9 @@ export default function ConfigForms() {
                     <DataTable rows={tableRows || []} columns={tableColumns}/>
                 </div>
             </div>
-            <NovoForm open={isNewModalOpen} onClose={() => setNewModalOpen(false)}/>
-            {isEditModalOpen && ( <EditForm open={isEditModalOpen} onClose={() => setEditModalOpen(false)} idForm={selectedEventoId} /> )}
+            <NovoForm open={isNewModalOpen} onClose={() => setNewModalOpen(false)} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
+            {isEditModalOpen && ( <EditForm open={isEditModalOpen} onClose={() => setEditModalOpen(false)} idForm={selectedEventoId} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} /> )}
+            <Alert open={alertOpen} setOpen={setAlertOpen} title={alertProps.title} label={alertProps.label} severity={alertProps.severity} />
         </div>
     )
 }

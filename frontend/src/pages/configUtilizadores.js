@@ -64,8 +64,10 @@ export default function Configtilizadores() {
             });
             const utilizadores = response.data.data;
 
+            const sortedUtilizadores = utilizadores.sort((a, b) => a.utilizadorid - b.utilizadorid);
+
             setTableRows(
-                utilizadores.map((utilizador) => ({
+                sortedUtilizadores.map((utilizador) => ({
                     key: utilizador.utilizadorid,
                     id: utilizador.utilizadorid,
                     nome: utilizador.pnome + ' ' + utilizador.unome,

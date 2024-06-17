@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './page.css';
+/* COMPONENTES */
 import DataTable from '../components/tables/dataTable';
 import EditButton from '../components/buttons/editButton';
 import ComboFilter from '../components/combobox/comboFilter';
@@ -8,8 +9,10 @@ import Header from '../components/header/header';
 import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
 import StateChanger from '../components/stateChanger/stateChanger';
+/* FIM COMPONENTES */
 import NovaCategoria from '../modals/categorias/novaCategoria';
 import EditarCategoria from '../modals/categorias/editarCategoria';
+import Alert from '../components/alerts/alert';
 
 const opcoesFiltro = [
     { value:'Todos', label: 'Todos'},
@@ -25,6 +28,8 @@ export default function ConfigCategorias() {
     const [tableRows, setTableRows] = useState([]);
     const [selectedCategoriaId, setSelectedCategoriaId] = useState(null);
     const [error, setError] = useState('');
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
@@ -33,12 +38,7 @@ export default function ConfigCategorias() {
         { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => ( <StateChanger status={row.value} />) },
         { field: 'ver', headerName: 'Ver', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEdit(row.id)} />)},
     ];
-
-    const handleEdit = (id) => {
-        setSelectedCategoriaId(id);
-        setEditModalOpen(true);
-    };
-
+    
     const fetchData = async () => {
         try {
             const token = sessionStorage.getItem('token');
@@ -60,7 +60,9 @@ export default function ConfigCategorias() {
             });
             const categorias = response.data;
             
-            setTableRows(categorias.map((categoria) => ({
+            const sortedCat = categorias.sort((a, b) => a.categoriaid - b.categoriaid);
+
+            setTableRows(sortedCat.map((categoria) => ({
                 key: categoria.categoriaid,
                 id: categoria.categoriaid,
                 categoria: categoria.valorpt,
@@ -70,6 +72,11 @@ export default function ConfigCategorias() {
         } catch (error) {
             setError(error);
         }
+    };
+
+    const handleEdit = (id) => {
+        setSelectedCategoriaId(id);
+        setEditModalOpen(true);
     };
 
     useEffect(() => {
@@ -99,8 +106,9 @@ export default function ConfigCategorias() {
                     <DataTable rows={tableRows || []} columns={tableColumns}/>
                 </div>
             </div>
-            <NovaCategoria open={isNewModalOpen} onClose={() => setNewModalOpen(false)} />
-            <EditarCategoria open={isEditModalOpen} onClose={() => setEditModalOpen(false)} categoriaId={selectedCategoriaId} />
+            <NovaCategoria open={isNewModalOpen} onClose={() => setNewModalOpen(false)} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
+            <EditarCategoria open={isEditModalOpen} onClose={() => setEditModalOpen(false)} categoriaId={selectedCategoriaId} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
+            <Alert open={alertOpen} setOpen={setAlertOpen} title={alertProps.title} label={alertProps.label} severity={alertProps.severity} />
         </div>
     )
 }

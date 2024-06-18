@@ -418,6 +418,33 @@ const controladorSubcategorias = {
         }
     },
 
+    consultarTudoMobile: async (req, res) => {
+        try {
+            const subcategorias = await sequelizeConn.query(
+                `SELECT 
+                    sc.subcategoriaid AS "subcategoriaId",
+                    sc.categoriaid AS "categoriaId",
+                    t.valor AS "descricao",
+                    t.idiomaid AS "idiomaId"
+                FROM 
+                    subcategoria sc 
+                    INNER JOIN 
+                        chave ch ON sc.subcategoriaid = ch.registoid AND ch.entidade = 'SUBCAT'
+                    INNER JOIN 
+                        traducao t ON t.chaveid = ch.chaveid
+                    ORDER BY 
+                        sc.categoriaid ASC, t.idiomaid ASC `,
+                {
+                    type: QueryTypes.SELECT
+                }
+            );
+            
+            res.status(200).json({data: subcategorias});
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar as subcategorias', details: error.message });
+        }
+    },
+
     consultarTudoComFiltroPT: async (req, res) => {
         const { estado, categoria, descricao } = req.query;
         try {

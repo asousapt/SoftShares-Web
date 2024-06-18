@@ -17,6 +17,7 @@ router.delete('/fav/delete/:idSubCatFav', authenticate, subcategoriasControlador
 
 //ROUTES GET
 router.get('/', authenticate, subcategoriasControlador.consultarTudo);
+router.get('/mobile/', authenticate, subcategoriasControlador.consultarTudoMobile);
 router.get('/filtro', authenticate, subcategoriasControlador.consultarTudoComFiltroPT);
 router.get('/categoria/:idCat', authenticate, subcategoriasControlador.consultarPorCategoria);
 router.get('/:idSubcat', authenticate, subcategoriasControlador.consultarPorID);

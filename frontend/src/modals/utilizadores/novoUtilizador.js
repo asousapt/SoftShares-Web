@@ -30,6 +30,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     const [image, setImage] = useState('');
     const [imageName, setImageName] = useState('');
     const [imageSize, setImageSize] = useState(0);
+    const [isPoloAdmidDisabled, setIsPoloAdmidDisabled] = useState(true);
 
     //ERRORS
     const [emailError, setEmailError] = useState(false);
@@ -123,6 +124,22 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         fetchDepartamentos();
     }, []);
 
+    const handlePerfilChange = (event) => {
+        const selectedPerfilId = event.target.value;
+        setPerfilid(selectedPerfilId);
+    
+        const selectedPerfil = perfil.find(p => p.value === selectedPerfilId);
+        
+        if (selectedPerfil && selectedPerfil.label === 'Admin') {
+            setIsPoloAdmidDisabled(false);
+        } else {
+            setIsPoloAdmidDisabled(true);
+            setPoloAdmid('');
+        }
+    
+        setPerfilError(false);
+    };
+    
     const validateEmail = (email) => {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(String(email).toLowerCase());
@@ -163,7 +180,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
             errors.funcaoError = true;
         }
 
-        if (!poloadmid) {
+        if (!isPoloAdmidDisabled && !poloadmid) {
             errors.poloAdmError = true;
         }
 
@@ -206,7 +223,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 sobre,
                 inactivo,
                 imagem,
-                administrador_poloid: poloadmid
+                administrador_poloid: isPoloAdmidDisabled ? null : poloadmid
             };
 
             console.log('newUser', newUser);
@@ -335,12 +352,12 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <div style={{ width: "50%" }}>
-                                        <ComboBox caption='Perfil' options={perfil} value={perfilid} handleChange={(e) => { setPerfilid(e.target.value); setPerfilError(false); }} error={perfilError}
+                                        <ComboBox caption='Perfil' options={perfil} value={perfilid} handleChange={handlePerfilChange} error={perfilError}
                                             helperText={perfilError ? "Selecione um perfil válido" : ""} />
                                     </div>
                                     <div style={{ width: "50%" }}>
                                         <ComboBox caption='Polo a Administrar' options={polos} value={poloadmid} handleChange={(e) => { setPoloAdmid(e.target.value); setPoloAdmError(false); }} error={poloAdmError}
-                                            helperText={poloAdmError ? "Selecione um polo válido" : ""} />
+                                            helperText={poloAdmError ? "Selecione um polo válido" : ""} disabled={isPoloAdmidDisabled} />
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>

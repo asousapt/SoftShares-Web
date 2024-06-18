@@ -7,7 +7,7 @@ const ficheirosController = require('./ficheiros');
 
 const controladorUtilizadores = {
     adicionar: async (req, res) => {
-        
+        console.log(req.body);
         const {
             poloid,
             perfilid,
@@ -51,12 +51,14 @@ const controladorUtilizadores = {
                 entidade: 'UTIL'
             });
 
-            await models.administrador_polo.create({
-                utilizadorid: user.utilizadorid,
-                poloid: administrador_poloid
-            });
+            if (administrador_poloid) {
+                await models.administrador_polo.create({
+                    utilizadorid: user.utilizadorid,
+                    poloid: administrador_poloid
+                });
+            }
 
-            console.log('depois ', user.utilizadorid);
+            console.log('dasdsa', administrador_poloid)
 
             ficheirosController.adicionar(user.utilizadorid, 'UTIL', imagem, user.utilizadorid);
 
@@ -80,7 +82,8 @@ const controladorUtilizadores = {
             departamentoid,
             funcaoid,
             sobre,
-            imagem
+            imagem,
+            administrador_poloid
         } = req.body;
 
         try {
@@ -104,6 +107,23 @@ const controladorUtilizadores = {
 
             ficheirosController.removerTodosFicheirosAlbum(idUtilizador, 'UTIL');
             ficheirosController.adicionar(idUtilizador, 'UTIL', imagem, idUtilizador);
+            
+            if (administrador_poloid) {
+                await models.administrador_polo.upsert({
+                    utilizadorid: idUtilizador,
+                    poloid: administrador_poloid
+                }, {
+                    where: {
+                        utilizadorid: idUtilizador
+                    }
+                });
+            } else {
+                await models.administrador_polo.destroy({
+                    where: {
+                        utilizadorid: idUtilizador
+                    }
+                });
+            }
 
             res.status(200).json({ message: 'Utilizador atualizado com sucesso' });
         } catch (error) {
@@ -146,11 +166,21 @@ const controladorUtilizadores = {
 
         try {
             const utilizador = await models.utilizador.findByPk(idUtilizador, {
-                include: {
-                    model: models.perfil,
-                    as: 'perfil',
-                    attributes: ['descricao']
-                }
+                include: [
+                    {
+                        model: models.perfil,
+                        as: 'perfil',
+                        attributes: ['descricao']
+                    },
+                    {
+                        model: models.administrador_polo,
+                        as: 'administrador_polos',
+                        include: {
+                            model: models.polo,
+                            as: 'polo'
+                        }
+                    }
+                ]
             });
 
             if (!utilizador) {

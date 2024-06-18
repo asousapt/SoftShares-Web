@@ -79,8 +79,10 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
     
             if (userData.administrador_polos && userData.administrador_polos.length > 0) {
                 setPoloAdmid(userData.administrador_polos[0].polo.poloid);
+                setIsPoloAdmidDisabled(false);
             } else {
                 setPoloAdmid('');
+                setIsPoloAdmidDisabled(true);
             }
     
             if (userData.imagem.url === '' || userData.imagem.url === null) {

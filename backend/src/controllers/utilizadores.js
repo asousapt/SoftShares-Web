@@ -108,21 +108,29 @@ const controladorUtilizadores = {
             ficheirosController.removerTodosFicheirosAlbum(idUtilizador, 'UTIL');
             ficheirosController.adicionar(idUtilizador, 'UTIL', imagem, idUtilizador);
             
+            const existingAdminPolo = await models.administrador_polo.findOne({
+                where: { utilizadorid: idUtilizador }
+            });
+    
             if (administrador_poloid) {
-                await models.administrador_polo.upsert({
-                    utilizadorid: idUtilizador,
-                    poloid: administrador_poloid
-                }, {
-                    where: {
-                        utilizadorid: idUtilizador
-                    }
-                });
+                if (existingAdminPolo) {
+                    await models.administrador_polo.update({
+                        poloid: administrador_poloid
+                    }, {
+                        where: { utilizadorid: idUtilizador }
+                    });
+                } else {
+                    await models.administrador_polo.create({
+                        utilizadorid: idUtilizador,
+                        poloid: administrador_poloid
+                    });
+                }
             } else {
-                await models.administrador_polo.destroy({
-                    where: {
-                        utilizadorid: idUtilizador
-                    }
-                });
+                if (existingAdminPolo) {
+                    await models.administrador_polo.destroy({
+                        where: { utilizadorid: idUtilizador }
+                    });
+                }
             }
 
             res.status(200).json({ message: 'Utilizador atualizado com sucesso' });

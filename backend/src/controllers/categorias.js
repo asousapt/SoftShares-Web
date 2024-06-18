@@ -309,7 +309,7 @@ const controladorCategorias = {
                 }
             );
             
-            res.status(200).json(categorias);
+            res.status(200).json({data: categorias});
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar as categorias', details: error.message });
         }

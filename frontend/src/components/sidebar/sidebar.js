@@ -27,11 +27,16 @@ const Sidebar = () => {
     const [selectedItem, setSelectedItem] = useState(location.pathname);
 
     const [userName, setUserName] = useState('');
+    const [userProfile, setUserProfile] = useState('');
 
     useEffect(() => {
         const name = sessionStorage.getItem('nome');
+        const profile = sessionStorage.getItem('perfil');
         if (name) {
             setUserName(name);
+        }
+        if (profile) {
+            setUserProfile(profile);
         }
     }, []);
 
@@ -90,6 +95,13 @@ const Sidebar = () => {
             ],
         },
     ];
+
+    if (userProfile === 'Admin') {
+        const index = menuItems.findIndex(item => item.title === 'Configuração');
+        if (index !== -1) {
+            menuItems.splice(index, 1);
+        }
+    }
 
     const getItemBackgroundColor = (itemLink) => {
         return selectedItem === itemLink ? 'rgba(128, 128, 128, 0.3)' : "white";

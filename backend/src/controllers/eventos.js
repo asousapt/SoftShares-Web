@@ -155,8 +155,9 @@ const controladorEventos = {
     },
 
     aprovarEvento: async (req, res) => {
-        const { idEvento } = req.params;
+        const { idEvento} = req.params;
         const { userAprovacao } = req.body;
+        
         try {
             await models.evento.update({
                 aprovado: true,
@@ -300,21 +301,30 @@ const controladorEventos = {
     },
 
     consultarPorAprovar: async (req, res) => {
-        const { descricao } = req.query;
+        const { descricao, poloid } = req.query;
+        console.log('poloid:', poloid);
+
         try {
+            let whereClause = {
+                aprovado: null,
+                titulo: {
+                    [Op.like]: `%${descricao}%`
+                }
+            };
+    
+            if (poloid) {
+                whereClause.poloid = poloid;
+            }
+    
             const evento = await models.evento.findAll({
                 include: {
                     model: models.utilizador,
                     as: 'utilizadorcriou_utilizador',
                     attributes: ['pnome', 'unome']
                 },
-                where: {
-                    aprovado: null,
-                    titulo: {
-                        [Op.like]: `%${descricao}%`
-                    }
-                }
+                where: whereClause
             });
+            
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: evento });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar utilizador', details: error.message });

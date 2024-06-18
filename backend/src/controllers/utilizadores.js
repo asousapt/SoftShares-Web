@@ -108,12 +108,12 @@ const controladorUtilizadores = {
             ficheirosController.removerTodosFicheirosAlbum(idUtilizador, 'UTIL');
             ficheirosController.adicionar(idUtilizador, 'UTIL', imagem, idUtilizador);
             
-            const existingAdminPolo = await models.administrador_polo.findOne({
+            const existeAdminPolo = await models.administrador_polo.findOne({
                 where: { utilizadorid: idUtilizador }
             });
     
             if (administrador_poloid) {
-                if (existingAdminPolo) {
+                if (existeAdminPolo) {
                     await models.administrador_polo.update({
                         poloid: administrador_poloid
                     }, {
@@ -126,7 +126,7 @@ const controladorUtilizadores = {
                     });
                 }
             } else {
-                if (existingAdminPolo) {
+                if (existeAdminPolo) {
                     await models.administrador_polo.destroy({
                         where: { utilizadorid: idUtilizador }
                     });

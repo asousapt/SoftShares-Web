@@ -38,12 +38,22 @@ export default function ModAprov() {
     const fetchData = async () => {
         try {
             const token = sessionStorage.getItem('token');
+            let poloid = sessionStorage.getItem('poloid');
+            console.log('1', poloid);
+
+            if (!poloid) {
+                poloid = '';
+            }
+
+            console.log('2', poloid);
+
             const responseEventos = await axios.get('http://localhost:8000/evento/porAprovar', {
                 headers: {
                     Authorization: `${token}`
                 },
                 params: {
-                    descricao: filtroText
+                    descricao: filtroText,
+                    poloid: poloid
                 }
             });
             const eventos = responseEventos.data.data;

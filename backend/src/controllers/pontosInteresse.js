@@ -190,7 +190,8 @@ const controladorPontosInteresse = {
     },
 
     consultarPorAprovar: async (req, res) => {
-        const { descricao } = req.query;
+        const { descricao} = req.query;
+
         try {
             const pontosInteresse = await models.pontointeresse.findAll({
                 include: {

@@ -44,8 +44,19 @@ const LoginModal = ({ open, handleClose }) => {
 
       sessionStorage.setItem('userid', utilizador.utilizadorid);
       sessionStorage.setItem('nome', utilizador.pnome+' '+utilizador.unome);
-      
-      console.log(utilizador);
+      sessionStorage.setItem('perfil', utilizador.perfil.descricao);
+      console.log(utilizador.perfil.descricao);
+
+      if (utilizador.administrador_polos.length > 0) {
+        sessionStorage.setItem('poloid', utilizador.administrador_polos[0].poloid);
+        console.log('poloid:', utilizador.administrador_polos[0]);
+        console.log(utilizador.administrador_polos[0].poloid);
+        sessionStorage.setItem('adm poloid', utilizador.administrador_polos[0].administrador_poloid);
+      } else {
+        console.warn('Utilizador não tem um poloid associado.');
+        sessionStorage.setItem('poloid', '');
+        sessionStorage.setItem('adm poloid', '');
+      }
 
       const tokenResponse = await axios.get(`http://localhost:8000/utilizadores/token/${utilizador.utilizadorid}`);
       sessionStorage.setItem('token', tokenResponse.data);

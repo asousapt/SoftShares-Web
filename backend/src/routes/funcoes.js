@@ -14,6 +14,7 @@ router.delete('/delete/:idFuncao', authenticate, funcoesControlador.remover);
 
 //ROUTES GET
 router.get('/', authenticate, funcoesControlador.consultarTudo);
+router.get('/mobile/', authenticate, funcoesControlador.consultarTudoMobile);
 router.get('/filtro', authenticate, funcoesControlador.consultarTudoComFiltroPT);
 router.get('/:idFuncao', authenticate, funcoesControlador.consultarPorID);
 

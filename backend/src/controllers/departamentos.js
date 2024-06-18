@@ -220,6 +220,30 @@ const controladorDepartamentos = {
         }
     },
 
+    consultarTudoMobile: async (req, res) => {
+        try {
+            const departamentos = await sequelizeConn.query(
+                `SELECT 
+                    dp.departamentoid AS "departamentoId",
+                    t.valor AS "descricao",
+                    t.idiomaid AS "idiomaId"
+                FROM 
+                    departamento dp
+                    INNER JOIN 
+                        chave ch ON dp.departamentoid = ch.registoid AND ch.entidade = 'DEPARTAMENTO'
+                    INNER JOIN 
+                        traducao t ON t.chaveid = ch.chaveid
+                    ORDER BY 
+                        dp.departamentoid, t.idiomaid ASC`,
+                { type: QueryTypes.SELECT }
+            );
+
+            res.status(200).json({data: departamentos});
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar os departamentos', details: error.message });
+        }
+    },
+
     consultarTudoComFiltroPT: async (req, res) => {
         const { estado, descricao } = req.query;
         try {

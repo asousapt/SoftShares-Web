@@ -16,7 +16,8 @@ const controladorPontosInteresse = {
             idiomaid,
             cidadeid,
             utilizadorcriou,
-            imagens
+            imagens,
+            formRespostas
         } = req.body;
 
         try {
@@ -36,6 +37,47 @@ const controladorPontosInteresse = {
                 registoid: pontointeresse.pontointeresseid,
                 entidade: 'POI'
             });
+
+            if (formRespostas && formRespostas !== '') {
+                const itemResposta = await models.itemrespostaformulario.create({
+                    registoid: pontointeresse.pontointeresseid,
+                    entidade: 'POI'
+                });
+
+                const respostaFormulario = await models.respostaformulario.create({
+                    itemrespostaformularioid: itemResposta.itemrespostaformularioid,
+                    utilizadorid: utilizadorcriou
+                });
+
+                await Promise.all(formRespostas.map(async resposta => {
+                    if (resposta.type === "TEXTO" || resposta.type === "NUMERICO" || resposta.type === "LOGICO"){
+                        await models.respostadetalhe.create({
+                            respostaformularioid: respostaFormulario.respostaformularioid,
+                            formulariodetalhesid: resposta.id,
+                            resposta: resposta.text
+                        });
+                    } else if (resposta.type === "ESCOLHA_MULTIPLA"){
+                        const opcao = resposta.options.find(o => o.selected === true);
+                        if (opcao){
+                            await models.respostadetalhe.create({
+                                respostaformularioid: respostaFormulario.respostaformularioid,
+                                formulariodetalhesid: resposta.id,
+                                resposta: opcao.opcao
+                            });
+                        }
+                    } else if (resposta.type === "SELECAO"){
+                        await Promise.all(resposta.options.map(async opcao => {
+                            if (opcao.selected) {
+                                await models.respostadetalhe.create({
+                                    respostaformularioid: respostaFormulario.respostaformularioid,
+                                    formulariodetalhesid: resposta.id,
+                                    resposta: opcao.opcao
+                                });
+                            }
+                        }));
+                    }
+                }));
+            }
 
             ficheirosController.adicionar(pontointeresse.pontointeresseid, 'POI', imagens, utilizadorcriou);
 

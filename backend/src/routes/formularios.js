@@ -11,6 +11,7 @@ router.post('/respostas', authenticate, controladorFormularios.adicionarResposta
 
 //ROUTES GET
 router.get('/generico/filtro', authenticate, controladorFormularios.consultarGenericosComFiltro);
+router.get('/subcat/:idSubcat', authenticate, controladorFormularios.consultarPorSubcatVersaoMaisRecente);
 router.get('/versao/:formularioVersaoid/:idRegisto/:tabela/respostas/consultar/:userid', authenticate, controladorFormularios.consultarRespostasPorFormulario);
 router.get('/:id/:tabela', authenticate, controladorFormularios.consultarPerguntas);
 router.get('/:idForm', authenticate, controladorFormularios.consultarGenericoPorIDVersaoMaisRecente);

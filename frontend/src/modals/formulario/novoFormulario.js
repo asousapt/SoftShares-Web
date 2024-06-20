@@ -70,7 +70,6 @@ const NovoFormulario = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         }
 
         for (let question of data) {
-            console.log('question', question);
             if (!question.text.trim()) {
                 alert('Preencha o texto de todas as perguntas!');
                 return;

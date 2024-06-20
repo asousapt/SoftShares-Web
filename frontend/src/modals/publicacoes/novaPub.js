@@ -201,11 +201,12 @@ const AddPublicacao = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         onClose();
     };
 
+
     return (
         <Modal open={open} onClose={handleCancel} >
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px' }}>
                 <h2 style={{marginTop: 0, color: 'white'}}>Nova Publicação</h2>
-                <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 20 ,borderRadius: 12}}>
+                <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 20, borderRadius: 12}}>
                     <div style={{marginBottom: 15}}>
                         <div style={{ display: 'flex', marginBottom: 10, gap: 10 }}>
                             <div style={{ width: '50%'}} >
@@ -214,7 +215,7 @@ const AddPublicacao = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                             </div>
                             <div style={{ width: '25%' }}>
                                 <Autocomplete options={opcoesCat} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                        <TextField {...params} label="Categoria" variant="outlined" type="text" error={catError} helperText={catError ? "Escolha uma categoria" : ""} /> )}
+                                    <TextField {...params} label="Categoria" variant="outlined" type="text" error={catError} helperText={catError ? "Escolha uma categoria" : ""} /> )}
                                     value={categoria}
                                     onChange={handleCategoriaChange}
                                     fullWidth={true} />
@@ -231,6 +232,7 @@ const AddPublicacao = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                             <BasicTextField multiline={true} caption='Descrição' valor={description} onchange={(e) => setDescription(e.target.value)} fullwidth={true} type="text" error={descriptionError}
                             helperText={descriptionError ? "Introduza uma descrição válida" : ""} />
                         </div>
+                        
                         <div style={{marginBottom: 20}}>
                             <ImageTable images={images} onAddImage={handleImage} onDelete={resetImage}/>
                         </div>

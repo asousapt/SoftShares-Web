@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Modal from '@mui/material/Modal';
 import BasicTextField from '../../components/textFields/basic';
@@ -8,8 +8,7 @@ import CancelButton from '../../components/buttons/cancelButton';
 import ImageTable from '../../components/tables/imageTable';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-
-const imgs = [];
+import FormAnswerer from '../../components/forms/FormAnswerer';
 
 const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     //VARS
@@ -27,6 +26,13 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     const [opcoesFiltroSubcat, setOpcoesSubcat] = useState([]);
     const [error, setError] = useState(null);
     const [images, setImages] = useState([]);
+    const [questions , setQuestions] = useState([]);
+    
+    const componentRef = useRef();
+
+    const executeFunction = () => {
+        componentRef.current.generateJSON();
+    };
 
     //ERRORS
     const [titleError, setTittleError] = useState(false);
@@ -163,7 +169,7 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         }
     };
 
-    const handleAddPontInt = async () => {
+    const handleAddPontInt = async (data, formErrors) => {
         const errors = validateForm();
 
         setTittleError(errors.titleError || false);
@@ -173,6 +179,30 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         setDistritoError(errors.distritoError || false);
         setCategoriaError(errors.categoriaError || false);
         setSubcategoriaError(errors.subcategoriaError || false);
+
+        setQuestions(prevQuestions => prevQuestions.map(q => ({ ...q, error: '' })));
+
+        data = JSON.parse(data);
+        if (data && Array.isArray(data)) {
+            setQuestions(prevQuestions => {
+                const updatedQuestions = prevQuestions.map(q => {
+                    const value = data.find(val => val.id === q.id);
+                    return value ? { ...q, text: value.text, options: value.options } : q;
+                });
+                return updatedQuestions;
+            });
+        }
+        
+        if (formErrors && Array.isArray(formErrors)) {
+            setQuestions(prevQuestions => {
+                const updatedQuestions = prevQuestions.map(q => {
+                    const error = formErrors.find(err => err.id === q.id);
+                    return error ? { ...q, error: error.message } : q;
+                });
+                return updatedQuestions;
+            });
+            return;
+        }
 
         if (Object.keys(errors).length > 0) {
             return;
@@ -197,9 +227,10 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 cidadeid: cidade ? cidade.value : '',
                 utilizadorcriou: userid,
                 subcategoriaid: subcategoria ? subcategoria.value : '',
-                imagens: imagesRtn
+                imagens: imagesRtn,
+                formRespostas: data
             };
-
+            console.log(novoEvento);
             await axios.post('http://localhost:8000/pontoInteresse/add', novoEvento, {
                 headers: {
                     Authorization: `${token}`,
@@ -267,6 +298,7 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         setCategoria(null);
         setSubcategoria(null);
         setImages([]);
+        setQuestions([]);
     };
 
     const handleCancel = () => {
@@ -282,11 +314,40 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         onClose();
     };
 
+    const getForm = async (idSubcat) => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get(`http://localhost:8000/formulario/subcat/${idSubcat}`, {
+                headers: {
+                    Authorization: `${token}`
+                }
+            });
+            const form = response.data;
+
+            setQuestions(form.map(detail => ({
+                id: detail.formulariodetalhesid,
+                type: detail.tipodados,
+                label: detail.pergunta,
+                text: '',
+                options: detail.respostaspossiveis
+                        ? detail.respostaspossiveis.split(', ').map(option => ({ opcao: option.trim(), selected: false }))
+                        : [{}], 
+                required: detail.obrigatorio,
+                minValue: detail.minimo,
+                maxValue: detail.maximo,
+                error: ''
+            })));
+            
+        } catch (error) {
+            console.error("Erro ao encontrar o formulário", error);
+        }
+    }
+
     return (
         <Modal open={open} onClose={handleCancel}>
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px', overflow: 'auto' }}>
                 <h2 style={{ marginTop: 0, color: 'white' }}>Novo Ponto Interesse</h2>
-                <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 20, borderRadius: 12 }}>
+                <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 20, borderRadius: 12, maxHeight: '70vh', overflowY: 'auto' }}>
                     <div style={{ marginBottom: 15 }}>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                             <div style={{ width: '50%' }}>
@@ -309,7 +370,7 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                             <div style={{ width: '25%' }}>
                                 <Autocomplete options={distritos} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                        <TextField {...params} label="Distrito" variant="outlined" type="text" error={distritoError} helperText={distritoError ? "Escolha um distrito" : ""} /> )}
+                                    <TextField {...params} label="Distrito" variant="outlined" type="text" error={distritoError} helperText={distritoError ? "Escolha um distrito" : ""} /> )}
                                     value={distrito}
                                     onChange={handleDistritoChange}
                                     fullWidth={true} />
@@ -323,7 +384,7 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                             </div>
                             <div style={{ width: '25%' }}>
                                 <Autocomplete options={opcoesFiltroCat} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                        <TextField {...params} label="Categoria" variant="outlined" type="text" error={categoriaError} helperText={categoriaError ? "Escolha uma categoria" : ""} /> )}
+                                    <TextField {...params} label="Categoria" variant="outlined" type="text" error={categoriaError} helperText={categoriaError ? "Escolha uma categoria" : ""} /> )}
                                     value={categoria}
                                     onChange={handleCategoriaChange}
                                     fullWidth={true} />
@@ -332,15 +393,17 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                                 <Autocomplete options={opcoesFiltroSubcat} getOptionLabel={(option) => option.label} renderInput={(params) => (
                                     <TextField {...params} label="Subcategoria" variant="outlined" error={subcategoriaError} helperText={subcategoriaError ? "Escolha uma categoria subcategoria" : ""} />)}
                                     value={subcategoria}
-                                    onChange={(event, newValue) => { setSubcategoria(newValue); setSubcategoriaError(false); }}
+                                    onChange={(event, newValue) => { setSubcategoria(newValue); getForm(newValue.value); setSubcategoriaError(false); }}
                                     fullWidth={true} />
                             </div>
                         </div>
+                        <FormAnswerer ref={componentRef} initialQuestions={questions} onFormSubmit={handleAddPontInt}  />
+
                         <ImageTable images={images} styleProp={{ paddingTop: 10 }} onAddImage={handleImage} onDelete={resetImage}/>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
                         <CancelButton onclick={handleCancel} caption='Cancelar' />
-                        <SubmitButton onclick={handleAddPontInt} caption='Guardar' />
+                        <SubmitButton onclick={executeFunction /*handleAddPontInt*/} caption='Guardar' /> 
                     </div>
                 </div>
             </div>

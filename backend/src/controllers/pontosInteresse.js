@@ -224,10 +224,29 @@ const controladorPontosInteresse = {
             const ficheiros = await ficheirosController.getAllFilesByAlbum(idPontoInteresse, 'POI');
             POI.dataValues.imagens = ficheiros;
 
+            const avgAvaliacao = await models.avaliacao.findOne({
+                attributes: [
+                    [Sequelize.fn('AVG', Sequelize.col('avaliacao')), 'averageRating']
+                ],
+                include: [
+                    {
+                        model: models.itemavaliacao,
+                        as: 'itemavaliacao',
+                        where: {
+                            itemorigid: idPontoInteresse,
+                            tipoentidade: 'POI'
+                        }
+                    }
+                ],
+                group: ['itemavaliacao.itemavaliacaoid'],
+            });
+    
+            POI.dataValues.avgAvaliacao = avgAvaliacao ? parseFloat(avgAvaliacao.dataValues.averageRating).toFixed(2) : null;
+    
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: POI });
         } catch (error) {
             console.error('Erro ao adicionar ponto de interesse', error);
-            res.status(500).json({ error: 'Erro ao consultar o evento' });
+            res.status(500).json({ error: 'Erro ao consultar o evento', error: error.message});
         }
     },
 

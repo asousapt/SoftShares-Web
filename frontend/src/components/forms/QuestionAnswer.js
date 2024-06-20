@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
     TextField,
     Radio,
@@ -7,6 +7,13 @@ import {
 
 const QuestionAnswerer = ({ question, handleTextChange, handleOptionChange }) => {
     const [selectedOption, setSelectedOption] = useState(-1); 
+    
+    useEffect(() => {
+        if (question.text !== '' && question.type === 'ESCOLHA_MULTIPLA') {
+            const idx = question.options.findIndex(opt => opt.selected);
+            setSelectedOption(idx !== -1 ? idx : -1);
+        }
+    }, [question]);
 
     const handleRadioChange = (idx) => {
         setSelectedOption(idx);
@@ -53,7 +60,7 @@ const QuestionAnswerer = ({ question, handleTextChange, handleOptionChange }) =>
             case 'LOGICO':
                 return (
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <Checkbox onChange={(e) => handleTextChange(question.id, 'text', e.target.checked)} />
+                        <Checkbox checked={question.text} onChange={(e) => handleTextChange(question.id, 'text', e.target.checked)} />
                         <TextField
                             value={question.label}
                             variant="outlined"

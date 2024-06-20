@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Modal from '@mui/material/Modal';
 import BasicTextField from '../../components/textFields/basic';
-import DataHora from '../../components/textFields/dataHora';
 import SubmitButton from '../../components/buttons/submitButton';
 import CancelButton from '../../components/buttons/cancelButton';
 import ImageTable from '../../components/tables/imageTable';
@@ -403,7 +402,7 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
                         <CancelButton onclick={handleCancel} caption='Cancelar' />
-                        <SubmitButton onclick={executeFunction /*handleAddPontInt*/} caption='Guardar' /> 
+                        <SubmitButton onclick={executeFunction} caption='Guardar' /> 
                     </div>
                 </div>
             </div>

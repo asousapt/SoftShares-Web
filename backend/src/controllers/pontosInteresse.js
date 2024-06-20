@@ -100,7 +100,8 @@ const controladorPontosInteresse = {
             idiomaid,
             cidadeid,
             utilizadorid,
-            imagens
+            imagens,
+            formRespostas
         } = req.body;
 
         try {
@@ -121,6 +122,59 @@ const controladorPontosInteresse = {
 
             await ficheirosController.removerTodosFicheirosAlbum(idPontoInteresse, 'POI');
             ficheirosController.adicionar(idPontoInteresse, 'POI', imagens, utilizadorid);
+
+            await Promise.all(formRespostas.map(async resposta => {
+                if (resposta.type === "TEXTO" || resposta.type === "NUMERICO" || resposta.type === "LOGICO"){
+                    await models.respostadetalhe.update({
+                        resposta: resposta.text
+                    }, {
+                        where: {
+                            respostadetalheid: resposta.id
+                        }
+                    });
+                } else if (resposta.type === "ESCOLHA_MULTIPLA"){
+                    const opcao = resposta.options.find(o => o.selected === true);
+                    if (opcao){
+                        await models.respostadetalhe.update({
+                            resposta: opcao.opcao
+                        }, {
+                            where: {
+                                respostadetalheid: resposta.id
+                            }
+                        });
+                    } else {
+                        await models.respostadetalhe.destroy({
+                            where: {
+                                respostadetalheid: resposta.id
+                            }
+                        })
+                    }
+                } else if (resposta.type === "SELECAO"){
+                    const respostadetalhe = await models.respostadetalhe.findOne({
+                        where: {
+                            respostadetalheid: resposta.id
+                        }
+                    })
+                    const respostaformularioid = respostadetalhe.respostaformularioid
+                    const formulariodetalhesid = respostadetalhe.formulariodetalhesid
+
+                    await models.respostadetalhe.destroy({
+                        where: {
+                            formulariodetalhesid: respostadetalhe.formulariodetalhesid
+                        }
+                    })
+
+                    await Promise.all(resposta.options.map(async opcao => {
+                        if (opcao.selected) {
+                            await models.respostadetalhe.create({
+                                respostaformularioid: respostaformularioid,
+                                formulariodetalhesid: formulariodetalhesid,
+                                resposta: opcao.opcao
+                            });
+                        }
+                    }));
+                }
+            }));
 
             res.status(200).json({ message: 'Ponto de interesse atualizado com sucesso' });
         } catch (error) {
@@ -240,13 +294,51 @@ const controladorPontosInteresse = {
                 ],
                 group: ['itemavaliacao.itemavaliacaoid'],
             });
-    
+
             POI.dataValues.avgAvaliacao = avgAvaliacao ? parseFloat(avgAvaliacao.dataValues.averageRating).toFixed(2) : null;
-    
+
+            const formulario = await sequelizeConn.query(
+                `SELECT 
+                    rd.respostadetalheid AS id,
+                    rd.resposta, 
+                    fd.*
+                FROM 
+                    respostadetalhe rd
+                INNER JOIN
+                    formulariodetalhes fd on fd.formulariodetalhesid = rd.formulariodetalhesid
+                WHERE
+                    rd.respostaformularioid IN (
+                        SELECT respostaformularioid
+                        FROM respostaformulario
+                        WHERE itemrespostaformularioid IN (
+                            SELECT itemrespostaformularioid
+                            FROM itemrespostaformulario
+                            WHERE 
+                                registoid = ${idPontoInteresse}
+                                AND entidade = 'POI'
+                        )
+                    )
+                ORDER BY
+                    fd.ordem asc
+                `
+            );
+            const form = formulario[0].reduce((acc, curr) => {
+                const existing = acc.find(item => item.formulariodetalhesid === curr.formulariodetalhesid);
+                
+                if (existing) {
+                    existing.resposta = existing.resposta ? existing.resposta + ', ' + curr.resposta : curr.resposta;
+                } else {
+                    acc.push({ ...curr });
+                }
+                return acc;
+            }, []);
+            
+            POI.dataValues.formdata = form;
+
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: POI });
         } catch (error) {
             console.error('Erro ao adicionar ponto de interesse', error);
-            res.status(500).json({ error: 'Erro ao consultar o evento', error: error.message});
+            res.status(500).json({ error: 'Erro ao consultar o evento', error: error});
         }
     },
 

@@ -5,6 +5,7 @@ import QuestionAnswerer from './QuestionAnswer';
 const FormAnswerer = forwardRef((props, ref) => {
     const { initialQuestions } = props;
     const [questions, setQuestions] = useState([]);
+    console.log(initialQuestions);
 
     useEffect(() => {
         if (initialQuestions && initialQuestions.length > 0) {
@@ -64,7 +65,8 @@ const FormAnswerer = forwardRef((props, ref) => {
                     const value = parseFloat(question.text) || 0;
                     const max = parseFloat(question.maxValue);
                     const min = parseFloat(question.minValue);
-                    if ((max >= 0 || min >= 0 || min !== null || max !== null) && (value < min || value > max)) {
+                    if ((max === 0 && min === 0)|| (min === null && max === null)){
+                    } else if (value < min || value > max) {
                         isValid = false;
                         errors.push({ id: question.id, message: `Este valor tem de estar entre ${min} e ${max}` });
                     }

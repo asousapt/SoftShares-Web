@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Modal from '@mui/material/Modal';
 import BasicTextField from '../../components/textFields/basic';
@@ -7,6 +7,7 @@ import CancelButton from '../../components/buttons/cancelButton';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import ImageTable from '../../components/tables/imageTable';
+import FormAnswerer from '../../components/forms/FormAnswerer';
 
 const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps }) => {
     //VARS
@@ -20,10 +21,15 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
     const [distritos, setDistritos] = useState([]);
     const [error, setError] = useState(null);
     const [images, setImages] = useState([]);
-    const [opcoesCat, setOpcoesCat] = useState([]);
     const [categoria, setCategoria] = useState(null);
-    const [opcoesSubcat, setOpcoesSubcat] = useState([]);
     const [subcategoria, setSubcategoria] = useState(null);
+    const [questions , setQuestions] = useState([]);
+
+    const componentRef = useRef();
+
+    const executeFunction = () => {
+        componentRef.current.generateJSON();
+    };
 
     //ERRORS
     const [titleError, setTittleError] = useState(false);
@@ -31,8 +37,6 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
     const [descriptionError, setDescriptionError] = useState(false);
     const [cidadeError, setCidadeError] = useState(false);
     const [distritoError, setDistritoError] = useState(false);
-    const [categoriaError, setCategoriaError] = useState(false);
-    const [subcategoriaError, setSubcategoriaError] = useState(false);
 
     const getBase64FromUrl = async (url) => {
         const response = await fetch(url);
@@ -80,66 +84,6 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
         }
 
         return errors;
-    };
-
-    const fetchCategorias = async () => {
-        try {
-            const token = sessionStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8000/categoria`, {
-                headers: { Authorization: `${token}` }
-            });
-            const categorias = response.data;
-
-            setOpcoesCat(categorias.map((cat) => ({
-                value: cat.categoriaid,
-                label: cat.valorpt
-            })));
-        } catch (error) {
-            setError(error);
-        }
-    }
-
-    const fetchSubcategoria = async (idcat) => {
-        try {
-            if (idcat) {
-                const token = sessionStorage.getItem('token');
-                const response = await axios.get(`http://localhost:8000/subcategoria/categoria/${idcat}`, {
-                    headers: { Authorization: `${token}` }
-                });
-                const subcategorias = response.data;
-                const subcategoriasOptions = subcategorias.map((subcat) => ({
-                    value: subcat.subcategoriaid,
-                    label: subcat.valorpt
-                }));
-                setOpcoesSubcat(subcategoriasOptions);
-            }
-        } catch (error) {
-            setError(error);
-        }
-    }
-
-    const handleCategoriaChange = async (event, newValue) => {
-        setCategoria(newValue);
-        setSubcategoria(null);
-        if (newValue) {
-            try {
-                const token = sessionStorage.getItem('token');
-                const response = await axios.get(`http://localhost:8000/subcategoria/categoria/${newValue.value}`, {
-                    headers: { Authorization: `${token}` }
-                });
-                const subcategorias = response.data;
-                const subcategoriasOptions = subcategorias.map((subcat) => ({
-                    value: subcat.subcategoriaid,
-                    label: subcat.valorpt
-                }));
-                setOpcoesSubcat(subcategoriasOptions);
-            } catch (error) {
-                setError(error);
-            }
-        } else {
-            setOpcoesSubcat([]);
-            setSubcategoria(null);
-        }
     };
 
     const fetchDistritoByCidadeId = async (cidadeId) => {
@@ -203,6 +147,7 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
                 headers: { Authorization: `${token}` }
             });
             const userData = response.data.data;
+            console.log(userData);
 
             setTitle(userData.titulo);
             setLocalizacao(userData.localizacao);
@@ -222,9 +167,8 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
             });
             const cat = catResponse.data;
 
-            setCategoria({ value: subcat.categoriaid, label: cat.valorpt });
-            fetchSubcategoria(subcat.categoriaid);
-            setSubcategoria({ value: userData.subcategoriaid, label: subcat.valorpt });
+            setCategoria(cat.valorpt);
+            setSubcategoria(subcat.valorpt);
 
             const transformedImages = await Promise.all(
                 userData.imagens.map(async (imagem) => {
@@ -237,6 +181,26 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
                 })
             );
             setImages(transformedImages);
+
+            setQuestions(userData.formdata.map(detail => {
+                const responseArray = detail.resposta ? detail.resposta.split(',').map(res => res.trim()) : [];
+            
+                return {
+                    id: detail.id,
+                    type: detail.tipodados,
+                    label: detail.pergunta,
+                    text: detail.resposta,
+                    options: detail.respostaspossiveis ? detail.respostaspossiveis.split(', ').map(option => ({
+                                opcao: option.trim(),
+                                selected: responseArray.includes(option.trim())
+                            })) : [{}],
+                    required: detail.obrigatorio,
+                    minValue: detail.minimo,
+                    maxValue: detail.maximo,
+                    error: ''
+                };
+            }));
+            
         } catch (error) {
             console.error('Erro ao receber dados do Ponto de Interesse:', error);
         }
@@ -244,11 +208,10 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
 
     useEffect(() => {
         fetchDistritos();
-        fetchCategorias();
         fetchEventData();
     }, [eventData]);
 
-    const handleEditPontoInt = async () => {
+    const handleEditPontoInt = async (data, formErrors) => {
         const errors = validateForm();
 
         setTittleError(errors.titleError || false);
@@ -256,8 +219,30 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
         setDescriptionError(errors.descriptionError || false);
         setCidadeError(errors.cidadeError || false);
         setDistritoError(errors.distritoError || false);
-        setCategoriaError(errors.categoriaError || false);
-        setSubcategoriaError(errors.subcategoriaError || false);
+
+        setQuestions(prevQuestions => prevQuestions.map(q => ({ ...q, error: '' })));
+
+        data = JSON.parse(data);
+        if (data && Array.isArray(data)) {
+            setQuestions(prevQuestions => {
+                const updatedQuestions = prevQuestions.map(q => {
+                    const value = data.find(val => val.id === q.id);
+                    return value ? { ...q, text: value.text, options: value.options } : q;
+                });
+                return updatedQuestions;
+            });
+        }
+        
+        if (formErrors && Array.isArray(formErrors)) {
+            setQuestions(prevQuestions => {
+                const updatedQuestions = prevQuestions.map(q => {
+                    const error = formErrors.find(err => err.id === q.id);
+                    return error ? { ...q, error: error.message } : q;
+                });
+                return updatedQuestions;
+            });
+            return;
+        }
 
         if (Object.keys(errors).length > 0) {
             return;
@@ -281,7 +266,8 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
                 cidadeid: cidadeID.value,
                 subcategoriaid: subcategoria.value,
                 imagens: imagesRtn,
-                utilizadorid: userid
+                utilizadorid: userid,
+                formRespostas: data
             };
 
             await axios.put(`http://localhost:8000/pontoInteresse/update/${eventData}`, poiEditado, {
@@ -306,8 +292,6 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
         setDescriptionError(false);
         setCidadeError(false);
         setDistritoError(false);
-        setCategoriaError(false);
-        setSubcategoriaError(false);
         setImages([]);
         onClose();
     };
@@ -393,27 +377,21 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
                                     fullWidth={true} />
                             </div>
                             <div style={{ width: '25%' }}>
-                                <Autocomplete options={opcoesCat} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                        <TextField {...params} label="Categoria" variant="outlined" type="text" error={categoriaError} helperText={categoriaError ? "Escolha um distrito" : ""} /> )}
-                                    value={categoria}
-                                    onChange={handleCategoriaChange}
-                                    fullWidth={true} />
+                                <BasicTextField caption='Categoria' valor={categoria} onchange={() => {}} fullwidth={true} disabled={true} />
                             </div>
                             <div style={{ width: '25%' }}>
-                                <Autocomplete options={opcoesSubcat} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                    <TextField {...params} label="Subcategoria" variant="outlined" error={subcategoriaError} helperText={subcategoriaError ? "Escolha uma cidade" : ""} />)}
-                                    value={subcategoria}
-                                    onChange={(event, newValue) => { setSubcategoria(newValue); setSubcategoriaError(false); }}
-                                    fullWidth={true} />
+                                <BasicTextField caption='Subcategoria' valor={subcategoria} onchange={() => {}} fullwidth={true} disabled={true} />
                             </div>
                         </div>
-                        <div style={{ marginTop: 20 }}>
+                        <FormAnswerer ref={componentRef} initialQuestions={questions} onFormSubmit={handleEditPontoInt}  />
+
+                        <div style={{ marginTop: 10 }}>
                             <ImageTable images={images} onAddImage={handleImage} onDelete={resetImage}/>
                         </div>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
                         <CancelButton onclick={handleCancel} caption='Cancelar' />
-                        <SubmitButton onclick={handleEditPontoInt} caption='Guardar' />
+                        <SubmitButton onclick={executeFunction} caption='Guardar' />
                     </div>
                 </div>
             </div>

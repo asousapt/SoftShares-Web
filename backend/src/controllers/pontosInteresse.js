@@ -197,14 +197,14 @@ const controladorPontosInteresse = {
                 `SELECT 
                     p.*, 
                     u.*,
-                    ROUND(AVG(a.avaliacao), 2) as avgAvaliacao
+                    COALESCE(ROUND(AVG(a.avaliacao), 2), 0) as avgAvaliacao
                 FROM 
                     pontointeresse p
                 INNER JOIN
                     utilizador u ON p.utilizadorcriou = u.utilizadorid
-                INNER JOIN 
+                LEFT JOIN 
                     itemavaliacao av ON p.pontointeresseid = av.itemorigid AND av.tipoentidade = 'POI'
-                INNER JOIN
+                LEFT JOIN
                     avaliacao a ON av.itemavaliacaoid = a.itemavaliacaoid
                 GROUP BY
                     p.pontointeresseid, u.utilizadorid

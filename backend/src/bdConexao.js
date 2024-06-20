@@ -10,7 +10,7 @@ function getConfig(env) {
         database: process.env[`${env}_PGDATABASE`],
         dialect: 'postgres',
         pool: {
-            max: parseInt(process.env[`${env}_PGCONNECTIONLIMIT`], 10) || 10,
+            max: parseInt(process.env[`${env}_PGCONNECTIONLIMIT`]) || 10,
             min: 0,
             acquire: 30000,
             idle: 10000

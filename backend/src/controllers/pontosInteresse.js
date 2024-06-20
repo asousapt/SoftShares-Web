@@ -193,12 +193,26 @@ const controladorPontosInteresse = {
 
     consultarTudo: async (req, res) => {
         try {
-            const pontosInteresse = await models.pontointeresse.findAll({
-                include: {
-                    model: models.utilizador,
-                    as: 'utilizadorcriou_utilizador'
-                },
-            });
+            const pontosInteresse = await sequelizeConn.query(
+                `SELECT 
+                    p.*, 
+                    u.*,
+                    ROUND(AVG(a.avaliacao), 2) as avgAvaliacao
+                FROM 
+                    pontointeresse p
+                INNER JOIN
+                    utilizador u ON p.utilizadorcriou = u.utilizadorid
+                INNER JOIN 
+                    itemavaliacao av ON p.pontointeresseid = av.itemorigid AND av.tipoentidade = 'POI'
+                INNER JOIN
+                    avaliacao a ON av.itemavaliacaoid = a.itemavaliacaoid
+                GROUP BY
+                    p.pontointeresseid, u.utilizadorid
+                `,
+
+                { type: QueryTypes.SELECT }
+            );
+            
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: pontosInteresse });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar os pontos de interesse', details: error.message });

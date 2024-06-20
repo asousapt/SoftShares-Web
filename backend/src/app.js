@@ -9,11 +9,13 @@ const perfil = require('./controllers/perfis');
 const departamento = require('./controllers/departamentos');
 const funcoes = require('./controllers/funcoes');
 const grupo = require('./controllers/grupo');
+const redLandingPage = require('./middlewareCode');
 const app = express();
 
 // Use CORS middleware
 app.use(cors());
 app.options('*', cors());
+app.use(redLandingPage);
 
 //Use bodyParser middleware
 app.use(bodyParser.json({ limit: '50mb' }));

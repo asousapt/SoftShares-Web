@@ -73,7 +73,7 @@ export default function ChartPie({ chartData, total, label }) {
         <SecondLineText x={chartSize.width / 2.8} y={chartSize.height / 1.8}> {total} </SecondLineText>
       </PieChart>
       </Box>
-      <Box mt={5} width={chartSize.width} textAlign="left">
+      <Box mt={5} width={chartSize.width} textAlign="left" height={200} overflow="auto">
         {data.map((item, index) => (
           <React.Fragment key={item.label}>
             <Box key={item.label} display="flex" justifyContent="space-between" alignItems="center" mb={1.5}>

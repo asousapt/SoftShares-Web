@@ -28,15 +28,21 @@ const Sidebar = () => {
 
     const [userName, setUserName] = useState('');
     const [userProfile, setUserProfile] = useState('');
+    const [descricaoPolo, setDescricaoPolo] = useState('');
 
     useEffect(() => {
         const name = sessionStorage.getItem('nome');
         const profile = sessionStorage.getItem('perfil');
+        const descricaoPolo = sessionStorage.getItem('descpolo');
+
         if (name) {
             setUserName(name);
         }
         if (profile) {
             setUserProfile(profile);
+        }
+        if (descricaoPolo) {
+            setDescricaoPolo(descricaoPolo);
         }
     }, []);
 
@@ -114,7 +120,7 @@ const Sidebar = () => {
     return (
         <Drawer variant="permanent" sx={{ "& .MuiPaper-root": { borderRight: "none" } }}>
             <List style={{ width: '250px', backgroundColor: 'rgba(42, 67, 97, 1)', height: '100%', overflowY: 'scroll' }}>
-                <div className="regiao">@Polo</div>
+                <div className="regiao">{descricaoPolo || userProfile}</div>
                 <div className="bemvindo">Bem-vindo</div>
                 <div className="User">{userName}</div>
 

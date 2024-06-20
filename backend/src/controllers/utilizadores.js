@@ -4,6 +4,7 @@ const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
 const { generateToken } = require('../tokenUtils');
 const ficheirosController = require('./ficheiros');
+const subcategoria_fav_util = require('../models/subcategoria_fav_util');
 
 const controladorUtilizadores = {
     adicionar: async (req, res) => {
@@ -204,6 +205,47 @@ const controladorUtilizadores = {
         }
     },
 
+    consultarPorIDMobile: async (req, res) => {
+        const { idUtilizador } = req.params;
+    
+        try {
+            const utilizador = await models.utilizador.findByPk(idUtilizador, {
+                attributes: ['utilizadorid', 'pnome', 'unome', 'email', 'sobre', 'poloid', 'departamentoid', 'funcaoid', 'idiomaid'],
+                include: [
+                    {
+                        model: models.subcategoria_fav_util,
+                        as: 'subcategoria_fav_utils',
+                        attributes: ['subcategoriaid'] // Only fetch the subcategoriaId
+                    }
+                ]
+            });
+    
+            if (!utilizador) {
+                return res.status(404).json({ error: 'Utilizador não encontrado' });
+            }
+    
+            // Faz o mapp das subcategorias favoritas para um array de ids
+            const preferencias = utilizador.subcategoria_fav_utils.map(sub => sub.subcategoriaid    );
+
+            const ficheiros = await ficheirosController.getAllFilesByAlbum(utilizador.utilizadorid, 'UTIL');
+            const fotoUrl = ficheiros[0] ? ficheiros[0].url : '';
+            // adiciona a propriedade fotoUrl ao objeto utilizador
+            utilizador.dataValues.fotoUrl = fotoUrl;
+            // adiciona o objecto da imagem completo ao objeto utilizador
+            utilizador.dataValues.imagem = ficheiros[0];
+    
+            // adiciona as preferencias ao objeto utilizador
+            utilizador.dataValues.preferencias = preferencias;
+    
+            // remove a propriedade subcategoria_fav_utils do objeto utilizador original
+            delete utilizador.dataValues.subcategoria_fav_utils;
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: utilizador });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar utilizador', details: error.message });
+        }
+    },
+    
     consultarPorEmail: async (req, res) => {
         const { email } = req.params;
 

@@ -18,6 +18,7 @@ router.get('/filtro', authenticate, utilizadorControlador.consultarTodosComFiltr
 router.get('/totalpolo', authenticate, utilizadorControlador.consultarTotalPorPolo);
 router.get('/email/:email', utilizadorControlador.consultarPorEmail);
 router.get('/:idUtilizador', authenticate, utilizadorControlador.consultarPorID);
+router.get('/mobile/:idUtilizador', authenticate, utilizadorControlador.consultarPorIDMobile);
 router.get('/token/:id', utilizadorControlador.novoToken);
 
 

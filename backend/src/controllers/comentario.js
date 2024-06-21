@@ -59,77 +59,125 @@ const comentarioController = {
         try {
             const comentarios = await sequelizeConn.query(
                 `SELECT
-                    p.*, 
-                    ic.*,
-                    c.*,
-                    cr.*
+                    p.pontointeresseid AS pontointeresseid,
+                    p.titulo AS poi_titulo,
+                    p.descricao AS poi_descricao,
+                    p.aprovado AS poi_aprovado,
+                    p.dataaprovacao AS poi_dataaprovacao,
+                    p.utilizadoraprova AS poi_utilizadoraprova,
+                    p.localizacao AS poi_localizacao,
+                    p.latitude AS poi_latitude,
+                    p.longitude AS poi_longitude,
+                    p.idiomaid AS poi_idiomaid,
+                    p.cidadeid AS poi_cidadeid,
+                    p.datacriacao AS poi_datacriacao,
+                    p.dataalteracao AS poi_dataalteracao,
+                    p.utilizadorcriou AS poi_utilizadorcriou,
+                    c1.comentarioid AS comentarioid,
+                    c1.itemcomentarioid AS itemcomentarioid,
+                    c1.utilizadorid AS utilizadorid,
+                    c1.comentario AS comentario,
+                    c1.datacriacao AS comentario_datacriacao,
+                    c1.dataalteracao AS comentario_dataalteracao,
+                    ic.tipo AS tipo,
+                    cr.comentariopaiid AS parent_comentarioid,
+                    c2.comentarioid AS resposta_comentarioid,
+                    c2.comentario AS resposta_comentario,
+                    c2.datacriacao AS resposta_datacriacao,
+                    c2.dataalteracao AS resposta_dataalteracao
                 FROM 
                     pontointeresse p
                 LEFT JOIN
                     itemcomentario ic ON p.pontointeresseid = ic.registoid AND ic.tipo = 'POI'
-                INNER JOIN
-                    comentario c ON ic.itemcomentarioid = c.itemcomentarioid
                 LEFT JOIN
-                    comentarioresposta cr ON c.comentarioid = cr.comentariopaiid
+                    comentario c1 ON ic.itemcomentarioid = c1.itemcomentarioid
+                LEFT JOIN
+                    comentarioresposta cr ON c1.comentarioid = cr.comentariopaiid
+                LEFT JOIN
+                    comentario c2 ON cr.respostaid = c2.comentarioid
                 `,
                 { type: QueryTypes.SELECT }
             );
     
-            // Object to hold points of interest with their comments
-            let poiCommentsMap = {};
+            // Helper function to build the nested comments structure
+            const buildNestedComments = (comments) => {
+                const commentMap = {};
+                const responseSet = new Set(); // To track which comments are responses
     
-            // Iterate through the comments to build the nested structure
+                comments.forEach(comment => {
+                    if (!commentMap[comment.comentarioid]) {
+                        commentMap[comment.comentarioid] = {
+                            comentarioid: comment.comentarioid,
+                            comentario: comment.comentario,
+                            tipo: comment.tipo,
+                            respostas: []
+                        };
+                    }
+    
+                    if (comment.resposta_comentarioid) {
+                        if (!commentMap[comment.resposta_comentarioid]) {
+                            commentMap[comment.resposta_comentarioid] = {
+                                comentarioid: comment.resposta_comentarioid,
+                                comentario: comment.resposta_comentario,
+                                tipo: 'REPLY',
+                                respostas: []
+                            };
+                        }
+                        commentMap[comment.comentarioid].respostas.push(commentMap[comment.resposta_comentarioid]);
+                        responseSet.add(comment.resposta_comentarioid); // Mark as a response
+                    }
+                });
+    
+                // Return only the root comments
+                return Object.values(commentMap).filter(comment => !responseSet.has(comment.comentarioid));
+            };
+    
+            // Map to hold POIs with their comments
+            const poiMap = {};
+    
             comentarios.forEach(row => {
-                // Check if the point of interest exists in the map
-                if (!poiCommentsMap[row.pontointeresseid]) {
-                    poiCommentsMap[row.pontointeresseid] = {
+                if (!poiMap[row.pontointeresseid]) {
+                    poiMap[row.pontointeresseid] = {
                         pontointeresseid: row.pontointeresseid,
-                        subcategoriaid: row.subcategoriaid,
-                        titulo: row.titulo,
-                        descricao: row.descricao,
-                        aprovado: row.aprovado,
-                        dataaprovacao: row.dataaprovacao,
-                        utilizadoraprova: row.utilizadoraprova,
-                        localizacao: row.localizacao,
-                        latitude: row.latitude,
-                        longitude: row.longitude,
-                        idiomaid: row.idiomaid,
-                        cidadeid: row.cidadeid,
-                        datacriacao: row.datacriacao,
-                        dataalteracao: row.dataalteracao,
-                        utilizadorcriou: row.utilizadorcriou,
+                        titulo: row.poi_titulo,
+                        descricao: row.poi_descricao,
+                        aprovado: row.poi_aprovado,
+                        dataaprovacao: row.poi_dataaprovacao,
+                        utilizadoraprova: row.poi_utilizadoraprova,
+                        localizacao: row.poi_localizacao,
+                        latitude: row.poi_latitude,
+                        longitude: row.poi_longitude,
+                        idiomaid: row.poi_idiomaid,
+                        cidadeid: row.poi_cidadeid,
+                        datacriacao: row.poi_datacriacao,
+                        dataalteracao: row.poi_dataalteracao,
+                        utilizadorcriou: row.poi_utilizadorcriou,
                         comentarios: []
                     };
                 }
     
-                // Check if the comment exists in the point of interest's comments list
-                let comment = poiCommentsMap[row.pontointeresseid].comentarios.find(c => c.comentarioid === row.comentarioid);
-                if (!comment) {
-                    comment = {
-                        itemcomentarioid: row.itemcomentarioid,
-                        registoid: row.registoid,
-                        tipo: row.tipo,
+                // Add comment to the respective POI
+                if (row.comentarioid) {
+                    const comment = {
                         comentarioid: row.comentarioid,
-                        utilizadorid: row.utilizadorid,
                         comentario: row.comentario,
-                        datacriacao: row['c.datacriacao'],
-                        dataalteracao: row['c.dataalteracao'],
-                        respostas: []
+                        tipo: row.tipo,
+                        parent_comentarioid: row.parent_comentarioid,
+                        resposta_comentarioid: row.resposta_comentarioid,
+                        resposta_comentario: row.resposta_comentario
                     };
-                    poiCommentsMap[row.pontointeresseid].comentarios.push(comment);
-                }
     
-                // Add the response to the comment if it exists
-                if (row.respostaid) {
-                    comment.respostas.push({
-                        respostaid: row.respostaid,
-                        comentariopaiid: row.comentariopaiid
-                    });
+                    poiMap[row.pontointeresseid].comentarios.push(comment);
                 }
             });
     
-            // Convert the map to an array
-            let pontosInteresse = Object.values(poiCommentsMap);
+            // Build nested comments for each POI
+            Object.values(poiMap).forEach(poi => {
+                poi.comentarios = buildNestedComments(poi.comentarios);
+            });
+    
+            // Convert POI map to an array
+            const pontosInteresse = Object.values(poiMap);
     
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: pontosInteresse });
         } catch (error) {

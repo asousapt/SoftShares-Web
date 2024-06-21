@@ -4,7 +4,7 @@ import CommentsList from '../../components/comments/commentList1';
 import axios from 'axios';
 
 const ReportCommentModal = ({ open, onClose, commentId }) => {
-    const [commentsData, setCommentsData] = useState([]);
+    const [poiData, setPoiData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -20,36 +20,41 @@ const ReportCommentModal = ({ open, onClose, commentId }) => {
                     });
 
                     const data = response.data.data;
+                    console.log(data);
 
-                    // Process comments and their replies
-                    const commentsMap = {};
-                    data.forEach(poi => {
+                    // Find the point of interest and comments related to the provided commentId
+                    const poi = data.find(poi => poi.comentarios.some(comment => comment.comentarioid === 3));
+
+                    if (poi) {
+                        // Process comments and their replies
+                        const commentsMap = {};
                         poi.comentarios.forEach(comment => {
-                            if (!commentsMap[comment.comentarioid]) {
-                                commentsMap[comment.comentarioid] = {
-                                    ...comment,
-                                    respostas: []
-                                };
-                            }
+                            commentsMap[comment.comentarioid] = {
+                                ...comment,
+                                respostas: []
+                            };
                         });
-                    });
 
-                    // Nesting replies
-                    data.forEach(poi => {
+                        // Nesting replies
                         poi.comentarios.forEach(comment => {
                             comment.respostas.forEach(reply => {
-                                if (commentsMap[reply.comentariopaiid]) {
-                                    commentsMap[reply.comentariopaiid].respostas.push(commentsMap[reply.respostaid]);
+                                commentsMap[reply.comentarioid] = {
+                                    ...reply,
+                                    respostas: []
+                                };
+                                if (commentsMap[comment.comentarioid]) {
+                                    commentsMap[comment.comentarioid].respostas.push(commentsMap[reply.comentarioid]);
                                 }
                             });
                         });
-                    });
 
-                    // Filtering root comments
-                    const rootComments = Object.values(commentsMap).filter(comment => comment.tipo === "POI");
+                        // Filtering root comments
+                        const rootComments = Object.values(commentsMap).filter(comment => comment.tipo === "POI");
 
-                    setCommentsData(rootComments);
-                    console.log(rootComments);
+                        setPoiData({ ...poi, comentarios: rootComments });
+                    } else {
+                        setError('Ponto de interesse não encontrado.');
+                    }
                 } catch (err) {
                     setError(err.message);
                 } finally {
@@ -59,7 +64,7 @@ const ReportCommentModal = ({ open, onClose, commentId }) => {
 
             fetchComments();
         }
-    }, [open]);
+    }, [open, commentId]);
 
     return (
         <Modal open={open} onClose={onClose}>
@@ -68,8 +73,13 @@ const ReportCommentModal = ({ open, onClose, commentId }) => {
                 <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 20, borderRadius: 12 }}>
                     {loading && <p>Loading comments...</p>}
                     {error && <p>Error: {error}</p>}
-                    {!loading && !error && (
-                        <CommentsList commentsData={commentsData} />
+                    {!loading && !error && poiData && (
+                        <>
+                            <h3>{poiData.titulo}</h3>
+                            <p>{poiData.descricao}</p>
+                            <p>{poiData.utilizadorcriou}</p>
+                            <CommentsList commentsData={poiData.comentarios} />
+                        </>
                     )}
                 </div>
             </div>

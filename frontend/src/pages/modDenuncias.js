@@ -17,6 +17,7 @@ export default function ModDen() {
     const [filtroText, setFiltroText] = useState('');
     const [tableRows, setTableRows] = useState([]);
     const [error, setError] = useState(null);
+    const [selectedId, setSelectedId] = useState(null);
 
     const tableColumns = [
         { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
@@ -26,7 +27,7 @@ export default function ModDen() {
         { field: 'denunciadopor', headerName: 'Denunciado Por', flex: 1, headerAlign: 'left' },
         { field: 'permitir', headerName: 'Permitir', width: 85, headerAlign: 'left', sortable: false , renderCell: (row) => ( <AprovButton /*onclick={} id={row.id}*/ />)},
         { field: 'remover', headerName: 'Remover', width: 85, headerAlign: 'left', sortable: false , renderCell: (row) => ( <RejButton /*onclick={} id={row.id}*/ />)},
-        { field: 'ver', headerName: 'Ver', width: 85, headerAlign: 'left', sortable: false , renderCell: (row) => ( <DetailButton onclick={() => setNewModalOpen(true)} /*id={row.id}*/ />)},
+        { field: 'ver', headerName: 'Ver', width: 85, headerAlign: 'left', sortable: false , renderCell: (row) => ( <DetailButton onclick={() => handleVerClick(row.id)} /*id={row.id}*/ />)},
     ];
 
     const fetchData = async () => {
@@ -57,11 +58,16 @@ export default function ModDen() {
         } catch (error) {
             setError(error);
         }
-    };
+    };  
 
     useEffect(() => {
         fetchData();
     }, [filtroText]);
+
+    const handleVerClick = (commentId) => {
+        setSelectedId(commentId);
+        setNewModalOpen(true);
+    };
 
     if (error) {
         return <div>Error: {error.message}</div>;
@@ -79,7 +85,7 @@ export default function ModDen() {
                     <DataTable rows={tableRows || []} columns={tableColumns}/>
                 </div>
             </div>
-            <VerComentario open={isNewModalOpen} onClose={() => setNewModalOpen(false)}/>
+            <VerComentario open={isNewModalOpen} onClose={() => setNewModalOpen(false)} commentId={selectedId} />
         </div>
     )
 }

@@ -73,36 +73,46 @@ const comentarioController = {
                     p.datacriacao AS poi_datacriacao,
                     p.dataalteracao AS poi_dataalteracao,
                     p.utilizadorcriou AS poi_utilizadorcriou,
+                    CONCAT(u1.pnome, ' ', u1.unome) AS poi_utilizador_nome,
                     c1.comentarioid AS comentarioid,
                     c1.itemcomentarioid AS itemcomentarioid,
                     c1.utilizadorid AS utilizadorid,
                     c1.comentario AS comentario,
                     c1.datacriacao AS comentario_datacriacao,
                     c1.dataalteracao AS comentario_dataalteracao,
+                    CONCAT(u2.pnome, ' ', u2.unome) AS comentario_utilizador_nome,
                     ic.tipo AS tipo,
                     cr.comentariopaiid AS parent_comentarioid,
                     c2.comentarioid AS resposta_comentarioid,
                     c2.comentario AS resposta_comentario,
                     c2.datacriacao AS resposta_datacriacao,
-                    c2.dataalteracao AS resposta_dataalteracao
+                    c2.dataalteracao AS resposta_dataalteracao,
+                    c2.utilizadorid AS resposta_utilizadorid,
+                    CONCAT(u3.pnome, ' ', u3.unome) AS resposta_utilizador_nome
                 FROM 
                     pontointeresse p
+                LEFT JOIN
+                    utilizador u1 ON p.utilizadorcriou = u1.utilizadorid
                 LEFT JOIN
                     itemcomentario ic ON p.pontointeresseid = ic.registoid AND ic.tipo = 'POI'
                 LEFT JOIN
                     comentario c1 ON ic.itemcomentarioid = c1.itemcomentarioid
                 LEFT JOIN
+                    utilizador u2 ON c1.utilizadorid = u2.utilizadorid
+                LEFT JOIN
                     comentarioresposta cr ON c1.comentarioid = cr.comentariopaiid
                 LEFT JOIN
                     comentario c2 ON cr.respostaid = c2.comentarioid
+                LEFT JOIN
+                    utilizador u3 ON c2.utilizadorid = u3.utilizadorid
                 `,
-                { type: QueryTypes.SELECT }
+                { type: Sequelize.QueryTypes.SELECT }
             );
     
             // Helper function to build the nested comments structure
             const buildNestedComments = (comments) => {
                 const commentMap = {};
-                const responseSet = new Set(); // To track which comments are responses
+                const responseSet = new Set();
     
                 comments.forEach(comment => {
                     if (!commentMap[comment.comentarioid]) {
@@ -110,6 +120,8 @@ const comentarioController = {
                             comentarioid: comment.comentarioid,
                             comentario: comment.comentario,
                             tipo: comment.tipo,
+                            utilizadorid: comment.utilizadorid,
+                            utilizador_nome: comment.utilizador_nome,
                             respostas: []
                         };
                     }
@@ -120,19 +132,19 @@ const comentarioController = {
                                 comentarioid: comment.resposta_comentarioid,
                                 comentario: comment.resposta_comentario,
                                 tipo: 'REPLY',
+                                utilizadorid: comment.resposta_utilizadorid,
+                                utilizador_nome: comment.resposta_utilizador_nome,
                                 respostas: []
                             };
                         }
                         commentMap[comment.comentarioid].respostas.push(commentMap[comment.resposta_comentarioid]);
-                        responseSet.add(comment.resposta_comentarioid); // Mark as a response
+                        responseSet.add(comment.resposta_comentarioid);
                     }
                 });
     
-                // Return only the root comments
                 return Object.values(commentMap).filter(comment => !responseSet.has(comment.comentarioid));
             };
     
-            // Map to hold POIs with their comments
             const poiMap = {};
     
             comentarios.forEach(row => {
@@ -152,31 +164,33 @@ const comentarioController = {
                         datacriacao: row.poi_datacriacao,
                         dataalteracao: row.poi_dataalteracao,
                         utilizadorcriou: row.poi_utilizadorcriou,
+                        utilizador_nome: row.poi_utilizador_nome,
                         comentarios: []
                     };
                 }
     
-                // Add comment to the respective POI
                 if (row.comentarioid) {
                     const comment = {
                         comentarioid: row.comentarioid,
                         comentario: row.comentario,
                         tipo: row.tipo,
+                        utilizadorid: row.utilizadorid,
+                        utilizador_nome: row.comentario_utilizador_nome,
                         parent_comentarioid: row.parent_comentarioid,
                         resposta_comentarioid: row.resposta_comentarioid,
-                        resposta_comentario: row.resposta_comentario
+                        resposta_comentario: row.resposta_comentario,
+                        resposta_utilizadorid: row.resposta_utilizadorid,
+                        resposta_utilizador_nome: row.resposta_utilizador_nome
                     };
     
                     poiMap[row.pontointeresseid].comentarios.push(comment);
                 }
             });
     
-            // Build nested comments for each POI
             Object.values(poiMap).forEach(poi => {
                 poi.comentarios = buildNestedComments(poi.comentarios);
             });
     
-            // Convert POI map to an array
             const pontosInteresse = Object.values(poiMap);
     
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: pontosInteresse });
@@ -184,7 +198,6 @@ const comentarioController = {
             res.status(500).json({ error: 'Erro ao consultar comentários', details: error.message });
         }
     },
-    
 
     consultarComentario: async (req, res) => {
         const { idComentario } = req.params;

@@ -1,25 +1,24 @@
 import React from 'react';
+import { Box, Container } from '@mui/material';
+import Comment from './comment';
 
-const CommentsList = ({ commentsData }) => {
+export default function CommentsList({ commentsData }) {
     const renderReplies = (replies) => {
-        return replies.map(reply => (
-            <div key={reply.comentarioid} style={{ marginLeft: '20px', padding: '10px', border: '1px solid #ddd' }}>
-                <p><strong>Reply:</strong> {reply.comentario}</p>
-                {reply.respostas && reply.respostas.length > 0 && renderReplies(reply.respostas)}
-            </div>
+        return replies.map((reply, index) => (
+            <Box ml={4} key={index}>
+                <Comment comment={reply} />
+            </Box>
         ));
     };
 
     return (
-        <div>
-            {commentsData.map(comment => (
-                <div key={comment.comentarioid} style={{ marginBottom: '20px', padding: '10px', border: '1px solid #ddd' }}>
-                    <p><strong>Comment:</strong> {comment.comentario}</p>
-                    {comment.respostas && comment.respostas.length > 0 && renderReplies(comment.respostas)}
-                </div>
+        <Container>
+            {commentsData.map((comment, index) => (
+                <Box key={index}>
+                    <Comment comment={comment} />
+                    {comment.replies && renderReplies(comment.replies)}
+                </Box>
             ))}
-        </div>
+        </Container>
     );
-};
-
-export default CommentsList;
+}

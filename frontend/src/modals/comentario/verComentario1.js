@@ -40,16 +40,14 @@ const ReportCommentModal = ({ open, onClose, commentId }) => {
                         poi: {
                             titulo: poi.titulo,
                             descricao: poi.descricao,
-                            utilizadorcriou: poi.utilizador_nome
+                            utilizadorcriou: poi.utilizador_nome // Use utilizador_nome to get the creator's name
                         },
-                        reportedComment: transformComment(comment)
+                        reportedComment: transformComment(comment, true) // Mark only the reported comment
                     };
                 }
-                for (let reply of comment.respostas) {
-                    const foundComment = findCommentInReplies(reply, commentId, poi);
-                    if (foundComment) {
-                        return foundComment;
-                    }
+                const result = findCommentInReplies(comment, commentId, poi);
+                if (result) {
+                    return result;
                 }
             }
         }
@@ -57,17 +55,17 @@ const ReportCommentModal = ({ open, onClose, commentId }) => {
     };
 
     const findCommentInReplies = (comment, commentId, poi) => {
-        if (comment.comentarioid === commentId) {
-            return {
-                poi: {
-                    titulo: poi.titulo,
-                    descricao: poi.descricao,
-                    utilizadorcriou: poi.utilizador_nome
-                },
-                reportedComment: transformComment(comment)
-            };
-        }
         for (let reply of comment.respostas) {
+            if (reply.comentarioid === commentId) {
+                return {
+                    poi: {
+                        titulo: poi.titulo,
+                        descricao: poi.descricao,
+                        utilizadorcriou: poi.utilizador_nome // Use utilizador_nome to get the creator's name
+                    },
+                    reportedComment: transformComment(comment) // Include the parent comment as well
+                };
+            }
             const foundComment = findCommentInReplies(reply, commentId, poi);
             if (foundComment) {
                 return foundComment;
@@ -76,12 +74,12 @@ const ReportCommentModal = ({ open, onClose, commentId }) => {
         return null;
     };
 
-    const transformComment = (comment) => {
+    const transformComment = (comment, isReported = false) => {
         return {
-            author: comment.utilizador_nome,
+            author: comment.utilizador_nome, // Correctly assign the author's name
             text: comment.comentario,
-            reported: true, // Mark this comment as reported
-            replies: comment.respostas.map(reply => transformComment(reply))
+            reported: isReported, // Mark this comment as reported only if it's the target comment
+            replies: comment.respostas.map(reply => transformComment(reply, reply.comentarioid === commentId)) // Replies should only be marked if they are the reported comment
         };
     };
 

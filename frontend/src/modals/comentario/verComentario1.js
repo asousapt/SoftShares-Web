@@ -31,7 +31,6 @@ const ReportCommentModal = ({ open, onClose, commentId }) => {
     }, [open, commentId]);
 
     const transformCommentsData = (data, commentId) => {
-        console.log("Transforming comments data...");
         let poi = null;
         let reportedComment = null;
 
@@ -51,14 +50,10 @@ const ReportCommentModal = ({ open, onClose, commentId }) => {
             if (reportedComment) break;
         }
 
-        console.log("POI:", poi);
-        console.log("Reported Comment:", reportedComment);
-
         return { poi, reportedComment };
     };
 
     const findAndTransformComment = (comment, commentId) => {
-        console.log("Finding comment:", comment.comentarioid, "Target:", commentId);
         if (comment.comentarioid === commentId) {
             return transformComment(comment, true, commentId);
         }
@@ -74,7 +69,6 @@ const ReportCommentModal = ({ open, onClose, commentId }) => {
     };
 
     const transformComment = (comment, isReported = false, reportedCommentId = null) => {
-        console.log("Transforming comment:", comment.comentarioid, "Is reported:", isReported);
         return {
             comentarioid: comment.comentarioid,
             author: comment.utilizador_nome,

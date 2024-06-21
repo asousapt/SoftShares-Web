@@ -25,9 +25,9 @@ export default function ModDen() {
         { field: 'dataHora', headerName: 'Data e Hora Criacao', type: 'dateTime', width: 300, headerAlign: 'left' },
         { field: 'criadoPor', headerName: 'Criado por', flex: 1, headerAlign: 'left' },
         { field: 'denunciadopor', headerName: 'Denunciado Por', flex: 1, headerAlign: 'left' },
-        { field: 'permitir', headerName: 'Permitir', width: 85, headerAlign: 'left', sortable: false , renderCell: (row) => ( <AprovButton /*onclick={} id={row.id}*/ />)},
-        { field: 'remover', headerName: 'Remover', width: 85, headerAlign: 'left', sortable: false , renderCell: (row) => ( <RejButton /*onclick={} id={row.id}*/ />)},
-        { field: 'ver', headerName: 'Ver', width: 85, headerAlign: 'left', sortable: false , renderCell: (row) => ( <DetailButton onclick={() => handleVerClick(row.id)} /*id={row.id}*/ />)},
+        { field: 'permitir', headerName: 'Permitir', width: 85, headerAlign: 'left', sortable: false , renderCell: (params) => ( <AprovButton /*onclick={} id={params.row.id}*/ />)},
+        { field: 'remover', headerName: 'Remover', width: 85, headerAlign: 'left', sortable: false , renderCell: (params) => ( <RejButton /*onclick={} id={params.row.id}*/ />)},
+        { field: 'ver', headerName: 'Ver', width: 85, headerAlign: 'left', sortable: false , renderCell: (params) => ( <DetailButton onclick={() => handleVerClick(params.row.comentarioId)} /*id={params.row.id}*/ />)},
     ];
 
     const fetchData = async () => {
@@ -44,28 +44,33 @@ export default function ModDen() {
             });
             const denuncias = response.data.data;
 
+            console.log('ini:', denuncias);
+
             const sortedDen = denuncias.sort((a, b) => a.denunciaid - b.denunciaid);
 
-            const formattedData = sortedDen.map(denuncia => ({
-                id: denuncia.denunciaid,
-                motivo: denuncia.texto,
-                dataHora: new Date(denuncia.datacriacao),
-                criadoPor: denuncia.utilizadorcriou,
-                denunciadopor: denuncia.utilizadordenunciado
-            }));
+            const formattedData = sortedDen.map(denuncia => {
+                return {
+                    id: denuncia.denunciaid,
+                    motivo: denuncia.texto,
+                    dataHora: new Date(denuncia.datacriacao),
+                    criadoPor: denuncia.utilizadorcriou,
+                    denunciadopor: denuncia.utilizadordenunciado,
+                    comentarioId: denuncia.comentarioid
+                };
+            });
 
             setTableRows(formattedData);
         } catch (error) {
             setError(error);
         }
-    };  
+    };
 
     useEffect(() => {
         fetchData();
     }, [filtroText]);
 
-    const handleVerClick = (commentId) => {
-        setSelectedId(commentId);
+    const handleVerClick = (comentarioId) => {
+        setSelectedId(comentarioId);
         setNewModalOpen(true);
     };
 
@@ -73,19 +78,19 @@ export default function ModDen() {
         return <div>Error: {error.message}</div>;
     }
 
-    return(
+    return (
         <div className="page-container">
             <Header caption='Denúncias' />
             <div className="data-container">
-                <div style={{marginBottom:'20px', paddingTop: '20px'}}>
-                    <Search onchange={(e) => setFiltroText(e.target.value)} /> 
+                <div style={{ marginBottom: '20px', paddingTop: '20px' }}>
+                    <Search onchange={(e) => setFiltroText(e.target.value)} />
                     <AddButton caption='Adicionar' onclick={() => setNewModalOpen(true)} /> {/*so para teste */}
                 </div>
-                <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px',border: 'none', boxShadow: 'none'}}>
-                    <DataTable rows={tableRows || []} columns={tableColumns}/>
+                <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px', border: 'none', boxShadow: 'none' }}>
+                    <DataTable rows={tableRows || []} columns={tableColumns} />
                 </div>
             </div>
             <VerComentario open={isNewModalOpen} onClose={() => setNewModalOpen(false)} commentId={selectedId} />
         </div>
-    )
+    );
 }

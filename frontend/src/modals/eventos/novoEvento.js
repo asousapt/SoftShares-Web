@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Modal from '@mui/material/Modal';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import BasicTextField from '../../components/textFields/basic';
 import DataHora from '../../components/textFields/dataHora';
 import SubmitButton from '../../components/buttons/submitButton';
@@ -8,6 +12,7 @@ import CancelButton from '../../components/buttons/cancelButton';
 import ImageTable from '../../components/tables/imageTable';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
+import FormBuilder from '../../components/forms/FormBuilder';
 
 const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
     //VARS
@@ -45,6 +50,9 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
     const [dataHoraFimError, setDataHoraFimError] = useState(false);
     const [dataLimInscricaoError, setDataLimInscricaoError] = useState(false);
     const [numParticipantesError, setNumParticipantesError] = useState(false);
+
+    const refFormInscricao = useRef();
+    const refFormQualidade = useRef();
 
     useEffect(() => {
         const fetchDistritos = async () => {
@@ -218,6 +226,23 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
             return;
         }
 
+        const formInsc = JSON.parse(refFormInscricao.current.generateJSON());
+        const formQdd = JSON.parse(refFormQualidade.current.generateJSON());
+
+        for (let question of formInsc) {
+            if (!question.text.trim()) {
+                alert('Preencha o texto de todas as perguntas do formulario de inscrição!');
+                return;
+            }
+        }
+
+        for (let question of formQdd) {
+            if (!question.text.trim()) {
+                alert('Preencha o texto de todas as perguntas do questionário de qualidade!');
+                return;
+            }
+        }
+
         try {
             const imagesRtn = images.map(image => ({
                 nome: image.alt,
@@ -241,8 +266,11 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
                 utilizadorCriou: userid,
                 subcategoriaId: subcategoria ? subcategoria.value : '',
                 poloId: polo ? polo.value : '',
-                imagens: imagesRtn
+                imagens: imagesRtn,
+                formInsc: formInsc,
+                formQualidade: formQdd
             };
+            console.log(novoEvento);
             await axios.post('http://localhost:8000/evento/add', novoEvento, {
                 headers: {
                     Authorization: `${token}`,
@@ -339,86 +367,109 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px', overflow: 'auto' }}>
                 <h2 style={{ marginTop: 0, color: 'white' }}>Novo Evento</h2>
                 <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 20, borderRadius: 12 }}>
-                    <div style={{ marginBottom: 15 }}>
-                        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-                            <div style={{ width: '40%' }}>
-                                <BasicTextField caption='Titulo' valor={title} onchange={(e) => setTitle(e.target.value)} fullwidth={true} type="text" error={titleError}
-                            helperText={titleError ? "Introduza um título válido" : ""} />
+                    <Accordion defaultExpanded>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />} id="panel1-header">
+                            Detalhes Principais
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <div style={{ marginBottom: 15 }}>
+                                <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                                    <div style={{ width: '40%' }}>
+                                        <BasicTextField caption='Titulo' valor={title} onchange={(e) => setTitle(e.target.value)} fullwidth={true} type="text" error={titleError}
+                                    helperText={titleError ? "Introduza um título válido" : ""} />
+                                    </div>
+                                    <div style={{ width: '33.9%' }}>
+                                        <BasicTextField caption='Localização' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} type="text" error={localizacaoError}
+                                    helperText={localizacaoError ? "Introduza uma localização válida" : ""} />
+                                    </div>
+                                    <div style={{ width: '25%' }}>
+                                        <BasicTextField caption='Nº Participantes Máximo' type='number' valor={numParticipantes} onchange={(e) => setNumParticipantes(e.target.value)} fullwidth={true} error={numParticipantesError}
+                                    helperText={numParticipantesError ? "Introduza um nº válido" : ""} />
+                                    </div>
+                                </div>
+                                <div style={{ marginBottom: 20 }}></div>
+                                <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                                    <div style={{ width: '74.5%' }}>
+                                        <BasicTextField caption='Descrição' valor={description} onchange={(e) => setDescription(e.target.value)} fullwidth={true} type="text" error={descError}
+                                    helperText={descError ? "Introduza uma descrição válida" : ""} />
+                                    </div>
+                                    <div style={{ width: '24.9%' }}>
+                                        <Autocomplete options={polos} getOptionLabel={(option) => option.label} renderInput={(params) => (
+                                                <TextField {...params} label="Polo" variant="outlined" type="text" error={poloError} helperText={poloError ? "Escolha um Polo" : ""} /> )}
+                                            value={polo}
+                                            onChange={(event, newValue) => { setPolo(newValue); }}
+                                            fullWidth={true} />
+                                    </div>
+                                </div>
+                                <div style={{ marginBottom: 20 }}></div>
+                                <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                                    <div style={{ width: '32.9%' }}>
+                                        <DataHora caption="Data e Hora Início" value={dataHoraInicio} onChange={(newValue) => setDataHoraInicio(newValue)} fullwidth={true} error={dataHoraInicioError}
+                                    helperText={dataHoraInicioError ? "Introduza uma data e hora válida" : ""} />
+                                    </div>
+                                    <div style={{ width: '33%' }}>
+                                        <DataHora caption="Data e Hora Fim" value={dataHoraFim} onChange={(newValue) => setDataHoraFim(newValue)} fullwidth={true} error={dataHoraFimError}
+                                    helperText={dataHoraFimError ? "Introduza uma data e hora válida" : ""} />
+                                    </div>
+                                    <div style={{ width: '33%' }}>
+                                        <DataHora caption="Data Limite de Inscrição" value={dataLimInscricao} onChange={(newValue) => setDataLimInscricao(newValue)} fullwidth={true} error={dataLimInscricaoError}
+                                    helperText={dataLimInscricaoError ? "Introduza uma data e hora válida" : ""} />
+                                    </div>
+                                </div>
+                                <div style={{ marginBottom: 20 }}></div>
+                                <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                                    <div style={{ width: '25%' }}>
+                                        <Autocomplete options={distritos} getOptionLabel={(option) => option.label} renderInput={(params) => (
+                                                <TextField {...params} label="Distrito" variant="outlined" type="text" error={distritoError} helperText={distritoError ? "Escolha um distrito" : ""} /> )}
+                                            value={distrito}
+                                            onChange={handleDistritoChange}
+                                            fullWidth={true} />
+                                    </div>
+                                    <div style={{ width: '23.4%' }}>
+                                        <Autocomplete options={cidades} getOptionLabel={(option) => option.label} renderInput={(params) => (
+                                            <TextField {...params} label="Cidade" variant="outlined" error={cidadeError} helperText={cidadeError ? "Escolha uma cidade" : ""} />)}
+                                            value={cidade}
+                                            onChange={(event, newValue) => { setCidade(newValue); setCidadeError(false); }}
+                                            fullWidth={true} />
+                                    </div>
+                                    <div style={{ width: '25%' }}>
+                                        <Autocomplete options={opcoesFiltroCat} getOptionLabel={(option) => option.label} renderInput={(params) => (
+                                                <TextField {...params} label="Categoria" variant="outlined" type="text" error={categoriaError} helperText={categoriaError ? "Escolha uma categoria" : ""} /> )}
+                                            value={categoria}
+                                            onChange={handleCategoriaChange}
+                                            fullWidth={true} />
+                                    </div>
+                                    <div style={{ width: '25%' }}>
+                                        <Autocomplete options={opcoesFiltroSubcat} getOptionLabel={(option) => option.label} renderInput={(params) => (
+                                            <TextField {...params} label="Subcategoria" variant="outlined" error={subcategoriaError} helperText={subcategoriaError ? "Escolha uma subcategoria" : ""} />)}
+                                            value={subcategoria}
+                                            onChange={(event, newValue) => { setSubcategoria(newValue); }}
+                                            fullWidth={true} />
+                                    </div>
+                                </div>
+                                <div style={{marginTop: 20}}>
+                                    <ImageTable images={images} onAddImage={handleImage} onDelete={resetImage}/>
+                                </div>
                             </div>
-                            <div style={{ width: '33.9%' }}>
-                                <BasicTextField caption='Localização' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} type="text" error={localizacaoError}
-                            helperText={localizacaoError ? "Introduza uma localização válida" : ""} />
-                            </div>
-                            <div style={{ width: '25%' }}>
-                                <BasicTextField caption='Nº Participantes Máximo' type='number' valor={numParticipantes} onchange={(e) => setNumParticipantes(e.target.value)} fullwidth={true} error={numParticipantesError}
-                            helperText={numParticipantesError ? "Introduza um nº válido" : ""} />
-                            </div>
-                        </div>
-                        <div style={{ marginBottom: 20 }}></div>
-                        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-                            <div style={{ width: '74.5%' }}>
-                                <BasicTextField caption='Descrição' valor={description} onchange={(e) => setDescription(e.target.value)} fullwidth={true} type="text" error={descError}
-                            helperText={descError ? "Introduza uma descrição válida" : ""} />
-                            </div>
-                            <div style={{ width: '24.9%' }}>
-                                <Autocomplete options={polos} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                        <TextField {...params} label="Polo" variant="outlined" type="text" error={poloError} helperText={poloError ? "Escolha um Polo" : ""} /> )}
-                                    value={polo}
-                                    onChange={(event, newValue) => { setPolo(newValue); }}
-                                    fullWidth={true} />
-                            </div>
-                        </div>
-                        <div style={{ marginBottom: 20 }}></div>
-                        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-                            <div style={{ width: '32.9%' }}>
-                                <DataHora caption="Data e Hora Início" value={dataHoraInicio} onChange={(newValue) => setDataHoraInicio(newValue)} fullwidth={true} error={dataHoraInicioError}
-                            helperText={dataHoraInicioError ? "Introduza uma data e hora válida" : ""} />
-                            </div>
-                            <div style={{ width: '33%' }}>
-                                <DataHora caption="Data e Hora Fim" value={dataHoraFim} onChange={(newValue) => setDataHoraFim(newValue)} fullwidth={true} error={dataHoraFimError}
-                            helperText={dataHoraFimError ? "Introduza uma data e hora válida" : ""} />
-                            </div>
-                            <div style={{ width: '33%' }}>
-                                <DataHora caption="Data Limite de Inscrição" value={dataLimInscricao} onChange={(newValue) => setDataLimInscricao(newValue)} fullwidth={true} error={dataLimInscricaoError}
-                            helperText={dataLimInscricaoError ? "Introduza uma data e hora válida" : ""} />
-                            </div>
-                        </div>
-                        <div style={{ marginBottom: 20 }}></div>
-                        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-                            <div style={{ width: '25%' }}>
-                                <Autocomplete options={distritos} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                        <TextField {...params} label="Distrito" variant="outlined" type="text" error={distritoError} helperText={distritoError ? "Escolha um distrito" : ""} /> )}
-                                    value={distrito}
-                                    onChange={handleDistritoChange}
-                                    fullWidth={true} />
-                            </div>
-                            <div style={{ width: '23.4%' }}>
-                                <Autocomplete options={cidades} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                    <TextField {...params} label="Cidade" variant="outlined" error={cidadeError} helperText={cidadeError ? "Escolha uma cidade" : ""} />)}
-                                    value={cidade}
-                                    onChange={(event, newValue) => { setCidade(newValue); setCidadeError(false); }}
-                                    fullWidth={true} />
-                            </div>
-                            <div style={{ width: '25%' }}>
-                                <Autocomplete options={opcoesFiltroCat} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                        <TextField {...params} label="Categoria" variant="outlined" type="text" error={categoriaError} helperText={categoriaError ? "Escolha uma categoria" : ""} /> )}
-                                    value={categoria}
-                                    onChange={handleCategoriaChange}
-                                    fullWidth={true} />
-                            </div>
-                            <div style={{ width: '25%' }}>
-                                <Autocomplete options={opcoesFiltroSubcat} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                    <TextField {...params} label="Subcategoria" variant="outlined" error={subcategoriaError} helperText={subcategoriaError ? "Escolha uma subcategoria" : ""} />)}
-                                    value={subcategoria}
-                                    onChange={(event, newValue) => { setSubcategoria(newValue); }}
-                                    fullWidth={true} />
-                            </div>
-                        </div>
-                        <div style={{marginTop: 20}}>
-                            <ImageTable images={images} onAddImage={handleImage} onDelete={resetImage}/>
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
+                        </AccordionDetails>
+                    </Accordion>
+                    <Accordion>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />} id="panel2-header">
+                            Formulário de Inscrição
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <FormBuilder ref={refFormInscricao} />
+                        </AccordionDetails>
+                    </Accordion>
+                    <Accordion>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />} id="panel3-header">
+                            Questionário de Qualidade
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <FormBuilder ref={refFormQualidade} />
+                        </AccordionDetails>
+                    </Accordion>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: 10 }}>
                         <CancelButton onclick={handleCancel} caption='Cancelar' />
                         <SubmitButton onclick={handleAddEvent} caption='Guardar' />
                     </div>

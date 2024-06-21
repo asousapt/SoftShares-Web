@@ -20,7 +20,9 @@ const controladorEventos = {
             utilizadorCriou, 
             subcategoriaId, 
             poloId,
-            imagens
+            imagens,
+            formInsc,
+            formQualidade
         } = req.body;
 
         try {
@@ -47,9 +49,69 @@ const controladorEventos = {
 
             ficheirosController.adicionar(evento.eventoid, 'EVENTO', imagens, utilizadorCriou);
 
+            if (Array.isArray(formInsc) && formInsc.length > 0){
+                const cfgFormulario = await models.itemcfgformulario.create({
+                    registoid: evento.eventoid,
+                    tipo: 'EVENTO'
+                });
+    
+                const formulario = await models.formulario.create({
+                    itemcfgformularioid: cfgFormulario.itemcfgformularioid,
+                    tipoformulario: "INSCR"
+                });
+    
+                const versao = await models.formularioversao.create({
+                    formularioid: formulario.formularioid,
+                    descricao: "Formulario Inscrição Evento "+evento.titulo,
+                });
+    
+                await Promise.all(formInsc.map(async pergunta => {
+                    await models.formulariodetalhes.create({
+                        formularioversaoid: versao.formularioversaoid,
+                        pergunta: pergunta.text,
+                        tipodados: pergunta.type,
+                        obrigatorio: pergunta.required,
+                        minimo: pergunta.minValue,
+                        maximo: pergunta.maxValue,
+                        ordem: pergunta.order,
+                        respostaspossiveis: pergunta.options.join(", ")
+                    });
+                }));
+            }
+
+            if (Array.isArray(formQualidade) && formQualidade.length > 0){
+                const cfgFormulario = await models.itemcfgformulario.create({
+                    registoid: evento.eventoid,
+                    tipo: 'EVENTO'
+                });
+    
+                const formulario = await models.formulario.create({
+                    itemcfgformularioid: cfgFormulario.itemcfgformularioid,
+                    tipoformulario: "QUALIDADE"
+                });
+    
+                const versao = await models.formularioversao.create({
+                    formularioid: formulario.formularioid,
+                    descricao: "Formulario Inscrição Evento "+evento.titulo,
+                });
+    
+                await Promise.all(formQualidade.map(async pergunta => {
+                    await models.formulariodetalhes.create({
+                        formularioversaoid: versao.formularioversaoid,
+                        pergunta: pergunta.text,
+                        tipodados: pergunta.type,
+                        obrigatorio: pergunta.required,
+                        minimo: pergunta.minValue,
+                        maximo: pergunta.maxValue,
+                        ordem: pergunta.order,
+                        respostaspossiveis: pergunta.options.join(", ")
+                    });
+                }));
+            }
+
             res.status(201).json({ message: 'Evento adicionado com sucesso' });
         } catch (error) {
-            res.status(500).json({ error: 'Erro ao adicionar evento', details: error.message });
+            res.status(500).json({ error: 'Erro ao adicionar evento', details: error });
         }
     },
 

@@ -16,8 +16,6 @@ const ReportCommentModal = ({ open, onClose, commentId }) => {
                         headers: { Authorization: `${token}` }
                     });
 
-                    console.log('Comments data:', response.data);
-
                     if (response.data && response.data.data) {
                         const transformedData = transformCommentsData(response.data.data, commentId);
                         setPoiData(transformedData.poi);
@@ -33,53 +31,56 @@ const ReportCommentModal = ({ open, onClose, commentId }) => {
     }, [open, commentId]);
 
     const transformCommentsData = (data, commentId) => {
-        for (let poi of data) {
-            for (let comment of poi.comentarios) {
-                if (comment.comentarioid === commentId) {
-                    return {
-                        poi: {
-                            titulo: poi.titulo,
-                            descricao: poi.descricao,
-                            utilizadorcriou: poi.utilizador_nome // Use utilizador_nome to get the creator's name
-                        },
-                        reportedComment: transformComment(comment, true) // Mark only the reported comment
-                    };
-                }
-                const result = findCommentInReplies(comment, commentId, poi);
+        console.log("Transforming comments data...");
+        let poi = null;
+        let reportedComment = null;
+
+        for (const p of data) {
+            for (const comment of p.comentarios) {
+                const result = findAndTransformComment(comment, commentId);
                 if (result) {
-                    return result;
+                    poi = {
+                        titulo: p.titulo,
+                        descricao: p.descricao,
+                        utilizadorcriou: p.utilizador_nome
+                    };
+                    reportedComment = result;
+                    break;
                 }
             }
+            if (reportedComment) break;
         }
-        return { poi: null, reportedComment: null };
+
+        console.log("POI:", poi);
+        console.log("Reported Comment:", reportedComment);
+
+        return { poi, reportedComment };
     };
 
-    const findCommentInReplies = (comment, commentId, poi) => {
-        for (let reply of comment.respostas) {
-            if (reply.comentarioid === commentId) {
-                return {
-                    poi: {
-                        titulo: poi.titulo,
-                        descricao: poi.descricao,
-                        utilizadorcriou: poi.utilizador_nome // Use utilizador_nome to get the creator's name
-                    },
-                    reportedComment: transformComment(comment) // Include the parent comment as well
-                };
-            }
-            const foundComment = findCommentInReplies(reply, commentId, poi);
-            if (foundComment) {
-                return foundComment;
+    const findAndTransformComment = (comment, commentId) => {
+        console.log("Finding comment:", comment.comentarioid, "Target:", commentId);
+        if (comment.comentarioid === commentId) {
+            return transformComment(comment, true, commentId);
+        }
+
+        for (const reply of comment.respostas) {
+            const result = findAndTransformComment(reply, commentId);
+            if (result) {
+                return transformComment(comment, false, commentId);
             }
         }
+
         return null;
     };
 
-    const transformComment = (comment, isReported = false) => {
+    const transformComment = (comment, isReported = false, reportedCommentId = null) => {
+        console.log("Transforming comment:", comment.comentarioid, "Is reported:", isReported);
         return {
-            author: comment.utilizador_nome, // Correctly assign the author's name
+            comentarioid: comment.comentarioid,
+            author: comment.utilizador_nome,
             text: comment.comentario,
-            reported: isReported, // Mark this comment as reported only if it's the target comment
-            replies: comment.respostas.map(reply => transformComment(reply, reply.comentarioid === commentId)) // Replies should only be marked if they are the reported comment
+            reported: isReported,
+            replies: comment.respostas.map(reply => transformComment(reply, reply.comentarioid === reportedCommentId, reportedCommentId))
         };
     };
 
@@ -94,9 +95,7 @@ const ReportCommentModal = ({ open, onClose, commentId }) => {
                 <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 5, borderRadius: 12 }}>
                     <div>
                         <h3>Título: {poiData.titulo}</h3>
-                        <p>Descrição:</p>
-                        <p>{poiData.descricao}</p>
-                        {/* <p>Autor: {poiData.utilizadorcriou}</p> */}
+                        <p>Descrição: {poiData.descricao}</p>
                         <p>Comentários:</p>
                         <CommentsList commentsData={[reportedComment]} />
                     </div>

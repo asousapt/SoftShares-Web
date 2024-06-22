@@ -60,7 +60,7 @@ const Sidebar = () => {
 
     const menuItems = [
         { title: 'Dashboard', icon: AiIcons.AiFillHome, link: '/dashboard' },
-        { 
+        /* { 
             title: 'Estatísticas', 
             icon: FaIcons.FaChartBar, 
             subItems: [
@@ -68,7 +68,7 @@ const Sidebar = () => {
                 { title: 'Denuncias', link: '/estatisticas/denuncias', icon: IoIcons.IoIosPaper },
                 { title: 'Reporting', link: '/estatisticas/reporting', icon: IoIcons.IoIosPaper },
             ],
-        },
+        }, */
         { 
             title: 'Listagem', 
             icon: FaIcons.FaClipboardList, 

@@ -1,12 +1,55 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-export default function Notificacoes({ anchorEl, open, handleClose, rows }) {
+export default function Notificacoes({ anchorEl, open, handleClose }) {
+    const [rows, setRows] = useState([]);
+
+    const marcarLida = async (id) => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.put(`http://localhost:8000/notificacao/lida/${id}`, {
+                headers: {
+                    Authorization: `${token}`
+                }
+            });
+            fetchData();
+        } catch (error) {
+            console.error("Erro ao encontrar o formulário", error);
+        }
+    }
+
+    const fetchData = async () => {
+        try {
+            const userid = sessionStorage.getItem('userid');
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get(`http://localhost:8000/notificacao/utilizador/${userid}`, {
+                headers: {
+                    Authorization: `${token}`
+                }
+            });
+            const notificacoes = response.data;
+            
+            setRows(notificacoes.map(ntf => ({
+                id: ntf.notificacaoid,
+                value: ntf.notificacao
+            })));
+        } catch (error) {
+            console.error("Erro ao encontrar o formulário", error);
+        }
+    }
+
+    useEffect(() => {
+        fetchData()
+    }, []);
+
     return (
         <Menu
             anchorEl={anchorEl}
@@ -48,8 +91,15 @@ export default function Notificacoes({ anchorEl, open, handleClose, rows }) {
                     As suas notificações
                 </Typography>
                 <List style={{ minWidth: '100%', maxHeight: 100, overflowX: 'auto', width: 'auto', border: '1px solid', borderColor: '#545F71', borderRadius: 4 }}>
-                    {rows.map((row, index) => (
-                        <ListItem key={index}>
+                    {rows.map((row) => (
+                        <ListItem 
+                            key={row.id}
+                            secondaryAction={
+                                <IconButton edge="end" onClick={() => {marcarLida(row.id)}}>
+                                    <DeleteIcon />
+                                </IconButton>
+                            }
+                        >
                             <ListItemText primary={row.value} />
                         </ListItem>
                     ))}

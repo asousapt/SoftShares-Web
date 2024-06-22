@@ -4,15 +4,25 @@ import MenuItem from '@mui/material/MenuItem';
 import Logout from '@mui/icons-material/Logout';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { useNavigate } from 'react-router-dom';
+import { Avatar } from '@mui/material';
 
 export default function Perfil({ anchorEl, open, handleClose }) {
     const navigate = useNavigate();
     const [userName, setUserName] = useState('');
+    const [userImage, setUserImage] = useState('');
 
     useEffect(() => {
         const name = sessionStorage.getItem('nome');
         if (name) {
             setUserName(name);
+        }
+        
+        const image = sessionStorage.getItem('image');
+        if (image && image !== '') {
+            setUserImage(image);
+        } else{
+            const char0 = userName.charAt(0);
+            setUserImage(image);
         }
     }, []);
 
@@ -55,16 +65,19 @@ export default function Perfil({ anchorEl, open, handleClose }) {
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
             <MenuItem onClick={handleClose} >
-                <img 
-                    src='https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D' 
-                    style={{
-                        width: 50,
-                        height: 50,
-                        objectFit: 'cover',
-                        marginRight: 5,
-                        borderRadius: 12
-                    }} 
-                    alt='user' /> 
+                {userImage !== '' && (
+                    <img 
+                        src={userImage} 
+                        style={{
+                            width: 50,
+                            height: 50,
+                            objectFit: 'cover',
+                            marginRight: 5,
+                            borderRadius: 12
+                        }} 
+                        alt='user' />
+                )} 
+                {userImage === '' && (<Avatar>{userName.charAt(0)}</Avatar>)}
                     {userName}
             </MenuItem>
             <MenuItem onClick={() => {navigate('/'); sessionStorage.clear();}} style={{backgroundColor: '#1765E0'}}>

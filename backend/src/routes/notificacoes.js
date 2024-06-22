@@ -6,6 +6,9 @@ const { authenticate } = require('../tokenUtils');
 //ROUTES POST
 router.post('/', authenticate, controladorNotificacoes.adicionar);
 
+//ROUTES PUT
+router.put('/lida/:id', authenticate, controladorNotificacoes.marcarLida);
+
 //ROUTES DELETE
 router.delete('/:id', authenticate, controladorNotificacoes.remover);
 

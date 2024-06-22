@@ -22,13 +22,34 @@ const denunciaController = {
 
     atualizar: async (req, res) => {
         const { idDenuncia } = req.params;
-        const { texto, utilizadormodera, datatratamento } = req.body;
+        const { texto, utilizadormodera } = req.body;
 
         try {
             await models.denuncia.update({
                 texto: texto,
                 utilizadormodera: utilizadormodera,
-                datatratamento: datatratamento
+                datatratamento: Sequelize.literal('CURRENT_TIMESTAMP')
+            }, {
+                where: {
+                    denunciaid: idDenuncia
+                }
+            });
+
+            res.status(200).json({ message: 'Denúncia atualizada com sucesso' });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao atualizar denúncia', details: error.message });
+        }
+    },
+
+    aprovar: async (req, res) => {
+        const { idDenuncia } = req.params;
+        const { texto, utilizadormodera } = req.body;
+
+        try {
+            await models.denuncia.update({
+                texto: texto,
+                utilizadormodera: utilizadormodera,
+                datatratamento: Sequelize.literal('CURRENT_TIMESTAMP')
             }, {
                 where: {
                     denunciaid: idDenuncia
@@ -54,6 +75,35 @@ const denunciaController = {
             res.status(200).json({ message: 'Denúncia removida com sucesso' });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao remover denúncia', details: error.message });
+        }
+    },
+
+    rejeitar: async (req, res) => {
+        const { idDenuncia } = req.params;
+        const { utilizadormodera, comentarioid } = req.body;
+        console.log('iddenunca, idcomentario', idDenuncia, comentarioid);
+
+        try {
+            await models.denuncia.update({
+                utilizadormodera: utilizadormodera,
+                datatratamento: Sequelize.literal('CURRENT_TIMESTAMP')
+            }, {
+                where: {
+                    denunciaid: idDenuncia
+                }
+            });
+
+            await models.comentario.update({
+                removido: true
+            }, {
+                where: {
+                    comentarioid: comentarioid
+                }
+            });
+
+            res.status(200).json({ message: 'Comentario denunciado atualizado para removido com sucesso' });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao atualizar estado de comentario denunciado', details: error.message });
         }
     },
 
@@ -85,11 +135,24 @@ const denunciaController = {
         const { descricao } = req.query;
         try {
             const denuncias = await models.denuncia.findAll({
-                where:{
-                    texto:{
+                where: {
+                    texto: {
                         [Op.like]: `%${descricao}%`
+                    },
+                    utilizadormodera: {
+                        [Op.is]: null
+                    },
+                    datatratamento: {
+                        [Op.is]: null
                     }
-                }
+                },
+                include: [
+                    {
+                        model: models.utilizador,
+                        as: 'utilizadorcriou_utilizador',
+                        attributes: ['pnome', 'unome']
+                    }
+                ]
             });
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: denuncias });
         } catch (error) {

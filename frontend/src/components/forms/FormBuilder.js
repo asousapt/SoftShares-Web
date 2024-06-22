@@ -96,6 +96,7 @@ const FormBuilder = forwardRef((props, ref) => {
       if (typeof props.onFormSubmit === 'function') {
         props.onFormSubmit(JSON.stringify(data));
       }
+            return JSON.stringify(data);
     }
   }));
 

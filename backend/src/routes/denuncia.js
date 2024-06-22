@@ -8,6 +8,8 @@ router.post('/add', authenticate, denunciaController.adicionar);
 
 // Rotas PUT
 router.put('/update/:idDenuncia', authenticate, denunciaController.atualizar);
+router.put('/aprovar/:idDenuncia', authenticate, denunciaController.aprovar);
+router.put('/rejeitar/:idDenuncia', authenticate, denunciaController.rejeitar);
 
 // Rotas DELETE
 router.delete('/delete/:idDenuncia', authenticate, denunciaController.remover);

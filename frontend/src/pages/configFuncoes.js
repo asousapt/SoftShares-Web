@@ -106,7 +106,7 @@ export default function Configtilizadores() {
                     <Search onchange={(e) => setFiltroText(e.target.value)} />
                     <ComboFilter options={opcoesFiltro} value={filtroCombo} handleChange={(e) => setFiltroCombo(e.target.value)} />
                 </div>
-                <div style={{ height: '65vh', width: '99%', overflowX: 'auto'}}>
+                <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px', border: 'none', boxShadow: 'none' }}>
                     <DataTable rows={tableRows} columns={tableColumns}/>
                 </div>
             </div>

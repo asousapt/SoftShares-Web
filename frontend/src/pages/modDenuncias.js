@@ -10,7 +10,7 @@ import AddButton from '../components/buttons/addButton';
 import Header from '../components/header/header';
 import Search from '../components/textFields/search';
 /* FIM COMPONENTES */
-import VerComentario from '../modals/comentario/verComentario1';
+import VerComentario from '../modals/comentario/verComentario';
 
 export default function ModDen() {
     const [isNewModalOpen, setNewModalOpen] = useState(false);

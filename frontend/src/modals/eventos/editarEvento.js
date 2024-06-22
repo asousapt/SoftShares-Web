@@ -32,6 +32,7 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
     const [opcoesSubcat, setOpcoesSubcat] = useState([]);
     const [subcategoria, setSubcategoria] = useState(null);
     const [images, setImages] = useState([]);
+    const [isPoloDisabled, setIsPoloDisabled] = useState(false);
 
     //ERRORS
     const [titleError, setTitleError] = useState(false);
@@ -248,6 +249,17 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
         fetchPolos();
         fetchCategorias();
         fetchEventData();
+
+        const perfil = sessionStorage.getItem('perfil');
+        if (perfil === 'Admin'){
+            setIsPoloDisabled(true);
+
+            const poloid = sessionStorage.getItem('poloid');
+            const descpolo = sessionStorage.getItem('descpolo');
+            setPolo({value: poloid, label: descpolo});
+        } else {
+            setIsPoloDisabled(false);
+        }
     }, [eventData]);
 
     const validateForm = () => {
@@ -472,7 +484,7 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
                             </div>
                             <div style={{ width: '24.9%' }}>
                                 <ComboBox caption='Polo' options={polos} value={poloId} handleChange={(e) => { setPolo(e.target.value); setPoloError(false); }} error={poloError}
-                                    helperText={poloError ? "Selecione um polo" : ""} />
+                                    disabled={isPoloDisabled} helperText={poloError ? "Selecione um polo" : ""} />
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>

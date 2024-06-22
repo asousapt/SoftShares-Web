@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '@mui/material/Modal';
 import CommentsList from '../../components/comments/commentList';
+import CancelButton from '../../components/buttons/cancelButton';
 import axios from 'axios';
 
 const ReportCommentModal = ({ open, onClose, commentId }) => {
@@ -92,6 +93,9 @@ const ReportCommentModal = ({ open, onClose, commentId }) => {
                         <p>Descrição: {poiData.descricao}</p>
                         <p>Comentários:</p>
                         <CommentsList commentsData={[reportedComment]} />
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
+                        <CancelButton onclick={() => { onClose(); }} caption='Voltar' />
                     </div>
                 </div>
             </div>

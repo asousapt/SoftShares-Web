@@ -36,6 +36,11 @@ module.exports = function(sequelize, DataTypes) {
             type: DataTypes.DATE,
             allowNull: false,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        },
+        removido: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
         }
     }, {
         tableName: 'comentario',

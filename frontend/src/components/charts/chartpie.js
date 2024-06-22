@@ -6,8 +6,8 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
 const chartSize = {
-  width: 340,  
-  height: 300, 
+  width: 340,
+  height: 300,
 };
 
 const StyledText = styled('text')(({ theme }) => ({
@@ -38,40 +38,57 @@ export default function ChartPie({ chartData, total, label }) {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    setData(chartData);
-  },[chartData]);
+    const coloredData = chartData.map((item, index) => {
+      // Gera um número base e converte para hexadecimal
+      const baseColor = ((index + 1) * 100000).toString(16).padStart(6, '0');
+      // Divide a string em componentes R, G, B
+      const r = parseInt(baseColor.substring(0, 2), 16);
+      const g = parseInt(baseColor.substring(2, 4), 16);
+      const b = parseInt(baseColor.substring(4, 6), 16);
+      // Aplica um fator de escuridão
+      const darkenFactor = 0.8;
+      const darkR = Math.floor(r * darkenFactor).toString(16).padStart(2, '0');
+      const darkG = Math.floor(g * darkenFactor).toString(16).padStart(2, '0');
+      const darkB = Math.floor(b * darkenFactor).toString(16).padStart(2, '0');
+      // Constrói a cor final em formato hexadecimal
+      const darkColor = `#${darkR}${darkG}${darkB}`;
+      return {
+        ...item,
+        color: darkColor,
+      };
+    });
+    setData(coloredData);
+  }, [chartData]);
 
   return (
-    <Box 
-      display="flex" 
-      flexDirection="column" 
-      alignItems="center" 
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
       p={2}
-      border={1} 
-      borderRadius={2} 
+      border={1}
+      borderRadius={2}
       borderColor="#ccc"
       width={340}
-      height={530}  
+      height={530}
     >
-      <Box
-        sx={{
-          transform: 'translateX(50px)',
-        }}
-      >
-      
-      <PieChart
-        series={[{ data, innerRadius: 80, outerRadius: 120, colors: data.map(d => d.color) }]}
-        width={chartSize.width}
-        height={chartSize.height}
-        slotProps={{
-          legend: {
-            hidden: true,
-          },
-        }}
-      >
-        <PieCenterLabel>{label}</PieCenterLabel>
-        <SecondLineText x={chartSize.width / 2.8} y={chartSize.height / 1.8}> {total} </SecondLineText>
-      </PieChart>
+      <Box sx={{ transform: 'translateX(50px)' }}>
+        <PieChart
+          series={[{ data, innerRadius: 80, outerRadius: 120, colors: data.map(d => d.color) }]}
+          width={chartSize.width}
+          height={chartSize.height}
+          slotProps={{
+            legend: {
+              hidden: true,
+            },
+          }}
+        >
+          <PieCenterLabel>{label}</PieCenterLabel>
+          <SecondLineText x={chartSize.width / 2.8} y={chartSize.height / 1.8}>
+            {' '}
+            {total}{' '}
+          </SecondLineText>
+        </PieChart>
       </Box>
       <Box mt={5} width={chartSize.width} textAlign="left" height={200} overflow="auto">
         {data.map((item, index) => (
@@ -85,13 +102,7 @@ export default function ChartPie({ chartData, total, label }) {
               </Box>
               <Typography variant="body1">{item.value}%</Typography>
             </Box>
-            {index < data.length - 1 && (
-              <Box
-                height={0.01}
-                bgcolor={`#ccc`} 
-                mb={2}
-              />
-            )}
+            {index < data.length - 1 && <Box height={0.01} bgcolor={`#ccc`} mb={2} />}
           </React.Fragment>
         ))}
       </Box>

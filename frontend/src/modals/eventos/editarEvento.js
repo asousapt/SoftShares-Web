@@ -277,21 +277,21 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
         if (!polos) {
             errors.poloError = true;
         }
-        if (!dataHoraInicio) {
+        if (!dataInicio) {
             errors.dataHoraInicioError = true;
         } else {
-            const startDate = new Date(dataHoraInicio);
+            const startDate = new Date(dataInicio);
             const currentDate = new Date();
             if (startDate <= currentDate) {
                 errors.dataHoraInicioError = true; 
             }
         }
-        if (!dataHoraFim) {
+        if (!dataFim) {
             errors.dataHoraFimError = true;
         } else {
-            const endDate = new Date(dataHoraFim);
+            const endDate = new Date(dataFim);
             const currentDate = new Date();
-            const startDate = new Date(dataHoraInicio);
+            const startDate = new Date(dataInicio);
             if (endDate <= currentDate) {
                 errors.dataHoraFimError = true;
             }else if (endDate < startDate) {
@@ -303,7 +303,7 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
         } else {
             const deadlineDate = new Date(dataLimInscricao);
             const currentDate = new Date();
-            const startDate = new Date(dataHoraInicio);
+            const startDate = new Date(dataInicio);
             if (deadlineDate <= currentDate) {
                 errors.dataLimInscricaoError = true; 
             }else if (deadlineDate > startDate) {

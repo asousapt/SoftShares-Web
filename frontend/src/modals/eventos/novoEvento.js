@@ -193,12 +193,36 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
         }
         if (!dataHoraInicio) {
             errors.dataHoraInicioError = true;
+        } else {
+            const startDate = new Date(dataHoraInicio);
+            const currentDate = new Date();
+            if (startDate <= currentDate) {
+                errors.dataHoraInicioError = true; 
+            }
         }
         if (!dataHoraFim) {
             errors.dataHoraFimError = true;
+        } else {
+            const endDate = new Date(dataHoraFim);
+            const currentDate = new Date();
+            const startDate = new Date(dataHoraInicio);
+            if (endDate <= currentDate) {
+                errors.dataHoraFimError = true;
+            }else if (endDate < startDate) {
+                errors.dataHoraFimError = true;
+            }
         }
         if (!dataLimInscricao) {
             errors.dataLimInscricaoError = true;
+        } else {
+            const deadlineDate = new Date(dataLimInscricao);
+            const currentDate = new Date();
+            const startDate = new Date(dataHoraInicio);
+            if (deadlineDate <= currentDate) {
+                errors.dataLimInscricaoError = true; 
+            }else if (deadlineDate > startDate) {
+                errors.dataHoraFimError = true;
+            }
         }
         if (!numParticipantes) {
             errors.numParticipantesError = true;

@@ -18,10 +18,11 @@ function LandingPage() {
     return (
         <div>
             {/* Header */}
-            <AppBar position="static">
+            <AppBar position="static" color="default">
                 <Toolbar>
-                    <Typography variant="h6" style={{ flexGrow: 1 }}>
-                        SOFTSHARES
+                    <Typography variant="h6" style={{ flexGrow: 1, fontWeight: 'bold' }}>
+                        <span style={{ color: '#4D9CFA' }}>SOFT</span>
+                        <span style={{ color: '#505D68' }}>SHARES</span>
                     </Typography>
                     <Button color="inherit" onClick={handleOpen}>
                         Entrar
@@ -31,9 +32,9 @@ function LandingPage() {
             <LoginModal open={open} handleClose={handleClose} />
 
             {/* Hero Section */}
-            <Box sx={{ backgroundColor: '#1976d2', color: 'white', padding: '50px 0' }}>
+            <Box sx={{ backgroundColor: '#0056b3', color: 'white', padding: '50px 0' }}>
                 <Container>
-                    <Typography variant="h3" gutterBottom>
+                    <Typography variant="h3" gutterBottom sx={{ fontWeight: 'bold' }}>
                         Torne a sua empresa mais próxima com SoftShares
                     </Typography>
                     <Typography variant="h6">
@@ -51,21 +52,21 @@ function LandingPage() {
                     <Grid item xs={12} md={4}>
                         <Paper elevation={3} sx={{ padding: '10%', textAlign: 'center' }}>
                             <Group fontSize="large" />
-                            <Typography variant="h6">Conexão Unida</Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Conexão Unida</Typography>
                             <Typography>Simplifica a comunicação, proporcionando um espaço digital unido.</Typography>
                         </Paper>
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <Paper elevation={3} sx={{ padding: '10%', textAlign: 'center' }}>
                             <PersonAdd fontSize="large" />
-                            <Typography variant="h6">Integração Fácil</Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Integração Fácil</Typography>
                             <Typography>Facilita a entrada de novos elementos, com a proximidade de outros membros.</Typography>
                         </Paper>
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <Paper elevation={3} sx={{ padding: '10%', textAlign: 'center' }}>
                             <Chat fontSize="large" />
-                            <Typography variant="h6">Promove a ligação da equipa</Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Promove a ligação da equipa</Typography>
                             <Typography>Com recursos como chats, fóruns e eventos, fortalece os laços entre os membros da equipa.</Typography>
                         </Paper>
                     </Grid>
@@ -73,7 +74,7 @@ function LandingPage() {
             </Container>
 
             {/* Statistics */}
-            <Container sx={{ backgroundColor: '#e0e0e0', padding: '30px 0', width: '100%', maxWidth: '100%' }}>
+            <Container sx={{ backgroundColor: '#f0f0f0', padding: '30px 0', width: '100%', maxWidth: '100%' }}>
                 <Typography variant="h4" gutterBottom align="center">
                     Deixe as estatísticas falarem alto
                 </Typography>
@@ -106,7 +107,7 @@ function LandingPage() {
             </Container>
 
             {/* Call to Action */}
-            <Box sx={{ backgroundColor: '#1976d2', color: 'white', padding: '50px 0' }}>
+            <Box sx={{ backgroundColor: '#0056b3', color: 'white', padding: '50px 0' }}>
                 <Container sx={{ textAlign: 'center' }}>
                     <Typography variant="h4" gutterBottom>
                         Aproveite e junte-se a nós!
@@ -125,7 +126,7 @@ function LandingPage() {
                 <Typography variant="body1">&copy; 2024 SoftShares. All rights reserved.</Typography>
             </Box>
         </div>
-    );
+    );  
 }
 
 export default LandingPage;

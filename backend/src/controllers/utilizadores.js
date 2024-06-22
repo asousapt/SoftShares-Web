@@ -1,10 +1,11 @@
-const { Sequelize, QueryTypes } = require('sequelize');
+const { Sequelize, QueryTypes, json } = require('sequelize');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
 const { generateToken } = require('../tokenUtils');
 const ficheirosController = require('./ficheiros');
 const subcategoria_fav_util = require('../models/subcategoria_fav_util');
+const utilizador = require('../models/utilizador');
 
 const controladorUtilizadores = {
     adicionar: async (req, res) => {
@@ -140,6 +141,71 @@ const controladorUtilizadores = {
         }
     },
 
+    atualizarMobile: async (req, res) => {
+        console.log(req.body);
+        const { idUtilizador } = req.params;
+        const {
+            poloid,
+            pnome,
+            unome,
+            email,
+            idiomaid,
+            departamentoid,
+            funcaoid,
+            sobre,
+            imagem,
+            preferencias,
+        } = req.body;
+    
+        try {
+            // Cria dinamicamente um objeto com os campos a atualizar
+            const updateData = {};
+            if (poloid !== undefined) updateData.poloid = poloid;
+            if (pnome !== undefined) updateData.pnome = pnome;
+            if (unome !== undefined) updateData.unome = unome;
+            if (email !== undefined) updateData.email = email;
+            if (idiomaid !== undefined) updateData.idiomaid = idiomaid;
+            if (departamentoid !== undefined) updateData.departamentoid = departamentoid;
+            if (funcaoid !== undefined) updateData.funcaoid = funcaoid;
+            if (sobre !== undefined) updateData.sobre = sobre;
+    
+            // Actualiza a tabela utilizadorcom os campos fornecidos
+            await models.utilizador.update(updateData, {
+                where: {
+                    utilizadorid: idUtilizador
+                }
+            });
+    
+            // atualiza a imagem do utilizador
+            if (imagem) {
+                const imageArray =  JSON.parse(imagem);
+                ficheirosController.removerTodosFicheirosAlbum(idUtilizador, 'UTIL');
+                ficheirosController.adicionar(idUtilizador, 'UTIL', imageArray, idUtilizador);
+            }
+    
+            // atualiza as preferencias do utilizador
+            if (preferencias) {
+                //remove as subcategorias favoritas anteriores
+                await models.subcategoria_fav_util.destroy({
+                    where: { utilizadorid: idUtilizador }
+                });
+    
+                // adiciona as novas subcategorias favoritas
+                for (const subcategoriaid of preferencias) {
+                    await models.subcategoria_fav_util.create({
+                        utilizadorid: idUtilizador,
+                        subcategoriaid
+                    });
+                }
+            }
+
+    
+            res.status(200).json({message: 'Utilizador atualizado com sucesso', data: idUtilizador});
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao atualizar utilizador', details: error.message });
+        }
+    },
+    
     remover: async (req, res) => {
         const { idUtilizador } = req.params;
 
@@ -215,7 +281,7 @@ const controladorUtilizadores = {
                     {
                         model: models.subcategoria_fav_util,
                         as: 'subcategoria_fav_utils',
-                        attributes: ['subcategoriaid'] // Only fetch the subcategoriaId
+                        attributes: ['subcategoriaid']  
                     }
                 ]
             });

@@ -65,7 +65,7 @@ export default function ListaEventos() {
         try {
             const token = sessionStorage.getItem('token');
             let poloid = sessionStorage.getItem('poloid');
-            console.log('poloid:', poloid);
+            
             if (!poloid) {
                 poloid = '';
             }
@@ -88,7 +88,6 @@ export default function ListaEventos() {
                 }
             });
             const eventos = response.data.data;
-            console.log('Eventos:', eventos);
 
             const sortedEvent = eventos.sort((a, b) => a.eventoid - b.eventoid);
 

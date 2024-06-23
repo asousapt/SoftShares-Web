@@ -430,7 +430,6 @@ const controladorEventos = {
 
     consultarTodosComFiltro: async (req, res) => {
         const { estado, categoria, descricao, poloid } = req.query;
-        console.log(poloid);
 
         try {
             let whereClause = '';

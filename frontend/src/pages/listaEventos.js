@@ -9,14 +9,16 @@ import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
 import ComboFilter from '../components/combobox/comboFilter';
 import Alert from '../components/alerts/alert';
+import StateChanger from '../components/stateChanger/stateChanger';
 /* FIM COMPONENTES */
 import NovoEvento from '../modals/eventos/novoEvento';
 import EditarEvento from '../modals/eventos/editarEvento';
 
 const opcoesFiltroEstado = [
     { value: 'Todos', label: 'Todos' },
+    { value: 'Por Aprovar', label: 'Por Aprovar' },
     { value: 'Aprovados', label: 'Apenas Aprovados' },
-    { value: 'Rejeitados', label: 'Apenas Rejeitados' }
+    { value: 'Rejeitados', label: 'Apenas Rejeitados' },
 ];
 
 export default function ListaEventos() {
@@ -39,6 +41,7 @@ export default function ListaEventos() {
         { field: 'dataHora', headerName: 'Data e Hora de Começo', type: 'dateTime', width: 250, headerAlign: 'left' },
         { field: 'localizacao', headerName: 'Localização', flex: 1, headerAlign: 'left' },
         { field: 'subcategoria', headerName: 'Subcategoria', flex: 1, headerAlign: 'left' },
+        { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => (<StateChanger status={row.value} />) },
         { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false, renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEditClick(row.id)} />)},
     ];
 
@@ -75,7 +78,10 @@ export default function ListaEventos() {
                 estado = true;
             } else if (filtroEstado === 'Rejeitados') {
                 estado = false;
+            } else if (filtroEstado === 'Por Approvar') {
+                estado = null;
             }
+
             const response = await axios.get('http://localhost:8000/evento/filtro', {
                 headers: {
                     Authorization: `${token}`
@@ -91,6 +97,11 @@ export default function ListaEventos() {
 
             const sortedEvent = eventos.sort((a, b) => a.eventoid - b.eventoid);
 
+            const determinarEstado = (aprovado) => {
+                if (aprovado === null || aprovado === undefined) return 'Por Aprovar';
+                return aprovado ? 'Aprovado' : 'Rejeitado';
+            };
+
             const eventosTable = sortedEvent.map((evento) => {
                 const totalParticipantes = evento.numinscritos + evento.numconvidados;
                 return {
@@ -100,7 +111,9 @@ export default function ListaEventos() {
                     nParticipantes: `${totalParticipantes} / ${evento.nmrmaxparticipantes}`,
                     dataHora: new Date(evento.datainicio),
                     localizacao: evento.localizacao,
-                    subcategoria: evento.valorpt
+                    subcategoria: evento.valorpt,
+                    estado: determinarEstado(evento.aprovado),
+                    status: evento.aprovado
                 };
             });
             

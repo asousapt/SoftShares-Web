@@ -9,14 +9,16 @@ import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
 import ComboFilter from '../components/combobox/comboFilter';
 import Alert from '../components/alerts/alert';
+import StateChanger from '../components/stateChanger/stateChanger';
 /* FIM COMPONENTES */
 import NovoPontoInt from '../modals/pontosInteresse/novoPontoInt';
 import EditPontoInt from '../modals/pontosInteresse/editPontoInt';
 
 const opcoesFiltro = [
-    { value:'Todos', label: 'Todos'},
-    { value:'Aprovados', label: 'Apenas Aprovados'},
-    { value:'Rejeitados', label: 'Apenas Rejeitados'}
+    { value: 'Todos', label: 'Todos' },
+    { value: 'PorAprovar', label: 'Por Aprovar' },
+    { value: 'Aprovados', label: 'Apenas Aprovados' },
+    { value: 'Rejeitados', label: 'Apenas Rejeitados' },
 ];
 
 export default function ListaPontosInt() {
@@ -38,6 +40,7 @@ export default function ListaPontosInt() {
         { field: 'dataHora', headerName: 'Data e Hora de Começo', type: 'dateTime', width: 300, headerAlign: 'left' },
         { field: 'localizacao', headerName: 'Localização', flex: 0.5, headerAlign: 'left' },
         { field: 'subcategoria', headerName: 'Subcategoria', flex: 1, headerAlign: 'left' },
+        { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => (<StateChanger status={row.value} />) },
         { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEditClick(row.id)} />)},
     ];
 
@@ -50,7 +53,6 @@ export default function ListaPontosInt() {
             }
         });
         const categorias = response.data;
-        console.log(categorias);
 
         setOpcoesSubcat([
             { value: 0, label: 'Sem Filtro' }, 
@@ -70,7 +72,11 @@ export default function ListaPontosInt() {
                 estado = true;
             } else if (filtroEstado === 'Rejeitados') {
                 estado = false;
+            } else if (filtroEstado === 'PorApprovar') {
+                estado = null;
             }
+
+            console.log(estado);
             const response = await axios.get('http://localhost:8000/pontoInteresse/filtro', {
                 headers: {
                     Authorization: `${token}`
@@ -85,13 +91,20 @@ export default function ListaPontosInt() {
 
             const sortedPint = pontosInt.sort((a, b) => a.pontointeresseid - b.pontointeresseid);
 
+            const determinarEstado = (aprovado) => {
+                if (aprovado === null || aprovado === undefined) return 'PorAprovar';
+                return aprovado ? 'Aprovado' : 'Rejeitado';
+            };
+
             const pontosInteresseTable = sortedPint.map((ponto) => ({
                 key: ponto.pontointeresseid,
                 id: ponto.pontointeresseid,
                 titulo: ponto.titulo,
                 dataHora: new Date(ponto.datacriacao),
                 localizacao: ponto.localizacao,
-                subcategoria: ponto.valorpt
+                subcategoria: ponto.valorpt,
+                estado: determinarEstado(ponto.aprovado),
+                status: ponto.aprovado
             }));
 
             setTableRows(pontosInteresseTable);

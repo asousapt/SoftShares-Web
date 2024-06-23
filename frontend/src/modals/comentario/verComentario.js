@@ -21,12 +21,13 @@ const ReportCommentModal = ({ open, onClose, commentId }) => {
                         headers: { Authorization: `${token}` }
                     });
                     const coments = response.data.data;
+                    
 
-                    if (response.data && response.data.data) {
-                        const transformedData = transformCommentsData(response.data.data, commentId);
+                    if (response.data) {
+                        const transformedData = transformCommentsData(coments, commentId);
+
                         setPoiData(transformedData.poi);
                         setReportedComment(transformedData.reportedComment);
-
                         setTitle(transformedData.poi.titulo);
                         setLocalizacao(transformedData.poi.localizacao);
                         setDescription(transformedData.poi.descricao);
@@ -50,10 +51,10 @@ const ReportCommentModal = ({ open, onClose, commentId }) => {
                 const result = findAndTransformComment(comment, commentId);
                 if (result) {
                     poi = {
-                        poiId: p.poiId,
                         titulo: p.titulo,
                         descricao: p.descricao,
-                        utilizadorcriou: p.utilizador_nome
+                        utilizadorcriou: p.utilizador_nome,
+                        localizacao: p.localizacao
                     };
                     reportedComment = result;
                 }

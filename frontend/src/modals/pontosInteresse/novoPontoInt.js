@@ -147,6 +147,7 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
 
     const handleCategoriaChange = async (event, newValue) => {
         setCategoria(newValue);
+        setQuestions([]);
         setSubcategoria(null);
         if (newValue) {
             try {
@@ -316,31 +317,41 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
 
     const getForm = async (idSubcat) => {
         try {
-            const token = sessionStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8000/formulario/subcat/${idSubcat}`, {
-                headers: {
-                    Authorization: `${token}`
-                }
-            });
-            const form = response.data;
+            if (idSubcat){
+                const token = sessionStorage.getItem('token');
+                const response = await axios.get(`http://localhost:8000/formulario/subcat/${idSubcat}`, {
+                    headers: {
+                        Authorization: `${token}`
+                    }
+                });
+                const form = response.data;
 
-            setQuestions(form.map(detail => ({
-                id: detail.formulariodetalhesid,
-                type: detail.tipodados,
-                label: detail.pergunta,
-                text: '',
-                options: detail.respostaspossiveis
-                        ? detail.respostaspossiveis.split(', ').map(option => ({ opcao: option.trim(), selected: false }))
-                        : [{}], 
-                required: detail.obrigatorio,
-                minValue: detail.minimo,
-                maxValue: detail.maximo,
-                error: ''
-            })));
-            
+                setQuestions(form.map(detail => ({
+                    id: detail.formulariodetalhesid,
+                    type: detail.tipodados,
+                    label: detail.pergunta,
+                    text: '',
+                    options: detail.respostaspossiveis
+                            ? detail.respostaspossiveis.split(', ').map(option => ({ opcao: option.trim(), selected: false }))
+                            : [{}], 
+                    required: detail.obrigatorio,
+                    minValue: detail.minimo,
+                    maxValue: detail.maximo,
+                    error: ''
+                })));
+            }
         } catch (error) {
             console.error("Erro ao encontrar o formulário", error);
         }
+    }
+
+    const handleSubcatChange = (event, newValue) => {
+        setSubcategoria(newValue); 
+        setQuestions([]);
+        if (newValue){
+            getForm(newValue.value); 
+        }
+        setSubcategoriaError(false); 
     }
 
     return (
@@ -393,11 +404,11 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                                 <Autocomplete options={opcoesFiltroSubcat} getOptionLabel={(option) => option.label} renderInput={(params) => (
                                     <TextField {...params} label="Subcategoria" variant="outlined" error={subcategoriaError} helperText={subcategoriaError ? "Escolha uma categoria subcategoria" : ""} />)}
                                     value={subcategoria}
-                                    onChange={(event, newValue) => { setSubcategoria(newValue); getForm(newValue.value); setSubcategoriaError(false); }}
+                                    onChange={handleSubcatChange}
                                     fullWidth={true} />
                             </div>
                         </div>
-                        <FormAnswerer ref={componentRef} initialQuestions={questions} onFormSubmit={handleAddPontInt}  />
+                        <FormAnswerer ref={componentRef} initialQuestions={questions} onFormSubmit={handleAddPontInt} />
 
                         <ImageTable images={images} styleProp={{ paddingTop: 10 }} onAddImage={handleImage} onDelete={resetImage}/>
                     </div>

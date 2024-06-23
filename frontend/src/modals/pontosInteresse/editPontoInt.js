@@ -120,6 +120,7 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
 
     const handleCategoriaChange = async (event, newValue) => {
         setCategoria(newValue);
+        setQuestions([]);
         setSubcategoria(null);
         if (newValue) {
             try {
@@ -353,6 +354,15 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
         });
     }
 
+    const handleSubcatChange = (event, newValue) => {
+        setSubcategoria(newValue); 
+        setQuestions([]);
+        if (newValue){
+            getForm(newValue.value); 
+        }
+        setSubcategoriaError(false); 
+    }
+
     return (
         <Modal open={open} onClose={handleCancel}>
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px', overflow: 'auto' }}>
@@ -403,7 +413,7 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
                                 <Autocomplete options={opcoesSubcat} getOptionLabel={(option) => option.label} renderInput={(params) => (
                                     <TextField {...params} label="Subcategoria" variant="outlined" error={subcategoriaError} helperText={subcategoriaError ? "Escolha uma cidade" : ""} />)}
                                     value={subcategoria}
-                                    onChange={(event, newValue) => { setSubcategoria(newValue); setSubcategoriaError(false); }}
+                                    onChange={handleSubcatChange}
                                     fullWidth={true} />
                             </div>
                         </div>

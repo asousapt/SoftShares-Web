@@ -36,6 +36,7 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
     const [opcoesFiltroSubcat, setOpcoesSubcat] = useState([]);
     const [error, setError] = useState(null);
     const [images, setImages] = useState([]);
+    const [isPoloDisabled, setIsPoloDisabled] = useState(false);
 
     //ERRORS
     const [titleError, setTitleError] = useState(false);
@@ -110,6 +111,16 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
         fetchPolos();
         fetchDistritos();
         fetchCategorias();
+        const perfil = sessionStorage.getItem('perfil');
+        if (perfil === 'Admin'){
+            setIsPoloDisabled(true);
+
+            const poloid = sessionStorage.getItem('poloid');
+            const descpolo = sessionStorage.getItem('descpolo');
+            setPolo({value: poloid, label: descpolo});
+        } else {
+            setIsPoloDisabled(false);
+        }
     }, []);
 
     const fetchCidades = async (distritoId) => {
@@ -419,10 +430,13 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
                                     </div>
                                     <div style={{ width: '24.9%' }}>
                                         <Autocomplete options={polos} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                                <TextField {...params} label="Polo" variant="outlined" type="text" error={poloError} helperText={poloError ? "Escolha um Polo" : ""} /> )}
+                                                <TextField {...params} label="Polo" variant="outlined" type="text" error={poloError} helperText={poloError ? "Escolha um Polo" : ""} /> 
+                                            )}
                                             value={polo}
                                             onChange={(event, newValue) => { setPolo(newValue); }}
-                                            fullWidth={true} />
+                                            fullWidth={true} 
+                                            disabled={isPoloDisabled}
+                                        />
                                     </div>
                                 </div>
                                 <div style={{ marginBottom: 20 }}></div>

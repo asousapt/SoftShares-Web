@@ -64,6 +64,11 @@ export default function ListaEventos() {
     const fetchData = async () => {
         try {
             const token = sessionStorage.getItem('token');
+            let poloid = sessionStorage.getItem('poloid');
+            console.log('poloid:', poloid);
+            if (!poloid) {
+                poloid = '';
+            }
 
             let estado = undefined;
             if (filtroEstado === 'Aprovados') {
@@ -78,10 +83,12 @@ export default function ListaEventos() {
                 params: {
                     estado: estado,
                     categoria: filtroCategoria,
-                    descricao: filtroText
+                    descricao: filtroText,
+                    poloid: poloid
                 }
             });
             const eventos = response.data.data;
+            console.log('Eventos:', eventos);
 
             const sortedEvent = eventos.sort((a, b) => a.eventoid - b.eventoid);
 

@@ -65,10 +65,16 @@ export default function ConfigPolos() {
     }, [filtroText])
 
     useEffect(() => {
-        if(!isNewModalOpen){
+        if (!isNewModalOpen) {
             fetchData();
         }
-    }, [isNewModalOpen])
+    }, [isNewModalOpen]);
+
+    useEffect(() => {
+        if (!isEditModalOpen) {
+            fetchData();
+        }
+    }, [isEditModalOpen]);
 
     const handleEditClick = (id) => {
         setSelectedPoloId(id);

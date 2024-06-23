@@ -74,12 +74,13 @@ export default function ListaEventos() {
             }
 
             let estado = undefined;
+            
             if (filtroEstado === 'Aprovados') {
                 estado = true;
             } else if (filtroEstado === 'Rejeitados') {
                 estado = false;
-            } else if (filtroEstado === 'PorApprovar') {
-                estado = null;
+            } else if (filtroEstado === 'Por Aprovar') {
+                estado = "NULL";
             }
 
             const response = await axios.get('http://localhost:8000/evento/filtro', {
@@ -98,7 +99,7 @@ export default function ListaEventos() {
             const sortedEvent = eventos.sort((a, b) => a.eventoid - b.eventoid);
 
             const determinarEstado = (aprovado) => {
-                if (aprovado === null || aprovado === undefined) return 'PorAprovar';
+                if (aprovado === null || aprovado === undefined) return 'Por Aprovar';
                 return aprovado ? 'Aprovado' : 'Rejeitado';
             };
 

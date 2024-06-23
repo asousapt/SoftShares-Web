@@ -430,10 +430,13 @@ const controladorEventos = {
 
     consultarTodosComFiltro: async (req, res) => {
         const { estado, categoria, descricao, poloid } = req.query;
-
+        console.log(estado);
+        
         try {
             let whereClause = '';
-            if (estado !== undefined) {
+            if (estado === "NULL") {
+                whereClause += ` AND e.aprovado IS NULL`;
+            } else if(estado !== undefined) {
                 whereClause += ` AND e.aprovado = ${estado}`;
             }
 

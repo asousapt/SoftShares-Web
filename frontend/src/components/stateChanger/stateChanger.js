@@ -24,7 +24,7 @@ export default function State({ status }) {
             textColor = 'white';
             text = 'Rejeitado';
             break;
-        case 'PorAprovar':
+        case 'Por Aprovar':
             backgroundColor = '#FFC107';
             textColor = 'white';
             text = 'Por Aprovar';

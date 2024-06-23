@@ -16,7 +16,7 @@ import EditPontoInt from '../modals/pontosInteresse/editPontoInt';
 
 const opcoesFiltro = [
     { value: 'Todos', label: 'Todos' },
-    { value: 'PorAprovar', label: 'Por Aprovar' },
+    { value: 'Por Aprovar', label: 'Por Aprovar' },
     { value: 'Aprovados', label: 'Apenas Aprovados' },
     { value: 'Rejeitados', label: 'Apenas Rejeitados' },
 ];
@@ -72,8 +72,8 @@ export default function ListaPontosInt() {
                 estado = true;
             } else if (filtroEstado === 'Rejeitados') {
                 estado = false;
-            } else if (filtroEstado === 'PorApprovar') {
-                estado = null;
+            } else if (filtroEstado === 'Por Aprovar') {
+                estado = "NULL";
             }
 
             console.log(estado);
@@ -92,7 +92,7 @@ export default function ListaPontosInt() {
             const sortedPint = pontosInt.sort((a, b) => a.pontointeresseid - b.pontointeresseid);
 
             const determinarEstado = (aprovado) => {
-                if (aprovado === null || aprovado === undefined) return 'PorAprovar';
+                if (aprovado === null || aprovado === undefined) return 'Por Aprovar';
                 return aprovado ? 'Aprovado' : 'Rejeitado';
             };
 

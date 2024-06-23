@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '@mui/material/Modal';
 import BasicTextField from '../../components/textFields/basic';
-import SubmitButton from '../../components/buttons/submitButton';
 import CancelButton from '../../components/buttons/cancelButton';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
@@ -177,31 +176,6 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
         fetchCategorias();
         fetchEventData();
     }, [registoId]);
-
-    const handleEditPontoInt = async () => {
-        try {
-            const token = sessionStorage.getItem('token');
-            const eventoEditado = {
-                titulo: titulo,
-                descricao: descricao,
-                localizacao: localizacao,
-                latitude: 0,
-                longitude: 0,
-                cidadeid: cidadeID.value,
-                subcategoriaid: subcategoria.value,
-            };
-
-            await axios.put(`http://localhost:8000/pontoInteresse/update/${registoId}`, eventoEditado, {
-                headers: {
-                    Authorization: `${token}`,
-                    'Content-Type': 'application/json',
-                }
-            });
-            onClose();
-        } catch (error) {
-            console.error('Erro ao editar Ponto de Interesse:', error);
-        }
-    };
 
     return (
         <Modal open={open} onClose={onClose}>

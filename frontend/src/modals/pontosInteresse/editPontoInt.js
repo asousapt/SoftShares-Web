@@ -120,7 +120,6 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
 
     const handleCategoriaChange = async (event, newValue) => {
         setCategoria(newValue);
-        setQuestions([]);
         setSubcategoria(null);
         if (newValue) {
             try {
@@ -356,10 +355,6 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
 
     const handleSubcatChange = (event, newValue) => {
         setSubcategoria(newValue); 
-        setQuestions([]);
-        if (newValue){
-            getForm(newValue.value); 
-        }
         setSubcategoriaError(false); 
     }
 

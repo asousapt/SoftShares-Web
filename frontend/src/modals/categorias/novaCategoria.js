@@ -91,15 +91,15 @@ const NovaCategoria = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 20, borderRadius: 12 }}>
                     <div style={{ marginBottom: 25 }}>
                         <BasicTextField caption='Descrição Portugues' valor={descricao} onchange={(e) => setDescricao(e.target.value)} fullwidth={true} type="text" error={ptError}
-                            helperText={ptError ? "Introduza uma descrição válida" : ""} />
+                            helperText={ptError ? "Introduza uma descrição válida" : ""} allowOnlyLetters={true}/>
                     </div>
                     <div style={{ marginBottom: 25 }}>
                         <BasicTextField caption='Descrição Inglês' valor={descricaoENG} onchange={(e) => setDescricaoENG(e.target.value)} fullwidth={true} type="text" error={engError}
-                            helperText={engError ? "Introduza uma descrição válida" : ""} />
+                            helperText={engError ? "Introduza uma descrição válida" : ""} allowOnlyLetters={true}/>
                     </div>
                     <div style={{ marginBottom: 25 }}>
                         <BasicTextField caption='Descrição Espanhol' valor={descricaoSPA} onchange={(e) => setDescricaoSPA(e.target.value)} fullwidth={true} type="text" error={esError}
-                            helperText={esError ? "Introduza uma descrição válida" : ""} />
+                            helperText={esError ? "Introduza uma descrição válida" : ""} allowOnlyLetters={true}/>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
                         <CancelButton onclick={handleCancel} caption='Cancelar' />

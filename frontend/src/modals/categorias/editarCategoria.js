@@ -121,15 +121,15 @@ const EditarCategoria = ({ open, onClose, categoriaId, setAlertOpen, setAlertPro
                 <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 20, borderRadius: 12 }}>
                     <div style={{ marginBottom: 25 }}>
                         <BasicTextField caption='Descrição Portugues' valor={descricao} onchange={(e) => setDescricaoPT(e.target.value)} fullwidth={true} type="text" error={ptError}
-                            helperText={ptError ? "Introduza uma descrição válida" : ""} />
+                            helperText={ptError ? "Introduza uma descrição válida" : ""} allowOnlyLetters={true}/>
                     </div>
                     <div style={{ marginBottom: 25 }}>
                         <BasicTextField caption='Descrição Inglês' valor={descricaoENG} onchange={(e) => setDescricaoEN(e.target.value)} fullwidth={true} type="text" error={engError}
-                            helperText={engError ? "Introduza uma descrição válida" : ""} />
+                            helperText={engError ? "Introduza uma descrição válida" : ""} allowOnlyLetters={true}/>
                     </div>
                     <div style={{ marginBottom: 25 }}>
                         <BasicTextField caption='Descrição Espanhol' valor={descricaoSPA} onchange={(e) => setDescricaoES(e.target.value)} fullwidth={true} type="text" error={esError}
-                            helperText={esError ? "Introduza uma descrição válida" : ""} />
+                            helperText={esError ? "Introduza uma descrição válida" : ""} allowOnlyLetters={true}/>
                     </div>
                     <div style={{ marginBottom: 15 }}>
                         <FormControlLabel

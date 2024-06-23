@@ -363,7 +363,7 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                             <div style={{ width: '50%' }}>
                                 <BasicTextField caption='Titulo' valor={title} onchange={(e) => setTitle(e.target.value)} fullwidth={true} type="text" error={titleError}
-                                helperText={titleError ? "Introduza um título válido" : ""} />
+                                helperText={titleError ? "Introduza um título válido" : ""} allowOnlyLetters={true}/>
                             </div>
                             <div style={{ width: '49.4%' }}>
                                 <BasicTextField caption='Localização' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} type="text" error={localizacaoError}

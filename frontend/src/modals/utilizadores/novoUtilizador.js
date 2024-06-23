@@ -329,11 +329,11 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <div style={{ width: "50%" }} >
                                         <BasicTextField caption='Primeiro Nome' valor={pnome} onchange={(e) => setPnome(e.target.value)} fullwidth={true} type="text" error={pnomeError}
-                                            helperText={pnomeError ? "Introduza um nome válido" : ""} />
+                                            helperText={pnomeError ? "Introduza um nome válido" : ""} allowOnlyLetters={true}/>
                                     </div>
                                     <div style={{ width: "50%" }} >
                                         <BasicTextField caption='Último Nome' valor={unome} onchange={(e) => setUnome(e.target.value)} fullwidth={true} type="text" error={unomeError}
-                                            helperText={unomeError ? "Introduza um nome válido" : ""} />
+                                            helperText={unomeError ? "Introduza um nome válido" : ""} allowOnlyLetters={true}/>
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>

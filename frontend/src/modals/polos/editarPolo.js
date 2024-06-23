@@ -318,7 +318,7 @@ const EditarPolo = ({ open, onClose, poloId, setAlertOpen, setAlertProps }) => {
                             </div>
                             <div style={{ width: '40%' }}>
                                 <BasicTextField caption='Coordenador' valor={responsavel} onchange={(e) => setResponsavel(e.target.value)} fullwidth={true} type="text" error={coordError}
-                                    helperText={coordError ? "Introduza um nome válido" : ""} />
+                                    helperText={coordError ? "Introduza um nome válido" : ""} allowOnlyLetters={true} />
                             </div>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>

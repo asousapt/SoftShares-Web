@@ -78,7 +78,7 @@ export default function ListaEventos() {
                 estado = true;
             } else if (filtroEstado === 'Rejeitados') {
                 estado = false;
-            } else if (filtroEstado === 'Por Approvar') {
+            } else if (filtroEstado === 'PorApprovar') {
                 estado = null;
             }
 
@@ -98,7 +98,7 @@ export default function ListaEventos() {
             const sortedEvent = eventos.sort((a, b) => a.eventoid - b.eventoid);
 
             const determinarEstado = (aprovado) => {
-                if (aprovado === null || aprovado === undefined) return 'Por Aprovar';
+                if (aprovado === null || aprovado === undefined) return 'PorAprovar';
                 return aprovado ? 'Aprovado' : 'Rejeitado';
             };
 

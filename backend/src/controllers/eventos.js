@@ -3,6 +3,8 @@ const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
 const ficheirosController = require('./ficheiros');
+const subcategoria = require('../models/subcategoria');
+const evento = require('../models/evento');
 
 const controladorEventos = {
     adicionarEvento: async (req, res) => {
@@ -294,22 +296,47 @@ const controladorEventos = {
 
     consultarEventosEntreDatas: async (req, res) => {
         const { idPolo, data1, data2 } = req.params;
-
+    
+        const query = `
+            SELECT evento.*, subcategoria.categoriaid,
+                   (SELECT STRING_AGG(participantes_eventos.utilizadorid::text, ',')
+                    FROM participantes_eventos
+                    WHERE participantes_eventos.eventoid = evento.eventoid) AS participantes,
+                   (SELECT COUNT(*)
+                    FROM participantes_eventos
+                    WHERE participantes_eventos.eventoid = evento.eventoid) AS numinscritos
+            FROM evento
+            JOIN subcategoria ON evento.subcategoriaid = subcategoria.subcategoriaid
+            WHERE evento.datainicio BETWEEN :data1 AND :data2
+            AND evento.cidadeid IN (SELECT cidadeid FROM polo WHERE poloid = :idPolo)
+        `;
+    
         try {
-            const eventos = await models.evento.findAll({
-                where: {
-                    [Op.and]: [
-                        {dataInicio: {[Op.between]: [data1, data2]}},
-                        Sequelize.literal(`cidadeID IN (SELECT CIDADEID FROM POLO WHERE POLOID = ${idPolo})`)
-                    ]
+            const eventos = await sequelizeConn.query(query, {
+                replacements: { idPolo, data1, data2 },
+                type: Sequelize.QueryTypes.SELECT
+            });
+    
+            const processedEventos = await Promise.all(eventos.map(async (evento) => {
+                if (evento.participantes) {
+                    evento.participantes = evento.participantes.split(',').map(id => parseInt(id, 10));
+                } else {
+                    evento.participantes = [];
                 }
-            })
-            res.status(200).json({ message: 'Consulta realizada com sucesso', data: eventos });
+    
+                evento.numinscritos = parseInt(evento.numinscritos, 10);
+                const ficheiros = await ficheirosController.getAllFilesByAlbum(evento.eventoid, 'EVENTO');
+                evento.imagens =  ficheiros ? ficheiros.map(file => file.url) : [];
+                return evento;
+            }));
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: processedEventos });
         } catch (error) {
+            console.error(error);
             res.status(500).json({ error: 'Erro ao consultar os eventos' });
         }
-    },
-
+    },    
+    
     consultarUtilizadoresEvento: async (req, res) => {
         const { idEvento } = req.params;
 

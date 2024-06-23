@@ -74,7 +74,7 @@ function LandingPage() {
             </Container>
 
             {/* Statistics */}
-            <Container sx={{ backgroundColor: '#f0f0f0', padding: '30px 0', width: '100%', maxWidth: '100%' }}>
+            <Container sx={{ backgroundColor: '#f0f0f0', padding: '30px 0', width: '100%', maxWidth: { xs: '100%', md: '1200px' }, '@media (min-width: 1200px)': { maxWidth: '100%', }, }}>
                 <Typography variant="h4" gutterBottom align="center">
                     Deixe as estatísticas falarem alto
                 </Typography>

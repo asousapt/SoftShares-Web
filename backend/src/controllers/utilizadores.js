@@ -335,10 +335,10 @@ const controladorUtilizadores = {
             if (!utilizador) {
                 return res.status(404).json({ error: 'Utilizador não encontrado' });
             }
-
+            
             const ficheiros = await ficheirosController.getAllFilesByAlbum(utilizador.utilizadorid, 'UTIL');
             utilizador.dataValues.imagem = ficheiros[0];
-
+            console.log(utilizador);
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: utilizador });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar utilizador', details: error.message });

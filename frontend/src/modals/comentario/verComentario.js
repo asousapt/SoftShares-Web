@@ -142,9 +142,6 @@ const ReportCommentModal = ({ open, onClose, commentId }) => {
                             <h3>Título: {poiData.titulo}</h3>
                             <p>Descrição: {poiData.descricao}</p>
                         </div>
-                        <div style={{ flex: 0.5 }}>
-                            <ImageTable images={images} onDelete={resetImage} />
-                        </div>
                     </div>
                     <h3>Comentários:</h3>
                     <CommentsList commentsData={[reportedComment]} />

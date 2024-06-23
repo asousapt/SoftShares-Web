@@ -145,10 +145,10 @@ export default function Dashboard() {
                             <ChartPie style={{ maxWidth: '100%' }} chartData={data1} total={total1} label='Utilizadores' />
                         </Grid>
                         <Grid item xs={12} md={4} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
-                            <ChartPie style={{ maxWidth: '100%' }} chartData={[]} total={0} label='Nº Denúncias' />
+                            <ChartPie style={{ maxWidth: '100%' }} chartData={[]} total={0} label='Registos' />
                         </Grid>
                         <Grid item xs={12} md={4} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
-                            <ChartPie style={{ maxWidth: '100%' }} chartData={data3} total={total3} label='Nº Registos' />
+                            <ChartPie style={{ maxWidth: '100%' }} chartData={data3} total={total3} label='Registos' />
                         </Grid>
                     </Grid>
                 </div>

@@ -32,7 +32,7 @@ function AppContent() {
                     <Sidebar />
                 </div>
             )}
-            <div className="content-container" style={{ marginLeft: location.pathname === '/' ? 0 : '250px' }}>
+            <div className="content-container" style={{ marginLeft: location.pathname === '/' ? 0 : '250px', marginRight: location.pathname === '/' ? 0 : '1%' }}>
                 <Routes>
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/dashboard" element={<Dashboard />} />

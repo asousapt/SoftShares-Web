@@ -32,10 +32,10 @@ export default function Configtilizadores() {
     const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
-        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left'},
-        { field: 'descricao', headerName: 'Descrição', flex: 1, headerAlign: 'left' },
-        { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => ( <StateChanger status={row.value} />) },
-        { field: 'edit', headerName: ' ', width: 100, headerAlign: 'left', sortable: false, renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEditClick(row.id)} />)},
+        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'descricao', headerName: 'Descrição', flex: 1, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => ( <StateChanger status={row.value} />), disableColumnMenu: true },
+        { field: 'edit', headerName: ' ', width: 100, headerAlign: 'left', sortable: false, renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEditClick(row.id)} />), disableColumnMenu: true },
     ];
 
     const fetchData = async () => {

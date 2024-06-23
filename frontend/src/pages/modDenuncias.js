@@ -28,13 +28,13 @@ export default function ModDen() {
     const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
-        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
-        { field: 'motivo', headerName: 'Motivo', flex: 1, headerAlign: 'left' },
-        { field: 'dataHora', headerName: 'Data e Hora Criacao', type: 'dateTime', width: 300, headerAlign: 'left' },
-        { field: 'denunciadopor', headerName: 'Denunciado Por', flex: 1, headerAlign: 'left' },
-        { field: 'permitir', headerName: 'Permitir', width: 85, headerAlign: 'left', sortable: false, renderCell: (params) => (<AprovButton onclick={() => handleOpenConfirmarAprov(params.row)} />) },
-        { field: 'remover', headerName: 'Remover', width: 85, headerAlign: 'left', sortable: false, renderCell: (params) => (<RejButton onclick={() => handleOpenRejeitarAprov(params.row)} />) },
-        { field: 'ver', headerName: 'Ver', width: 85, headerAlign: 'left', sortable: false, renderCell: (params) => (<DetailButton onclick={() => handleVerClick(params.row.comentarioId)} />) },
+        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'motivo', headerName: 'Motivo', flex: 1, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'dataHora', headerName: 'Data e Hora Criacao', type: 'dateTime', width: 300, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'denunciadopor', headerName: 'Denunciado Por', flex: 1, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'permitir', headerName: 'Permitir', width: 85, headerAlign: 'left', sortable: false, renderCell: (params) => (<AprovButton onclick={() => handleOpenConfirmarAprov(params.row)} />), disableColumnMenu: true },
+        { field: 'remover', headerName: 'Remover', width: 85, headerAlign: 'left', sortable: false, renderCell: (params) => (<RejButton onclick={() => handleOpenRejeitarAprov(params.row)} />), disableColumnMenu: true },
+        { field: 'ver', headerName: 'Ver', width: 85, headerAlign: 'left', sortable: false, renderCell: (params) => (<DetailButton onclick={() => handleVerClick(params.row.comentarioId)} />), disableColumnMenu: true },
     ];
 
     const fetchData = async () => {

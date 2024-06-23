@@ -27,13 +27,13 @@ export default function ListaPublicacoes() {
     const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
-        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
-        { field: 'titulo', headerName: 'Título', flex: 1, headerAlign: 'left' },
-        { field: 'dataHora', headerName: 'Data e Hora de Criação', type: 'dateTime', width: 250, headerAlign: 'left' },
-        { field: 'criadoPor', headerName: 'Criado por', flex: 1, headerAlign: 'left' },
-        { field: 'subcategoria', headerName: 'Subcategoria', flex: 1, headerAlign: 'left' },
-        { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'left', renderCell: (row) => ( <StateChanger status={row.value} />) },
-        { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEditClick(row.id)}/>)},
+        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'titulo', headerName: 'Título', flex: 1, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'dataHora', headerName: 'Data e Hora de Criação', type: 'dateTime', width: 250, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'criadoPor', headerName: 'Criado por', flex: 1, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'subcategoria', headerName: 'Subcategoria', flex: 1, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'left', renderCell: (row) => ( <StateChanger status={row.value} />), disableColumnMenu: true },
+        { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEditClick(row.id)}/>), disableColumnMenu: true },
     ];
 
     const fetchCategorias = async () => {

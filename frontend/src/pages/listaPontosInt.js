@@ -35,13 +35,13 @@ export default function ListaPontosInt() {
     const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
-        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
-        { field: 'titulo', headerName: 'Título', flex: 0.5, headerAlign: 'left' },
-        { field: 'dataHora', headerName: 'Data e Hora de Começo', type: 'dateTime', width: 300, headerAlign: 'left' },
-        { field: 'localizacao', headerName: 'Localização', flex: 0.5, headerAlign: 'left' },
-        { field: 'subcategoria', headerName: 'Subcategoria', flex: 1, headerAlign: 'left' },
-        { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => (<StateChanger status={row.value} />) },
-        { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEditClick(row.id)} />)},
+        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'titulo', headerName: 'Título', flex: 0.5, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'dataHora', headerName: 'Data e Hora de Começo', type: 'dateTime', width: 300, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'localizacao', headerName: 'Localização', flex: 0.5, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'subcategoria', headerName: 'Subcategoria', flex: 1, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => (<StateChanger status={row.value} />), disableColumnMenu: true },
+        { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEditClick(row.id)} />), disableColumnMenu: true },
     ];
 
     const fetchCategorias = async () => {

@@ -32,12 +32,12 @@ export default function ConfigAlertas() {
     const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
-        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
-        { field: 'alerta', headerName: 'Alerta', flex: 1, headerAlign: 'left' },
-        { field: 'dataHora', headerName: 'Data e Hora de Criação', type: 'dateTime', width: 300, headerAlign: 'left' },
-        { field: 'criadoPor', headerName: 'Criado por', flex: 1, headerAlign: 'left' },
-        { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => ( <StateChanger status={row.value} />) },
-        { field: 'ver', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEdit(row.id)} />)},
+        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'alerta', headerName: 'Alerta', flex: 1, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'dataHora', headerName: 'Data e Hora de Criação', type: 'dateTime', width: 300, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'criadoPor', headerName: 'Criado por', flex: 1, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => ( <StateChanger status={row.value} />), disableColumnMenu: true },
+        { field: 'ver', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEdit(row.id)} />), disableColumnMenu: true },
     ];
 
     const handleEdit = (id) => {

@@ -60,8 +60,6 @@ const controladorUtilizadores = {
                 });
             }
 
-            console.log('dasdsa', administrador_poloid)
-
             ficheirosController.adicionar(user.utilizadorid, 'UTIL', imagem, user.utilizadorid);
 
             res.status(201).json({ message: 'Utilizador adicionado com sucesso' });

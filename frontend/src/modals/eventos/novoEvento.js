@@ -114,7 +114,6 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
         const perfil = sessionStorage.getItem('perfil');
         if (perfil === 'Admin'){
             setIsPoloDisabled(true);
-
             const poloid = sessionStorage.getItem('poloid');
             const descpolo = sessionStorage.getItem('descpolo');
             setPolo({value: poloid, label: descpolo});

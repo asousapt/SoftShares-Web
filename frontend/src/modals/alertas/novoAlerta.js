@@ -5,14 +5,17 @@ import BasicTextField from '../../components/textFields/basic';
 import ComboBox from '../../components/combobox/comboboxBasic';
 import SubmitButton from '../../components/buttons/submitButton';
 import CancelButton from '../../components/buttons/cancelButton';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 
 const NovoAlerta = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     //VARS
     //FIELDS
     const [descricao, setDescricao] = useState('');
-    const [polo, setPolo] = useState('');
+    const [polo, setPolo] = useState(null);
     const [opcoesPolo, setOpcoes] = useState([]);
     const [error, setError] = useState(null);
+    const [isPoloDisabled, setIsPoloDisabled] = useState(false);
 
     //ERRORS
     const [descError, setDescError] = useState(false);
@@ -42,7 +45,7 @@ const NovoAlerta = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 }
             });
             const polos = response.data.data;
-            
+
             setOpcoes(polos.map((polo) => ({
                 value: polo.poloid,
                 label: polo.descricao,
@@ -54,7 +57,18 @@ const NovoAlerta = ({ open, onClose, setAlertOpen, setAlertProps }) => {
 
     useEffect(() => {
         fetchPolos();
-    }, []);
+
+        const perfil = sessionStorage.getItem('perfil');
+        if (perfil === 'Admin') {
+            setIsPoloDisabled(true);
+            const poloid = sessionStorage.getItem('poloid');
+            const descpolo = sessionStorage.getItem('descpolo');
+            setPolo({ value: poloid, label: descpolo });
+        } else {
+            setIsPoloDisabled(false);
+        }
+
+    }, [open]);
 
     const handleAddEvent = async () => {
         const errors = validateForm();
@@ -65,15 +79,18 @@ const NovoAlerta = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         if (Object.keys(errors).length > 0) {
             return;
         }
-        
+
         try {
             const userid = sessionStorage.getItem('userid');
             const token = sessionStorage.getItem('token');
-            await axios.post('http://localhost:8000/alerta/add', {
+
+            const novoAlerta = {
                 utilizadorID: userid,
                 texto: descricao,
-                poloID: polo
-            }, {
+                poloID: polo ? polo.value : '',
+            };
+
+            await axios.post('http://localhost:8000/alerta/add', novoAlerta, {
                 headers: {
                     'Authorization': `${token}`,
                     'Content-Type': 'application/json',
@@ -109,19 +126,25 @@ const NovoAlerta = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     return (
         <Modal open={open} onClose={handleCancel} >
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '800px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px' }}>
-                <h2 style={{marginTop: 0, color: 'white'}}>Novo Alerta</h2>
+                <h2 style={{ marginTop: 0, color: 'white' }}>Novo Alerta</h2>
                 <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 20, borderRadius: 12 }}>
                     <div style={{ marginBottom: 15 }}>
-                        <div style={{display:'flex', marginBottom: 20}}>
-                            <div style={{width: '75%'}}>
-                                <ComboBox caption='Polo' options={opcoesPolo} value={polo} handleChange={(e) => { setPolo(e.target.value); setPoloError(false); }} error={poloError}
-                                    helperText={poloError ? "Selecione um polo" : ""} />
+                        <div style={{ display: 'flex', marginBottom: 20 }}>
+                            <div style={{ width: '75%' }}>
+                                <Autocomplete options={opcoesPolo} getOptionLabel={(option) => option.label} renderInput={(params) => (
+                                    <TextField {...params} label="Polo" variant="outlined" type="text" error={poloError} helperText={poloError ? "Escolha um Polo" : ""} />
+                                )}
+                                    value={polo}
+                                    onChange={(event, newValue) => { setPolo(newValue); }}
+                                    fullWidth={true}
+                                    disabled={isPoloDisabled}
+                                />
                             </div>
                         </div>
                         <BasicTextField caption='Descrição' valor={descricao} onchange={(e) => setDescricao(e.target.value)} fullwidth={true} type="text" error={descError}
-                                helperText={descError ? "Introduza uma descrição válida" : ""} />
+                            helperText={descError ? "Introduza uma descrição válida" : ""} />
                     </div>
-                    <div style={{display: 'flex', justifyContent: 'center', gap: '20px'}}>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
                         <CancelButton onclick={handleCancel} caption='Cancelar' />
                         <SubmitButton onclick={handleAddEvent} caption='Guardar' />
                     </div>

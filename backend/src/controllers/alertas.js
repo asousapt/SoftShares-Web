@@ -138,7 +138,8 @@ const controladorAlertas = {
     },
 
     consultarTudoComFiltros: async (req, res) => {
-        const {estado, descricao} = req.query;
+        const {estado, descricao, poloid} = req.query;
+
         try {
             const alertas = await models.alerta.findAll({
                 include: [
@@ -150,8 +151,10 @@ const controladorAlertas = {
                 ],
                 where: {
                     texto: { [Op.like]: `%${descricao}%` },
-                    ...(estado !== undefined && { inactivo: estado })
-                }
+                    ...(estado !== undefined && { inactivo: estado }),
+                    ...(poloid && { poloid: poloid })
+                },
+                
             });
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: alertas });
         } catch (error) {

@@ -14,7 +14,7 @@ import InputImage from '../../components/image/imageInput';
 const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     //VARS
     //FIELDS
-    const [poloid, setPoloid] = useState('');
+    const [poloid, setPoloid] = useState(null);
     const [poloadmid, setPoloAdmid] = useState('');
     const [perfilid, setPerfilid] = useState('');
     const [pnome, setPnome] = useState('');
@@ -223,7 +223,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 tamanho: imageSize
             }];
             const newUser = {
-                poloid,
+                poloid: poloid ? poloid.value : '',
                 perfilid,
                 pnome,
                 unome,
@@ -238,8 +238,6 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 imagem,
                 administrador_poloid: isPoloAdmidDisabled ? null : poloadmid
             };
-
-            console.log('newUser', newUser);
 
             await axios.post('http://localhost:8000/utilizadores/add', newUser, {
                 headers: {
@@ -359,8 +357,14 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                                             helperText={passError ? "Introduza uma password válida" : ""} />
                                     </div>
                                     <div style={{ width: "50%" }}>
-                                        <Autocomplete options={polos} getOptionLabel={(option) => option.label} value={poloid} onChange={(event, newValue) => { setPoloid(newValue); setPoloError(false); }}
-                                            disabled={isPoloDisabled} renderInput={(params) => (<TextField {...params} label="Polo" error={poloError} helperText={poloError ? "Escolha um polo" : ""} />)} />
+                                    <Autocomplete options={polos} getOptionLabel={(option) => option.label} renderInput={(params) => (
+                                                <TextField {...params} label="Polo" variant="outlined" type="text" error={poloError} helperText={poloError ? "Escolha um Polo" : ""} /> 
+                                            )}
+                                            value={poloid}
+                                            onChange={(event, newValue) => { setPoloid(newValue); }}
+                                            fullWidth={true} 
+                                            disabled={isPoloDisabled}
+                                        />
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>

@@ -48,7 +48,12 @@ export default function ConfigAlertas() {
     const fetchData = async () => {
         try {
             const token = sessionStorage.getItem('token');
-
+            let poloid = sessionStorage.getItem('poloid');
+            
+            if (!poloid) {
+                poloid = '';
+            }
+            
             let estado = undefined;
             if (filtroCombo === 'Ativos') {
                 estado = false;
@@ -61,7 +66,8 @@ export default function ConfigAlertas() {
                 },
                 params: {
                     estado: estado,
-                    descricao: filtroText
+                    descricao: filtroText,
+                    poloid: poloid
                 }
             });
             const alertas = response.data.data;

@@ -253,14 +253,13 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
         const perfil = sessionStorage.getItem('perfil');
         if (perfil === 'Admin'){
             setIsPoloDisabled(true);
-
             const poloid = sessionStorage.getItem('poloid');
             const descpolo = sessionStorage.getItem('descpolo');
             setPolo({value: poloid, label: descpolo});
         } else {
             setIsPoloDisabled(false);
         }
-    }, [eventData]);
+    }, [open, eventData]);
 
     const validateForm = () => {
         let errors = {};

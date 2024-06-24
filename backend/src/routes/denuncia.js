@@ -17,6 +17,7 @@ router.delete('/delete/:idDenuncia', authenticate, denunciaController.remover);
 // Rotas GET
 router.get('/', authenticate, denunciaController.consultarTudo);
 router.get('/filtro', authenticate, denunciaController.consultarTudoComFiltro);
+router.get('/count', authenticate, denunciaController.consultarCountDenuncias);
 router.get('/comentario/:idComentario', authenticate, denunciaController.consultarComentario);
 
 module.exports = router;

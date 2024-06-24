@@ -1,4 +1,4 @@
-const { Sequelize, Op } = require('sequelize');
+const { Sequelize, Op, QueryTypes } = require('sequelize');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
@@ -111,6 +111,35 @@ const denunciaController = {
         try {
             const denuncias = await models.denuncia.findAll();
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: denuncias });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar denúncias', details: error.message });
+        }
+    },
+
+    consultarCountDenuncias: async (req, res) => {
+        const { utilizadorid } = req.params;
+
+        try {
+            const query = await sequelizeConn.query(
+                `SELECT 
+                    p.poloid,
+                    p.descricao,
+                    COUNT(d.denunciaid) AS count
+                FROM 
+                    denuncia d
+                JOIN 
+                    utilizador u ON d.utilizadorcriou = u.utilizadorid
+                JOIN 
+                    polo p ON u.poloid = p.poloid
+                WHERE 
+                    d.utilizadorcriou = u.utilizadorid
+                GROUP BY 
+                    p.poloid;
+            `,
+                { type: QueryTypes.SELECT },
+            );
+
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: query });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar denúncias', details: error.message });
         }

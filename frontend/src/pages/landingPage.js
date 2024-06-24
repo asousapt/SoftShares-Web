@@ -8,7 +8,7 @@ import QrCodeModal from '../modals/qrcodeModal';
 function LandingPage() {
     const [open, setOpen] = useState(false);
     const [qrCodeOpen, setQrCodeOpen] = useState(false);
-    
+
     const handleOpen = () => {
         setOpen(true);
     };
@@ -65,24 +65,24 @@ function LandingPage() {
                 </Typography>
                 <Grid container spacing={4}>
                     <Grid item xs={12} md={4}>
-                        <Paper elevation={3} sx={{ padding: '20px', textAlign: 'center' }}>
+                        <Paper elevation={3} sx={{ padding: '5%', textAlign: 'center' }}>
                             <Group fontSize="large" sx={{ color: '#4D9CFA', marginBottom: '10px' }} />
                             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Conexão Unida</Typography>
                             <Typography>Simplifica a comunicação, proporcionando um espaço digital unido.</Typography>
                         </Paper>
                     </Grid>
                     <Grid item xs={12} md={4}>
-                        <Paper elevation={3} sx={{ padding: '20px', textAlign: 'center' }}>
+                        <Paper elevation={3} sx={{ padding: '5%', textAlign: 'center' }}>
                             <PersonAdd fontSize="large" sx={{ color: '#4D9CFA', marginBottom: '10px' }} />
                             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Integração Fácil</Typography>
                             <Typography>Facilita a entrada de novos elementos, com a proximidade de outros membros.</Typography>
                         </Paper>
                     </Grid>
                     <Grid item xs={12} md={4}>
-                        <Paper elevation={3} sx={{ padding: '20px', textAlign: 'center' }}>
+                        <Paper elevation={3} sx={{ padding: '5%', textAlign: 'center' }}>
                             <Chat fontSize="large" sx={{ color: '#4D9CFA', marginBottom: '10px' }} />
-                            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Promove a ligação da equipa</Typography>
-                            <Typography>Com recursos como chats, fóruns e eventos, fortalece os laços entre os membros da equipa.</Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Promove a Integração</Typography>
+                            <Typography>Com recursos como chats, fóruns e eventos, fortalece os laços entre os membros.</Typography>
                         </Paper>
                     </Grid>
                 </Grid>
@@ -91,10 +91,11 @@ function LandingPage() {
             {/* Statistics */}
             <Container sx={{
                 backgroundColor: '#f0f0f0',
-                padding: '50px 0',
-                maxWidth: '100%'
+                padding: '40px 0',
+                maxWidth: '100%',
+                borderRadius: '10px',
+                marginBottom: '20px'
             }}>
-                 {/* <Container sx={{ backgroundColor: '#f0f0f0', padding: '30px 0', width: '100%', maxWidth: { xs: '100%', md: '1200px' }, '@media (min-width: 1200px)': { maxWidth: '100%', }, }}></Container> */}
                 <Typography variant="h4" gutterBottom align="center">
                     Deixe as estatísticas falarem alto
                 </Typography>

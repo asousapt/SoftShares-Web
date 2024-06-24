@@ -120,6 +120,15 @@ export default function ListaEventos() {
             
             setTableRows(eventosTable);
             
+            if (eventosTable.length === 0) {
+                setAlertProps({
+                    title: 'Sem Registos',
+                    label: 'Nenhum evento encontrado com os filtros aplicados.',
+                    severity: 'info'
+                });
+                setAlertOpen(true);
+            }
+            
         } catch (error) {
             setError(error);
         }

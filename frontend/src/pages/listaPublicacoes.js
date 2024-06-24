@@ -84,6 +84,16 @@ export default function ListaPublicacoes() {
                     estado: thread.inactivo ? 'Inativo' : 'Ativo'
                 }))
             );
+
+            if (sortedPub.length === 0) {
+                setAlertProps({
+                    title: 'Sem Registos',
+                    label: 'Nenhuma publicação encontrada com os filtros aplicados.',
+                    severity: 'info'
+                });
+                setAlertOpen(true);
+            }
+            
         } catch (error) {
             setError(error);
         }

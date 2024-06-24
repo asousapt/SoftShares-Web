@@ -431,44 +431,50 @@ const controladorEventos = {
     consultarTodosComFiltro: async (req, res) => {
         const { estado, categoria, descricao, poloid } = req.query;
         console.log(estado);
-        
+    
         try {
-            let whereClause = '';
+            let whereClause = 'WHERE e.titulo LIKE :descricao';
+            const replacements = { descricao: `%${descricao}%` };
+    
             if (estado === "NULL") {
-                whereClause += ` AND e.aprovado IS NULL`;
-            } else if(estado !== undefined) {
-                whereClause += ` AND e.aprovado = ${estado}`;
+                whereClause += ' AND e.aprovado IS NULL';
+            } else if (estado !== undefined) {
+                whereClause += ' AND e.aprovado = :estado';
+                replacements.estado = estado;
             }
-
+    
             if (categoria > 0) {
-                whereClause += ` AND e.subcategoriaid IN (SELECT subcategoriaid FROM subcategoria WHERE categoriaid = ${categoria}) `;
+                whereClause += ' AND e.subcategoriaid IN (SELECT subcategoriaid FROM subcategoria WHERE categoriaid = :categoria)';
+                replacements.categoria = categoria;
             }
-
+    
             if (poloid) {
-                whereClause += `AND e.poloid = ${poloid}`;
+                whereClause += ' AND e.poloid = :poloid';
+                replacements.poloid = poloid;
             }
-
+    
             const eventos = await sequelizeConn.query(
                 `SELECT 
                     e.*, 
                     t.valor as valorpt,
-                    (SELECT COUNT(pe.participantes_eventosid) FROM participantes_eventos pe WHERE pe.eventoid = e.eventoid ) as numinscritos,
-                    (SELECT COALESCE(SUM(pe.convidadosadic), 0) FROM participantes_eventos pe WHERE pe.eventoid = e.eventoid ) as numconvidados
+                    (SELECT COUNT(pe.participantes_eventosid) FROM participantes_eventos pe WHERE pe.eventoid = e.eventoid) as numinscritos,
+                    (SELECT COALESCE(SUM(pe.convidadosadic), 0) FROM participantes_eventos pe WHERE pe.eventoid = e.eventoid) as numconvidados
                 FROM 
                     evento e
                 INNER JOIN 
                     chave ch ON e.subcategoriaid = ch.registoid AND ch.entidade = 'SUBCAT'
                 LEFT JOIN 
                     traducao t ON ch.chaveid = t.chaveid AND t.idiomaid = 1
-                WHERE
-                    e.titulo LIKE '%${descricao}%'
-                ${whereClause}
-                    `,
-                { type: QueryTypes.SELECT }
+                ${whereClause}`,
+                { 
+                    replacements, 
+                    type: QueryTypes.SELECT 
+                }
             );
+    
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: eventos });
         } catch (error) {
-            res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
+            res.status(500).json({ error: 'Erro ao consultar eventos', details: error.message });
         }
     },
 };

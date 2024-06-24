@@ -108,6 +108,16 @@ export default function ListaPontosInt() {
             }));
 
             setTableRows(pontosInteresseTable);
+
+            if (pontosInteresseTable.length === 0) {
+                setAlertProps({
+                    title: 'Sem Registos',
+                    label: 'Nenhum Ponto de Interesse encontrado com os filtros aplicados.',
+                    severity: 'info'
+                });
+                setAlertOpen(true);
+            }
+
         } catch (error) {
             setError(error);
         }

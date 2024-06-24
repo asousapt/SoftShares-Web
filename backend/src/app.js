@@ -9,7 +9,6 @@ const perfil = require('./controllers/perfis');
 const departamento = require('./controllers/departamentos');
 const funcoes = require('./controllers/funcoes');
 const grupo = require('./controllers/grupo');
-const redLandingPage = require('./middlewareCode');
 const app = express();
 
 // Use CORS middleware

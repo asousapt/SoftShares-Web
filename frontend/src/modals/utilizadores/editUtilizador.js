@@ -177,16 +177,21 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
                 setPoloAdmid('');
                 setIsPoloAdmidDisabled(true);
             }
-
-            if (userData.imagem.url === '' || userData.imagem.url === null) {
+            if (userData.imagem === undefined){
                 setImageName('');
                 setImageSize(0);
                 setImage('');
             } else {
-                const base64String = await getBase64FromUrl(userData.imagem.url);
-                setImage(base64String);
-                setImageName(userData.imagem.name);
-                setImageSize(userData.imagem.size);
+                if (userData.imagem.url === '' || userData.imagem.url === null) {
+                    setImageName('');
+                    setImageSize(0);
+                    setImage('');
+                } else {
+                    const base64String = await getBase64FromUrl(userData.imagem.url);
+                    setImage(base64String);
+                    setImageName(userData.imagem.name);
+                    setImageSize(userData.imagem.size);
+                }
             }
         } catch (error) {
             console.error('Erro ao buscar dados do utilizador:', error);

@@ -73,15 +73,22 @@ const EditarPolo = ({ open, onClose, poloId, setAlertOpen, setAlertProps }) => {
             const distrito = await fetchDistritoByCidadeId(polo.cidadeid);
             setDistrito(distrito);
             fetchCidades(distrito.value, polo.cidadeid);
-            if (polo.imagem.url === '' || polo.imagem.url === null) {
+            
+            if (polo.imagem === undefined){
                 setImageName('');
                 setImageSize(0);
                 setImage('');
             } else {
-                const base64String = await getBase64FromUrl(polo.imagem.url);
-                setImage(base64String);
-                setImageName(polo.imagem.name);
-                setImageSize(polo.imagem.size);
+                if (polo.imagem.url === '' || polo.imagem.url === null) {
+                    setImageName('');
+                    setImageSize(0);
+                    setImage('');
+                } else {
+                    const base64String = await getBase64FromUrl(polo.imagem.url);
+                    setImage(base64String);
+                    setImageName(polo.imagem.name);
+                    setImageSize(polo.imagem.size);
+                }
             }
         } catch (error) {
             console.error('Erro ao buscar dados do polo:', error);

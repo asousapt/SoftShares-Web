@@ -5,12 +5,13 @@ import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import BasicTextField from '../../components/textFields/basic';
 import ComboBox from '../../components/combobox/comboboxBasic';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 import SubmitButton from '../../components/buttons/submitButton';
 import CancelButton from '../../components/buttons/cancelButton';
 import InputImage from '../../components/image/imageInput';
 
 const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) => {
-    // console.log('id ver utilizador', userId);
     //VARS
     //FIELDS
     const [poloid, setPoloid] = useState('');
@@ -32,6 +33,7 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
     const [imageName, setImageName] = useState('');
     const [imageSize, setImageSize] = useState(0);
     const [isPoloAdmidDisabled, setIsPoloAdmidDisabled] = useState(true);
+    const [isPoloDisabled, setIsPoloDisabled] = useState(false);
 
     //ERRORS
     const [emailError, setEmailError] = useState(false);
@@ -47,7 +49,7 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
     const getBase64FromUrl = async (url) => {
         const response = await fetch(url);
         const blob = await response.blob();
-        
+
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -65,8 +67,7 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
                 headers: { Authorization: `${token}` }
             });
             const userData = response.data.data;
-    
-            setPoloid(userData.poloid);
+
             setPerfilid(userData.perfilid);
             setPnome(userData.pnome);
             setUnome(userData.unome);
@@ -76,7 +77,7 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
             setPasswd(userData.passwd);
             setSobre(userData.sobre);
             setInactivo(userData.inactivo);
-    
+
             if (userData.administrador_polos && userData.administrador_polos.length > 0) {
                 setPoloAdmid(userData.administrador_polos[0].polo.poloid);
                 setIsPoloAdmidDisabled(false);
@@ -84,7 +85,7 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
                 setPoloAdmid('');
                 setIsPoloAdmidDisabled(true);
             }
-    
+
             if (userData.imagem.url === '' || userData.imagem.url === null) {
                 setImageName('');
                 setImageSize(0);
@@ -186,21 +187,33 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
         fetchFuncao();
         fetchPolos();
         fetchDepartamentos();
-    }, []);
+
+        const perfilsess = sessionStorage.getItem('perfil');
+        if (perfilsess === 'Admin') {
+            setIsPoloDisabled(true);
+            const poloid = sessionStorage.getItem('poloid');
+            console.log('poloid', poloid);
+            const descpolo = sessionStorage.getItem('descpolo');
+            console.log('descpolo', descpolo);
+            setPoloid({ value: poloid, label: descpolo });
+        } else {
+            setIsPoloDisabled(false);
+        }
+    }, [open]);
 
     const handlePerfilChange = (event) => {
         const selectedPerfilId = event.target.value;
         setPerfilid(selectedPerfilId);
-    
+
         const selectedPerfil = perfil.find(p => p.value === selectedPerfilId);
-        
+
         if (selectedPerfil && selectedPerfil.label === 'Admin') {
             setIsPoloAdmidDisabled(false);
         } else {
             setIsPoloAdmidDisabled(true);
             setPoloAdmid('');
         }
-    
+
         setPerfilError(false);
     };
 
@@ -316,20 +329,20 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
         try {
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
-            fileInput.accept = 'image/*'; 
-    
+            fileInput.accept = 'image/*';
+
             fileInput.addEventListener('change', async (event) => {
                 const file = event.target.files[0];
-                if (!file) return; 
+                if (!file) return;
                 setImageName(file.name);
                 setImageSize(file.size);
-                
+
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
-        
+
                 reader.onload = async () => {
                     const imageData = reader.result;
-                    console.log('reader',reader);
+                    console.log('reader', reader);
                     setImage(imageData);
                 };
             });
@@ -382,12 +395,12 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <div style={{ width: "50%" }}>
-                                    <BasicTextField caption='Senha' valor={passwd} onchange={(e) => setPasswd(e.target.value)} fullwidth={true} type="password" error={passError}
-                                        helperText={passError ? "Introduza uma password válida" : ""} />
+                                        <BasicTextField caption='Senha' valor={passwd} onchange={(e) => setPasswd(e.target.value)} fullwidth={true} type="password" error={passError}
+                                            helperText={passError ? "Introduza uma password válida" : ""} />
                                     </div>
                                     <div style={{ width: "50%" }}>
-                                        <ComboBox caption='Polo' options={polos} value={poloid} handleChange={(e) => { setPoloid(e.target.value); setPoloError(false); }} error={poloError}
-                                            helperText={poloError ? "Selecione um polo válido" : ""} />
+                                        <Autocomplete options={polos} getOptionLabel={(option) => option.label} value={poloid} onChange={(event, newValue) => { setPoloid(newValue); setPoloError(false); }}
+                                            disabled={isPoloDisabled} renderInput={(params) => (<TextField {...params} label="Polo" error={poloError} helperText={poloError ? "Escolha um polo" : ""} />)} />
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
@@ -422,7 +435,7 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
                                         labelPlacement="start"
                                         control={<Switch checked={inactivo} onChange={handleChangeAtivo} />}
                                         label="Inativo"
-                                        sx={{ marginTop: '10px' }}/>
+                                        sx={{ marginTop: '10px' }} />
                                 </div>
                             </div>
                         </div>

@@ -398,11 +398,15 @@ const controladorUtilizadores = {
     },
 
     consultarTodosComFiltro: async (req, res) => {
-        const { estado, descricao } = req.query;
+        const { estado, descricao, poloid } = req.query;
         try {
             let whereClause = '';
             if (estado !== undefined) {
                 whereClause += ` AND u.inactivo = ${estado}`;
+            }
+
+            if (poloid) {
+                whereClause += `AND u.poloid = ${poloid}`;
             }
 
             const utilizadors = await sequelizeConn.query(

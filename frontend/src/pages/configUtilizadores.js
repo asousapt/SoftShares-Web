@@ -46,7 +46,12 @@ export default function Configtilizadores() {
     const fetchData = async () => {
         try {
             const token = sessionStorage.getItem('token');
-
+            let poloid = sessionStorage.getItem('poloid');
+            
+            if (!poloid) {
+                poloid = '';
+            }
+            
             let estado = undefined;
             if (filtroCombo === 'Ativos') {
                 estado = false;
@@ -59,7 +64,8 @@ export default function Configtilizadores() {
                 },
                 params: {
                     estado: estado,
-                    descricao: filtroText
+                    descricao: filtroText,
+                    poloid: poloid
                 }
             });
             const utilizadores = response.data.data;

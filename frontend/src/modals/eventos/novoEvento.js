@@ -121,7 +121,7 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
         } else {
             setIsPoloDisabled(false);
         }
-    }, []);
+    }, [open]);
 
     const fetchCidades = async (distritoId) => {
         try {
@@ -305,7 +305,7 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
                 formInsc: formInsc,
                 formQualidade: formQdd
             };
-            console.log(novoEvento);
+            
             await axios.post('http://localhost:8000/evento/add', novoEvento, {
                 headers: {
                     Authorization: `${token}`,

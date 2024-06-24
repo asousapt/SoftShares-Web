@@ -6,6 +6,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import BasicTextField from '../../components/textFields/basic';
 import ComboBox from '../../components/combobox/comboboxBasic';
 import SubmitButton from '../../components/buttons/submitButton';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 import CancelButton from '../../components/buttons/cancelButton';
 import InputImage from '../../components/image/imageInput';
 
@@ -31,6 +33,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     const [imageName, setImageName] = useState('');
     const [imageSize, setImageSize] = useState(0);
     const [isPoloAdmidDisabled, setIsPoloAdmidDisabled] = useState(true);
+    const [isPoloDisabled, setIsPoloDisabled] = useState(false);
 
     //ERRORS
     const [emailError, setEmailError] = useState(false);
@@ -106,7 +109,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                     headers: { Authorization: `${token}` }
                 });
                 const perfilData = response.data.data;
-                
+
                 const perfilOptions = perfilData.map(perfil => ({
                     value: perfil.perfilid,
                     label: perfil.descricao
@@ -122,24 +125,34 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         fetchFuncao();
         fetchPolos();
         fetchDepartamentos();
-    }, []);
+
+        const perfilsess = sessionStorage.getItem('perfil');
+        if (perfilsess === 'Admin') {
+            setIsPoloDisabled(true);
+            const poloid = sessionStorage.getItem('poloid');
+            const descpolo = sessionStorage.getItem('descpolo');
+            setPoloid({ value: poloid, label: descpolo });
+        } else {
+            setIsPoloDisabled(false);
+        }
+    }, [open]);
 
     const handlePerfilChange = (event) => {
         const selectedPerfilId = event.target.value;
         setPerfilid(selectedPerfilId);
-    
+
         const selectedPerfil = perfil.find(p => p.value === selectedPerfilId);
-        
+
         if (selectedPerfil && selectedPerfil.label === 'Admin') {
             setIsPoloAdmidDisabled(false);
         } else {
             setIsPoloAdmidDisabled(true);
             setPoloAdmid('');
         }
-    
+
         setPerfilError(false);
     };
-    
+
     const validateEmail = (email) => {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(String(email).toLowerCase());
@@ -317,7 +330,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         setPoloAdmError(false);
         onClose();
     };
-    
+
     return (
         <Modal open={open} onClose={handleCancel}>
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px', overflow: 'auto' }}>
@@ -329,11 +342,11 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <div style={{ width: "50%" }} >
                                         <BasicTextField caption='Primeiro Nome' valor={pnome} onchange={(e) => setPnome(e.target.value)} fullwidth={true} type="text" error={pnomeError}
-                                            helperText={pnomeError ? "Introduza um nome válido" : ""} allowOnlyLetters={true}/>
+                                            helperText={pnomeError ? "Introduza um nome válido" : ""} allowOnlyLetters={true} />
                                     </div>
                                     <div style={{ width: "50%" }} >
                                         <BasicTextField caption='Último Nome' valor={unome} onchange={(e) => setUnome(e.target.value)} fullwidth={true} type="text" error={unomeError}
-                                            helperText={unomeError ? "Introduza um nome válido" : ""} allowOnlyLetters={true}/>
+                                            helperText={unomeError ? "Introduza um nome válido" : ""} allowOnlyLetters={true} />
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
@@ -342,12 +355,12 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <div style={{ width: "50%" }}>
-                                    <BasicTextField caption='Senha' valor={passwd} onchange={(e) => setPasswd(e.target.value)} fullwidth={true} type="password" error={passError}
-                                        helperText={passError ? "Introduza uma password válida" : ""} />
+                                        <BasicTextField caption='Senha' valor={passwd} onchange={(e) => setPasswd(e.target.value)} fullwidth={true} type="password" error={passError}
+                                            helperText={passError ? "Introduza uma password válida" : ""} />
                                     </div>
                                     <div style={{ width: "50%" }}>
-                                        <ComboBox caption='Polo' options={polos} value={poloid} handleChange={(e) => { setPoloid(e.target.value); setPoloError(false); }} error={poloError}
-                                            helperText={poloError ? "Selecione um polo válido" : ""} />
+                                        <Autocomplete options={polos} getOptionLabel={(option) => option.label} value={poloid} onChange={(event, newValue) => { setPoloid(newValue); setPoloError(false); }}
+                                            disabled={isPoloDisabled} renderInput={(params) => (<TextField {...params} label="Polo" error={poloError} helperText={poloError ? "Escolha um polo" : ""} />)} />
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>

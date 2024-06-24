@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 import Modal from '@mui/material/Modal';
 import BasicTextField from '../../components/textFields/basic';
 import DataHora from '../../components/textFields/dataHora';
-import SubmitButton from '../../components/buttons/submitButton';
 import ComboBox from '../../components/combobox/comboboxBasic';
 import CancelButton from '../../components/buttons/cancelButton';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import InputImage from '../../components/image/imageInput';
+import ImageTable from '../../components/tables/imageTable';
 import axios from 'axios';
 
 const VerEventModal = ({ open, onClose, eventoId}) => {
@@ -25,11 +24,25 @@ const VerEventModal = ({ open, onClose, eventoId}) => {
     const [poloId, setPolo] = useState('');
     const [polos, setPolos] = useState([]);
     const [error, setError] = useState(null);
-    const [image, setImage] = useState('https://i0.wp.com/ctmirror-images.s3.amazonaws.com/wp-content/uploads/2021/01/dummy-man-570x570-1.png?fit=570%2C570&ssl=1');
+    const [images, setImages] = useState([]);
     const [opcoesCat, setOpcoesCat] = useState([]);
     const [categoria, setCategoria] = useState(null);
     const [opcoesSubcat, setOpcoesSubcat] = useState([]);
     const [subcategoria, setSubcategoria] = useState(null);
+
+    const getBase64FromUrl = async (url) => {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                resolve(reader.result);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    };
 
     const fetchCategorias = async () => {
         try {
@@ -163,41 +176,53 @@ const VerEventModal = ({ open, onClose, eventoId}) => {
     };
 
     const fetchEventData = async () => {
-            try {
-                const token = sessionStorage.getItem('token');
-                const response = await axios.get(`http://localhost:8000/evento/${eventoId}`, {
-                    headers: { Authorization: `${token}` }
-                });
-                const userData = response.data.data;
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get(`http://localhost:8000/evento/${eventoId}`, {
+                headers: { Authorization: `${token}` }
+            });
+            const userData = response.data.data;
 
-                setTitle(userData.titulo);
-                setLocalizacao(userData.localizacao);
-                setDescription(userData.descricao);
-                setNumParticipantes(userData.nmrmaxparticipantes);
-                setDataHoraInicio(dataFormatada(userData.datainicio));
-                setDataHoraFim(dataFormatada(userData.datafim));
-                setDataLimInscricao(dataFormatada(userData.dataliminscricao));
-                setPolo(userData.poloid);
+            setTitle(userData.titulo);
+            setLocalizacao(userData.localizacao);
+            setDescription(userData.descricao);
+            setNumParticipantes(userData.nmrmaxparticipantes);
+            setDataHoraInicio(dataFormatada(userData.datainicio));
+            setDataHoraFim(dataFormatada(userData.datafim));
+            setDataLimInscricao(dataFormatada(userData.dataliminscricao));
+            setPolo(userData.poloid);
 
-                const distrito = await fetchDistritoByCidadeId(userData.cidadeid);
-                setDistrito(distrito);
-                fetchCidades(distrito.value, userData.cidadeid);
-                
-                const catResponse = await axios.get(`http://localhost:8000/categoria/${userData.subcategoria.categoriaid}`, {
-                    headers: { Authorization: `${token}` }
-                });
-                const cat = catResponse.data;
-                setCategoria({value: userData.subcategoria.categoriaid, label: cat.valorpt});
-                fetchSubcategoria(userData.subcategoria.categoriaid);
-    
-                const subcatResponse = await axios.get(`http://localhost:8000/subcategoria/${userData.subcategoriaid}`, {
-                    headers: { Authorization: `${token}` }
-                });
-                const subcat = subcatResponse.data;
-                setSubcategoria({value: userData.subcategoriaid, label: subcat.valorpt});
-            } catch (error) {
-                console.error('Erro ao buscar dados do evento:', error);
-            }
+            const distrito = await fetchDistritoByCidadeId(userData.cidadeid);
+            setDistrito(distrito);
+            fetchCidades(distrito.value, userData.cidadeid);
+            
+            const catResponse = await axios.get(`http://localhost:8000/categoria/${userData.subcategoria.categoriaid}`, {
+                headers: { Authorization: `${token}` }
+            });
+            const cat = catResponse.data;
+            setCategoria({value: userData.subcategoria.categoriaid, label: cat.valorpt});
+            fetchSubcategoria(userData.subcategoria.categoriaid);
+
+            const subcatResponse = await axios.get(`http://localhost:8000/subcategoria/${userData.subcategoriaid}`, {
+                headers: { Authorization: `${token}` }
+            });
+            const subcat = subcatResponse.data;
+            setSubcategoria({value: userData.subcategoriaid, label: subcat.valorpt});
+            
+            const transformedImages = await Promise.all(
+                userData.imagens.map(async (imagem) => {
+                    const base64String = await getBase64FromUrl(imagem.url);
+                    return {
+                        src: base64String,
+                        alt: imagem.name,
+                        size: imagem.size,
+                    };
+                })
+            );
+            setImages(transformedImages);
+        } catch (error) {
+            console.error('Erro ao buscar dados do evento:', error);
+        }
     };
 
     useEffect(() => {
@@ -329,7 +354,7 @@ const VerEventModal = ({ open, onClose, eventoId}) => {
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>
-                        <InputImage image={image} />
+                        <ImageTable images={images} onAddImage={() => {}} onDelete={() => {}} canModify={false} />
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
                         <CancelButton onclick={() => { onClose(); }} caption='Voltar' />

@@ -7,15 +7,17 @@ const models = initModels(sequelizeConn);
 const controladorFicheiros = {
     adicionar: async (id, entidade, files, userID) => {
         try {
-            const objecto = await models.objecto.findOne({
+            let objecto = await models.objecto.findOne({
                 where:{
                     registoid: id,
                     entidade: entidade
                 }
             });
             if (!objecto){
-                console.error('O objeto não existe!');
-                return false;
+                objecto = await models.objecto.create({
+                    registoid: id,
+                    entidade: entidade
+                });
             }
 
             let album = await models.album.findOne({
@@ -56,33 +58,29 @@ const controladorFicheiros = {
                     entidade: entidade
                 }
             });
+
             if (!objecto){
                 console.error('O objeto não existe!');
-                return false;
-            }
-
-            const album = await models.album.findOne({
-                where:{
-                    objectoid: objecto.objectoid
+            } else {
+                const album = await models.album.findOne({
+                    where:{
+                        objectoid: objecto.objectoid
+                    }
+                });
+                if (!album){
+                    console.error('O album não existe!');
+                } else {
+                    objStorage.deleteAllFiles(album.descricao);
+    
+                    await models.ficheiro.destroy({
+                        where: {
+                            albumid: album.albumid
+                        }
+                    });
                 }
-            });
-            if (!album){
-                console.error('O album não existe!');
-                return false;
             }
-
-            objStorage.deleteAllFiles(album.descricao);
-
-            await models.ficheiro.destroy({
-                where: {
-                    albumid: album.albumid
-                }
-            });
-
-            return true;
         } catch (error) {
             console.error('Não foi possível remover os ficheiros!', error);
-            return false;
         }
     },
 

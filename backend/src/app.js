@@ -15,7 +15,6 @@ const app = express();
 // Use CORS middleware
 app.use(cors());
 app.options('*', cors());
-app.use(redLandingPage);
 
 //Use bodyParser middleware
 app.use(bodyParser.json({ limit: '50mb' }));

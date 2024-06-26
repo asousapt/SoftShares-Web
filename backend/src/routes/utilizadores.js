@@ -22,5 +22,4 @@ router.get('/:idUtilizador', authenticate, utilizadorControlador.consultarPorID)
 router.get('/mobile/:idUtilizador', authenticate, utilizadorControlador.consultarPorIDMobile);
 router.get('/token/:id', utilizadorControlador.novoToken);
 
-
 module.exports = router;

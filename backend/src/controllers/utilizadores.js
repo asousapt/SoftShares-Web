@@ -9,7 +9,6 @@ const utilizador = require('../models/utilizador');
 
 const controladorUtilizadores = {
     adicionar: async (req, res) => {
-        console.log(req.body);
         const {
             poloid,
             perfilid,
@@ -140,7 +139,6 @@ const controladorUtilizadores = {
     },
 
     atualizarMobile: async (req, res) => {
-        console.log(req.body);
         const { idUtilizador } = req.params;
         const {
             poloid,
@@ -312,6 +310,7 @@ const controladorUtilizadores = {
     
     consultarPorEmail: async (req, res) => {
         const { email } = req.params;
+        console.log('email:', email);
 
         try {
             const utilizador = await models.utilizador.findOne({
@@ -336,7 +335,6 @@ const controladorUtilizadores = {
             
             const ficheiros = await ficheirosController.getAllFilesByAlbum(utilizador.utilizadorid, 'UTIL');
             utilizador.dataValues.imagem = ficheiros[0];
-            console.log(utilizador);
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: utilizador });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar utilizador', details: error.message });

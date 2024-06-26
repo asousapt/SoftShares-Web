@@ -37,6 +37,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
 
     //ERRORS
     const [emailError, setEmailError] = useState(false);
+    const [emailErrorMessage, setEmailErrorMessage] = useState('');
     const [pnomeError, setPnomeError] = useState(false);
     const [unomeError, setUnomeError] = useState(false);
     const [passError, setPassError] = useState(false);
@@ -158,11 +159,33 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         return re.test(String(email).toLowerCase());
     };
 
-    const validateForm = () => {
+    const verificarEmail = async (email) => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get(`http://localhost:8000/utilizadores/email/${email}`, {
+                headers: { Authorization: `${token}` }
+            });
+            return response.status === 200;
+        } catch (error) {
+            if (error.response && error.response.status === 404) {
+                return false;
+            }
+            console.error('Erro ao verificar e-mail:', error);
+            return true;
+        }
+    };
+
+    const validateForm = async () => {
         let errors = {};
 
         if (!validateEmail(email)) {
             errors.emailError = true;
+        } else {
+            const emailExists = await verificarEmail(email);
+            if (emailExists) {
+                errors.emailError = true;
+                errors.emailMessage = "Este e-mail já está em uso.";
+            }
         }
 
         if (!pnome) {
@@ -201,8 +224,24 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     };
 
     const handleAddUser = async () => {
-        const errors = validateForm();
+        const emailErrorState = !validateEmail(email);
+        setEmailError(emailErrorState);
+
+        if (emailErrorState) {
+            setEmailErrorMessage("Introduza um e-mail válido");
+            return;
+        }
+
+        const emailExists = await verificarEmail(email);
+        if (emailExists) {
+            setEmailError(true);
+            setEmailErrorMessage("Este e-mail já está em uso.");
+            return;
+        }
+        
+        const errors = await validateForm();
         setEmailError(errors.emailError || false);
+        setEmailErrorMessage(errors.emailMessage || "");
         setPnomeError(errors.pnomeError || false);
         setUnomeError(errors.unomeError || false);
         setPassError(errors.passError || false);
@@ -215,6 +254,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         if (Object.keys(errors).length > 0) {
             return;
         }
+
         try {
             const token = sessionStorage.getItem('token');
             const imagem = [{
@@ -298,7 +338,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     }
 
     const resetForm = () => {
-        setPoloid('');
+        setPoloid(null);
         setPoloAdmid('');
         setPerfilid('');
         setPnome('');
@@ -349,7 +389,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <BasicTextField caption='Email' valor={email} onchange={(e) => setEmail(e.target.value)} fullwidth={true} type="email" error={emailError}
-                                        helperText={emailError ? "Introduza um e-mail válido" : ""} />
+                                        helperText={emailError ? emailErrorMessage : ""} />
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <div style={{ width: "50%" }}>
@@ -357,12 +397,12 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                                             helperText={passError ? "Introduza uma password válida" : ""} />
                                     </div>
                                     <div style={{ width: "50%" }}>
-                                    <Autocomplete options={polos} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                                <TextField {...params} label="Polo" variant="outlined" type="text" error={poloError} helperText={poloError ? "Escolha um Polo" : ""} /> 
-                                            )}
+                                        <Autocomplete options={polos} getOptionLabel={(option) => option.label} renderInput={(params) => (
+                                            <TextField {...params} label="Polo" variant="outlined" type="text" error={poloError} helperText={poloError ? "Escolha um Polo" : ""} />
+                                        )}
                                             value={poloid}
                                             onChange={(event, newValue) => { setPoloid(newValue); }}
-                                            fullWidth={true} 
+                                            fullWidth={true}
                                             disabled={isPoloDisabled}
                                         />
                                     </div>

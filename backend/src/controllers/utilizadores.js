@@ -310,7 +310,6 @@ const controladorUtilizadores = {
     
     consultarPorEmail: async (req, res) => {
         const { email } = req.params;
-        console.log('email:', email);
 
         try {
             const utilizador = await models.utilizador.findOne({

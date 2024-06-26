@@ -290,16 +290,16 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
         }
         if (!dataInicio) {
             errors.dataHoraInicioError = true;
-        } else {
+        } /* else {
             const startDate = new Date(dataInicio);
             const currentDate = new Date();
             if (startDate <= currentDate) {
                 errors.dataHoraInicioError = true; 
-            }
-        }
+            } 
+        }*/
         if (!dataFim) {
             errors.dataHoraFimError = true;
-        } else {
+        } /* else {
             const endDate = new Date(dataFim);
             const currentDate = new Date();
             const startDate = new Date(dataInicio);
@@ -308,10 +308,10 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
             }else if (endDate < startDate) {
                 errors.dataHoraFimError = true;
             }
-        }
+        } */
         if (!dataLimInscricao) {
             errors.dataLimInscricaoError = true;
-        } else {
+        } /* else {
             const deadlineDate = new Date(dataLimInscricao);
             const currentDate = new Date();
             const startDate = new Date(dataInicio);
@@ -320,7 +320,7 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
             }else if (deadlineDate > startDate) {
                 errors.dataHoraFimError = true;
             }
-        }
+        } */
         if (!nmrMaxParticipantes) {
             errors.numParticipantesError = true;
         }

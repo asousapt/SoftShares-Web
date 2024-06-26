@@ -208,6 +208,7 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
             const currentDate = new Date();
             if (startDate <= currentDate) {
                 errors.dataHoraInicioError = true; 
+                alert('Data de Início não pode ser igual à atual.');
             }
         }
         if (!dataHoraFim) {
@@ -218,8 +219,10 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
             const startDate = new Date(dataHoraInicio);
             if (endDate <= currentDate) {
                 errors.dataHoraFimError = true;
+                alert('Data de Fim não pode ser igual à atual.');
             }else if (endDate < startDate) {
                 errors.dataHoraFimError = true;
+                alert('Data de Fim não pode ser anterior à de início.');
             }
         }
         if (!dataLimInscricao) {
@@ -230,8 +233,10 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
             const startDate = new Date(dataHoraInicio);
             if (deadlineDate <= currentDate) {
                 errors.dataLimInscricaoError = true; 
+                alert('Data de Inscrição não pode ser igual à atual.');
             }else if (deadlineDate > startDate) {
                 errors.dataHoraFimError = true;
+                alert('Data de Inscrição não pode ser superior à de Início.');
             }
         }
         if (!numParticipantes) {

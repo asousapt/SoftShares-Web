@@ -26,7 +26,7 @@ const controladorEventos = {
             formInsc,
             formQualidade
         } = req.body;
-
+        
         try {
             const evento = await models.evento.create({
                 titulo: titulo,
@@ -50,7 +50,7 @@ const controladorEventos = {
             });
 
             ficheirosController.adicionar(evento.eventoid, 'EVENTO', imagens, utilizadorCriou);
-
+             
             if (Array.isArray(formInsc) && formInsc.length > 0) {
                 const cfgFormulario = await models.itemcfgformulario.create({
                     registoid: evento.eventoid,
@@ -295,7 +295,7 @@ const controladorEventos = {
     },
 
     consultarEventosEntreDatas: async (req, res) => {
-        const { idPolo, data1, data2 } = req.params;
+        const { idPolo, data1, data2 } = req.params;    
 
         const query = `
             SELECT evento.*, subcategoria.categoriaid,
@@ -307,7 +307,7 @@ const controladorEventos = {
                     WHERE participantes_eventos.eventoid = evento.eventoid) AS numinscritos
             FROM evento
             JOIN subcategoria ON evento.subcategoriaid = subcategoria.subcategoriaid
-            WHERE evento.datainicio BETWEEN :data1 AND :data2
+            WHERE evento.aprovado = true and evento.datainicio BETWEEN :data1 AND :data2
             AND evento.cidadeid IN (SELECT cidadeid FROM polo WHERE poloid = :idPolo)
         `;
 

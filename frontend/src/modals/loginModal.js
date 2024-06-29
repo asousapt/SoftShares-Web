@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Modal, Box, Typography, TextField, Button, Checkbox, FormControlLabel, IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { Google, Facebook } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
 const style = {
@@ -23,6 +22,54 @@ const LoginModal = ({ open, handleClose }) => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
+  const [emailError, setEmailError] = useState(false);
+  const [emailErrorMessage, setEmailErrorMessage] = useState('');
+  const [passError, setPassError] = useState(false);
+  const [passErrorMessage, setPassErrorMessage] = useState('');
+
+  const verificarEmail = async (email) => {
+    try {
+      const token = sessionStorage.getItem('token');
+      const response = await axios.get(`http://localhost:8000/utilizadores/email/${email}`, {
+        headers: { Authorization: `${token}` }
+      });
+      return response.status === 200;
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        return false;
+      }
+      console.error('Erro ao verificar e-mail:', error);
+      return true;
+    }
+  };
+
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+  };
+
+  const validateForm = async () => {
+    let errors = {};
+
+    if (!validateEmail(email)) {
+      errors.emailError = true;
+      errors.emailMessage = "Introduza um e-mail válido";
+    } else {
+      const emailExists = await verificarEmail(email);
+      if (!emailExists) {
+        errors.emailError = true;
+        errors.emailMessage = "O e-mail introduziu não se encontra registado.";
+      }
+    }
+
+    if (!password) {
+      errors.passError = true;
+      errors.passMessage = "Introduza a sua password";
+    }
+
+    return errors;
+  };
+
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -42,12 +89,23 @@ const LoginModal = ({ open, handleClose }) => {
   };
 
   const handleLogin = async () => {
+    const errors = await validateForm();
+    setEmailError(errors.emailError || false);
+    setEmailErrorMessage(errors.emailMessage || "");
+    setPassError(errors.passError || false);
+    setPassErrorMessage(errors.passMessage || "");
+
+    if (Object.keys(errors).length > 0) {
+      return;
+    }
+
     try {
       const response = await axios.get(`http://localhost:8000/utilizadores/email/${email}`);
 
       const utilizador = response.data.data;
       if (password !== utilizador.passwd) {
-        alert('Palavra-passe errada!');
+        setPassError(true);
+        setPassErrorMessage("Combinação de email e password incorreta");
         return;
       }
 
@@ -95,14 +153,47 @@ const LoginModal = ({ open, handleClose }) => {
     }
   };
 
+  const resetForm = () => {
+    setEmail('');
+    setEmailErrorMessage('');
+    setPassword('');
+    setPassErrorMessage('');
+  };
+
+  const handleCancel = () => {
+    resetForm();
+    setEmailError(false);
+    setPassError(false);
+    handleClose();
+  };
+
   return (
-    <Modal open={open} onClose={handleClose}>
+    <Modal open={open} onClose={handleCancel}>
       <Box sx={style}>
         <Typography variant="h4" textAlign="center" gutterBottom> SOFTSHARES </Typography>
         <Typography variant="h5" textAlign="center" gutterBottom> Entrar na tua conta </Typography>
         <Typography variant="subtitle1" textAlign="center" gutterBottom> Bem vindo de volta, introduz os teus dados! </Typography>
-        <TextField label="Email" fullWidth margin="normal" variant="outlined" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <TextField label="Password" type={showPassword ? 'text' : 'password'} fullWidth margin="normal" variant="outlined" value={password} onChange={(e) => setPassword(e.target.value)}
+        <TextField
+          label="Email"
+          fullWidth
+          margin="normal"
+          variant="outlined"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          type="email"
+          error={emailError}
+          helperText={emailError ? emailErrorMessage : ""}
+        />
+        <TextField
+          label="Password"
+          type={showPassword ? 'text' : 'password'}
+          fullWidth
+          margin="normal"
+          variant="outlined"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          error={passError}
+          helperText={passError ? passErrorMessage : ""}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -123,24 +214,8 @@ const LoginModal = ({ open, handleClose }) => {
         >
           Entrar
         </Button>
-        <Button
-          variant="outlined"
-          color="primary"
-          startIcon={<Google />}
-          fullWidth
-          sx={{ mt: 2 }}
-        >
-          Entrar com o Google
-        </Button>
-        <Button
-          variant="outlined"
-          color="primary"
-          startIcon={<Facebook />}
-          fullWidth
-          sx={{ mt: 2 }}
-        >
-          Entrar com o Facebook
-        </Button>
+        {/* <Button variant="outlined" color="primary" startIcon={<Google />} fullWidth sx={{ mt: 2 }} > Entrar com o Google </Button>
+        <Button variant="outlined" color="primary" startIcon={<Facebook />} fullWidth sx={{ mt: 2 }} > Entrar com o Facebook </Button> */}
       </Box>
     </Modal>
   );

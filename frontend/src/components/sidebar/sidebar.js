@@ -60,15 +60,14 @@ const Sidebar = () => {
 
     const menuItems = [
         { title: 'Dashboard', icon: AiIcons.AiFillHome, link: '/dashboard' },
-        /* { 
+        { 
             title: 'Estatísticas', 
             icon: FaIcons.FaChartBar, 
             subItems: [
                 { title: 'Utilizadores', link: '/estatisticas/utilizadores', icon: IoIcons.IoIosPaper },
-                { title: 'Denuncias', link: '/estatisticas/denuncias', icon: IoIcons.IoIosPaper },
-                { title: 'Reporting', link: '/estatisticas/reporting', icon: IoIcons.IoIosPaper },
+                { title: 'Denuncias', link: '/estatisticas/denuncias', icon: IoIcons.IoIosPaper }
             ],
-        }, */
+        },
         { 
             title: 'Listagem', 
             icon: FaIcons.FaClipboardList, 

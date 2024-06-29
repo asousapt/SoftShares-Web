@@ -51,7 +51,6 @@ export default function ListaEventos() {
         const dataHora = new Date(row.row.dataHora);
         const now = new Date();
 
-        
         setSelectedEventoId(row.id);
         if (dataHora <= now || row.row.estado !== 'Por Aprovar') {
             setVerModalOpen(true);

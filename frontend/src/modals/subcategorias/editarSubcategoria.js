@@ -159,15 +159,15 @@ const EditarSubcategoria = ({ open, onClose, subcategoriaId, setAlertOpen, setAl
                         </div>
                         <div style={{ marginBottom: 25 }}>
                             <BasicTextField caption='Descrição Português' valor={descricaoPT} onchange={(e) => setDescricaoPT(e.target.value)} fullwidth={true} type="text" error={ptError}
-                                helperText={ptError ? "Introduza uma descrição válida" : ""} />
+                                helperText={ptError ? "Introduza uma descrição válida" : ""} allowOnlyLetters={true}/>
                         </div>
                         <div style={{ marginBottom: 25 }}>
                             <BasicTextField caption='Descrição Inglês' valor={descricaoEN} onchange={(e) => setDescricaoEN(e.target.value)} fullwidth={true} type="text" error={engError}
-                                helperText={engError ? "Introduza uma descrição válida" : ""} />
+                                helperText={engError ? "Introduza uma descrição válida" : ""} allowOnlyLetters={true}/>
                         </div>
                         <div style={{ marginBottom: 25 }}>
                             <BasicTextField caption='Descrição Espanhol' valor={descricaoES} onchange={(e) => setDescricaoES(e.target.value)} fullwidth={true} type="text" error={esError}
-                                helperText={esError ? "Introduza uma descrição válida" : ""} />
+                                helperText={esError ? "Introduza uma descrição válida" : ""} allowOnlyLetters={true}/>
                         </div>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>

@@ -8,6 +8,7 @@ router.post('/add', authenticate, utilizadorControlador.adicionar);
 
 // ROUTES PUT
 router.put('/update/:idUtilizador', authenticate, utilizadorControlador.atualizar);
+router.put('/update/mobile/:idUtilizador', authenticate, utilizadorControlador.atualizarMobile);
 
 // ROUTES DELETE
 router.delete('/delete/:idUtilizador', authenticate, utilizadorControlador.remover);
@@ -18,7 +19,7 @@ router.get('/filtro', authenticate, utilizadorControlador.consultarTodosComFiltr
 router.get('/totalpolo', authenticate, utilizadorControlador.consultarTotalPorPolo);
 router.get('/email/:email', utilizadorControlador.consultarPorEmail);
 router.get('/:idUtilizador', authenticate, utilizadorControlador.consultarPorID);
+router.get('/mobile/:idUtilizador', authenticate, utilizadorControlador.consultarPorIDMobile);
 router.get('/token/:id', utilizadorControlador.novoToken);
-
 
 module.exports = router;

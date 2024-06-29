@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '@mui/material/Modal';
 import BasicTextField from '../../components/textFields/basic';
-import SubmitButton from '../../components/buttons/submitButton';
 import CancelButton from '../../components/buttons/cancelButton';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import InputImage from '../../components/image/imageInput';
+import ImageTable from '../../components/tables/imageTable';
 import axios from 'axios';
 
 const EditPontoIntModal = ({ open, onClose, registoId}) => {
@@ -17,11 +16,25 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
     const [distrito, setDistrito] = useState(null);
     const [distritos, setDistritos] = useState([]);
     const [error, setError] = useState(null);
-    const [image, setImage] = useState('https://i0.wp.com/ctmirror-images.s3.amazonaws.com/wp-content/uploads/2021/01/dummy-man-570x570-1.png?fit=570%2C570&ssl=1');
+    const [images, setImages] = useState([]);
     const [opcoesCat, setOpcoesCat] = useState([]);
     const [categoria, setCategoria] = useState(null);
     const [opcoesSubcat, setOpcoesSubcat] = useState([]);
     const [subcategoria, setSubcategoria] = useState(null);
+
+    const getBase64FromUrl = async (url) => {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                resolve(reader.result);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    };
 
     const fetchCategorias = async () => {
         try {
@@ -138,38 +151,50 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
     };
 
     const fetchEventData = async () => {
-            try {
-                const token = sessionStorage.getItem('token');
-                const response = await axios.get(`http://localhost:8000/pontoInteresse/${registoId}`, {
-                    headers: { Authorization: `${token}` }
-                });
-                const userData = response.data.data;
-                
-                setTitle(userData.titulo);
-                setLocalizacao(userData.localizacao);
-                setDescription(userData.descricao);
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get(`http://localhost:8000/pontoInteresse/${registoId}`, {
+                headers: { Authorization: `${token}` }
+            });
+            const userData = response.data.data;
+            
+            setTitle(userData.titulo);
+            setLocalizacao(userData.localizacao);
+            setDescription(userData.descricao);
 
-                const distrito = await fetchDistritoByCidadeId(userData.cidadeid);
-                setDistrito(distrito);
-                fetchCidades(distrito.value, userData.cidadeid);
+            const distrito = await fetchDistritoByCidadeId(userData.cidadeid);
+            setDistrito(distrito);
+            fetchCidades(distrito.value, userData.cidadeid);
 
-                const subcatResponse = await axios.get(`http://localhost:8000/subcategoria/${userData.subcategoriaid}`, {
-                    headers: { Authorization: `${token}` }
-                });
-                const subcat = subcatResponse.data;
+            const subcatResponse = await axios.get(`http://localhost:8000/subcategoria/${userData.subcategoriaid}`, {
+                headers: { Authorization: `${token}` }
+            });
+            const subcat = subcatResponse.data;
 
-                const catResponse = await axios.get(`http://localhost:8000/categoria/${subcat.categoriaid}`, {
-                    headers: { Authorization: `${token}` }
-                });
-                const cat = catResponse.data;
-                
-                setCategoria({value: subcat.categoriaid, label: cat.valorpt});
-                fetchSubcategoria(subcat.categoriaid);
-    
-                setSubcategoria({value: userData.subcategoriaid, label: subcat.valorpt});
-            } catch (error) {
-                console.error('Erro ao receber dados do Ponto de Interesse:', error);
-            }
+            const catResponse = await axios.get(`http://localhost:8000/categoria/${subcat.categoriaid}`, {
+                headers: { Authorization: `${token}` }
+            });
+            const cat = catResponse.data;
+            
+            setCategoria({value: subcat.categoriaid, label: cat.valorpt});
+            fetchSubcategoria(subcat.categoriaid);
+
+            setSubcategoria({value: userData.subcategoriaid, label: subcat.valorpt});
+            
+            const transformedImages = await Promise.all(
+                userData.imagens.map(async (imagem) => {
+                    const base64String = await getBase64FromUrl(imagem.url);
+                    return {
+                        src: base64String,
+                        alt: imagem.name,
+                        size: imagem.size,
+                    };
+                })
+            );
+            setImages(transformedImages);
+        } catch (error) {
+            console.error('Erro ao receber dados do Ponto de Interesse:', error);
+        }
     };
 
     useEffect(() => {
@@ -177,31 +202,6 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
         fetchCategorias();
         fetchEventData();
     }, [registoId]);
-
-    const handleEditPontoInt = async () => {
-        try {
-            const token = sessionStorage.getItem('token');
-            const eventoEditado = {
-                titulo: titulo,
-                descricao: descricao,
-                localizacao: localizacao,
-                latitude: 0,
-                longitude: 0,
-                cidadeid: cidadeID.value,
-                subcategoriaid: subcategoria.value,
-            };
-
-            await axios.put(`http://localhost:8000/pontoInteresse/update/${registoId}`, eventoEditado, {
-                headers: {
-                    Authorization: `${token}`,
-                    'Content-Type': 'application/json',
-                }
-            });
-            onClose();
-        } catch (error) {
-            console.error('Erro ao editar Ponto de Interesse:', error);
-        }
-    };
 
     return (
         <Modal open={open} onClose={onClose}>
@@ -271,7 +271,7 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>
-                        <InputImage image={image} />
+                        <ImageTable images={images} onAddImage={() => {}} onDelete={() => {}} canModify={false} />
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
                         <CancelButton onclick={() => { onClose(); }} caption='Voltar' />

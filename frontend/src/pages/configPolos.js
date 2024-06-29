@@ -7,17 +7,10 @@ import EditButton from '../components/buttons/editButton';
 import Header from '../components/header/header';
 import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
-import StateChanger from '../components/stateChanger/stateChanger';
 import Alert from '../components/alerts/alert';
 /* FIM COMPONENTES */
 import NovoPolo from '../modals/polos/novoPolo';
 import EditarPolo from '../modals/polos/editarPolo';
-
-const opcoesFiltro = [
-    { value:'Todos', label: 'Todos'},
-    { value:'Ativos', label: 'Apenas Ativos'},
-    { value:'Inativos', label: 'Apenas Inativos'}
-];
 
 export default function ConfigPolos() {
     const [isNewModalOpen, setNewModalOpen] = useState(false);
@@ -30,13 +23,12 @@ export default function ConfigPolos() {
     const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
-        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
-        { field: 'descricao', headerName: 'Descrição', flex: 0.5, headerAlign: 'left' },
-        { field: 'numerousers', headerName: 'Nº de Utilizadores', flex: 0.5, headerAlign: 'left' },
-        { field: 'localidade', headerName: 'Localidade', flex: 0.5, headerAlign: 'left' },
-        { field: 'coordenador', headerName: 'Coordenador', flex: 0.5, headerAlign: 'left' },
-        { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => ( <StateChanger status={row.value} />) },
-        { field: 'status', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEditClick(row.id)} />)},
+        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'descricao', headerName: 'Descrição', flex: 0.5, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'numerousers', headerName: 'Nº de Utilizadores', flex: 0.5, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'localidade', headerName: 'Localidade', flex: 0.5, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'coordenador', headerName: 'Coordenador', flex: 0.5, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'status', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEditClick(row.id)} />), disableColumnMenu: true },
     ];
 
     const fetchData = async () => {
@@ -73,10 +65,16 @@ export default function ConfigPolos() {
     }, [filtroText])
 
     useEffect(() => {
-        if(!isNewModalOpen){
+        if (!isNewModalOpen) {
             fetchData();
         }
-    }, [isNewModalOpen])
+    }, [isNewModalOpen]);
+
+    useEffect(() => {
+        if (!isEditModalOpen) {
+            fetchData();
+        }
+    }, [isEditModalOpen]);
 
     const handleEditClick = (id) => {
         setSelectedPoloId(id);

@@ -19,6 +19,24 @@ const controladorNotificacoes = {
         }
     },
 
+    marcarLida: async (req, res) => {
+        const { id } = req.params;
+
+        try{
+            await models.mensagem.notificacao.update({
+                lida: true
+            }, {
+                where: {
+                    notificacaoid: id
+                }
+            });
+            
+            res.status(201).json({ message: 'Mensagem lida com sucesso' });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao adicionar mensagem', details: error.message });
+        }
+    },
+
     remover: async (req, res) => {
         const { id } = req.params;
         

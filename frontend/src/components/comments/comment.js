@@ -1,19 +1,24 @@
-// Comment.js
 import React from 'react';
-import { Avatar, Typography, Box, Paper } from '@mui/material';
+import { Card, CardContent, Typography, Box } from '@mui/material';
 
-export default function Comment({ comment }){
+const Comment = ({ comment }) => {
     return (
-        <Box display="flex" mb={2}>
-            <Avatar>{comment.author.charAt(0)}</Avatar>
-            <Paper elevation={3} sx={{ marginLeft: 2, padding: 2, flexGrow: 1, backgroundColor: comment.reported ? 'red' : 'white'}}>
-                <Typography variant="body1" style={{color: comment.reported ? 'white' : 'black'}}> {comment.author} </Typography>
-                <Typography variant="body2" style={{color: comment.reported ? 'white' : 'black'}}> {comment.text} </Typography>
-            </Paper>
+        <Box mb={2}>
+            <Card style={{ backgroundColor: comment.reported ? '#FFCDD2' : '#FFFFFF' }}>
+                <CardContent>
+                    <Typography variant="h6">{comment.author}</Typography>
+                    <Typography variant="body1">{comment.text}</Typography>
+                </CardContent>
+            </Card>
+            {comment.replies && comment.replies.length > 0 && (
+                <Box ml={4} mt={2}>
+                    {comment.replies.map((reply) => (
+                        <Comment key={reply.comentarioid} comment={reply} />
+                    ))}
+                </Box>
+            )}
         </Box>
     );
 };
 
-
-
-
+export default Comment;

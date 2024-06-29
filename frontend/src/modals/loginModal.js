@@ -27,24 +27,51 @@ const LoginModal = ({ open, handleClose }) => {
     setShowPassword(!showPassword);
   };
 
+  const getBase64FromUrl = async (url) => {
+    const response = await fetch(url);
+    const blob = await response.blob();
+
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        resolve(reader.result);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  };
+
   const handleLogin = async () => {
     try {
       const response = await axios.get(`http://localhost:8000/utilizadores/email/${email}`);
 
       const utilizador = response.data.data;
-      if (password !== utilizador.passwd){
+      if (password !== utilizador.passwd) {
         alert('Palavra-passe errada!');
         return;
       }
 
-      if (utilizador.perfil.descricao === 'User'){
+      if (utilizador.perfil.descricao === 'User') {
         alert('Sem acesso a backoffice!');
         return;
       }
+      console.log(utilizador);
 
       sessionStorage.setItem('userid', utilizador.utilizadorid);
-      sessionStorage.setItem('nome', utilizador.pnome+' '+utilizador.unome);
+      sessionStorage.setItem('nome', utilizador.pnome + ' ' + utilizador.unome);
       sessionStorage.setItem('perfil', utilizador.perfil.descricao);
+
+      if (utilizador.imagem === undefined) {
+        sessionStorage.setItem('image', '');
+      }
+      else {
+        if (utilizador.imagem.url === '' || utilizador.imagem.url === null) {
+          sessionStorage.setItem('image', '');
+        } else {
+          const base64String = await getBase64FromUrl(utilizador.imagem.url);
+          sessionStorage.setItem('image', base64String);
+        }
+      }
 
       if (utilizador.administrador_polos.length > 0) {
         sessionStorage.setItem('poloid', utilizador.administrador_polos[0].poloid);
@@ -61,9 +88,9 @@ const LoginModal = ({ open, handleClose }) => {
       navigate('/dashboard');
     } catch (error) {
       if (error.response && error.response.status === 404) {
-          alert('Utilizador não encontrado');
+        alert('Utilizador não encontrado');
       } else {
-          console.error('Erro ao fazer login:', error);
+        console.error('Erro ao fazer login:', error);
       }
     }
   };

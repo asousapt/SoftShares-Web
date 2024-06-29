@@ -26,26 +26,23 @@ export default function ModAprov() {
     const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
-        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
-        { field: 'tipo', headerName: 'Tipo', flex: 1, headerAlign: 'left' },
-        { field: 'titulo', headerName: 'Título', flex: 2, headerAlign: 'left' },
-        { field: 'criadoPor', headerName: 'Criado Por', flex: 1, headerAlign: 'left' },
-        { field: 'permitir', headerName: 'Permitir', width: 85, headerAlign: 'left', sortable: false, renderCell: (params) => (<AprovButton onclick={() => handleOpenConfirmarAprov(params.row)} />) },
-        { field: 'remover', headerName: 'Remover', width: 85, headerAlign: 'left', sortable: false, renderCell: (params) => (<RejButton onclick={() => handleOpenRejeitarAprov(params.row)} />) },
-        { field: 'ver', headerName: 'Ver', width: 85, headerAlign: 'left', sortable: false, renderCell: (params) => (<DetailButton onclick={() => handleOpenModal(params.row)} />) },
+        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'tipo', headerName: 'Tipo', flex: 1, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'titulo', headerName: 'Título', flex: 2, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'criadoPor', headerName: 'Criado Por', flex: 1, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'permitir', headerName: 'Permitir', width: 85, headerAlign: 'left', sortable: false, renderCell: (params) => (<AprovButton onclick={() => handleOpenConfirmarAprov(params.row)} />), disableColumnMenu: true },
+        { field: 'remover', headerName: 'Remover', width: 85, headerAlign: 'left', sortable: false, renderCell: (params) => (<RejButton onclick={() => handleOpenRejeitarAprov(params.row)} />), disableColumnMenu: true },
+        { field: 'ver', headerName: 'Ver', width: 85, headerAlign: 'left', sortable: false, renderCell: (params) => (<DetailButton onclick={() => handleOpenModal(params.row)} />), disableColumnMenu: true },
     ];
 
     const fetchData = async () => {
         try {
             const token = sessionStorage.getItem('token');
             let poloid = sessionStorage.getItem('poloid');
-            console.log('1', poloid);
 
             if (!poloid) {
                 poloid = '';
             }
-
-            console.log('2', poloid);
 
             const responseEventos = await axios.get('http://localhost:8000/evento/porAprovar', {
                 headers: {

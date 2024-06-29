@@ -8,7 +8,7 @@ const FormAnswerer = forwardRef((props, ref) => {
     console.log(initialQuestions);
 
     useEffect(() => {
-        if (initialQuestions && initialQuestions.length > 0) {
+        if (initialQuestions && initialQuestions.length >= 0) {
             const newQuestions = initialQuestions.map((question, index) => ({
                 id: question.id || index + 1, 
                 type: question.type || 'TEXTO',

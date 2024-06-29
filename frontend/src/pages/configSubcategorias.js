@@ -34,12 +34,12 @@ export default function ConfigSubcategorias() {
     const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
-        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
-        { field: 'subcategoria', headerName: 'Descrição', flex: 0.5, headerAlign: 'left' },
-        { field: 'categoria', headerName: 'Categoria', flex: 0.5, headerAlign: 'left' },
-        { field: 'dataHora', headerName: 'Data e Hora de Criação', type: 'dateTime', width: 300, headerAlign: 'left' },
-        { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => ( <StateChanger status={row.value} />) },
-        { field: 'ver', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEdit(row.id)} />)},
+        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'subcategoria', headerName: 'Descrição', flex: 0.5, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'categoria', headerName: 'Categoria', flex: 0.5, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'dataHora', headerName: 'Data e Hora de Criação', type: 'dateTime', width: 300, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => ( <StateChanger status={row.value} />), disableColumnMenu: true },
+        { field: 'ver', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEdit(row.id)} />), disableColumnMenu: true },
     ];
 
     const handleEdit = (id) => {

@@ -18,7 +18,7 @@ router.delete('/delete/itemcomentario/:idItemComentario', authenticate, comentar
 // Rotas GET
 router.get('/', authenticate, comentarioController.consultarTudo);
 router.get('/itemcomentario/:idItemComentario', authenticate, comentarioController.consultarPorItemComentario);
-router.get('/comentario/:idComentario', authenticate, comentarioController.consultarComentario);
+router.get('/item/:idComentario', authenticate, comentarioController.consultarComentario);
 router.get('/itemcomentario', authenticate, comentarioController.consultarTudoItemComentario);
 
 module.exports = router;

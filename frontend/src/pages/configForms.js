@@ -26,11 +26,11 @@ export default function ConfigForms() {
     const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
-        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
-        { field: 'titulo', headerName: 'Título', flex: 1, headerAlign: 'left' },
-        { field: 'subcategoria', headerName: 'Subcategoria', flex: 1, headerAlign: 'left' },
-        { field: 'versao', headerName: 'Versão', flex: 0.5, headerAlign: 'left' },
-        { field: 'edit', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' onclick={() => {setSelectedEventoId(row.id); setEditModalOpen(true);}} />)},
+        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'titulo', headerName: 'Título', flex: 1, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'subcategoria', headerName: 'Subcategoria', flex: 1, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'versao', headerName: 'Versão', flex: 0.5, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'edit', headerName: ' ', width: 100, headerAlign: 'left', sortable: false , renderCell: (row) => ( <EditButton caption=' ' onclick={() => {setSelectedEventoId(row.id); setEditModalOpen(true);}} />), disableColumnMenu: true },
     ];
 
     const fetchCategorias = async () => {

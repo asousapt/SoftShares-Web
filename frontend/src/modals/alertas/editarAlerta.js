@@ -16,6 +16,7 @@ const EditarAlerta = ({ open, onClose, alertaid, setAlertOpen, setAlertProps }) 
     const [inactivo, setInactivo] = useState(false);
     const [opcoesPolo, setOpcoesPolo] = useState([]);
     const [error, setError] = useState(null);
+    const [isPoloDisabled, setIsPoloDisabled] = useState(false);
 
     //ERRORS
     const [descError, setDescError] = useState(false);
@@ -66,6 +67,17 @@ const EditarAlerta = ({ open, onClose, alertaid, setAlertOpen, setAlertProps }) 
             fetchAlertData();
             fetchPolos();
         }
+
+        const perfil = sessionStorage.getItem('perfil');
+        if (perfil === 'Admin'){
+            setIsPoloDisabled(true);
+            const poloid = sessionStorage.getItem('poloid');
+            const descpolo = sessionStorage.getItem('descpolo');
+            setPolo({value: poloid, label: descpolo});
+        } else {
+            setIsPoloDisabled(false);
+        }
+        
     }, [alertaid, open]);
 
     const validateForm = () => {
@@ -131,8 +143,8 @@ const EditarAlerta = ({ open, onClose, alertaid, setAlertOpen, setAlertProps }) 
                     <div style={{ marginBottom: 15 }}>
                         <div style={{ display: 'flex', marginBottom: 20 }}>
                             <div style={{ width: '75%' }}>
-                                <ComboBox caption='Polo' options={opcoesPolo} value={polo} handleChange={(e) => { setPolo(e.target.value); setPoloError(false); }} error={poloError}
-                                    helperText={poloError ? "Selecione um polo" : ""} />
+                            <ComboBox caption='Polo' options={opcoesPolo} value={polo} handleChange={(e) => { setPolo(e.target.value); setPoloError(false); }} error={poloError}
+                                    disabled={isPoloDisabled} helperText={poloError ? "Selecione um polo" : ""} />
                             </div>
                             <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
                                 <FormControlLabel

@@ -1,4 +1,4 @@
-const { Sequelize, Op } = require('sequelize');
+const { Sequelize, Op, QueryTypes } = require('sequelize');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
@@ -22,13 +22,34 @@ const denunciaController = {
 
     atualizar: async (req, res) => {
         const { idDenuncia } = req.params;
-        const { texto, utilizadormodera, datatratamento } = req.body;
+        const { texto, utilizadormodera } = req.body;
 
         try {
             await models.denuncia.update({
                 texto: texto,
                 utilizadormodera: utilizadormodera,
-                datatratamento: datatratamento
+                datatratamento: Sequelize.literal('CURRENT_TIMESTAMP')
+            }, {
+                where: {
+                    denunciaid: idDenuncia
+                }
+            });
+
+            res.status(200).json({ message: 'Denúncia atualizada com sucesso' });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao atualizar denúncia', details: error.message });
+        }
+    },
+
+    aprovar: async (req, res) => {
+        const { idDenuncia } = req.params;
+        const { texto, utilizadormodera } = req.body;
+
+        try {
+            await models.denuncia.update({
+                texto: texto,
+                utilizadormodera: utilizadormodera,
+                datatratamento: Sequelize.literal('CURRENT_TIMESTAMP')
             }, {
                 where: {
                     denunciaid: idDenuncia
@@ -57,10 +78,68 @@ const denunciaController = {
         }
     },
 
+    rejeitar: async (req, res) => {
+        const { idDenuncia } = req.params;
+        const { utilizadormodera, comentarioid } = req.body;
+        console.log('iddenunca, idcomentario', idDenuncia, comentarioid);
+
+        try {
+            await models.denuncia.update({
+                utilizadormodera: utilizadormodera,
+                datatratamento: Sequelize.literal('CURRENT_TIMESTAMP')
+            }, {
+                where: {
+                    denunciaid: idDenuncia
+                }
+            });
+
+            await models.comentario.update({
+                removido: true
+            }, {
+                where: {
+                    comentarioid: comentarioid
+                }
+            });
+
+            res.status(200).json({ message: 'Comentario denunciado atualizado para removido com sucesso' });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao atualizar estado de comentario denunciado', details: error.message });
+        }
+    },
+
     consultarTudo: async (req, res) => {
         try {
             const denuncias = await models.denuncia.findAll();
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: denuncias });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar denúncias', details: error.message });
+        }
+    },
+
+    consultarCountDenuncias: async (req, res) => {
+        const { utilizadorid } = req.params;
+
+        try {
+            const query = await sequelizeConn.query(
+                `SELECT 
+                    p.poloid,
+                    p.descricao,
+                    COUNT(d.denunciaid) AS count
+                FROM 
+                    denuncia d
+                JOIN 
+                    utilizador u ON d.utilizadorcriou = u.utilizadorid
+                JOIN 
+                    polo p ON u.poloid = p.poloid
+                WHERE 
+                    d.utilizadorcriou = u.utilizadorid
+                GROUP BY 
+                    p.poloid;
+            `,
+                { type: QueryTypes.SELECT },
+            );
+
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: query });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar denúncias', details: error.message });
         }
@@ -85,11 +164,24 @@ const denunciaController = {
         const { descricao } = req.query;
         try {
             const denuncias = await models.denuncia.findAll({
-                where:{
-                    texto:{
+                where: {
+                    texto: {
                         [Op.like]: `%${descricao}%`
+                    },
+                    utilizadormodera: {
+                        [Op.is]: null
+                    },
+                    datatratamento: {
+                        [Op.is]: null
                     }
-                }
+                },
+                include: [
+                    {
+                        model: models.utilizador,
+                        as: 'utilizadorcriou_utilizador',
+                        attributes: ['pnome', 'unome']
+                    }
+                ]
             });
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: denuncias });
         } catch (error) {

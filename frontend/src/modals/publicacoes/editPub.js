@@ -284,7 +284,7 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
                         <div style={{ display: 'flex', marginBottom: 10, gap: 10 }}>
                             <div style={{ width: '50%' }} >
                                 <BasicTextField caption='Titulo' valor={title} onchange={(e) => setTitle(e.target.value)} fullwidth={true} type="text" error={titleError}
-                                    helperText={titleError ? "Introduza um título válido" : ""} />
+                                    helperText={titleError ? "Introduza um título válido" : ""} allowOnlyLetters={true}/>
                             </div>
                             <div style={{ width: '25%' }}>
                                 <Autocomplete options={opcoesCat} getOptionLabel={(option) => option.label} renderInput={(params) => (

@@ -6,13 +6,15 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import BasicTextField from '../../components/textFields/basic';
 import ComboBox from '../../components/combobox/comboboxBasic';
 import SubmitButton from '../../components/buttons/submitButton';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 import CancelButton from '../../components/buttons/cancelButton';
 import InputImage from '../../components/image/imageInput';
 
 const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     //VARS
     //FIELDS
-    const [poloid, setPoloid] = useState('');
+    const [poloid, setPoloid] = useState(null);
     const [poloadmid, setPoloAdmid] = useState('');
     const [perfilid, setPerfilid] = useState('');
     const [pnome, setPnome] = useState('');
@@ -31,9 +33,11 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     const [imageName, setImageName] = useState('');
     const [imageSize, setImageSize] = useState(0);
     const [isPoloAdmidDisabled, setIsPoloAdmidDisabled] = useState(true);
+    const [isPoloDisabled, setIsPoloDisabled] = useState(false);
 
     //ERRORS
     const [emailError, setEmailError] = useState(false);
+    const [emailErrorMessage, setEmailErrorMessage] = useState('');
     const [pnomeError, setPnomeError] = useState(false);
     const [unomeError, setUnomeError] = useState(false);
     const [passError, setPassError] = useState(false);
@@ -106,7 +110,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                     headers: { Authorization: `${token}` }
                 });
                 const perfilData = response.data.data;
-                
+
                 const perfilOptions = perfilData.map(perfil => ({
                     value: perfil.perfilid,
                     label: perfil.descricao
@@ -122,34 +126,66 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         fetchFuncao();
         fetchPolos();
         fetchDepartamentos();
-    }, []);
+
+        const perfilsess = sessionStorage.getItem('perfil');
+        if (perfilsess === 'Admin') {
+            setIsPoloDisabled(true);
+            const poloid = sessionStorage.getItem('poloid');
+            const descpolo = sessionStorage.getItem('descpolo');
+            setPoloid({ value: poloid, label: descpolo });
+        } else {
+            setIsPoloDisabled(false);
+        }
+    }, [open]);
 
     const handlePerfilChange = (event) => {
         const selectedPerfilId = event.target.value;
         setPerfilid(selectedPerfilId);
-    
+
         const selectedPerfil = perfil.find(p => p.value === selectedPerfilId);
-        
+
         if (selectedPerfil && selectedPerfil.label === 'Admin') {
             setIsPoloAdmidDisabled(false);
         } else {
             setIsPoloAdmidDisabled(true);
             setPoloAdmid('');
         }
-    
+
         setPerfilError(false);
     };
-    
+
     const validateEmail = (email) => {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(String(email).toLowerCase());
     };
 
-    const validateForm = () => {
+    const verificarEmail = async (email) => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get(`http://localhost:8000/utilizadores/email/${email}`, {
+                headers: { Authorization: `${token}` }
+            });
+            return response.status === 200;
+        } catch (error) {
+            if (error.response && error.response.status === 404) {
+                return false;
+            }
+            console.error('Erro ao verificar e-mail:', error);
+            return true;
+        }
+    };
+
+    const validateForm = async () => {
         let errors = {};
 
         if (!validateEmail(email)) {
             errors.emailError = true;
+        } else {
+            const emailExists = await verificarEmail(email);
+            if (emailExists) {
+                errors.emailError = true;
+                errors.emailMessage = "Este e-mail já está em uso.";
+            }
         }
 
         if (!pnome) {
@@ -188,8 +224,24 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     };
 
     const handleAddUser = async () => {
-        const errors = validateForm();
+        const emailErrorState = !validateEmail(email);
+        setEmailError(emailErrorState);
+
+        if (emailErrorState) {
+            setEmailErrorMessage("Introduza um e-mail válido");
+            return;
+        }
+
+        const emailExists = await verificarEmail(email);
+        if (emailExists) {
+            setEmailError(true);
+            setEmailErrorMessage("Este e-mail já está em uso.");
+            return;
+        }
+        
+        const errors = await validateForm();
         setEmailError(errors.emailError || false);
+        setEmailErrorMessage(errors.emailMessage || "");
         setPnomeError(errors.pnomeError || false);
         setUnomeError(errors.unomeError || false);
         setPassError(errors.passError || false);
@@ -202,6 +254,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         if (Object.keys(errors).length > 0) {
             return;
         }
+
         try {
             const token = sessionStorage.getItem('token');
             const imagem = [{
@@ -210,7 +263,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 tamanho: imageSize
             }];
             const newUser = {
-                poloid,
+                poloid: poloid ? poloid.value : '',
                 perfilid,
                 pnome,
                 unome,
@@ -225,8 +278,6 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 imagem,
                 administrador_poloid: isPoloAdmidDisabled ? null : poloadmid
             };
-
-            console.log('newUser', newUser);
 
             await axios.post('http://localhost:8000/utilizadores/add', newUser, {
                 headers: {
@@ -287,7 +338,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     }
 
     const resetForm = () => {
-        setPoloid('');
+        setPoloid(null);
         setPoloAdmid('');
         setPerfilid('');
         setPnome('');
@@ -317,7 +368,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         setPoloAdmError(false);
         onClose();
     };
-    
+
     return (
         <Modal open={open} onClose={handleCancel}>
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px', overflow: 'auto' }}>
@@ -329,25 +380,31 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <div style={{ width: "50%" }} >
                                         <BasicTextField caption='Primeiro Nome' valor={pnome} onchange={(e) => setPnome(e.target.value)} fullwidth={true} type="text" error={pnomeError}
-                                            helperText={pnomeError ? "Introduza um nome válido" : ""} />
+                                            helperText={pnomeError ? "Introduza um nome válido" : ""} allowOnlyLetters={true} />
                                     </div>
                                     <div style={{ width: "50%" }} >
                                         <BasicTextField caption='Último Nome' valor={unome} onchange={(e) => setUnome(e.target.value)} fullwidth={true} type="text" error={unomeError}
-                                            helperText={unomeError ? "Introduza um nome válido" : ""} />
+                                            helperText={unomeError ? "Introduza um nome válido" : ""} allowOnlyLetters={true} />
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <BasicTextField caption='Email' valor={email} onchange={(e) => setEmail(e.target.value)} fullwidth={true} type="email" error={emailError}
-                                        helperText={emailError ? "Introduza um e-mail válido" : ""} />
+                                        helperText={emailError ? emailErrorMessage : ""} />
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <div style={{ width: "50%" }}>
-                                    <BasicTextField caption='Senha' valor={passwd} onchange={(e) => setPasswd(e.target.value)} fullwidth={true} type="password" error={passError}
-                                        helperText={passError ? "Introduza uma password válida" : ""} />
+                                        <BasicTextField caption='Senha' valor={passwd} onchange={(e) => setPasswd(e.target.value)} fullwidth={true} type="password" error={passError}
+                                            helperText={passError ? "Introduza uma password válida" : ""} />
                                     </div>
                                     <div style={{ width: "50%" }}>
-                                        <ComboBox caption='Polo' options={polos} value={poloid} handleChange={(e) => { setPoloid(e.target.value); setPoloError(false); }} error={poloError}
-                                            helperText={poloError ? "Selecione um polo válido" : ""} />
+                                        <Autocomplete options={polos} getOptionLabel={(option) => option.label} renderInput={(params) => (
+                                            <TextField {...params} label="Polo" variant="outlined" type="text" error={poloError} helperText={poloError ? "Escolha um Polo" : ""} />
+                                        )}
+                                            value={poloid}
+                                            onChange={(event, newValue) => { setPoloid(newValue); }}
+                                            fullWidth={true}
+                                            disabled={isPoloDisabled}
+                                        />
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>

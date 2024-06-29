@@ -5,7 +5,6 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 /* COMPONENTES */
 import BasicTextField from '../../components/textFields/basic';
-import ComboBox from '../../components/combobox/comboboxBasic';
 import SubmitButton from '../../components/buttons/submitButton';
 import CancelButton from '../../components/buttons/cancelButton';
 import FormBuilder from '../../components/forms/FormBuilder';

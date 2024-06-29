@@ -17,6 +17,8 @@ export default function Dashboard() {
     const [total1, setTotal1] = useState(0);
     const [data3, setData3] = useState([]);
     const [total3, setTotal3] = useState(0);
+    const [data2, setData2] = useState([]);
+    const [total2, setTotal2] = useState(0);
 
     useEffect(() => {
         const fetchDataPieCharts = async () => {
@@ -29,23 +31,23 @@ export default function Dashboard() {
                     }
                 });
                 const polosCount = polosResponse.data.data;
-                
+
                 setTotal1(polosCount.reduce((acc, polo) => acc + parseFloat(polo.value), 0));
-                
+
                 const formattedData = polosCount.map((polo) => ({
                     value: Math.round((parseFloat(polo.value) / parseFloat(total1)) * 100),
                     label: polo.label
                 }));
-                
+
                 setData1(formattedData);
-                
+
                 const eventosResponse = await axios.get('http://localhost:8000/evento', {
                     headers: {
                         Authorization: `${token}`
                     }
                 });
                 const eventosCount = eventosResponse.data.data.length;
-                
+
                 const poiResponse = await axios.get('http://localhost:8000/pontoInteresse', {
                     headers: {
                         Authorization: `${token}`
@@ -62,22 +64,42 @@ export default function Dashboard() {
 
                 const total = eventosCount + poiCount + publicacoesCount
                 setTotal3(total);
-                
-                // const formattedData = polosCount.map((polo) => ({
-                //     value: Math.round((parseFloat(polo.value) / parseFloat(total1)) * 100),
-                //     label: polo.label
-                // }));
-                
-                setData3([
-                    {value: Math.round((parseFloat(poiCount) / parseFloat(total1)) * 100), label: 'Pontos de Interesse'},
-                    {value: Math.round((parseFloat(publicacoesCount) / parseFloat(total1)) * 100), label: 'Publicações no Fórum'},
-                    {value: Math.round((parseFloat(eventosCount) / parseFloat(total1)) * 100), label: 'Eventos'}
-                ]);
+
+                const formattedData3 = [
+                    { value: (poiCount / total) * 100, label: 'Pontos de Interesse' },
+                    { value: (publicacoesCount / total) * 100, label: 'Publicações no Fórum' },
+                    { value: (eventosCount / total) * 100, label: 'Eventos' }
+                ];
+
+                setData3(formattedData3.map(item => ({
+                    ...item,
+                    value: parseFloat(item.value.toFixed(0))
+                })));
+
+                const denunciaResponse = await axios.get('http://localhost:8000/denuncia/count', {
+                    headers: {
+                        Authorization: `${token}`
+                    }
+                });
+                const denunciaCount = denunciaResponse.data.data;
+
+                const totalDenuncia = denunciaCount.reduce((acc, item) => acc + parseFloat(item.count), 0);
+                setTotal2(totalDenuncia);
+
+                const formattedData2 = denunciaCount.map((item) => ({
+                    value: (parseFloat(item.count) / totalDenuncia) * 100,
+                    label: item.descricao
+                }));
+                setData2(formattedData2.map(item => ({
+                    ...item,
+                    value: parseFloat(item.value.toFixed(0))
+                })));
+
             } catch (error) {
                 setError(error);
             }
         };
-    
+
         fetchDataPieCharts();
     }, [total1, total3]);
 
@@ -96,7 +118,7 @@ export default function Dashboard() {
                 });
                 const eventosCount = eventosResponse.data.data.length;
                 setNumEventoAprovar(eventosCount);
-                
+
                 const PoiResponse = await axios.get('http://localhost:8000/pontoInteresse/porAprovar', {
                     headers: {
                         Authorization: `${token}`
@@ -145,10 +167,10 @@ export default function Dashboard() {
                             <ChartPie style={{ maxWidth: '100%' }} chartData={data1} total={total1} label='Utilizadores' />
                         </Grid>
                         <Grid item xs={12} md={4} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
-                            <ChartPie style={{ maxWidth: '100%' }} chartData={[]} total={0} label='Registos' />
+                            <ChartPie style={{ maxWidth: '100%' }} chartData={data2} total={total2} label='Denúnicas Polo' />
                         </Grid>
                         <Grid item xs={12} md={4} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
-                            <ChartPie style={{ maxWidth: '100%' }} chartData={data3} total={total3} label='Registos' />
+                            <ChartPie style={{ maxWidth: '100%' }} chartData={data3} total={total3} label='Nº Registos' />
                         </Grid>
                     </Grid>
                 </div>

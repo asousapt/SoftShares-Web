@@ -32,21 +32,26 @@ export default function Configtilizadores() {
     const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
-        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
-        { field: 'nome', headerName: 'Nome', flex: 1, headerAlign: 'left' },
-        { field: 'tipo', headerName: 'Tipo', flex: 0.7, headerAlign: 'left' },
-        { field: 'dataHora', headerName: 'Data de Criação', type: 'dateTime', width: 220, headerAlign: 'left' },
-        { field: 'departamento', headerName: 'Departamento', flex: 1, headerAlign: 'left' },
-        { field: 'funcao', headerName: 'Função', flex: 1, headerAlign: 'left' },
-        { field: 'polo', headerName: 'Polo', flex: 1, headerAlign: 'left' },
-        { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => (<StateChanger status={row.value} />) },
-        { field: 'status', headerName: ' ', width: 100, headerAlign: 'left', sortable: false, renderCell: (row) => (<EditButton caption=' ' onclick={() => {setSelectedUserId(row.id); setEditModalOpen(true);}} />) },
+        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'nome', headerName: 'Nome', flex: 1, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'tipo', headerName: 'Tipo', flex: 0.7, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'dataHora', headerName: 'Data de Criação', type: 'dateTime', width: 220, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'departamento', headerName: 'Departamento', flex: 1, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'funcao', headerName: 'Função', flex: 1, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'polo', headerName: 'Polo', flex: 1, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => (<StateChanger status={row.value} />), disableColumnMenu: true },
+        { field: 'status', headerName: ' ', width: 100, headerAlign: 'left', sortable: false, renderCell: (row) => (<EditButton caption=' ' onclick={() => {setSelectedUserId(row.id); setEditModalOpen(true);}} />), disableColumnMenu: true },
     ];
 
     const fetchData = async () => {
         try {
             const token = sessionStorage.getItem('token');
-
+            let poloid = sessionStorage.getItem('poloid');
+            
+            if (!poloid) {
+                poloid = '';
+            }
+            
             let estado = undefined;
             if (filtroCombo === 'Ativos') {
                 estado = false;
@@ -59,7 +64,8 @@ export default function Configtilizadores() {
                 },
                 params: {
                     estado: estado,
-                    descricao: filtroText
+                    descricao: filtroText,
+                    poloid: poloid
                 }
             });
             const utilizadores = response.data.data;

@@ -1,24 +1,34 @@
 import React from 'react';
-import { Box, Container, Typography } from '@mui/material';
-import Comment from './comment';
+import { Box, Card, CardContent, Typography } from '@mui/material';
 
-export default function CommentsList({ commentsData }){
-    const renderReplies = (replies) => {
-        return replies.map((reply, index) => (
-            <Box ml={4} key={index}>
-                <Comment comment={reply} />
-            </Box>
-        ));
-    };
-
+const CommentsList = ({ commentsData }) => {
     return (
-        <Container>
-            {commentsData.map((comment, index) => (
-                <Box key={index}>
-                    <Comment comment={comment} />
-                    {comment.replies && renderReplies(comment.replies)}
-                </Box>
+        <div>
+            {commentsData.map(comment => (
+                <Comment key={comment.comentarioid} comment={comment} />
             ))}
-        </Container>
+        </div>
     );
 };
+
+const Comment = ({ comment }) => {
+    return (
+        <Box mb={2}>
+            <Card style={{ backgroundColor: comment.reported ? '#FFCDD2' : '#FFFFFF' }}>
+                <CardContent>
+                    <Typography variant="h6">{comment.author}</Typography>
+                    <Typography variant="body1">{comment.text}</Typography>
+                </CardContent>
+            </Card>
+            {comment.replies && comment.replies.length > 0 && (
+                <Box ml={4} mt={2}>
+                    {comment.replies.map((reply) => (
+                        <Comment key={reply.comentarioid} comment={reply} />
+                    ))}
+                </Box>
+            )}
+        </Box>
+    );
+};
+
+export default CommentsList;

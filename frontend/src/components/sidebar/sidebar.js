@@ -60,7 +60,7 @@ const Sidebar = () => {
 
     const menuItems = [
         { title: 'Dashboard', icon: AiIcons.AiFillHome, link: '/dashboard' },
-        { 
+        /* { 
             title: 'Estatísticas', 
             icon: FaIcons.FaChartBar, 
             subItems: [
@@ -68,7 +68,7 @@ const Sidebar = () => {
                 { title: 'Denuncias', link: '/estatisticas/denuncias', icon: IoIcons.IoIosPaper },
                 { title: 'Reporting', link: '/estatisticas/reporting', icon: IoIcons.IoIosPaper },
             ],
-        },
+        }, */
         { 
             title: 'Listagem', 
             icon: FaIcons.FaClipboardList, 
@@ -89,7 +89,10 @@ const Sidebar = () => {
         { 
             title: 'Configuração', 
             icon: FaIcons.FaClipboardList, 
-            subItems: [
+            subItems: userProfile === 'Admin' ? [
+                { title: 'Utilizadores', link: '/config/utilizadores', icon: MdIcons.MdOutlineManageAccounts },
+                { title: 'Alertas', link: '/config/alertas', icon: IoIcons.IoIosPaper },
+            ] : [
                 { title: 'Polos', link: '/config/polos', icon: IoIcons.IoIosPaper },
                 { title: 'Formulários', link: '/config/forms', icon: IoIcons.IoIosPaper },
                 { title: 'Utilizadores', link: '/config/utilizadores', icon: MdIcons.MdOutlineManageAccounts },
@@ -101,13 +104,6 @@ const Sidebar = () => {
             ],
         },
     ];
-
-    if (userProfile === 'Admin') {
-        const index = menuItems.findIndex(item => item.title === 'Configuração');
-        if (index !== -1) {
-            menuItems.splice(index, 1);
-        }
-    }
 
     const getItemBackgroundColor = (itemLink) => {
         return selectedItem === itemLink ? 'rgba(128, 128, 128, 0.3)' : "white";

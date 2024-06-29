@@ -32,6 +32,7 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
     const [opcoesSubcat, setOpcoesSubcat] = useState([]);
     const [subcategoria, setSubcategoria] = useState(null);
     const [images, setImages] = useState([]);
+    const [isPoloDisabled, setIsPoloDisabled] = useState(false);
 
     //ERRORS
     const [titleError, setTitleError] = useState(false);
@@ -248,7 +249,17 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
         fetchPolos();
         fetchCategorias();
         fetchEventData();
-    }, [eventData]);
+
+        const perfil = sessionStorage.getItem('perfil');
+        if (perfil === 'Admin'){
+            setIsPoloDisabled(true);
+            const poloid = sessionStorage.getItem('poloid');
+            const descpolo = sessionStorage.getItem('descpolo');
+            setPolo({value: poloid, label: descpolo});
+        } else {
+            setIsPoloDisabled(false);
+        }
+    }, [open, eventData]);
 
     const validateForm = () => {
         let errors = {};
@@ -279,13 +290,37 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
         }
         if (!dataInicio) {
             errors.dataHoraInicioError = true;
-        }
+        } /* else {
+            const startDate = new Date(dataInicio);
+            const currentDate = new Date();
+            if (startDate <= currentDate) {
+                errors.dataHoraInicioError = true; 
+            } 
+        }*/
         if (!dataFim) {
             errors.dataHoraFimError = true;
-        }
+        } /* else {
+            const endDate = new Date(dataFim);
+            const currentDate = new Date();
+            const startDate = new Date(dataInicio);
+            if (endDate <= currentDate) {
+                errors.dataHoraFimError = true;
+            }else if (endDate < startDate) {
+                errors.dataHoraFimError = true;
+            }
+        } */
         if (!dataLimInscricao) {
             errors.dataLimInscricaoError = true;
-        }
+        } /* else {
+            const deadlineDate = new Date(dataLimInscricao);
+            const currentDate = new Date();
+            const startDate = new Date(dataInicio);
+            if (deadlineDate <= currentDate) {
+                errors.dataLimInscricaoError = true; 
+            }else if (deadlineDate > startDate) {
+                errors.dataHoraFimError = true;
+            }
+        } */
         if (!nmrMaxParticipantes) {
             errors.numParticipantesError = true;
         }
@@ -429,7 +464,7 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                             <div style={{ width: '40%' }}>
                                 <BasicTextField caption='Titulo' valor={titulo} onchange={(e) => setTitle(e.target.value)} fullwidth={true} type="text" error={titleError}
-                            helperText={titleError ? "Introduza um título válido" : ""} />
+                            helperText={titleError ? "Introduza um título válido" : ""} allowOnlyLetters={true}/>
                             </div>
                             <div style={{ width: '33.9%' }}>
                                 <BasicTextField caption='Localização' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} type="text" error={localizacaoError}
@@ -448,7 +483,7 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
                             </div>
                             <div style={{ width: '24.9%' }}>
                                 <ComboBox caption='Polo' options={polos} value={poloId} handleChange={(e) => { setPolo(e.target.value); setPoloError(false); }} error={poloError}
-                                    helperText={poloError ? "Selecione um polo" : ""} />
+                                    disabled={isPoloDisabled} helperText={poloError ? "Selecione um polo" : ""} />
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>

@@ -5,12 +5,13 @@ import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import BasicTextField from '../../components/textFields/basic';
 import ComboBox from '../../components/combobox/comboboxBasic';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 import SubmitButton from '../../components/buttons/submitButton';
 import CancelButton from '../../components/buttons/cancelButton';
 import InputImage from '../../components/image/imageInput';
 
 const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) => {
-    // console.log('id ver utilizador', userId);
     //VARS
     //FIELDS
     const [poloid, setPoloid] = useState('');
@@ -32,6 +33,7 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
     const [imageName, setImageName] = useState('');
     const [imageSize, setImageSize] = useState(0);
     const [isPoloAdmidDisabled, setIsPoloAdmidDisabled] = useState(true);
+    const [isPoloDisabled, setIsPoloDisabled] = useState(false);
 
     //ERRORS
     const [emailError, setEmailError] = useState(false);
@@ -47,7 +49,7 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
     const getBase64FromUrl = async (url) => {
         const response = await fetch(url);
         const blob = await response.blob();
-        
+
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -58,6 +60,97 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
         });
     };
 
+    const fetchDepartamentos = async () => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get('http://localhost:8000/departamento', {
+                headers: { Authorization: `${token}` }
+            });
+            const departamentosData = response.data;
+
+            const departamentosOptions = departamentosData.map(departamento => ({
+                value: departamento.departamentoid,
+                label: departamento.valorpt
+            }));
+
+            setDepartamentos(departamentosOptions);
+        } catch (error) {
+            console.error('Erro ao buscar departamentos:', error);
+        }
+    };
+
+    const fetchPolos = async () => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get('http://localhost:8000/polo', {
+                headers: { Authorization: `${token}` }
+            });
+            const polosData = response.data.data;
+            const polosOptions = polosData.map(polo => ({
+                value: polo.poloid,
+                label: polo.descricao
+            }));
+
+            setPolos(polosOptions);
+        } catch (error) {
+            console.error('Erro ao buscar polos:', error);
+        }
+    };
+
+    const fetchFuncao = async () => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get('http://localhost:8000/funcao', {
+                headers: { Authorization: `${token}` }
+            });
+            const funcaoData = response.data;
+
+            const funcaoOptions = funcaoData.map(funcao => ({
+                value: funcao.funcaoid,
+                label: funcao.valorpt
+            }));
+
+            setFuncao(funcaoOptions);
+        } catch (error) {
+            console.error('Erro ao buscar funções:', error);
+        }
+    };
+
+    const fetchPerfil = async () => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get('http://localhost:8000/perfil', {
+                headers: { Authorization: `${token}` }
+            });
+            const perfilData = response.data.data;
+
+            const perfilOptions = perfilData.map(perfil => ({
+                value: perfil.perfilid,
+                label: perfil.descricao
+            }));
+
+            setPerfil(perfilOptions);
+        } catch (error) {
+            console.error('Erro ao buscar perfis:', error);
+        }
+    };
+
+    const handlePerfilChange = (event) => {
+        const selectedPerfilId = event.target.value;
+        setPerfilid(selectedPerfilId);
+
+        const selectedPerfil = perfil.find(p => p.value === selectedPerfilId);
+
+        if (selectedPerfil && selectedPerfil.label === 'Admin') {
+            setIsPoloAdmidDisabled(false);
+        } else {
+            setIsPoloAdmidDisabled(true);
+            setPoloAdmid('');
+        }
+
+        setPerfilError(false);
+    };
+
     const fetchUserData = async () => {
         try {
             const token = sessionStorage.getItem('token');
@@ -65,7 +158,7 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
                 headers: { Authorization: `${token}` }
             });
             const userData = response.data.data;
-    
+
             setPoloid(userData.poloid);
             setPerfilid(userData.perfilid);
             setPnome(userData.pnome);
@@ -76,7 +169,7 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
             setPasswd(userData.passwd);
             setSobre(userData.sobre);
             setInactivo(userData.inactivo);
-    
+
             if (userData.administrador_polos && userData.administrador_polos.length > 0) {
                 setPoloAdmid(userData.administrador_polos[0].polo.poloid);
                 setIsPoloAdmidDisabled(false);
@@ -84,16 +177,21 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
                 setPoloAdmid('');
                 setIsPoloAdmidDisabled(true);
             }
-    
-            if (userData.imagem.url === '' || userData.imagem.url === null) {
+            if (userData.imagem === undefined){
                 setImageName('');
                 setImageSize(0);
                 setImage('');
             } else {
-                const base64String = await getBase64FromUrl(userData.imagem.url);
-                setImage(base64String);
-                setImageName(userData.imagem.name);
-                setImageSize(userData.imagem.size);
+                if (userData.imagem.url === '' || userData.imagem.url === null) {
+                    setImageName('');
+                    setImageSize(0);
+                    setImage('');
+                } else {
+                    const base64String = await getBase64FromUrl(userData.imagem.url);
+                    setImage(base64String);
+                    setImageName(userData.imagem.name);
+                    setImageSize(userData.imagem.size);
+                }
             }
         } catch (error) {
             console.error('Erro ao buscar dados do utilizador:', error);
@@ -101,108 +199,22 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
     };
 
     useEffect(() => {
-        if (open) {
-            fetchUserData();
-        }
-    }, [open, userId]);
-
-    useEffect(() => {
-        const fetchDepartamentos = async () => {
-            try {
-                const token = sessionStorage.getItem('token');
-                const response = await axios.get('http://localhost:8000/departamento', {
-                    headers: { Authorization: `${token}` }
-                });
-                const departamentosData = response.data;
-
-                const departamentosOptions = departamentosData.map(departamento => ({
-                    value: departamento.departamentoid,
-                    label: departamento.valorpt
-                }));
-
-                setDepartamentos(departamentosOptions);
-            } catch (error) {
-                console.error('Erro ao buscar departamentos:', error);
-            }
-        };
-
-        const fetchPolos = async () => {
-            try {
-                const token = sessionStorage.getItem('token');
-                const response = await axios.get('http://localhost:8000/polo', {
-                    headers: { Authorization: `${token}` }
-                });
-                const polosData = response.data.data;
-                const polosOptions = polosData.map(polo => ({
-                    value: polo.poloid,
-                    label: polo.descricao
-                }));
-
-                setPolos(polosOptions);
-            } catch (error) {
-                console.error('Erro ao buscar polos:', error);
-            }
-        };
-
-        const fetchFuncao = async () => {
-            try {
-                const token = sessionStorage.getItem('token');
-                const response = await axios.get('http://localhost:8000/funcao', {
-                    headers: { Authorization: `${token}` }
-                });
-                const funcaoData = response.data;
-
-                const funcaoOptions = funcaoData.map(funcao => ({
-                    value: funcao.funcaoid,
-                    label: funcao.valorpt
-                }));
-
-                setFuncao(funcaoOptions);
-            } catch (error) {
-                console.error('Erro ao buscar funções:', error);
-            }
-        };
-
-        const fetchPerfil = async () => {
-            try {
-                const token = sessionStorage.getItem('token');
-                const response = await axios.get('http://localhost:8000/perfil', {
-                    headers: { Authorization: `${token}` }
-                });
-                const perfilData = response.data.data;
-
-                const perfilOptions = perfilData.map(perfil => ({
-                    value: perfil.perfilid,
-                    label: perfil.descricao
-                }));
-
-                setPerfil(perfilOptions);
-            } catch (error) {
-                console.error('Erro ao buscar perfis:', error);
-            }
-        };
-
         fetchPerfil();
         fetchFuncao();
         fetchPolos();
         fetchDepartamentos();
-    }, []);
+        fetchUserData();
 
-    const handlePerfilChange = (event) => {
-        const selectedPerfilId = event.target.value;
-        setPerfilid(selectedPerfilId);
-    
-        const selectedPerfil = perfil.find(p => p.value === selectedPerfilId);
-        
-        if (selectedPerfil && selectedPerfil.label === 'Admin') {
-            setIsPoloAdmidDisabled(false);
+        const perfilsess = sessionStorage.getItem('perfil');
+        if (perfilsess === 'Admin') {
+            setIsPoloDisabled(true);
+            const poloid = sessionStorage.getItem('poloid');
+            const descpolo = sessionStorage.getItem('descpolo');
+            setPoloid({ value: poloid, label: descpolo });
         } else {
-            setIsPoloAdmidDisabled(true);
-            setPoloAdmid('');
+            setIsPoloDisabled(false);
         }
-    
-        setPerfilError(false);
-    };
+    }, [open, userId]);
 
     const validateEmail = (email) => {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -316,20 +328,20 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
         try {
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
-            fileInput.accept = 'image/*'; 
-    
+            fileInput.accept = 'image/*';
+
             fileInput.addEventListener('change', async (event) => {
                 const file = event.target.files[0];
-                if (!file) return; 
+                if (!file) return;
                 setImageName(file.name);
                 setImageSize(file.size);
-                
+
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
-        
+
                 reader.onload = async () => {
                     const imageData = reader.result;
-                    console.log('reader',reader);
+                    console.log('reader', reader);
                     setImage(imageData);
                 };
             });
@@ -369,11 +381,11 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <div style={{ width: "50%" }}>
                                         <BasicTextField caption='Primeiro Nome' valor={pnome} onchange={(e) => setPnome(e.target.value)} fullwidth={true} error={pnomeError}
-                                            helperText={pnomeError ? "Introduza um nome válido" : ""} />
+                                            helperText={pnomeError ? "Introduza um nome válido" : ""} allowOnlyLetters={true} />
                                     </div>
                                     <div style={{ width: "50%" }}>
                                         <BasicTextField caption='Último Nome' valor={unome} onchange={(e) => setUnome(e.target.value)} fullwidth={true} type="text" error={unomeError}
-                                            helperText={unomeError ? "Introduza um nome válido" : ""} />
+                                            helperText={unomeError ? "Introduza um nome válido" : ""} allowOnlyLetters={true} />
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
@@ -382,12 +394,12 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <div style={{ width: "50%" }}>
-                                    <BasicTextField caption='Senha' valor={passwd} onchange={(e) => setPasswd(e.target.value)} fullwidth={true} type="password" error={passError}
-                                        helperText={passError ? "Introduza uma password válida" : ""} />
+                                        <BasicTextField caption='Senha' valor={passwd} onchange={(e) => setPasswd(e.target.value)} fullwidth={true} type="password" error={passError}
+                                            helperText={passError ? "Introduza uma password válida" : ""} />
                                     </div>
                                     <div style={{ width: "50%" }}>
                                         <ComboBox caption='Polo' options={polos} value={poloid} handleChange={(e) => { setPoloid(e.target.value); setPoloError(false); }} error={poloError}
-                                            helperText={poloError ? "Selecione um polo válido" : ""} />
+                                            disabled={isPoloDisabled} helperText={poloError ? "Selecione um polo" : ""} />
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
@@ -422,7 +434,7 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
                                         labelPlacement="start"
                                         control={<Switch checked={inactivo} onChange={handleChangeAtivo} />}
                                         label="Inativo"
-                                        sx={{ marginTop: '10px' }}/>
+                                        sx={{ marginTop: '10px' }} />
                                 </div>
                             </div>
                         </div>

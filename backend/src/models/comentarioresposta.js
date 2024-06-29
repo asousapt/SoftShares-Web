@@ -20,7 +20,6 @@ module.exports = function(sequelize, DataTypes) {
             }
         }
     }, {
-        sequelize,
         tableName: 'comentarioresposta',
         schema: 'public',
         timestamps: false,

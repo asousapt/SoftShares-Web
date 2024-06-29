@@ -9,14 +9,16 @@ import AddButton from '../components/buttons/addButton';
 import Search from '../components/textFields/search';
 import ComboFilter from '../components/combobox/comboFilter';
 import Alert from '../components/alerts/alert';
+import StateChanger from '../components/stateChanger/stateChanger';
 /* FIM COMPONENTES */
 import NovoEvento from '../modals/eventos/novoEvento';
 import EditarEvento from '../modals/eventos/editarEvento';
 
 const opcoesFiltroEstado = [
     { value: 'Todos', label: 'Todos' },
+    { value: 'Por Aprovar', label: 'Por Aprovar' },
     { value: 'Aprovados', label: 'Apenas Aprovados' },
-    { value: 'Rejeitados', label: 'Apenas Rejeitados' }
+    { value: 'Rejeitados', label: 'Apenas Rejeitados' },
 ];
 
 export default function ListaEventos() {
@@ -33,13 +35,14 @@ export default function ListaEventos() {
     const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
-        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
-        { field: 'titulo', headerName: 'Título', flex: 1, headerAlign: 'left' },
-        { field: 'nParticipantes', headerName: '# Participantes', flex: 1, headerAlign: 'left' },
-        { field: 'dataHora', headerName: 'Data e Hora de Começo', type: 'dateTime', width: 250, headerAlign: 'left' },
-        { field: 'localizacao', headerName: 'Localização', flex: 1, headerAlign: 'left' },
-        { field: 'subcategoria', headerName: 'Subcategoria', flex: 1, headerAlign: 'left' },
-        { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false, renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEditClick(row.id)} />)},
+        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'titulo', headerName: 'Título', flex: 1, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'nParticipantes', headerName: '# Participantes', flex: 1, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'dataHora', headerName: 'Data e Hora de Começo', type: 'dateTime', width: 250, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'localizacao', headerName: 'Localização', flex: 1, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'subcategoria', headerName: 'Subcategoria', flex: 1, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => (<StateChanger status={row.value} />), disableColumnMenu: true },
+        { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false, renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEditClick(row.id)} />), disableColumnMenu: true },
     ];
 
     const fetchCategorias = async () => {
@@ -64,13 +67,22 @@ export default function ListaEventos() {
     const fetchData = async () => {
         try {
             const token = sessionStorage.getItem('token');
+            let poloid = sessionStorage.getItem('poloid');
+            
+            if (!poloid) {
+                poloid = '';
+            }
 
             let estado = undefined;
+            
             if (filtroEstado === 'Aprovados') {
                 estado = true;
             } else if (filtroEstado === 'Rejeitados') {
                 estado = false;
+            } else if (filtroEstado === 'Por Aprovar') {
+                estado = "NULL";
             }
+
             const response = await axios.get('http://localhost:8000/evento/filtro', {
                 headers: {
                     Authorization: `${token}`
@@ -78,12 +90,18 @@ export default function ListaEventos() {
                 params: {
                     estado: estado,
                     categoria: filtroCategoria,
-                    descricao: filtroText
+                    descricao: filtroText,
+                    poloid: poloid
                 }
             });
             const eventos = response.data.data;
 
             const sortedEvent = eventos.sort((a, b) => a.eventoid - b.eventoid);
+
+            const determinarEstado = (aprovado) => {
+                if (aprovado === null || aprovado === undefined) return 'Por Aprovar';
+                return aprovado ? 'Aprovado' : 'Rejeitado';
+            };
 
             const eventosTable = sortedEvent.map((evento) => {
                 const totalParticipantes = evento.numinscritos + evento.numconvidados;
@@ -94,11 +112,22 @@ export default function ListaEventos() {
                     nParticipantes: `${totalParticipantes} / ${evento.nmrmaxparticipantes}`,
                     dataHora: new Date(evento.datainicio),
                     localizacao: evento.localizacao,
-                    subcategoria: evento.valorpt
+                    subcategoria: evento.valorpt,
+                    estado: determinarEstado(evento.aprovado),
+                    status: evento.aprovado
                 };
             });
             
             setTableRows(eventosTable);
+            
+            if (eventosTable.length === 0) {
+                setAlertProps({
+                    title: 'Sem Registos',
+                    label: 'Nenhum evento encontrado com os filtros aplicados.',
+                    severity: 'info'
+                });
+                setAlertOpen(true);
+            }
             
         } catch (error) {
             setError(error);

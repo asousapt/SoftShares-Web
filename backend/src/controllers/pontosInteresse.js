@@ -400,9 +400,12 @@ const controladorPontosInteresse = {
 
     consultarTodosComFiltro: async (req, res) => {
         const { estado, categoria, descricao } = req.query;
+
         try {
             let whereClause = '';
-            if (estado !== undefined) {
+            if (estado === "NULL") {
+                whereClause += ` AND p.aprovado IS NULL`;
+            } else if(estado !== undefined) {
                 whereClause += ` AND p.aprovado = ${estado}`;
             }
 

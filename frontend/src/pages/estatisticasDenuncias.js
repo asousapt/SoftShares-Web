@@ -16,11 +16,11 @@ export default function StatsDenuncias() {
     const [filtroText, setFiltroText] = useState('');
 
     const tableColumns = [
-        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left' },
-        { field: 'titulo', headerName: 'Título', flex: 2, headerAlign: 'left' },
-        { field: 'nParticipantes', headerName: '# Participantes', flex: 0.5, headerAlign: 'left' },
-        { field: 'dataHora', headerName: 'Data e Hora de Começo', type: 'dateTime', width: 200, headerAlign: 'left' },
-        { field: 'localizacao', headerName: 'Localização', flex: 1, headerAlign: 'left' },
+        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'titulo', headerName: 'Título', flex: 2, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'nParticipantes', headerName: '# Participantes', flex: 0.5, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'dataHora', headerName: 'Data e Hora de Começo', type: 'dateTime', width: 200, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'localizacao', headerName: 'Localização', flex: 1, headerAlign: 'left', disableColumnMenu: true },
         { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false, renderCell: (row) => (<EditButton caption=' ' /*onclick={} id={row.id}*/ />) },
     ];
 

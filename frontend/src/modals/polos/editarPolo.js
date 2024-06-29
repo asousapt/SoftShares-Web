@@ -73,15 +73,22 @@ const EditarPolo = ({ open, onClose, poloId, setAlertOpen, setAlertProps }) => {
             const distrito = await fetchDistritoByCidadeId(polo.cidadeid);
             setDistrito(distrito);
             fetchCidades(distrito.value, polo.cidadeid);
-            if (polo.imagem.url === '' || polo.imagem.url === null) {
+            
+            if (polo.imagem === undefined){
                 setImageName('');
                 setImageSize(0);
                 setImage('');
             } else {
-                const base64String = await getBase64FromUrl(polo.imagem.url);
-                setImage(base64String);
-                setImageName(polo.imagem.name);
-                setImageSize(polo.imagem.size);
+                if (polo.imagem.url === '' || polo.imagem.url === null) {
+                    setImageName('');
+                    setImageSize(0);
+                    setImage('');
+                } else {
+                    const base64String = await getBase64FromUrl(polo.imagem.url);
+                    setImage(base64String);
+                    setImageName(polo.imagem.name);
+                    setImageSize(polo.imagem.size);
+                }
             }
         } catch (error) {
             console.error('Erro ao buscar dados do polo:', error);
@@ -161,6 +168,7 @@ const EditarPolo = ({ open, onClose, poloId, setAlertOpen, setAlertProps }) => {
 
         if (!validateTelefone(telefone)) {
             errors.telefoneError = true;
+            alert('Contacto deve começar por 232 e ter 9 digitos!');
         }
 
         if (!descricao) {
@@ -195,7 +203,7 @@ const EditarPolo = ({ open, onClose, poloId, setAlertOpen, setAlertProps }) => {
         setDistritoError(errors.distritoError || false);
         setMoradaError(errors.moradaError || false);
         setTelefoneError(errors.telefoneError || false);
-
+        
         if (Object.keys(errors).length > 0) {
             return;
         }
@@ -278,7 +286,7 @@ const EditarPolo = ({ open, onClose, poloId, setAlertOpen, setAlertProps }) => {
         setTelefoneError(false);
         onClose();
     };
-
+    
     return (
         <Modal open={open} onClose={handleCancel} >
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px', overflow: 'auto' }}>
@@ -318,7 +326,7 @@ const EditarPolo = ({ open, onClose, poloId, setAlertOpen, setAlertProps }) => {
                             </div>
                             <div style={{ width: '40%' }}>
                                 <BasicTextField caption='Coordenador' valor={responsavel} onchange={(e) => setResponsavel(e.target.value)} fullwidth={true} type="text" error={coordError}
-                                    helperText={coordError ? "Introduza um nome válido" : ""} />
+                                    helperText={coordError ? "Introduza um nome válido" : ""} allowOnlyLetters={true} />
                             </div>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>

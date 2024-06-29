@@ -25,7 +25,7 @@ export default function Dashboard() {
             try {
                 const token = sessionStorage.getItem('token');
 
-                const polosResponse = await axios.get('http://localhost:8000/utilizadores/totalpolo', {
+                const polosResponse = await axios.get(`${process.env.REACT_APP_API_URL}/utilizadores/totalpolo`, {
                     headers: {
                         Authorization: `${token}`
                     }
@@ -41,21 +41,21 @@ export default function Dashboard() {
 
                 setData1(formattedData);
 
-                const eventosResponse = await axios.get('http://localhost:8000/evento', {
+                const eventosResponse = await axios.get(`${process.env.REACT_APP_API_URL}/evento`, {
                     headers: {
                         Authorization: `${token}`
                     }
                 });
                 const eventosCount = eventosResponse.data.data.length;
 
-                const poiResponse = await axios.get('http://localhost:8000/pontoInteresse', {
+                const poiResponse = await axios.get(`${process.env.REACT_APP_API_URL}/pontoInteresse`, {
                     headers: {
                         Authorization: `${token}`
                     }
                 });
                 const poiCount = poiResponse.data.data.length;
 
-                const publicacoesResponse = await axios.get('http://localhost:8000/thread', {
+                const publicacoesResponse = await axios.get(`${process.env.REACT_APP_API_URL}/thread`, {
                     headers: {
                         Authorization: `${token}`
                     }
@@ -76,7 +76,7 @@ export default function Dashboard() {
                     value: parseFloat(item.value.toFixed(0))
                 })));
 
-                const threadsResponse = await axios.get('http://localhost:8000/thread/count/subcategoria', {
+                const threadsResponse = await axios.get(`${process.env.REACT_APP_API_URL}/thread/count/subcategoria`, {
                     headers: {
                         Authorization: `${token}`
                     }
@@ -108,7 +108,7 @@ export default function Dashboard() {
             try {
                 const token = sessionStorage.getItem('token');
 
-                const eventosResponse = await axios.get('http://localhost:8000/evento/porAprovar', {
+                const eventosResponse = await axios.get(`${process.env.REACT_APP_API_URL}/evento/porAprovar`, {
                     headers: {
                         Authorization: `${token}`
                     },
@@ -119,7 +119,7 @@ export default function Dashboard() {
                 const eventosCount = eventosResponse.data.data.length;
                 setNumEventoAprovar(eventosCount);
 
-                const PoiResponse = await axios.get('http://localhost:8000/pontoInteresse/porAprovar', {
+                const PoiResponse = await axios.get(`${process.env.REACT_APP_API_URL}/pontoInteresse/porAprovar`, {
                     headers: {
                         Authorization: `${token}`
                     },

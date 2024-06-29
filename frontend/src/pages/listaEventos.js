@@ -13,6 +13,7 @@ import StateChanger from '../components/stateChanger/stateChanger';
 /* FIM COMPONENTES */
 import NovoEvento from '../modals/eventos/novoEvento';
 import EditarEvento from '../modals/eventos/editarEvento';
+import VerEvento from '../modals/aprovacoes/verEvento';
 
 const opcoesFiltroEstado = [
     { value: 'Todos', label: 'Todos' },
@@ -28,6 +29,7 @@ export default function ListaEventos() {
     const [opcoesFiltroSubcat, setOpcoesSubcat] = useState([]);
     const [filtroCategoria, setFiltroCategoria] = useState(0);
     const [tableRows, setTableRows] = useState([]);
+    const [isVerModalOpen, setVerModalOpen] = useState(false);
     const [isEditModalOpen, setEditModalOpen] = useState(false);
     const [selectedEventoId, setSelectedEventoId] = useState(null);
     const [error, setError] = useState(null);
@@ -42,8 +44,20 @@ export default function ListaEventos() {
         { field: 'localizacao', headerName: 'Localização', flex: 1, headerAlign: 'left', disableColumnMenu: true },
         { field: 'subcategoria', headerName: 'Subcategoria', flex: 1, headerAlign: 'left', disableColumnMenu: true },
         { field: 'estado', headerName: 'Estado', width: 120, headerAlign: 'center', renderCell: (row) => (<StateChanger status={row.value} />), disableColumnMenu: true },
-        { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false, renderCell: (row) => ( <EditButton caption=' ' onclick={() => handleEditClick(row.id)} />), disableColumnMenu: true },
+        { field: 'edit', headerName: ' ', width: 90, headerAlign: 'left', sortable: false, renderCell: (row) => ( <EditButton caption=' ' onclick={() => openModal(row)} />), disableColumnMenu: true },
     ];
+
+    const openModal = (row) => {
+        const dataHora = new Date(row.row.dataHora);
+        const now = new Date();
+
+        setSelectedEventoId(row.id);
+        if (dataHora <= now || row.row.estado !== 'Por Aprovar') {
+            setVerModalOpen(true);
+        } else {
+            setEditModalOpen(true);
+        }
+    }
 
     const fetchCategorias = async () => {
         const token = sessionStorage.getItem('token');
@@ -134,11 +148,6 @@ export default function ListaEventos() {
         }
     };
 
-    const handleEditClick = (id) => {
-        setSelectedEventoId(id);
-        setEditModalOpen(true);
-    };
-
     useEffect(() => {
         fetchCategorias();
     }, []);
@@ -179,6 +188,7 @@ export default function ListaEventos() {
             </div>
             <NovoEvento open={isNewModalOpen} onClose={() => setNewModalOpen(false)} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
             {isEditModalOpen && (<EditarEvento open={isEditModalOpen} onClose={() => setEditModalOpen(false)} eventData={selectedEventoId} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />)}
+            {isVerModalOpen && (<VerEvento open={isVerModalOpen} onClose={() => setVerModalOpen(false)} eventoId={selectedEventoId} />)}
             <Alert open={alertOpen} setOpen={setAlertOpen} title={alertProps.title} label={alertProps.label} severity={alertProps.severity} />
         </div>
     );

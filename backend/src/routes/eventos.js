@@ -39,4 +39,6 @@ router.get('/:idPolo/futuro/:numTop', authenticate, eventoControlador.consultarE
 
 router.get('/:idEvento', authenticate, eventoControlador.consultarEventoPorID);
 
+router.get('/:idEvento/form/:tipoForm', authenticate, eventoControlador.getIdFormularioAResponder);
+
 module.exports = router;

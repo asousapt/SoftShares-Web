@@ -337,11 +337,6 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
         });
     }
 
-    const handleSubcatChange = (event, newValue) => {
-        setSubcategoria(newValue); 
-        setSubcategoriaError(false); 
-    }
-
     return (
         <Modal open={open} onClose={handleCancel}>
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px', overflow: 'auto' }}>

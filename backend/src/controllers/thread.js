@@ -126,7 +126,15 @@ const controladorThread = {
                 }
             );
 
-            res.status(200).json({ message: 'Consulta realizada com sucesso', data: threads });
+            const threadsWithFiles = await Promise.all(threads.map(async (thread) => {
+                const ficheiros = await ficheirosController.getAllFilesByAlbum(thread.threadid, 'THREAD');
+                return {
+                    ...thread,
+                    imagens: ficheiros
+                };
+            }));
+
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: threadsWithFiles });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar threads', details: error.message });
         }

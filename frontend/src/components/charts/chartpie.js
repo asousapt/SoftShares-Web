@@ -27,9 +27,14 @@ const SecondLineText = styled('text')(({ theme }) => ({
 
 function PieCenterLabel({ children }) {
   const { width, height, left, top } = useDrawingArea();
+  const lines = React.Children.toArray(children).map((child, index) => (
+    <tspan x={left + width / 2} dy={index === 0 ? 0 : "1.2em"} key={index}>
+      {child}
+    </tspan>
+  ));
   return (
     <StyledText x={left + width / 2} y={top + height / 2.3}>
-      {children}
+      {lines}
     </StyledText>
   );
 }
@@ -83,7 +88,11 @@ export default function ChartPie({ chartData, total, label }) {
             },
           }}
         >
-          <PieCenterLabel>{label}</PieCenterLabel>
+          <PieCenterLabel>
+            {label.split('\n').map((line, index) => (
+              <tspan key={index} x={chartSize.width / 2.7} dy={index === 0 ? -20 : "1.2em"}>{line}</tspan>
+            ))}
+          </PieCenterLabel>
           <SecondLineText x={chartSize.width / 2.8} y={chartSize.height / 1.8}>
             {' '}
             {total}{' '}

@@ -76,19 +76,19 @@ export default function Dashboard() {
                     value: parseFloat(item.value.toFixed(0))
                 })));
 
-                const denunciaResponse = await axios.get('http://localhost:8000/denuncia/count', {
+                const threadsResponse = await axios.get('http://localhost:8000/thread/count/subcategoria', {
                     headers: {
                         Authorization: `${token}`
                     }
                 });
-                const denunciaCount = denunciaResponse.data.data;
+                const threadsCount = threadsResponse.data.data;
 
-                const totalDenuncia = denunciaCount.reduce((acc, item) => acc + parseFloat(item.count), 0);
-                setTotal2(totalDenuncia);
+                const totalThreads = threadsCount.reduce((acc, item) => acc + parseFloat(item.total), 0);
+                setTotal2(totalThreads);
 
-                const formattedData2 = denunciaCount.map((item) => ({
-                    value: (parseFloat(item.count) / totalDenuncia) * 100,
-                    label: item.descricao
+                const formattedData2 = threadsCount.map((item) => ({
+                    value: (parseFloat(item.total) / totalThreads) * 100,
+                    label: item.valorpt
                 }));
                 setData2(formattedData2.map(item => ({
                     ...item,
@@ -167,7 +167,7 @@ export default function Dashboard() {
                             <ChartPie style={{ maxWidth: '100%' }} chartData={data1} total={total1} label='Utilizadores' />
                         </Grid>
                         <Grid item xs={12} md={4} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
-                            <ChartPie style={{ maxWidth: '100%' }} chartData={data2} total={total2} label='Denúnicas Polo' />
+                            <ChartPie style={{ maxWidth: '100%' }} chartData={data2} total={total2} label={"Publicações\nSubcategoria"} />
                         </Grid>
                         <Grid item xs={12} md={4} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
                             <ChartPie style={{ maxWidth: '100%' }} chartData={data3} total={total3} label='Nº Registos' />

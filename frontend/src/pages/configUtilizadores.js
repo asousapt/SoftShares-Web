@@ -58,7 +58,7 @@ export default function Configtilizadores() {
             } else if (filtroCombo === 'Inativos') {
                 estado = true;
             }
-            const response = await axios.get('http://localhost:8000/utilizadores/filtro', {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/utilizadores/filtro`, {
                 headers: { 
                     Authorization: `${token}` 
                 },

@@ -41,7 +41,7 @@ export default function ModDen() {
         try {
             const token = sessionStorage.getItem('token');
 
-            const response = await axios.get('http://localhost:8000/denuncia/filtro', {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/denuncia/filtro`, {
                 headers: {
                     Authorization: `${token}`
                 },
@@ -79,7 +79,7 @@ export default function ModDen() {
 
             console.log('Aprovar registo:', id);
 
-            await axios.put(`http://localhost:8000/denuncia/aprovar/${id}`, aprovacao, {
+            await axios.put(`${process.env.REACT_APP_API_URL}/denuncia/aprovar/${id}`, aprovacao, {
                 headers: {
                     Authorization: `${token}`
                 }
@@ -104,7 +104,7 @@ export default function ModDen() {
                 comentarioid: selectedRegisto.comentarioId
             };
 
-            await axios.put(`http://localhost:8000/denuncia/rejeitar/${idDenuncia}`, requestData, {
+            await axios.put(`${process.env.REACT_APP_API_URL}/denuncia/rejeitar/${idDenuncia}`, requestData, {
                 headers: {
                     Authorization: `${token}`
                 }

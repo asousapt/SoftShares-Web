@@ -39,7 +39,7 @@ export default function ListaPublicacoes() {
     const fetchCategorias = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get('http://localhost:8000/categoria', {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/categoria`, {
                 headers: {
                     Authorization: `${token}`
                 }
@@ -60,7 +60,7 @@ export default function ListaPublicacoes() {
     const fetchData = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get('http://localhost:8000/thread/filtro', {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/thread/filtro`, {
                 headers: {
                     Authorization: `${token}`
                 },

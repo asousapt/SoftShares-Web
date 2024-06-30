@@ -26,7 +26,7 @@ const EditarAlerta = ({ open, onClose, alertaid, setAlertOpen, setAlertProps }) 
         const fetchPolos = async () => {
             try {
                 const token = 'tokenFixo';
-                const response = await axios.get('http://localhost:8000/polo', {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/polo`, {
                     headers: {
                         Authorization: `${token}`
                     }
@@ -45,7 +45,7 @@ const EditarAlerta = ({ open, onClose, alertaid, setAlertOpen, setAlertProps }) 
         const fetchAlertData = async () => {
             try {
                 const token = 'tokenFixo';
-                const response = await axios.get(`http://localhost:8000/alerta/${alertaid}`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/alerta/${alertaid}`, {
                     headers: {
                         Authorization: `${token}`
                     }
@@ -106,7 +106,7 @@ const EditarAlerta = ({ open, onClose, alertaid, setAlertOpen, setAlertProps }) 
 
         try {
             const token = 'tokenFixo';
-            await axios.put(`http://localhost:8000/alerta/update/${alertaid}`, {
+            await axios.put(`${process.env.REACT_APP_API_URL}/alerta/update/${alertaid}`, {
                 texto: descricao,
                 poloID: polo,
                 inactivo

@@ -69,7 +69,7 @@ const EditFormulario = ({ open, onClose, idForm, setAlertOpen, setAlertProps  })
                 descForm: desc,
                 perguntas: data
             };
-            await axios.post(`http://localhost:8000/formulario/${idForm}/versao/add`, novoForm, {
+            await axios.post(`${process.env.REACT_APP_API_URL}/formulario/${idForm}/versao/add`, novoForm, {
                 headers: {
                     Authorization: `${token}`,
                     'Content-Type': 'application/json',
@@ -88,7 +88,7 @@ const EditFormulario = ({ open, onClose, idForm, setAlertOpen, setAlertProps  })
     const fetchData = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8000/formulario/${idForm}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/formulario/${idForm}`, {
                 headers: {
                     Authorization: `${token}`
                 }
@@ -97,12 +97,12 @@ const EditFormulario = ({ open, onClose, idForm, setAlertOpen, setAlertProps  })
             
             setDesc(forms.descricao);
 
-            const subcatResponse = await axios.get(`http://localhost:8000/subcategoria/${forms.subcategoriaid}`, {
+            const subcatResponse = await axios.get(`${process.env.REACT_APP_API_URL}/subcategoria/${forms.subcategoriaid}`, {
                 headers: { Authorization: `${token}` }
             });
             const subcat = subcatResponse.data;
 
-            const catResponse = await axios.get(`http://localhost:8000/categoria/${subcat.categoriaid}`, {
+            const catResponse = await axios.get(`${process.env.REACT_APP_API_URL}/categoria/${subcat.categoriaid}`, {
                 headers: { Authorization: `${token}` }
             });
             const cat = catResponse.data;

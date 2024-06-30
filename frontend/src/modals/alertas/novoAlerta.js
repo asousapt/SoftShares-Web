@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Modal from '@mui/material/Modal';
 import BasicTextField from '../../components/textFields/basic';
-import ComboBox from '../../components/combobox/comboboxBasic';
 import SubmitButton from '../../components/buttons/submitButton';
 import CancelButton from '../../components/buttons/cancelButton';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -39,7 +38,7 @@ const NovoAlerta = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         try {
             const token = sessionStorage.getItem('token');
 
-            const response = await axios.get('http://localhost:8000/polo', {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/polo`, {
                 headers: {
                     Authorization: `${token}`
                 }
@@ -90,7 +89,7 @@ const NovoAlerta = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 poloID: polo ? polo.value : '',
             };
 
-            await axios.post('http://localhost:8000/alerta/add', novoAlerta, {
+            await axios.post(`${process.env.REACT_APP_API_URL}/alerta/add`, novoAlerta, {
                 headers: {
                     'Authorization': `${token}`,
                     'Content-Type': 'application/json',

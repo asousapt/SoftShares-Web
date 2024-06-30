@@ -89,7 +89,7 @@ const NovoFormulario = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 descForm: desc,
                 perguntas: data
             };
-            await axios.post('http://localhost:8000/formulario/add', novoForm, {
+            await axios.post(`${process.env.REACT_APP_API_URL}/formulario/add`, novoForm, {
                 headers: {
                     Authorization: `${token}`,
                     'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ const NovoFormulario = ({ open, onClose, setAlertOpen, setAlertProps }) => {
 
     const fetchCategorias = async () => {
         const token = sessionStorage.getItem('token');
-        const response = await axios.get(`http://localhost:8000/categoria`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/categoria`, {
             headers: { Authorization: `${token}` }
         });
         const categorias = response.data;
@@ -124,7 +124,7 @@ const NovoFormulario = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         setSubcategoria(null);
         if (newValue) {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8000/subcategoria/categoria/${newValue.value}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/subcategoria/categoria/${newValue.value}`, {
                 headers: { Authorization: `${token}` }
             });
             const subcategorias = response.data;

@@ -8,6 +8,8 @@ router.post('/add', authenticate, eventoControlador.adicionarEvento);
 
 router.post('/utilizador/add', authenticate, eventoControlador.adicionarParticipante);
 
+router.post('/inscricao', authenticate, eventoControlador.inscricaoEvento);
+
 //ROUTES PUT
 router.put('/update/:idEvento', authenticate, eventoControlador.atualizarEvento);
 
@@ -40,5 +42,7 @@ router.get('/:idPolo/futuro/:numTop', authenticate, eventoControlador.consultarE
 router.get('/:idEvento', authenticate, eventoControlador.consultarEventoPorID);
 
 router.get('/:idEvento/form/:tipoForm', authenticate, eventoControlador.getIdFormularioAResponder);
+
+router.get('/form/:idFormulario', authenticate, eventoControlador.getPerguntasFormulario);
 
 module.exports = router;

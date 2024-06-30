@@ -44,7 +44,7 @@ export default function ModAprov() {
                 poloid = '';
             }
 
-            const responseEventos = await axios.get('http://localhost:8000/evento/porAprovar', {
+            const responseEventos = await axios.get(`${process.env.REACT_APP_API_URL}/evento/porAprovar`, {
                 headers: {
                     Authorization: `${token}`
                 },
@@ -55,7 +55,7 @@ export default function ModAprov() {
             });
             const eventos = responseEventos.data.data;
 
-            const responsePontosInteresse = await axios.get('http://localhost:8000/pontoInteresse/porAprovar', {
+            const responsePontosInteresse = await axios.get(`${process.env.REACT_APP_API_URL}/pontoInteresse/porAprovar`, {
                 headers: {
                     Authorization: `${token}`
                 },
@@ -100,13 +100,13 @@ export default function ModAprov() {
             };
 
             if (tipo === 'Ponto de Interesse') {
-                await axios.put(`http://localhost:8000/pontoInteresse/aprovar/${id}`, aprovacao, {
+                await axios.put(`${process.env.REACT_APP_API_URL}/pontoInteresse/aprovar/${id}`, aprovacao, {
                     headers: {
                         Authorization: `${token}`
                     }
                 });
             } else if (tipo === 'Evento') {
-                await axios.put(`http://localhost:8000/evento/aprovar/${id}`, aprovacao, {
+                await axios.put(`${process.env.REACT_APP_API_URL}/evento/aprovar/${id}`, aprovacao, {
                     headers: {
                         Authorization: `${token}`
                     }
@@ -131,13 +131,13 @@ export default function ModAprov() {
             };
 
             if (tipo === 'Ponto de Interesse') {
-                await axios.put(`http://localhost:8000/pontoInteresse/rejeitar/${id}`, aprovacao, {
+                await axios.put(`${process.env.REACT_APP_API_URL}/pontoInteresse/rejeitar/${id}`, aprovacao, {
                     headers: {
                         Authorization: `${token}`
                     }
                 });
             } else if (tipo === 'Evento') {
-                await axios.put(`http://localhost:8000/evento/rejeitar/${id}`, aprovacao, {
+                await axios.put(`${process.env.REACT_APP_API_URL}/evento/rejeitar/${id}`, aprovacao, {
                     headers: {
                         Authorization: `${token}`
                     }

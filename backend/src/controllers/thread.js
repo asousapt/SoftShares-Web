@@ -104,6 +104,32 @@ const controladorThread = {
         }
     },
 
+    consultarPorSubcategoriaCount: async (req, res) => {
+        try {
+            const threads = await sequelizeConn.query(
+                `SELECT 
+                    COUNT(t.subcategoriaid) AS total, 
+                    (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 1) AS ValorPT
+                FROM 
+                    thread t
+                INNER JOIN 
+                    chave ch ON t.subcategoriaid = ch.registoid AND ch.entidade = 'SUBCAT'
+                INNER JOIN
+                    subcategoria s ON s.subcategoriaid = t.subcategoriaid
+                GROUP BY
+                    ch.chaveid
+                `,
+                {
+                    type: QueryTypes.SELECT
+                }
+            );
+
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: threads });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar threads por subcategoria', details: error.message });
+        }
+    },
+
     consultarTodos: async (req, res) => {
         try {
             const threads = await sequelizeConn.query(

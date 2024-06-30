@@ -25,7 +25,7 @@ export default function Dashboard() {
             try {
                 const token = sessionStorage.getItem('token');
 
-                const polosResponse = await axios.get('http://localhost:8000/utilizadores/totalpolo', {
+                const polosResponse = await axios.get(`${process.env.REACT_APP_API_URL}/utilizadores/totalpolo`, {
                     headers: {
                         Authorization: `${token}`
                     }
@@ -41,21 +41,21 @@ export default function Dashboard() {
 
                 setData1(formattedData);
 
-                const eventosResponse = await axios.get('http://localhost:8000/evento', {
+                const eventosResponse = await axios.get(`${process.env.REACT_APP_API_URL}/evento`, {
                     headers: {
                         Authorization: `${token}`
                     }
                 });
                 const eventosCount = eventosResponse.data.data.length;
 
-                const poiResponse = await axios.get('http://localhost:8000/pontoInteresse', {
+                const poiResponse = await axios.get(`${process.env.REACT_APP_API_URL}/pontoInteresse`, {
                     headers: {
                         Authorization: `${token}`
                     }
                 });
                 const poiCount = poiResponse.data.data.length;
 
-                const publicacoesResponse = await axios.get('http://localhost:8000/thread', {
+                const publicacoesResponse = await axios.get(`${process.env.REACT_APP_API_URL}/thread`, {
                     headers: {
                         Authorization: `${token}`
                     }
@@ -76,19 +76,19 @@ export default function Dashboard() {
                     value: parseFloat(item.value.toFixed(0))
                 })));
 
-                const denunciaResponse = await axios.get('http://localhost:8000/denuncia/count', {
+                const threadsResponse = await axios.get(`${process.env.REACT_APP_API_URL}/thread/count/subcategoria`, {
                     headers: {
                         Authorization: `${token}`
                     }
                 });
-                const denunciaCount = denunciaResponse.data.data;
+                const threadsCount = threadsResponse.data.data;
 
-                const totalDenuncia = denunciaCount.reduce((acc, item) => acc + parseFloat(item.count), 0);
-                setTotal2(totalDenuncia);
+                const totalThreads = threadsCount.reduce((acc, item) => acc + parseFloat(item.total), 0);
+                setTotal2(totalThreads);
 
-                const formattedData2 = denunciaCount.map((item) => ({
-                    value: (parseFloat(item.count) / totalDenuncia) * 100,
-                    label: item.descricao
+                const formattedData2 = threadsCount.map((item) => ({
+                    value: (parseFloat(item.total) / totalThreads) * 100,
+                    label: item.valorpt
                 }));
                 setData2(formattedData2.map(item => ({
                     ...item,
@@ -108,7 +108,7 @@ export default function Dashboard() {
             try {
                 const token = sessionStorage.getItem('token');
 
-                const eventosResponse = await axios.get('http://localhost:8000/evento/porAprovar', {
+                const eventosResponse = await axios.get(`${process.env.REACT_APP_API_URL}/evento/porAprovar`, {
                     headers: {
                         Authorization: `${token}`
                     },
@@ -119,7 +119,7 @@ export default function Dashboard() {
                 const eventosCount = eventosResponse.data.data.length;
                 setNumEventoAprovar(eventosCount);
 
-                const PoiResponse = await axios.get('http://localhost:8000/pontoInteresse/porAprovar', {
+                const PoiResponse = await axios.get(`${process.env.REACT_APP_API_URL}/pontoInteresse/porAprovar`, {
                     headers: {
                         Authorization: `${token}`
                     },
@@ -167,7 +167,7 @@ export default function Dashboard() {
                             <ChartPie style={{ maxWidth: '100%' }} chartData={data1} total={total1} label='Utilizadores' />
                         </Grid>
                         <Grid item xs={12} md={4} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
-                            <ChartPie style={{ maxWidth: '100%' }} chartData={data2} total={total2} label='Denúnicas Polo' />
+                            <ChartPie style={{ maxWidth: '100%' }} chartData={data2} total={total2} label={"Publicações\nSubcategoria"} />
                         </Grid>
                         <Grid item xs={12} md={4} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
                             <ChartPie style={{ maxWidth: '100%' }} chartData={data3} total={total3} label='Nº Registos' />

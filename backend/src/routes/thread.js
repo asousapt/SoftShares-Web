@@ -14,6 +14,7 @@ router.delete('/delete/:id', authenticate, controladorThread.remover);
 
 // GET - Consultar threads por subcategoria
 router.get('/subcategoria/:subcategoriaid', authenticate, controladorThread.consultarPorSubcategoria);
+router.get('/count/subcategoria', authenticate, controladorThread.consultarPorSubcategoriaCount);
 
 // GET - Consultar threads por utilizador
 router.get('/', authenticate, controladorThread.consultarTodos);

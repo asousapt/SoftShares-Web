@@ -62,7 +62,7 @@ export default function ListaEventos() {
     const fetchCategorias = async () => {
         const token = sessionStorage.getItem('token');
 
-        const response = await axios.get('http://localhost:8000/categoria', {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/categoria`, {
             headers: {
                 Authorization: `${token}`
             }
@@ -97,7 +97,7 @@ export default function ListaEventos() {
                 estado = "NULL";
             }
 
-            const response = await axios.get('http://localhost:8000/evento/filtro', {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/evento/filtro`, {
                 headers: {
                     Authorization: `${token}`
                 },

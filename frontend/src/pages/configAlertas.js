@@ -60,7 +60,7 @@ export default function ConfigAlertas() {
             } else if (filtroCombo === 'Inativos') {
                 estado = true;
             }
-            const response = await axios.get('http://localhost:8000/alerta/filtro', {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/alerta/filtro`, {
                 headers: {
                     Authorization: `${token}`
                 },

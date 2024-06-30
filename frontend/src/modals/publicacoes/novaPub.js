@@ -29,7 +29,7 @@ const AddPublicacao = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     const fetchCategorias = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8000/categoria`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/categoria`, {
                 headers: { Authorization: `${token}` }
             });
             const categorias = response.data;
@@ -49,7 +49,7 @@ const AddPublicacao = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         if (newValue) {
             try {
                 const token = sessionStorage.getItem('token');
-                const response = await axios.get(`http://localhost:8000/subcategoria/categoria/${newValue.value}`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/subcategoria/categoria/${newValue.value}`, {
                     headers: { Authorization: `${token}` }
                 });
                 const subcategorias = response.data;
@@ -122,7 +122,7 @@ const AddPublicacao = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 idiomaid: 1,
                 imagens: imagesRtn
             };
-            await axios.post('http://localhost:8000/thread/add', novaPublicacao, {
+            await axios.post(`${process.env.REACT_APP_API_URL}/thread/add`, novaPublicacao, {
                 headers: {
                     Authorization: `${token}`,
                     'Content-Type': 'application/json',

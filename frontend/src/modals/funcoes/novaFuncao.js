@@ -48,7 +48,7 @@ const NovaFuncao = ({ open, onClose, setAlertOpen, setAlertProps }) => {
 
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.post('http://localhost:8000/funcao/add', {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/funcao/add`, {
                 descricaoPT,
                 descricaoEN,
                 descricaoES

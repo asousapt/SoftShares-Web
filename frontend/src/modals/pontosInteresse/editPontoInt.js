@@ -88,7 +88,7 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
 
     const fetchDistritoByCidadeId = async (cidadeId) => {
         const token = sessionStorage.getItem('token');
-        const response = await axios.get(`http://localhost:8000/cidades/${cidadeId}/distrito`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/cidades/${cidadeId}/distrito`, {
             headers: { Authorization: `${token}` }
         });
         const distritoData = response.data.data;
@@ -98,7 +98,7 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
     const fetchCidades = async (distritoId, cidadeId) => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8000/cidades/distrito/${distritoId}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/cidades/distrito/${distritoId}`, {
                 headers: { Authorization: `${token}` }
             });
             const cidadesData = response.data.data;
@@ -116,7 +116,7 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
     const fetchDistritos = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get('http://localhost:8000/cidades/distritos', {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/cidades/distritos`, {
                 headers: { Authorization: `${token}` }
             });
             const distritoData = response.data.data;
@@ -143,7 +143,7 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
     const fetchEventData = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8000/pontoInteresse/${eventData}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/pontoInteresse/${eventData}`, {
                 headers: { Authorization: `${token}` }
             });
             const userData = response.data.data;
@@ -157,12 +157,12 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
             setDistrito(distrito);
             fetchCidades(distrito.value, userData.cidadeid);
 
-            const subcatResponse = await axios.get(`http://localhost:8000/subcategoria/${userData.subcategoriaid}`, {
+            const subcatResponse = await axios.get(`${process.env.REACT_APP_API_URL}/subcategoria/${userData.subcategoriaid}`, {
                 headers: { Authorization: `${token}` }
             });
             const subcat = subcatResponse.data;
 
-            const catResponse = await axios.get(`http://localhost:8000/categoria/${subcat.categoriaid}`, {
+            const catResponse = await axios.get(`${process.env.REACT_APP_API_URL}/categoria/${subcat.categoriaid}`, {
                 headers: { Authorization: `${token}` }
             });
             const cat = catResponse.data;
@@ -270,7 +270,7 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
                 formRespostas: data
             };
 
-            await axios.put(`http://localhost:8000/pontoInteresse/update/${eventData}`, poiEditado, {
+            await axios.put(`${process.env.REACT_APP_API_URL}/pontoInteresse/update/${eventData}`, poiEditado, {
                 headers: {
                     Authorization: `${token}`,
                     'Content-Type': 'application/json',

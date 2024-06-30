@@ -19,7 +19,7 @@ export default function StatsDenuncias() {
             try {
                 const token = sessionStorage.getItem('token');
 
-                const denunciaResponse = await axios.get('http://localhost:8000/denuncia/count', {
+                const denunciaResponse = await axios.get(`${process.env.REACT_APP_API_URL}/denuncia/count`, {
                     headers: {
                         Authorization: `${token}`
                     }

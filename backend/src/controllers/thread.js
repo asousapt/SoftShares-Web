@@ -248,8 +248,9 @@ const controladorThread = {
             res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
         }
     }, 
-     consultarTodosMobile: async (req, res) => {
+    consultarTodosMobile: async (req, res) => {
         try {
+            // Fetch threads with their related subcategories
             const threads = await sequelizeConn.query(
                 `SELECT 
                     t.threadid as "topicoId",
@@ -267,6 +268,7 @@ const controladorThread = {
                 { type: QueryTypes.SELECT }
             );
     
+            // Map over each thread and fetch additional details
             const threadsWithDetails = await Promise.all(threads.map(async (thread) => {
                 // Fetch utilizador data
                 const utilizador = await models.utilizador.findByPk(thread.utilizadorid, {
@@ -282,20 +284,21 @@ const controladorThread = {
     
                 // Fetch thread files
                 const threadFiles = await ficheirosController.getAllFilesByAlbum(thread.topicoId, 'THREAD');
+                const imagens = threadFiles ? threadFiles.map(file => file.url) : [];
+    
                 return {
                     ...thread,
                     utilizador,
-                    imagens: threadFiles || []
+                    imagens
                 };
             }));
-
-            delete threadsWithDetails.utilizadorid;
     
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: threadsWithDetails });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar threads', details: error.message });
         }
     }
+    
 
 };
 

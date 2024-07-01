@@ -17,6 +17,16 @@ const controladorThread = {
                 idiomaid: idiomaid
             });
 
+            await models.itemcomentario.create({
+                registoid: thread.threadid,
+                tipo: 'THREAD'
+            });
+
+            await models.itemavaliacao.create({
+                itemorigid: thread.threadid,
+                tipoentidade: 'THREAD'
+            });
+
             await models.objecto.create({
                 registoid: thread.threadid,
                 entidade: 'THREAD'

@@ -20,5 +20,6 @@ router.get('/', authenticate, comentarioController.consultarTudo);
 router.get('/itemcomentario/:idItemComentario', authenticate, comentarioController.consultarPorItemComentario);
 router.get('/item/:idComentario', authenticate, comentarioController.consultarComentario);
 router.get('/itemcomentario', authenticate, comentarioController.consultarTudoItemComentario);
+router.get('/tabela/:tipo/registo/:id', authenticate, comentarioController.consultarComBaseNoItemcomentario);
 
 module.exports = router;

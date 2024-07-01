@@ -33,6 +33,16 @@ const controladorPontosInteresse = {
                 utilizadorcriou: utilizadorcriou
             });
 
+            await models.itemcomentario.create({
+                registoid: pontointeresse.pontointeresseid,
+                tipo: 'POI'
+            });
+
+            await models.itemavaliacao.create({
+                itemorigid: pontointeresse.pontointeresseid,
+                tipoentidade: 'POI'
+            });
+
             await models.objecto.create({
                 registoid: pontointeresse.pontointeresseid,
                 entidade: 'POI'
@@ -260,6 +270,36 @@ const controladorPontosInteresse = {
                     itemavaliacao av ON p.pontointeresseid = av.itemorigid AND av.tipoentidade = 'POI'
                 LEFT JOIN
                     avaliacao a ON av.itemavaliacaoid = a.itemavaliacaoid
+                GROUP BY
+                    p.pontointeresseid, u.utilizadorid
+                `,
+
+                { type: QueryTypes.SELECT }
+            );
+            
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: pontosInteresse });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar os pontos de interesse', details: error.message });
+        }
+    },
+
+    consultarTudoAprovado: async (req, res) => {
+        try {
+            const pontosInteresse = await sequelizeConn.query(
+                `SELECT 
+                    p.*, 
+                    u.*,
+                    COALESCE(ROUND(AVG(a.avaliacao), 2), 0) as avgAvaliacao
+                FROM 
+                    pontointeresse p
+                INNER JOIN
+                    utilizador u ON p.utilizadorcriou = u.utilizadorid
+                LEFT JOIN 
+                    itemavaliacao av ON p.pontointeresseid = av.itemorigid AND av.tipoentidade = 'POI'
+                LEFT JOIN
+                    avaliacao a ON av.itemavaliacaoid = a.itemavaliacaoid
+                WHERE
+                    p.aprovado = 1
                 GROUP BY
                     p.pontointeresseid, u.utilizadorid
                 `,

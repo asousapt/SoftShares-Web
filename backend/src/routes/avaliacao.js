@@ -20,5 +20,6 @@ router.get('/', authenticate, avaliacaoController.consultarTudo);
 router.get('/item/:itemAvaliacaoId', authenticate, avaliacaoController.consultarAvalicao);
 router.get('/tipoentidade', authenticate, avaliacaoController.consultarTodosItemAvalicao);
 router.get('/tipoentidade/:tipoentidade', authenticate, avaliacaoController.consultarItemAvaliacao);
+router.get('/poi/:idPonto/utilizador/:idUser', authenticate, avaliacaoController.consultarPorPOIeUtilizador);
 
 module.exports = router;

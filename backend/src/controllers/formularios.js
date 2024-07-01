@@ -237,7 +237,49 @@ const controladorFormularios = {
             res.status(500).json({ error: 'Erro ao consultar formulario', details: error });
         }
     },
+
+    consultarTodosGenericoVersaoMaisRecente: async (req, res) => {
+        try{
+            const results = await sequelizeConn.query(
+                `SELECT 
+                    fd.*,
+                    cfg.registoid as subcategoriaid
+                FROM 
+                    FormularioDetalhes fd 
+                INNER JOIN
+                    formularioversao fv ON fv.formularioversaoid = fd.formularioversaoid
+                INNER JOIN
+                    formulario f ON f.formularioid = fv.formularioid
+                INNER JOIN
+                    itemcfgformulario cfg ON cfg.itemcfgformularioid = f.itemcfgformularioid AND tipo = 'SUBCAT'
+                WHERE 
+                    fv.formularioversaoid = (SELECT max(formularioversaoid) from formularioversao WHERE formularioid = f.formularioid)
+                `,
+                {
+                    type: QueryTypes.SELECT
+                }
+            );
+
+            const groupedResults = results.reduce((acc, row) => {
+                const { subcategoriaid, ...detailColumns } = row;
+                if (!acc[subcategoriaid]) {
+                    acc[subcategoriaid] = [];
+                }
+                acc[subcategoriaid].push(detailColumns);
+                return acc;
+            }, {});
     
+            const response = Object.keys(groupedResults).map(subcategoriaid => ({
+                subcategoriaid,
+                formDetails: groupedResults[subcategoriaid]
+            }));
+    
+            res.status(200).json(response);
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar formulario', details: error });
+        }
+    },
+
     consultarPorSubcatVersaoMaisRecente: async (req, res) => {
         const { idSubcat } = req.params;
 

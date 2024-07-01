@@ -248,6 +248,55 @@ const controladorThread = {
             res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
         }
     }, 
+     consultarTodosMobile: async (req, res) => {
+        try {
+            const threads = await sequelizeConn.query(
+                `SELECT 
+                    t.threadid as "topicoId",
+                    t.subcategoriaid as "subcategoria",
+                    s.categoriaID as "categoria", 
+                    t.titulo as "titulo", 
+                    t.mensagem as "mensagem", 
+                    t.datacriacao as "dataCriacao", 
+                    t.idiomaid as "idiomaId", 
+                    t.utilizadorid as "utilizadorid"
+                FROM 
+                    thread t
+                INNER JOIN
+                    subcategoria s ON t.subcategoriaid = s.subcategoriaid`,
+                { type: QueryTypes.SELECT }
+            );
+    
+            const threadsWithDetails = await Promise.all(threads.map(async (thread) => {
+                // Fetch utilizador data
+                const utilizador = await models.utilizador.findByPk(thread.utilizadorid, {
+                    attributes: ['utilizadorid', 'pnome', 'unome', 'email', 'poloid'],
+                });
+    
+                if (utilizador) {
+                    const ficheiros = await ficheirosController.getAllFilesByAlbum(utilizador.utilizadorid, 'UTIL');
+                    const fotoUrl = ficheiros[0] ? ficheiros[0].url : '';
+                    utilizador.dataValues.fotoUrl = fotoUrl;
+                    utilizador.dataValues.imagem = ficheiros[0];
+                }
+    
+                // Fetch thread files
+                const threadFiles = await ficheirosController.getAllFilesByAlbum(thread.topicoId, 'THREAD');
+                return {
+                    ...thread,
+                    utilizador,
+                    imagens: threadFiles || []
+                };
+            }));
+
+            delete threadsWithDetails.utilizadorid;
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: threadsWithDetails });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar threads', details: error.message });
+        }
+    }
+
 };
 
 module.exports = controladorThread;

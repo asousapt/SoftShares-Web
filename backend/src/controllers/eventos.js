@@ -5,6 +5,9 @@ const models = initModels(sequelizeConn);
 const ficheirosController = require('./ficheiros');
 const subcategoria = require('../models/subcategoria');
 const evento = require('../models/evento');
+const utilizador = require('../models/utilizador');
+const respostaformulario = require('../models/respostaformulario');
+const itemrespostaformulario = require('../models/itemrespostaformulario');;
 
 const controladorEventos = {
     adicionarEvento: async (req, res) => {
@@ -295,7 +298,7 @@ const controladorEventos = {
     },
 
     consultarEventosEntreDatas: async (req, res) => {
-        const { idPolo, data1, data2 } = req.params;    
+        const { idPolo, data1, data2, idUtilizador } = req.params;    
 
         const query = `
             SELECT evento.*, subcategoria.categoriaid,
@@ -309,11 +312,24 @@ const controladorEventos = {
             JOIN subcategoria ON evento.subcategoriaid = subcategoria.subcategoriaid
             WHERE evento.aprovado = true and evento.datainicio BETWEEN :data1 AND :data2
             AND evento.cidadeid IN (SELECT cidadeid FROM polo WHERE poloid = :idPolo)
+            union 
+			SELECT evento.*, subcategoria.categoriaid,
+                    (SELECT STRING_AGG(participantes_eventos.utilizadorid::text, ',')
+                    FROM participantes_eventos
+                    WHERE participantes_eventos.eventoid = evento.eventoid) AS participantes,
+                    (SELECT COUNT(*)
+                    FROM participantes_eventos
+                    WHERE participantes_eventos.eventoid = evento.eventoid) AS numinscritos
+            FROM evento
+            JOIN subcategoria ON evento.subcategoriaid = subcategoria.subcategoriaid
+            WHERE evento.utilizadorcriou = :idUtilizador and evento.aprovado = false 
+            and evento.dataaprovacao is null and evento.datainicio BETWEEN :data1 AND :data2
+            AND evento.cidadeid IN (SELECT cidadeid FROM polo WHERE poloid = :idPolo)
         `;
 
         try {
             const eventos = await sequelizeConn.query(query, {
-                replacements: { idPolo, data1, data2 },
+                replacements: { idPolo, data1, data2, idUtilizador },
                 type: Sequelize.QueryTypes.SELECT
             });
 
@@ -505,6 +521,124 @@ const controladorEventos = {
             res.status(500).json({ error: 'Erro ao consultar os eventos' });
         }
     },
+    getPerguntasFormulario: async (req, res) => {
+        const { idFormulario } = req.params;
+    
+        // Define the SQL queries
+        const query = `
+            SELECT 
+                fm.formularioid AS "formId", 
+                fv.descricao AS "titulo"
+            FROM formularioversao fv
+            INNER JOIN formulario fm ON fm.formularioid = fv.formularioid AND fm.formularioid = :idFormulario
+        `;
+    
+        const query2 = `
+            SELECT 
+                fd.formulariodetalhesid AS "detalheId", 
+                fd.pergunta AS "pergunta", 
+                fd.tipodados AS "tipoDados", 
+                fd.obrigatorio AS "obrigatorio", 
+                fd.minimo AS "min", 
+                fd.maximo AS "max", 
+                fd.tamanho AS "tamanho", 
+                fd.respostasPossiveis AS "valoresPossiveis", 
+                fd.ordem AS "ordem"
+            FROM formulariodetalhes fd
+            WHERE fd.formularioversaoid = (
+                SELECT MAX(fv.formularioversaoid) 
+                FROM formularioversao fv
+                WHERE fv.formularioid = :idFormulario
+            )
+        `;
+    
+        try {
+            const eventos = await sequelizeConn.query(query, {
+                replacements: { idFormulario },
+                type: Sequelize.QueryTypes.SELECT
+            });
+    
+            const perguntas = await sequelizeConn.query(query2, {
+                replacements: { idFormulario },
+                type: Sequelize.QueryTypes.SELECT
+            });
+    
+            // converte os valores possiveis para um array
+            const processedPerguntas = perguntas.map(pergunta => {
+                if (pergunta.valoresPossiveis) {
+                    pergunta.valoresPossiveis = pergunta.valoresPossiveis
+                        .split(',')
+                        .map(val => val.trim())
+                        .filter(val => val);
+                } else {
+                    pergunta.valoresPossiveis = [];
+                }
+                return pergunta;
+            });
+    
+            const formData = {
+                formId: eventos[0].formId, 
+                titulo: eventos[0].titulo,
+                perguntas: processedPerguntas
+            };
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: formData });
+    
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar os eventos' });
+        }
+    }, 
+    // endpoint para inscrição no evento 
+    inscricaoEvento: async (req, res) => {
+        try {
+            const { idEvento, idUser, numConvidados, respostas } = req.body;
+
+            const participante = await models.participantes_eventos.create({
+                utilizadorid: idUser,
+                eventoid: idEvento,
+                convidadosadic: numConvidados
+            });
+    
+            if (respostas.length > 0) {
+                const itemRespostaFormulario = await models.itemrespostaformulario.create({
+                    registoid: idEvento,
+                    entidade: 'EVENTO'
+                });
+    
+                const respostaFormulario = await models.respostaformulario.create({
+                    itemrespostaformularioid: itemRespostaFormulario.itemrespostaformularioid,
+                    utilizadorid: idUser
+                });
+    
+                await Promise.all(respostas.map(async resposta => {
+                    await models.respostadetalhe.create({
+                        respostaformularioid: respostaFormulario.respostaformularioid,
+                        formulariodetalhesid: resposta.formulariodetalhesid,
+                        resposta: resposta.resposta
+                    });
+                }));
+            }
+    
+            res.status(201).json({ message: 'Inscrição realizada com sucesso', data: participante });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao inscrever no evento' });
+        }
+    }, 
+    buscaEventoPorIdEditar: async (req, res) => {
+        const { idEvento } = req.params;
+        try {
+            const evento = await models.evento.findByPk(idEvento);
+    
+            const ficheiros = await ficheirosController.getAllFilesByAlbum(idEvento, 'EVENTO');
+            evento.dataValues.images = ficheiros;
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: { evento } });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar o evento' });
+        }
+    },
+    
+    
 };
 
 module.exports = controladorEventos;

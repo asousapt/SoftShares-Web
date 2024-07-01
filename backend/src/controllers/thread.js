@@ -159,7 +159,7 @@ const controladorThread = {
                 const ficheiros = await ficheirosController.getAllFilesByAlbum(thread.threadid, 'THREAD');
                 return {
                     ...thread,
-                    imagens: ficheiros
+                    imagens: ficheiros || []
                 };
             }));
 

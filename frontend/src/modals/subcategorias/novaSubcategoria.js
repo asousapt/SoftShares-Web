@@ -47,7 +47,7 @@ const NovaSubcategoria = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         const fetchCategorias = async () => {
             try {
                 const token = sessionStorage.getItem('token');
-                const response = await axios.get('http://localhost:8000/categoria', {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/categoria`, {
                     headers: {
                         Authorization: `${token}`
                     }
@@ -76,7 +76,7 @@ const NovaSubcategoria = ({ open, onClose, setAlertOpen, setAlertProps }) => {
 
         try {
             const token = sessionStorage.getItem('token');
-            await axios.post(`http://localhost:8000/subcategoria/add`, {
+            await axios.post(`${process.env.REACT_APP_API_URL}/subcategoria/add`, {
                 categoriaID: categoria,
                 descricaoPT: descricaoPT,
                 descricaoEN: descricaoEN,

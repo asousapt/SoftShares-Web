@@ -30,7 +30,7 @@ const LoginModal = ({ open, handleClose }) => {
   const verificarEmail = async (email) => {
     try {
       const token = sessionStorage.getItem('token');
-      const response = await axios.get(`http://localhost:8000/utilizadores/email/${email}`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/utilizadores/email/${email}`, {
         headers: { Authorization: `${token}` }
       });
       return response.status === 200;
@@ -100,7 +100,7 @@ const LoginModal = ({ open, handleClose }) => {
     }
 
     try {
-      const response = await axios.get(`http://localhost:8000/utilizadores/email/${email}`);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/utilizadores/email/${email}`);
 
       const utilizador = response.data.data;
       if (password !== utilizador.passwd) {
@@ -141,7 +141,7 @@ const LoginModal = ({ open, handleClose }) => {
         sessionStorage.setItem('adm poloid', '');
       }
 
-      const tokenResponse = await axios.get(`http://localhost:8000/utilizadores/token/${utilizador.utilizadorid}`);
+      const tokenResponse = await axios.get(`${process.env.REACT_APP_API_URL}/utilizadores/token/${utilizador.utilizadorid}`);
       sessionStorage.setItem('token', tokenResponse.data);
       navigate('/dashboard');
     } catch (error) {

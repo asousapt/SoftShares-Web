@@ -48,7 +48,7 @@ const NovaCategoria = ({ open, onClose, setAlertOpen, setAlertProps }) => {
 
         try {
             const token = sessionStorage.getItem('token');
-            await axios.post('http://localhost:8000/categoria/add', {
+            await axios.post(`${process.env.REACT_APP_API_URL}/categoria/add`, {
                 descricaoPT: descricao,
                 descricaoEN: descricaoENG,
                 descricaoES: descricaoSPA

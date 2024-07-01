@@ -48,7 +48,7 @@ const NovoDepartamento = ({ open, onClose, setAlertOpen, setAlertProps }) => {
 
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.post('http://localhost:8000/departamento/add', {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/departamento/add`, {
                 descricaoPT,
                 descricaoEN,
                 descricaoES

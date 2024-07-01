@@ -38,7 +38,7 @@ const NovoPolo = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         const fetchDistritos = async () => {
             try {
                 const token = sessionStorage.getItem('token');
-                const response = await axios.get('http://localhost:8000/cidades/distritos', {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/cidades/distritos`, {
                     headers: { Authorization: `${token}` }
                 });
                 const distritoData = response.data.data;
@@ -59,7 +59,7 @@ const NovoPolo = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     const fetchCidades = async (distritoId) => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8000/cidades/distrito/${distritoId}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/cidades/distrito/${distritoId}`, {
                 headers: { Authorization: `${token}` }
             });
             const cidadesData = response.data.data;
@@ -162,7 +162,7 @@ const NovoPolo = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 utilizadorid: userid
             };
 
-            await axios.post('http://localhost:8000/polo/add', novoPolo, {
+            await axios.post(`${process.env.REACT_APP_API_URL}/polo/add`, novoPolo, {
                 headers: {
                     Authorization: `${token}`,
                     'Content-Type': 'application/json',

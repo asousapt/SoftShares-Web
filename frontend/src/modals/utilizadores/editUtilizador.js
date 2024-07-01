@@ -63,7 +63,7 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
     const fetchDepartamentos = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get('http://localhost:8000/departamento', {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/departamento`, {
                 headers: { Authorization: `${token}` }
             });
             const departamentosData = response.data;
@@ -82,7 +82,7 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
     const fetchPolos = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get('http://localhost:8000/polo', {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/polo`, {
                 headers: { Authorization: `${token}` }
             });
             const polosData = response.data.data;
@@ -100,7 +100,7 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
     const fetchFuncao = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get('http://localhost:8000/funcao', {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/funcao`, {
                 headers: { Authorization: `${token}` }
             });
             const funcaoData = response.data;
@@ -119,7 +119,7 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
     const fetchPerfil = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get('http://localhost:8000/perfil', {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/perfil`, {
                 headers: { Authorization: `${token}` }
             });
             const perfilData = response.data.data;
@@ -154,7 +154,7 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
     const fetchUserData = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8000/utilizadores/${userId}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/utilizadores/${userId}`, {
                 headers: { Authorization: `${token}` }
             });
             const userData = response.data.data;
@@ -303,7 +303,7 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
 
             console.log('updatedUser', updatedUser);
 
-            await axios.put(`http://localhost:8000/utilizadores/update/${userId}`, updatedUser, {
+            await axios.put(`${process.env.REACT_APP_API_URL}/utilizadores/update/${userId}`, updatedUser, {
                 headers: {
                     'Authorization': `${token}`,
                     'Content-Type': 'application/json'

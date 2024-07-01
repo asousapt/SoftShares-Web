@@ -25,7 +25,7 @@ const EditFuncao = ({ open, onClose, funcaoId, setAlertOpen, setAlertProps  }) =
             const fetchFuncao = async () => {
                 try {
                     const token = sessionStorage.getItem('token');
-                    const response = await axios.get(`http://localhost:8000/funcao/${funcaoId}`, {
+                    const response = await axios.get(`${process.env.REACT_APP_API_URL}/funcao/${funcaoId}`, {
                         headers: {
                             Authorization: `${token}`
                         }
@@ -81,7 +81,7 @@ const EditFuncao = ({ open, onClose, funcaoId, setAlertOpen, setAlertProps  }) =
 
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.put(`http://localhost:8000/funcao/update/${funcaoId}`, {
+            const response = await axios.put(`${process.env.REACT_APP_API_URL}/funcao/update/${funcaoId}`, {
                 descricaoPT: descricaoPT,
                 descricaoEN: descricaoEN,
                 descricaoES: descricaoES,

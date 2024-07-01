@@ -51,7 +51,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         const fetchDepartamentos = async () => {
             try {
                 const token = sessionStorage.getItem('token');
-                const response = await axios.get('http://localhost:8000/departamento', {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/departamento`, {
                     headers: { Authorization: `${token}` }
                 });
                 const departamentosData = response.data;
@@ -70,7 +70,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         const fetchPolos = async () => {
             try {
                 const token = sessionStorage.getItem('token');
-                const response = await axios.get('http://localhost:8000/polo', {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/polo`, {
                     headers: { Authorization: `${token}` }
                 });
                 const polosData = response.data.data;
@@ -88,7 +88,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         const fetchFuncao = async () => {
             try {
                 const token = sessionStorage.getItem('token');
-                const response = await axios.get('http://localhost:8000/funcao', {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/funcao`, {
                     headers: { Authorization: `${token}` }
                 });
                 const funcaoData = response.data;
@@ -106,7 +106,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         const fetchPerfil = async () => {
             try {
                 const token = sessionStorage.getItem('token');
-                const response = await axios.get('http://localhost:8000/perfil', {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/perfil`, {
                     headers: { Authorization: `${token}` }
                 });
                 const perfilData = response.data.data;
@@ -162,7 +162,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     const verificarEmail = async (email) => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8000/utilizadores/email/${email}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/utilizadores/email/${email}`, {
                 headers: { Authorization: `${token}` }
             });
             return response.status === 200;
@@ -279,7 +279,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 administrador_poloid: isPoloAdmidDisabled ? null : poloadmid
             };
 
-            await axios.post('http://localhost:8000/utilizadores/add', newUser, {
+            await axios.post(`${process.env.REACT_APP_API_URL}/utilizadores/add`, newUser, {
                 headers: {
                     'Authorization': `${token}`,
                     'Content-Type': 'application/json'

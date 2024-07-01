@@ -21,8 +21,7 @@ export default function Perfil({ anchorEl, open, handleClose }) {
         if (image && image !== '') {
             setUserImage(image);
         } else{
-            const char0 = userName.charAt(0);
-            setUserImage(image);
+            setUserImage('');
         }
     }, []);
 

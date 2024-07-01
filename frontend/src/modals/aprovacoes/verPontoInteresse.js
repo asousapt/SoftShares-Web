@@ -39,7 +39,7 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
     const fetchCategorias = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8000/categoria`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/categoria`, {
                 headers: { Authorization: `${token}` }
             });
             const categorias = response.data;
@@ -57,7 +57,7 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
         try {
             if (idcat){
                 const token = sessionStorage.getItem('token');
-                const response = await axios.get(`http://localhost:8000/subcategoria/categoria/${idcat}`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/subcategoria/categoria/${idcat}`, {
                     headers: { Authorization: `${token}` }
                 });
                 const subcategorias = response.data;
@@ -78,7 +78,7 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
         if (newValue) {
             try {
                 const token = sessionStorage.getItem('token');
-                const response = await axios.get(`http://localhost:8000/subcategoria/categoria/${newValue.value}`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/subcategoria/categoria/${newValue.value}`, {
                     headers: { Authorization: `${token}` }
                 });
                 const subcategorias = response.data;
@@ -98,7 +98,7 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
 
     const fetchDistritoByCidadeId = async (cidadeId) => {
         const token = sessionStorage.getItem('token');
-        const response = await axios.get(`http://localhost:8000/cidades/${cidadeId}/distrito`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/cidades/${cidadeId}/distrito`, {
             headers: { Authorization: `${token}` }
         });
         const distritoData = response.data.data;
@@ -108,7 +108,7 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
     const fetchCidades = async (distritoId, cidadeId) => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8000/cidades/distrito/${distritoId}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/cidades/distrito/${distritoId}`, {
                 headers: { Authorization: `${token}` }
             });
             const cidadesData = response.data.data;
@@ -126,7 +126,7 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
     const fetchDistritos = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get('http://localhost:8000/cidades/distritos', {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/cidades/distritos`, {
                 headers: { Authorization: `${token}` }
             });
             const distritoData = response.data.data;
@@ -153,7 +153,7 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
     const fetchEventData = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8000/pontoInteresse/${registoId}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/pontoInteresse/${registoId}`, {
                 headers: { Authorization: `${token}` }
             });
             const userData = response.data.data;
@@ -166,12 +166,12 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
             setDistrito(distrito);
             fetchCidades(distrito.value, userData.cidadeid);
 
-            const subcatResponse = await axios.get(`http://localhost:8000/subcategoria/${userData.subcategoriaid}`, {
+            const subcatResponse = await axios.get(`${process.env.REACT_APP_API_URL}/subcategoria/${userData.subcategoriaid}`, {
                 headers: { Authorization: `${token}` }
             });
             const subcat = subcatResponse.data;
 
-            const catResponse = await axios.get(`http://localhost:8000/categoria/${subcat.categoriaid}`, {
+            const catResponse = await axios.get(`${process.env.REACT_APP_API_URL}/categoria/${subcat.categoriaid}`, {
                 headers: { Authorization: `${token}` }
             });
             const cat = catResponse.data;

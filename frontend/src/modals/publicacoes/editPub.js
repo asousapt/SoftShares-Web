@@ -46,7 +46,7 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
     const fetchCategorias = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8000/categoria`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/categoria`, {
                 headers: { Authorization: `${token}` }
             });
             const categorias = response.data;
@@ -64,7 +64,7 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
         try {
             if (idcat) {
                 const token = sessionStorage.getItem('token');
-                const response = await axios.get(`http://localhost:8000/subcategoria/categoria/${idcat}`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/subcategoria/categoria/${idcat}`, {
                     headers: { Authorization: `${token}` }
                 });
                 const subcategorias = response.data;
@@ -85,7 +85,7 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
         if (newValue) {
             try {
                 const token = sessionStorage.getItem('token');
-                const response = await axios.get(`http://localhost:8000/subcategoria/categoria/${newValue.value}`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/subcategoria/categoria/${newValue.value}`, {
                     headers: { Authorization: `${token}` }
                 });
                 const subcategorias = response.data;
@@ -106,7 +106,7 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
     const fetchData = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8000/thread/${idPub}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/thread/${idPub}`, {
                 headers: { Authorization: `${token}` }
             });
             const threads = response.data.data[0];
@@ -115,14 +115,14 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
             setDescription(threads.mensagem);
             setInativo(threads.inativo);
 
-            const catResponse = await axios.get(`http://localhost:8000/categoria/${threads.categoriaid}`, {
+            const catResponse = await axios.get(`${process.env.REACT_APP_API_URL}/categoria/${threads.categoriaid}`, {
                 headers: { Authorization: `${token}` }
             });
             const cat = catResponse.data;
             setCategoria({ value: threads.categoriaid, label: cat.valorpt });
             fetchSubcategoria(threads.categoriaid);
 
-            const subcatResponse = await axios.get(`http://localhost:8000/subcategoria/${threads.subcategoriaid}`, {
+            const subcatResponse = await axios.get(`${process.env.REACT_APP_API_URL}/subcategoria/${threads.subcategoriaid}`, {
                 headers: { Authorization: `${token}` }
             });
             const subcat = subcatResponse.data;
@@ -199,7 +199,7 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
                 imagens: imagesRtn,
                 utilizadorid: userid
             };
-            await axios.put('http://localhost:8000/thread/update/' + idPub, editarPublicacao, {
+            await axios.put(`${process.env.REACT_APP_API_URL}/thread/update/` + idPub, editarPublicacao, {
                 headers: {
                     Authorization: `${token}`,
                     'Content-Type': 'application/json',

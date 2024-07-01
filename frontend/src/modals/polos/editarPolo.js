@@ -60,7 +60,7 @@ const EditarPolo = ({ open, onClose, poloId, setAlertOpen, setAlertProps }) => {
     const fetchPoloData = async (id) => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8000/polo/${id}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/polo/${id}`, {
                 headers: { Authorization: `${token}` }
             });
             const polo = response.data.data;
@@ -97,7 +97,7 @@ const EditarPolo = ({ open, onClose, poloId, setAlertOpen, setAlertProps }) => {
 
     const fetchDistritoByCidadeId = async (cidadeId) => {
         const token = sessionStorage.getItem('token');
-        const response = await axios.get(`http://localhost:8000/cidades/${cidadeId}/distrito`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/cidades/${cidadeId}/distrito`, {
             headers: { Authorization: `${token}` }
         });
         const distritoData = response.data.data;
@@ -107,7 +107,7 @@ const EditarPolo = ({ open, onClose, poloId, setAlertOpen, setAlertProps }) => {
     const fetchDistritos = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get('http://localhost:8000/cidades/distritos', {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/cidades/distritos`, {
                 headers: { Authorization: `${token}` }
             });
             const distritoData = response.data.data;
@@ -124,7 +124,7 @@ const EditarPolo = ({ open, onClose, poloId, setAlertOpen, setAlertProps }) => {
     const fetchCidades = async (distritoId, cidadeId) => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8000/cidades/distrito/${distritoId}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/cidades/distrito/${distritoId}`, {
                 headers: { Authorization: `${token}` }
             });
             const cidadesData = response.data.data;
@@ -227,7 +227,7 @@ const EditarPolo = ({ open, onClose, poloId, setAlertOpen, setAlertProps }) => {
                 utilizadorid: userid
             };
 
-            await axios.put(`http://localhost:8000/polo/update/${poloId}`, novoPolo, {
+            await axios.put(`${process.env.REACT_APP_API_URL}/polo/update/${poloId}`, novoPolo, {
                 headers: {
                     Authorization: `${token}`,
                     'Content-Type': 'application/json',

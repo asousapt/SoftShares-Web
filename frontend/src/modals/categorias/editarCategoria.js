@@ -25,7 +25,7 @@ const EditarCategoria = ({ open, onClose, categoriaId, setAlertOpen, setAlertPro
             const fetchCategoria = async () => {
                 try {
                     const token = sessionStorage.getItem('token');
-                    const response = await axios.get(`http://localhost:8000/categoria/${categoriaId}`, {
+                    const response = await axios.get(`${process.env.REACT_APP_API_URL}/categoria/${categoriaId}`, {
                         headers: {
                             Authorization: `${token}`,
                         },
@@ -80,7 +80,7 @@ const EditarCategoria = ({ open, onClose, categoriaId, setAlertOpen, setAlertPro
 
         try {
             const token = sessionStorage.getItem('token');
-            await axios.put(`http://localhost:8000/categoria/update/${categoriaId}`, {
+            await axios.put(`${process.env.REACT_APP_API_URL}/categoria/update/${categoriaId}`, {
                 descricaoPT: descricao,
                 descricaoEN: descricaoENG,
                 descricaoES: descricaoSPA,

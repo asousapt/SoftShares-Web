@@ -59,7 +59,7 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
         const fetchDistritos = async () => {
             try {
                 const token = sessionStorage.getItem('token');
-                const response = await axios.get('http://localhost:8000/cidades/distritos', {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/cidades/distritos`, {
                     headers: { Authorization: `${token}` }
                 });
                 const distritoData = response.data.data;
@@ -77,7 +77,7 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
         const fetchCategorias = async () => {
             try {
                 const token = sessionStorage.getItem('token');
-                const response = await axios.get('http://localhost:8000/categoria', {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/categoria`, {
                     headers: { Authorization: `${token}` }
                 });
                 const categorias = response.data;
@@ -94,7 +94,7 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
         const fetchPolos = async () => {
             try {
                 const token = sessionStorage.getItem('token');
-                const response = await axios.get('http://localhost:8000/polo', {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/polo`, {
                     headers: { Authorization: `${token}` }
                 });
                 const polosData = response.data.data;
@@ -125,7 +125,7 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
     const fetchCidades = async (distritoId) => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8000/cidades/distrito/${distritoId}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/cidades/distrito/${distritoId}`, {
                 headers: { Authorization: `${token}` }
             });
             const cidadesData = response.data.data;
@@ -156,7 +156,7 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
         if (newValue) {
             try {
                 const token = sessionStorage.getItem('token');
-                const response = await axios.get(`http://localhost:8000/subcategoria/categoria/${newValue.value}`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/subcategoria/categoria/${newValue.value}`, {
                     headers: { Authorization: `${token}` }
                 });
                 const subcategorias = response.data;
@@ -310,7 +310,7 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
                 formQualidade: formQdd
             };
             
-            await axios.post('http://localhost:8000/evento/add', novoEvento, {
+            await axios.post(`${process.env.REACT_APP_API_URL}/evento/add`, novoEvento, {
                 headers: {
                     Authorization: `${token}`,
                     'Content-Type': 'application/json',

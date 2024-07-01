@@ -299,7 +299,7 @@ const controladorPontosInteresse = {
                 LEFT JOIN
                     avaliacao a ON av.itemavaliacaoid = a.itemavaliacaoid
                 WHERE
-                    p.aprovado = 1
+                    p.aprovado = true
                 GROUP BY
                     p.pontointeresseid, u.utilizadorid
                 `,

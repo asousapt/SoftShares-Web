@@ -298,7 +298,7 @@ const controladorEventos = {
     },
 
     consultarEventosEntreDatas: async (req, res) => {
-        const { idPolo, data1, data2 } = req.params;    
+        const { idPolo, data1, data2, idUtilizador } = req.params;    
 
         const query = `
             SELECT evento.*, subcategoria.categoriaid,
@@ -312,11 +312,24 @@ const controladorEventos = {
             JOIN subcategoria ON evento.subcategoriaid = subcategoria.subcategoriaid
             WHERE evento.aprovado = true and evento.datainicio BETWEEN :data1 AND :data2
             AND evento.cidadeid IN (SELECT cidadeid FROM polo WHERE poloid = :idPolo)
+            union 
+			SELECT evento.*, subcategoria.categoriaid,
+                    (SELECT STRING_AGG(participantes_eventos.utilizadorid::text, ',')
+                    FROM participantes_eventos
+                    WHERE participantes_eventos.eventoid = evento.eventoid) AS participantes,
+                    (SELECT COUNT(*)
+                    FROM participantes_eventos
+                    WHERE participantes_eventos.eventoid = evento.eventoid) AS numinscritos
+            FROM evento
+            JOIN subcategoria ON evento.subcategoriaid = subcategoria.subcategoriaid
+            WHERE evento.utilizadorcriou = :idUtilizador and evento.aprovado = false 
+            and evento.dataaprovacao is null and evento.datainicio BETWEEN :data1 AND :data2
+            AND evento.cidadeid IN (SELECT cidadeid FROM polo WHERE poloid = :idPolo)
         `;
 
         try {
             const eventos = await sequelizeConn.query(query, {
-                replacements: { idPolo, data1, data2 },
+                replacements: { idPolo, data1, data2, idUtilizador },
                 type: Sequelize.QueryTypes.SELECT
             });
 
@@ -610,7 +623,21 @@ const controladorEventos = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao inscrever no evento' });
         }
-    }
+    }, 
+    buscaEventoPorIdEditar: async (req, res) => {
+        const { idEvento } = req.params;
+        try {
+            const evento = await models.evento.findByPk(idEvento);
+    
+            const ficheiros = await ficheirosController.getAllFilesByAlbum(idEvento, 'EVENTO');
+            evento.dataValues.images = ficheiros;
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: { evento } });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar o evento' });
+        }
+    },
+    
     
 };
 

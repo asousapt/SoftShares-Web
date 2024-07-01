@@ -144,7 +144,8 @@ const controladorThread = {
         try {
             const threads = await sequelizeConn.query(
                 `SELECT 
-                    t.*, 
+                    t.*,
+                    s.categoriaID,
                     (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 1) AS ValorPT, 
                     (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 2) AS ValorEN, 
                     (SELECT valor FROM traducao WHERE ch.chaveid = traducao.chaveid AND idiomaid = 3) AS ValorES,
@@ -156,6 +157,8 @@ const controladorThread = {
                     chave ch ON t.subcategoriaid = ch.registoid AND ch.entidade = 'SUBCAT'
                 INNER JOIN
                     utilizador u ON t.utilizadorid = u.utilizadorid
+                INNER JOIN
+                    subcategoria s ON t.subcategoriaid = s.subcategoriaid
                 `,
                 {
                     type: QueryTypes.SELECT
@@ -166,7 +169,7 @@ const controladorThread = {
                 const ficheiros = await ficheirosController.getAllFilesByAlbum(thread.threadid, 'THREAD');
                 return {
                     ...thread,
-                    imagens: ficheiros
+                    imagens: ficheiros || []
                 };
             }));
 
@@ -192,6 +195,8 @@ const controladorThread = {
                     chave ch ON t.subcategoriaid = ch.registoid AND ch.entidade = 'SUBCAT'
                 INNER JOIN
                     subcategoria s ON s.subcategoriaid = t.subcategoriaid
+                INNER JOIN
+                    utilizador u ON t.utilizadorid = u.utilizadorid
                 WHERE
                     t.threadid = ${id}
                 `,

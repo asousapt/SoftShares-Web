@@ -31,7 +31,7 @@ router.get('/filtro', authenticate, eventoControlador.consultarTodosComFiltro);
 
 router.get('/porAprovar', authenticate, eventoControlador.consultarPorAprovar);
 
-router.get('/:idPolo/data/range/:data1/:data2', authenticate, eventoControlador.consultarEventosEntreDatas);
+router.get('/:idPolo/data/range/:data1/:data2/utilizador/:idUtilizador', authenticate, eventoControlador.consultarEventosEntreDatas);
 
 router.get('/utilizador/lista/:idEvento', authenticate, eventoControlador.consultarUtilizadoresEvento);
 
@@ -40,6 +40,8 @@ router.get('/utilizador/:idUser', authenticate, eventoControlador.consultarEvent
 router.get('/:idPolo/futuro/:numTop', authenticate, eventoControlador.consultarEventosFuturos);
 
 router.get('/:idEvento', authenticate, eventoControlador.consultarEventoPorID);
+
+router.get('/:idEvento/formulario', authenticate, eventoControlador.buscaEventoPorIdEditar);
 
 router.get('/:idEvento/form/:tipoForm', authenticate, eventoControlador.getIdFormularioAResponder);
 

@@ -41,7 +41,7 @@ router.get('/:idPolo/futuro/:numTop', authenticate, eventoControlador.consultarE
 
 router.get('/:idEvento', authenticate, eventoControlador.consultarEventoPorID);
 
-router.get('/:idEvento/formulario', authenticate, eventoControlador.buscaEventoPorIdEditar);
+router.get('/mobile/:idEvento', authenticate, eventoControlador.buscaEventoPorIdEditar);
 
 router.get('/:idEvento/form/:tipoForm', authenticate, eventoControlador.getIdFormularioAResponder);
 

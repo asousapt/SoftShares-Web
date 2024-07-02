@@ -528,7 +528,8 @@ const controladorEventos = {
         const query = `
             SELECT 
                 fm.formularioid AS "formId", 
-                fv.descricao AS "titulo"
+                fv.descricao AS "titulo",
+                fm.tipoformulario AS "tipoFormulario"
             FROM formularioversao fv
             INNER JOIN formulario fm ON fm.formularioid = fv.formularioid AND fm.formularioid = :idFormulario
         `;
@@ -579,6 +580,7 @@ const controladorEventos = {
             const formData = {
                 formId: eventos[0].formId, 
                 titulo: eventos[0].titulo,
+                tipoFormulario: eventos[0].tipoFormulario,
                 perguntas: processedPerguntas
             };
     
@@ -627,7 +629,13 @@ const controladorEventos = {
     buscaEventoPorIdEditar: async (req, res) => {
         const { idEvento } = req.params;
         try {
-            const evento = await models.evento.findByPk(idEvento);
+            const evento = await models.evento.findByPk(idEvento, { 
+                include: {
+                    model: models.subcategoria,
+                    as: 'subcategoria'
+                }
+            
+            }); 
     
             const ficheiros = await ficheirosController.getAllFilesByAlbum(idEvento, 'EVENTO');
             evento.dataValues.images = ficheiros;

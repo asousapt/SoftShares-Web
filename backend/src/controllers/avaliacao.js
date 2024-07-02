@@ -5,11 +5,25 @@ const models = initModels(sequelizeConn);
 
 const avaliacaoController = {
     adicionar: async (req, res) => {
-        const { itemavaliacaoid, utilizadorid, avaliacao } = req.body;
+        const { tipo, idRegisto, utilizadorid, avaliacao } = req.body;
 
         try {
+            let itemAvaliacao = await models.itemavaliacao.findOne({
+                where: {
+                    itemorigid: idRegisto,
+                    tipoentidade: tipo
+                }
+            });
+
+            if (!itemAvaliacao) {
+                itemAvaliacao = await models.itemavaliacao.create({
+                    itemorigid: registoid,
+                    tipoentidade: tipo
+                });
+            }
+
             await models.avaliacao.create({
-                itemavaliacaoid: itemavaliacaoid,
+                itemavaliacaoid: itemAvaliacao.itemavaliacaoid,
                 utilizadorid: utilizadorid,
                 avaliacao: avaliacao
             });

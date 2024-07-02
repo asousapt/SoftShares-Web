@@ -350,7 +350,102 @@ const controladorFormularios = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar resposta', details: error.message });
         }
-    }
+    }, 
+    getIdFormularioAResponder: async (req, res) => {
+        const { idSubcat } = req.params;    
+    
+        const query = `
+            SELECT DISTINCT fm.formularioId 
+                FROM formulariodetalhes fd
+                INNER JOIN formularioversao fv ON fv.formularioversaoid = fd.formularioversaoid
+                INNER JOIN formulario fm ON fm.formularioid = fv.formularioid 
+                INNER JOIN itemcfgformulario itf ON itf.itemcfgformularioid = fm.itemcfgformularioid
+                AND itf.tipo = 'SUBCAT' and itf.registoid = :idSubcat
+        `;
+    
+        try {
+            const formularios = await sequelizeConn.query(query, {
+                replacements: { idSubcat },
+                type: Sequelize.QueryTypes.SELECT
+            });
+            console.log(formularios);
+    
+            // verifica se o evento tem um formulario associado
+            const formularioid = formularios.length > 0 ? formularios[0].formularioid : 0;
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: formularioid });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Erro ao consultar os eventos' });
+        }
+    },
+    getPerguntasFormulario: async (req, res) => {
+        const { idFormulario } = req.params;
+    
+        // Define the SQL queries
+        const query = `
+            SELECT 
+                fm.formularioid AS "formId", 
+                fv.descricao AS "titulo"
+            FROM formularioversao fv
+            INNER JOIN formulario fm ON fm.formularioid = fv.formularioid AND fm.formularioid = :idFormulario
+        `;
+    
+        const query2 = `
+            SELECT 
+                fd.formulariodetalhesid AS "detalheId", 
+                fd.pergunta AS "pergunta", 
+                fd.tipodados AS "tipoDados", 
+                fd.obrigatorio AS "obrigatorio", 
+                fd.minimo AS "min", 
+                fd.maximo AS "max", 
+                fd.tamanho AS "tamanho", 
+                fd.respostasPossiveis AS "valoresPossiveis", 
+                fd.ordem AS "ordem"
+            FROM formulariodetalhes fd
+            WHERE fd.formularioversaoid = (
+                SELECT MAX(fv.formularioversaoid) 
+                FROM formularioversao fv
+                WHERE fv.formularioid = :idFormulario
+            )
+        `;
+    
+        try {
+            const formularios = await sequelizeConn.query(query, {
+                replacements: { idFormulario },
+                type: Sequelize.QueryTypes.SELECT
+            });
+    
+            const perguntas = await sequelizeConn.query(query2, {
+                replacements: { idFormulario },
+                type: Sequelize.QueryTypes.SELECT
+            });
+    
+            // converte os valores possiveis para um array
+            const processedPerguntas = perguntas.map(pergunta => {
+                if (pergunta.valoresPossiveis) {
+                    pergunta.valoresPossiveis = pergunta.valoresPossiveis
+                        .split(',')
+                        .map(val => val.trim())
+                        .filter(val => val);
+                } else {
+                    pergunta.valoresPossiveis = [];
+                }
+                return pergunta;
+            });
+    
+            const formData = {
+                formId: formularios[0].formId, 
+                titulo: formularios[0].titulo,
+                perguntas: processedPerguntas
+            };
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: formData });
+    
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar o form' });
+        }
+    },
 }
 
 module.exports = controladorFormularios;

@@ -3,7 +3,6 @@ import IconButton from '@mui/material/IconButton';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Perfil from '../../modals/perfil'; 
-import Notificacoes from '../../modals/notificacoes';
 import './header.css'
 
 export default function Header({caption}){
@@ -25,7 +24,6 @@ export default function Header({caption}){
             </IconButton>
         </div>
         <Perfil anchorEl={anchorPerfil} open={openPerfil} handleClose={() => setAnchorPerfil(null)} />
-        <Notificacoes anchorEl={anchorNotificacoes} open={openNotificacoes} handleClose={() => setAnchorNotificacoes(null)} />
     </div>
     );
 }

@@ -6,9 +6,10 @@ import Header from '../components/header/header';
 import ListUsersComents from '../components/charts/listaUsersComents';
 import ListUsersPub from '../components/charts/listaUsersPub';
 import LineChart from '../components/charts/linechart';
+import BarChart from '../components/charts/barchart';
+import ListInfo from '../components/charts/info';
 /* FIM COMPONENTES */
 import NovoEvento from '../modals/eventos/novoEvento';
-import { Grid } from '@mui/material';
 
 export default function StatsDenuncias() {
     const [isNewModalOpen, setNewModalOpen] = useState(false);
@@ -56,38 +57,37 @@ export default function StatsDenuncias() {
         <div className="page-container">
             <Header caption='Painel de Controlo' />
             <div className="data-container">
-                <div style={{ display: 'flex', textAlign: 'center', alignItems: 'center', flexDirection: 'column'}}>
-                    <h2 style={{ marginBottom: '20px', textAlign: 'center' }} >Estatísticas Utilizadores</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <h2 style={{ marginBottom: '20px', textAlign: 'center' }}>Estatísticas Gerais</h2>
                     <div style={{ height: '69vh', width: '99%', overflowY: 'auto', paddingBottom: '40px', border: 'none', boxShadow: 'none' }}>
-                        <Grid container spacing={3} wrap="wrap">
-                            {/* Coluna para as duas listas */}
-                            <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
-                                <Grid container spacing={2}>
-                                    <Grid item xs={12} md={1} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
+                        <div style={{ marginBottom: '20px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
+                                <div style={{ display: 'flex', justifyContent: 'center', flex: '1', maxWidth: '100%' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'center', flex: '4', maxWidth: '100%', textAlign: 'center', gap: '20px'}}>
                                         <ListUsersComents />
-                                    </Grid>
-                                    <Grid item xs={12} md={2} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
                                         <ListUsersPub />
-                                    </Grid>
-                                </Grid>
-                            </Grid>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'center', flex: '4', maxWidth: '100%', textAlign: 'center' }}>
+                                        <ListInfo />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
+                            <div style={{ display: 'flex', justifyContent: 'center', flex: '1', maxWidth: '100%' }}>
+                                <div style={{ display: 'flex', justifyContent: 'center', flex: '2', maxWidth: '100%', textAlign: 'center', gap: '20px' }}>
+                                    <LineChart />
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'center', flex: '2', maxWidth: '100%', textAlign: 'center' }}>
+                                    <BarChart /> 
+                                </div>
+                            </div>
+                        </div>
 
-                            {/* Coluna para o LineChart */}
-                            <Grid item xs={12} md={12} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
-                                <Grid container spacing={2}>
-                                    <Grid item xs={12} md={1} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
-                                        <LineChart />
-                                    </Grid>
-                                    <Grid item xs={12} md={3} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
-                                        
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                        </Grid>
                     </div>
                 </div>
                 <NovoEvento open={isNewModalOpen} onClose={handleCloseNewModal} />
             </div>
         </div>
-    )
+    );
 }

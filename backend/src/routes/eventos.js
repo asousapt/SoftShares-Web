@@ -31,6 +31,8 @@ router.get('/filtro', authenticate, eventoControlador.consultarTodosComFiltro);
 
 router.get('/porAprovar', authenticate, eventoControlador.consultarPorAprovar);
 
+router.get('/totaleventos', authenticate, eventoControlador.consultarEventosTotal);
+
 router.get('/:idPolo/data/range/:data1/:data2/utilizador/:idUtilizador', authenticate, eventoControlador.consultarEventosEntreDatas);
 
 router.get('/utilizador/lista/:idEvento', authenticate, eventoControlador.consultarUtilizadoresEvento);

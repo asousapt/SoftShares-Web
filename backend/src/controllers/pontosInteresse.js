@@ -474,6 +474,24 @@ const controladorPontosInteresse = {
             res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
         }
     }, 
+
+    consultarPontIntTotal: async (req, res) => {
+        try {
+            const pontosInt = await sequelizeConn.query(
+                `SELECT 
+                    COUNT(p.pontointeresseid) AS pontointeresse
+                FROM 
+                    pontointeresse p
+                `,
+                { type: QueryTypes.SELECT }
+            );
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: pontosInt });
+        } catch (error) {
+            console.error('Erro ao consultar publicações por mês:', error.message);
+            res.status(500).json({ error: 'Erro ao consultar publicações', details: error.message });
+        }
+    },
 };
 
 module.exports = controladorPontosInteresse;

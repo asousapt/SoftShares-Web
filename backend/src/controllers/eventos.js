@@ -646,6 +646,23 @@ const controladorEventos = {
         }
     },
     
+    consultarEventosTotal: async (req, res) => {
+        try {
+            const eventos = await sequelizeConn.query(
+                `SELECT 
+                    COUNT(e.eventoid) AS eventos
+                FROM 
+                    evento e
+                `,
+                { type: QueryTypes.SELECT }
+            );
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: eventos });
+        } catch (error) {
+            console.error('Erro ao consultar publicações por mês:', error.message);
+            res.status(500).json({ error: 'Erro ao consultar publicações', details: error.message });
+        }
+    },
     
 };
 

@@ -9,10 +9,12 @@ import BasicTextField from '../../components/textFields/basic';
 import SubmitButton from '../../components/buttons/submitButton';
 import CancelButton from '../../components/buttons/cancelButton';
 import ImageTable from '../../components/tables/imageTable';
+import ComboBox from '../../components/combobox/comboboxBasic';
 
 const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) => {
     //VARS
     //FIELDS
+    const [poloid, setPoloid] = useState('');
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [opcoesCat, setOpcoesCat] = useState([]);
@@ -20,6 +22,7 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
     const [opcoesSubcat, setOpcoesSubcat] = useState([]);
     const [subcategoria, setSubcategoria] = useState(null);
     const [inativo, setInativo] = useState(null);
+    const [poloOptions, setPoloOptions] = useState([]);
     const [error, setError] = useState(null);
     const [images, setImages] = useState([]);
 
@@ -28,11 +31,12 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
     const [descriptionError, setDescriptionError] = useState(false);
     const [catError, setCatError] = useState(false);
     const [subcatError, setSubcatError] = useState(false);
+    const [poloError, setPoloError] = useState(false);
 
     const getBase64FromUrl = async (url) => {
         const response = await fetch(url);
         const blob = await response.blob();
-        
+
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -41,6 +45,24 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
             reader.onerror = reject;
             reader.readAsDataURL(blob);
         });
+    };
+
+    const fetchPolos = async () => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/polo`, {
+                headers: { Authorization: `${token}` }
+            });
+            const polosData = response.data.data;
+            const polosOptions = polosData.map(polo => ({
+                value: polo.poloid,
+                label: polo.descricao
+            }));
+
+            setPoloOptions(polosOptions);
+        } catch (error) {
+            console.error('Erro ao buscar polos:', error);
+        }
     };
 
     const fetchCategorias = async () => {
@@ -114,6 +136,7 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
             setTitle(threads.titulo);
             setDescription(threads.mensagem);
             setInativo(threads.inativo);
+            setPoloid(threads.poloid);
 
             const catResponse = await axios.get(`${process.env.REACT_APP_API_URL}/categoria/${threads.categoriaid}`, {
                 headers: { Authorization: `${token}` }
@@ -163,6 +186,10 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
             errors.subcatError = true;
         }
 
+        if (!poloid) {
+            errors.poloError = true;
+        }
+
         return errors;
     };
 
@@ -172,6 +199,7 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
         setDescriptionError(errors.descriptionError || false);
         setCatError(errors.catError || false);
         setSubcatError(errors.subcatError || false);
+        setPoloError(errors.poloError || false);
 
         if (Object.keys(errors).length > 0) {
             return;
@@ -188,7 +216,7 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
                 base64: image.src,
                 tamanho: image.size
             }));
-            
+
             const userid = sessionStorage.getItem('userid');
             const token = sessionStorage.getItem('token');
             const editarPublicacao = {
@@ -196,6 +224,7 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
                 titulo: title,
                 mensagem: description,
                 inactivo: inativo,
+                poloid: poloid,
                 imagens: imagesRtn,
                 utilizadorid: userid
             };
@@ -216,12 +245,12 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
     };
 
     const handleChangeAtivo = (e) => {
-        console.log(e.target.checked);
         setInativo(e.target.checked);
     };
 
     useEffect(() => {
         fetchCategorias();
+        fetchPolos();
         fetchData();
     }, []);
 
@@ -237,21 +266,19 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
         try {
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
-            fileInput.accept = 'image/*'; 
-    
+            fileInput.accept = 'image/*';
+
             fileInput.addEventListener('change', async (event) => {
                 const file = event.target.files[0];
-                if (!file) return; 
-                console.log(file);
+                if (!file) return;
                 const fileName = file.name;
                 const fileSize = file.size;
-                
+
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
-        
+
                 reader.onload = async () => {
                     const imageData = reader.result;
-                    console.log('reader',reader);
                     const fileData = imageData;
                     const image = {
                         src: fileData,
@@ -284,18 +311,24 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
                         <div style={{ display: 'flex', marginBottom: 10, gap: 10 }}>
                             <div style={{ width: '50%' }} >
                                 <BasicTextField caption='Titulo' valor={title} onchange={(e) => setTitle(e.target.value)} fullwidth={true} type="text" error={titleError}
-                                    helperText={titleError ? "Introduza um título válido" : ""} allowOnlyLetters={true}/>
+                                    helperText={titleError ? "Introduza um título válido" : ""} allowOnlyLetters={true} />
                             </div>
-                            <div style={{ width: '25%' }}>
+                        </div>
+                        <div style={{ display: 'flex', marginBottom: 10, gap: 10 }}>
+                            <div style={{ width: "33%" }}>
+                                <ComboBox caption='Polo' options={poloOptions} value={poloid} handleChange={(e) => { setPoloid(e.target.value); setPoloError(false); }} error={poloError}
+                                    helperText={poloError ? "Selecione um polo" : ""} />
+                            </div>
+                            <div style={{ width: '33%' }}>
                                 <Autocomplete options={opcoesCat} getOptionLabel={(option) => option.label} renderInput={(params) => (
                                     <TextField {...params} label="Categoria" variant="outlined" type="text" error={catError} helperText={catError ? "Escolha uma categoria" : ""} />)}
                                     value={categoria}
                                     onChange={handleCategoriaChange}
                                     fullWidth={true} />
                             </div>
-                            <div style={{ width: '25%' }}>
+                            <div style={{ width: '33%' }}>
                                 <Autocomplete options={opcoesSubcat} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                    <TextField {...params} label="Subcategoria" variant="outlined" error={subcatError} helperText={subcatError ? "Escolha uma categoria subcategoria" : ""} />)}
+                                    <TextField {...params} label="Subcategoria" variant="outlined" error={subcatError} helperText={subcatError ? "Escolha uma subcategoria" : ""} />)}
                                     value={subcategoria}
                                     onChange={(event, newValue) => { setSubcategoria(newValue); setSubcatError(false); }}
                                     fullWidth={true} />
@@ -303,7 +336,7 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
                         </div>
                         <div style={{ marginBottom: 20 }}>
                             <BasicTextField multiline={true} caption='Descrição' valor={description} onchange={(e) => setDescription(e.target.value)} fullwidth={true} type="text" error={descriptionError}
-                            helperText={descriptionError ? "Introduza uma descrição válida" : ""} />
+                                helperText={descriptionError ? "Introduza uma descrição válida" : ""} />
                         </div>
                         <div style={{ marginBottom: 20 }}>
                             <FormControlLabel
@@ -312,7 +345,7 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
                             />
                         </div>
                         <div style={{ marginBottom: 20 }}>
-                            <ImageTable images={images} onAddImage={handleImage} onDelete={resetImage}/>
+                            <ImageTable images={images} onAddImage={handleImage} onDelete={resetImage} />
                         </div>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>

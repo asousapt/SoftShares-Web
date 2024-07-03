@@ -46,6 +46,7 @@ const controladorEventos = {
                 utilizadorcriou: utilizadorCriou,
                 subcategoriaid: subcategoriaId,
                 poloid: poloId,
+                aprovado: null
             });
 
             await models.objecto.create({
@@ -54,7 +55,7 @@ const controladorEventos = {
             });
 
             ficheirosController.adicionar(evento.eventoid, 'EVENTO', imagens, utilizadorCriou);
-             
+            
             if (Array.isArray(formInsc) && formInsc.length > 0) {
                 const cfgFormulario = await models.itemcfgformulario.create({
                     registoid: evento.eventoid,
@@ -153,7 +154,8 @@ const controladorEventos = {
             subcategoriaId,
             poloId,
             utilizadorid,
-            imagens
+            imagens,
+            cancelado
         } = req.body;
 
         try {
@@ -169,7 +171,8 @@ const controladorEventos = {
                 longitude: longitude,
                 cidadeid: cidadeID,
                 subcategoriaid: subcategoriaId,
-                poloid: poloId
+                poloid: poloId,
+                cancelado: cancelado
             }, {
                 where: {
                     eventoid: idEvento
@@ -801,7 +804,26 @@ const controladorEventos = {
             console.error(error);   
             res.status(500).json({ error: 'Erro ao atualizar evento' });
         }
-    }
+    },
+    
+    consultarEventosTotal: async (req, res) => {
+        try {
+            const eventos = await sequelizeConn.query(
+                `SELECT 
+                    COUNT(e.eventoid) AS eventos
+                FROM 
+                    evento e
+                `,
+                { type: QueryTypes.SELECT }
+            );
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: eventos });
+        } catch (error) {
+            console.error('Erro ao consultar publicações por mês:', error.message);
+            res.status(500).json({ error: 'Erro ao consultar publicações', details: error.message });
+        }
+    },
+    
 };
 
 module.exports = controladorEventos;

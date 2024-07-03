@@ -8,10 +8,12 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import ImageTable from '../../components/tables/imageTable';
 import FormAnswerer from '../../components/forms/FormAnswerer';
+import ComboBox from '../../components/combobox/comboboxBasic';
 
 const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps }) => {
     //VARS
     //FIELDS
+    const [poloid, setPoloid] = useState('');
     const [titulo, setTitle] = useState('');
     const [localizacao, setLocalizacao] = useState('');
     const [descricao, setDescription] = useState('');
@@ -19,6 +21,7 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
     const [cidades, setCidades] = useState([]);
     const [distrito, setDistrito] = useState(null);
     const [distritos, setDistritos] = useState([]);
+    const [poloOptions, setPoloOptions] = useState([]);
     const [error, setError] = useState(null);
     const [images, setImages] = useState([]);
     const [categoria, setCategoria] = useState(null);
@@ -37,6 +40,7 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
     const [descriptionError, setDescriptionError] = useState(false);
     const [cidadeError, setCidadeError] = useState(false);
     const [distritoError, setDistritoError] = useState(false);
+    const [poloError, setPoloError] = useState(false);
 
     const getBase64FromUrl = async (url) => {
         const response = await fetch(url);
@@ -50,6 +54,24 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
             reader.onerror = reject;
             reader.readAsDataURL(blob);
         });
+    };
+
+    const fetchPolos = async () => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/polo`, {
+                headers: { Authorization: `${token}` }
+            });
+            const polosData = response.data.data;
+            const polosOptions = polosData.map(polo => ({
+                value: polo.poloid,
+                label: polo.descricao
+            }));
+
+            setPoloOptions(polosOptions);
+        } catch (error) {
+            console.error('Erro ao buscar polos:', error);
+        }
     };
 
     const validateForm = () => {
@@ -81,6 +103,10 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
 
         if (!subcategoria) {
             errors.subcategoriaError = true;
+        }
+
+        if (!poloid) {
+            errors.poloError = true;
         }
 
         return errors;
@@ -147,11 +173,11 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
                 headers: { Authorization: `${token}` }
             });
             const userData = response.data.data;
-            console.log(userData);
 
             setTitle(userData.titulo);
             setLocalizacao(userData.localizacao);
             setDescription(userData.descricao);
+            setPoloid(userData.poloid);
 
             const distrito = await fetchDistritoByCidadeId(userData.cidadeid);
             setDistrito(distrito);
@@ -209,6 +235,7 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
     useEffect(() => {
         fetchDistritos();
         fetchEventData();
+        fetchPolos();
     }, [eventData]);
 
     const handleEditPontoInt = async (data, formErrors) => {
@@ -219,6 +246,7 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
         setDescriptionError(errors.descriptionError || false);
         setCidadeError(errors.cidadeError || false);
         setDistritoError(errors.distritoError || false);
+        setPoloError(errors.poloError || false);
 
         setQuestions(prevQuestions => prevQuestions.map(q => ({ ...q, error: '' })));
 
@@ -267,6 +295,7 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
                 subcategoriaid: subcategoria.value,
                 imagens: imagesRtn,
                 utilizadorid: userid,
+                poloid: poloid,
                 formRespostas: data
             };
 
@@ -292,6 +321,7 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
         setDescriptionError(false);
         setCidadeError(false);
         setDistritoError(false);
+        setPoloError(false);
         setImages([]);
         onClose();
     };
@@ -305,7 +335,6 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
             fileInput.addEventListener('change', async (event) => {
                 const file = event.target.files[0];
                 if (!file) return; 
-                console.log(file);
                 const fileName = file.name;
                 const fileSize = file.size;
                 
@@ -355,9 +384,13 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
                         </div>
                         <div style={{ marginBottom: 20 }}></div>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-                            <div style={{ width: '100%' }}>
+                            <div style={{ width: '74.4%' }}>
                                 <BasicTextField caption='Descrição' valor={descricao} onchange={(e) => setDescription(e.target.value)} fullwidth={true} type="text" error={descriptionError}
                                     helperText={descriptionError ? "Introduza uma descrição válida" : ""} />
+                            </div>
+                            <div style={{ width: "25%" }}>
+                                <ComboBox caption='Polo' options={poloOptions} value={poloid} handleChange={(e) => { setPoloid(e.target.value); setPoloError(false); }} error={poloError}
+                                    helperText={poloError ? "Selecione um polo" : ""} />
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>

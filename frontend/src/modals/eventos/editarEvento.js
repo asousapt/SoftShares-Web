@@ -9,6 +9,8 @@ import CancelButton from '../../components/buttons/cancelButton';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import ImageTable from '../../components/tables/imageTable';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps  }) => {
     //VARS
@@ -32,7 +34,7 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
     const [opcoesSubcat, setOpcoesSubcat] = useState([]);
     const [subcategoria, setSubcategoria] = useState(null);
     const [images, setImages] = useState([]);
-    const [isPoloDisabled, setIsPoloDisabled] = useState(false);
+    const [cancelado, setCancelado] = useState(null);
 
     //ERRORS
     const [titleError, setTitleError] = useState(false);
@@ -210,6 +212,7 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
             setDataHoraFim(dataFormatada(userData.datafim));
             setDataLimInscricao(dataFormatada(userData.dataliminscricao));
             setPolo(userData.poloid);
+            setCancelado(userData.cancelado)
 
             const distrito = await fetchDistritoByCidadeId(userData.cidadeid);
             setDistrito(distrito);
@@ -249,16 +252,6 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
         fetchPolos();
         fetchCategorias();
         fetchEventData();
-
-        const perfil = sessionStorage.getItem('perfil');
-        if (perfil === 'Admin'){
-            setIsPoloDisabled(true);
-            const poloid = sessionStorage.getItem('poloid');
-            const descpolo = sessionStorage.getItem('descpolo');
-            setPolo({value: poloid, label: descpolo});
-        } else {
-            setIsPoloDisabled(false);
-        }
     }, [open, eventData]);
 
     const validateForm = () => {
@@ -290,16 +283,16 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
         }
         if (!dataInicio) {
             errors.dataHoraInicioError = true;
-        } /* else {
+        } else {
             const startDate = new Date(dataInicio);
             const currentDate = new Date();
             if (startDate <= currentDate) {
                 errors.dataHoraInicioError = true; 
             } 
-        }*/
+        }
         if (!dataFim) {
             errors.dataHoraFimError = true;
-        } /* else {
+        } else {
             const endDate = new Date(dataFim);
             const currentDate = new Date();
             const startDate = new Date(dataInicio);
@@ -308,10 +301,10 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
             }else if (endDate < startDate) {
                 errors.dataHoraFimError = true;
             }
-        } */
+        } 
         if (!dataLimInscricao) {
             errors.dataLimInscricaoError = true;
-        } /* else {
+        } else {
             const deadlineDate = new Date(dataLimInscricao);
             const currentDate = new Date();
             const startDate = new Date(dataInicio);
@@ -320,7 +313,7 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
             }else if (deadlineDate > startDate) {
                 errors.dataHoraFimError = true;
             }
-        } */
+        } 
         if (!nmrMaxParticipantes) {
             errors.numParticipantesError = true;
         }
@@ -370,9 +363,9 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
                 subcategoriaId: subcategoria.value,
                 poloId,
                 utilizadorid: userid,
-                imagens: imagesRtn
+                imagens: imagesRtn,
+                cancelado: cancelado
             };
-            console.log('edit:', eventoEditado);
             await axios.put(`${process.env.REACT_APP_API_URL}/evento/update/${eventData}`, eventoEditado, {
                 headers: {
                     Authorization: `${token}`,
@@ -483,22 +476,7 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
                             </div>
                             <div style={{ width: '24.9%' }}>
                                 <ComboBox caption='Polo' options={polos} value={poloId} handleChange={(e) => { setPolo(e.target.value); setPoloError(false); }} error={poloError}
-                                    disabled={isPoloDisabled} helperText={poloError ? "Selecione um polo" : ""} />
-                            </div>
-                        </div>
-                        <div style={{ marginBottom: 20 }}></div>
-                        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-                            <div style={{ width: '32.9%' }}>
-                                <DataHora caption="Data e Hora Início" value={dataInicio} onChange={(newValue) => setDataHoraInicio(newValue)} fullwidth={true} error={dataHoraInicioError}
-                            helperText={dataHoraInicioError ? "Introduza uma data e hora válida" : ""} />
-                            </div>
-                            <div style={{ width: '33%' }}>
-                                <DataHora caption="Data e Hora Fim" value={dataFim} onChange={(newValue) => setDataHoraFim(newValue)} fullwidth={true} error={dataHoraFimError}
-                            helperText={dataHoraFimError ? "Introduza uma data e hora válida" : ""} />
-                            </div>
-                            <div style={{ width: '33%' }}>
-                                <DataHora caption="Data Limite de Inscrição" value={dataLimInscricao} onChange={(newValue) => setDataLimInscricao(newValue)} fullwidth={true} error={dataLimInscricaoError}
-                            helperText={dataLimInscricaoError ? "Introduza uma data e hora válida" : ""} />
+                                    disabled={false} helperText={poloError ? "Selecione um polo" : ""} />
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>
@@ -530,6 +508,27 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
                                     value={subcategoria}
                                     onChange={(event, newValue) => { setSubcategoria(newValue); }}
                                     fullWidth={true} />
+                            </div>
+                        </div>
+                        <div style={{ marginBottom: 20 }}></div>
+                        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', alignItems: 'center' }}>
+                            <div style={{ width: '25%' }}>
+                                <DataHora caption="Data e Hora Início" value={dataInicio} onChange={(newValue) => setDataHoraInicio(newValue)} fullwidth={true} error={dataHoraInicioError}
+                            helperText={dataHoraInicioError ? "Introduza uma data e hora válida" : ""} />
+                            </div>
+                            <div style={{ width: '23.5%' }}>
+                                <DataHora caption="Data e Hora Fim" value={dataFim} onChange={(newValue) => setDataHoraFim(newValue)} fullwidth={true} error={dataHoraFimError}
+                            helperText={dataHoraFimError ? "Introduza uma data e hora válida" : ""} />
+                            </div>
+                            <div style={{ width: '25%' }}>
+                                <DataHora caption="Data Limite de Inscrição" value={dataLimInscricao} onChange={(newValue) => setDataLimInscricao(newValue)} fullwidth={true} error={dataLimInscricaoError}
+                            helperText={dataLimInscricaoError ? "Introduza uma data e hora válida" : ""} />
+                            </div>
+                            <div style={{ width: '15%' }}>
+                                <FormControlLabel
+                                    control={<Switch checked={cancelado} onChange={(e) => setCancelado(e.target.checked)} />}
+                                    label="Cancelado"
+                                />
                             </div>
                         </div>
                         <div style={{marginTop: 20}}>

@@ -16,6 +16,7 @@ const controladorPontosInteresse = {
             idiomaid,
             cidadeid,
             utilizadorcriou,
+            poloid,
             imagens,
             formRespostas
         } = req.body;
@@ -30,7 +31,8 @@ const controladorPontosInteresse = {
                 longitude: longitude,
                 idiomaid: idiomaid,
                 cidadeid: cidadeid,
-                utilizadorcriou: utilizadorcriou
+                utilizadorcriou: utilizadorcriou,
+                poloid: poloid
             });
 
             await models.itemcomentario.create({
@@ -110,6 +112,7 @@ const controladorPontosInteresse = {
             idiomaid,
             cidadeid,
             utilizadorid,
+            poloid,
             imagens,
             formRespostas
         } = req.body;
@@ -123,7 +126,8 @@ const controladorPontosInteresse = {
                 latitude: latitude,
                 longitude: longitude,
                 idiomaid: idiomaid,
-                cidadeid: cidadeid
+                cidadeid: cidadeid,
+                poloid: poloid
             }, {
                 where: {
                     pontointeresseid: idPontoInteresse
@@ -273,10 +277,9 @@ const controladorPontosInteresse = {
                 GROUP BY
                     p.pontointeresseid, u.utilizadorid
                 `,
-
                 { type: QueryTypes.SELECT }
             );
-            
+
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: pontosInteresse });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar os pontos de interesse', details: error.message });
@@ -303,9 +306,15 @@ const controladorPontosInteresse = {
                 GROUP BY
                     p.pontointeresseid, u.utilizadorid
                 `,
-
                 { type: QueryTypes.SELECT }
             );
+
+            await Promise.all(pontosInteresse.map(async (poi) => {
+                const ficheiros = await ficheirosController.getAllFilesByAlbum(poi.pontointeresseid, 'POI');
+                const imagens = ficheiros ? ficheiros.map(file => file.url) : [];
+    
+                poi.imagem = imagens[0] || '';
+            }));
             
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: pontosInteresse });
         } catch (error) {
@@ -474,6 +483,24 @@ const controladorPontosInteresse = {
             res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
         }
     }, 
+
+    consultarPontIntTotal: async (req, res) => {
+        try {
+            const pontosInt = await sequelizeConn.query(
+                `SELECT 
+                    COUNT(p.pontointeresseid) AS pontointeresse
+                FROM 
+                    pontointeresse p
+                `,
+                { type: QueryTypes.SELECT }
+            );
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: pontosInt });
+        } catch (error) {
+            console.error('Erro ao consultar publicações por mês:', error.message);
+            res.status(500).json({ error: 'Erro ao consultar publicações', details: error.message });
+        }
+    },
 };
 
 module.exports = controladorPontosInteresse;

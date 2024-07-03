@@ -17,7 +17,7 @@ const avaliacaoController = {
 
             if (!itemAvaliacao) {
                 itemAvaliacao = await models.itemavaliacao.create({
-                    itemorigid: registoid,
+                    itemorigid: idRegisto,
                     tipoentidade: tipo
                 });
             }

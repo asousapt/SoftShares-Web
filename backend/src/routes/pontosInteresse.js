@@ -18,6 +18,7 @@ router.delete('/delete/:idPontoInteresse', authenticate, pontosInteresseControla
 router.get('/', authenticate, pontosInteresseControlador.consultarTudo);
 router.get('/aprovados', authenticate, pontosInteresseControlador.consultarTudoAprovado);
 router.get('/filtro', authenticate, pontosInteresseControlador.consultarTodosComFiltro);
+router.get('/totalpontint', authenticate, pontosInteresseControlador.consultarPontIntTotal);
 router.get('/subcategoria/:idSubCat', authenticate, pontosInteresseControlador.consultarPorSubcategoria);
 router.get('/porAprovar', authenticate, pontosInteresseControlador.consultarPorAprovar);
 router.get('/:idPontoInteresse', authenticate, pontosInteresseControlador.consultarPorID);

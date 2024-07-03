@@ -64,7 +64,7 @@ const Sidebar = () => {
             title: 'Estatísticas', 
             icon: FaIcons.FaChartBar, 
             subItems: [
-                { title: 'Utilizadores', link: '/estatisticas/utilizadores', icon: IoIcons.IoIosPaper },
+                { title: 'Gerais', link: '/estatisticas/utilizadores', icon: IoIcons.IoIosPaper },
                 { title: 'Denuncias', link: '/estatisticas/denuncias', icon: IoIcons.IoIosPaper }
             ],
         },

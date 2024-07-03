@@ -4,8 +4,6 @@ const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
 const { generateToken } = require('../tokenUtils');
 const ficheirosController = require('./ficheiros');
-const subcategoria_fav_util = require('../models/subcategoria_fav_util');
-const utilizador = require('../models/utilizador');
 
 const controladorUtilizadores = {
     adicionar: async (req, res) => {
@@ -135,6 +133,24 @@ const controladorUtilizadores = {
             res.status(200).json({ message: 'Utilizador atualizado com sucesso' });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao atualizar utilizador', details: error.message });
+        }
+    },
+
+    atualizarPass: async (req, res) => {
+        const { idUtilizador } = req.params;
+        const { password } = req.body;
+        try {
+            await models.utilizador.update({
+                passwd: password
+            }, {
+                where: {
+                    utilizadorid: idUtilizador
+                }
+            });
+
+            res.status(200).json({ message: 'Utilizador atualizado com sucesso' });
+        } catch (e){
+            res.status(500).json({ error: 'Erro ao atualizar utilizador', details: e.message });
         }
     },
 
@@ -537,6 +553,15 @@ const controladorUtilizadores = {
             const utilizador = await models.utilizador.findByPk(id);
 
             const token = generateToken(utilizador);
+
+            await models.utilizador.update({
+                ultimologin: Sequelize.literal('CURRENT_TIMESTAMP'),
+            },{
+                where: {
+                    utilizadorid: id
+                }
+            })
+            
             res.status(200).json(token);
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });

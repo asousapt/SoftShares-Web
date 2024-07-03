@@ -156,7 +156,6 @@ export default function ModDen() {
             <div className="data-container">
                 <div style={{ marginBottom: '20px', paddingTop: '20px' }}>
                     <Search onchange={(e) => setFiltroText(e.target.value)} />
-                    <AddButton caption='Adicionar' onclick={() => setNewModalOpen(true)} /> {/*so para teste */}
                 </div>
                 <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px', border: 'none', boxShadow: 'none' }}>
                     <DataTable rows={tableRows || []} columns={tableColumns} />

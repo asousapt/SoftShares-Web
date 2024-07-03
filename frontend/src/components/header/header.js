@@ -2,11 +2,30 @@ import React, { useState, useEffect } from 'react';
 import IconButton from '@mui/material/IconButton';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Perfil from '../../modals/perfil'; 
+import AlterarPassword from '../../modals/utilizadores/alterarPassword'; 
+import Alert from '../../components/alerts/alert';
 import './header.css'
 
 export default function Header({caption}){
     const [anchorPerfil, setAnchorPerfil] = useState(null);
     const openPerfil = Boolean(anchorPerfil);
+    const [idUser, setIdUser] = useState(sessionStorage.getItem('userid'));
+    const [isPassModalOpen, setIsPassModalOpen] = useState(false);
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
+
+    useEffect(() => {
+        const open = sessionStorage.getItem('primeirologin');
+        if (open === "true"){
+            setIsPassModalOpen(true);
+        }else{
+            setIsPassModalOpen(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        console.log('isPassModalOpen',isPassModalOpen)
+    }, [isPassModalOpen])
 
     return(
     <div className="header">
@@ -17,6 +36,8 @@ export default function Header({caption}){
             </IconButton>
         </div>
         <Perfil anchorEl={anchorPerfil} open={openPerfil} handleClose={() => setAnchorPerfil(null)} />
+        <AlterarPassword open={isPassModalOpen} onClose={() => {setIsPassModalOpen(false); sessionStorage.setItem('primeirologin', false);}} userId={idUser} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
+        <Alert open={alertOpen} setOpen={setAlertOpen} title={alertProps.title} label={alertProps.label} severity={alertProps.severity} />
     </div>
     );
 }

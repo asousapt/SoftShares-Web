@@ -144,11 +144,11 @@ export default function ModAprov() {
                 });
             }
             fetchData();
-            setAlertProps({ title: 'Sucesso', label: 'O registro foi rejeitado com sucesso.', severity: 'success' });
+            setAlertProps({ title: 'Sucesso', label: 'O registo foi rejeitado com sucesso.', severity: 'success' });
             setAlertOpen(true);
         } catch (error) {
             console.error('Erro ao rejeitar registo:', error.message);
-            setAlertProps({ title: 'Erro', label: 'Ocorreu um erro ao rejeitar o registro.', severity: 'error' });
+            setAlertProps({ title: 'Erro', label: 'Ocorreu um erro ao rejeitar o registo.', severity: 'error' });
             setAlertOpen(true);
         }
     };

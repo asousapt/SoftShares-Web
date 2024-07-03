@@ -822,6 +822,49 @@ const controladorEventos = {
             res.status(500).json({ error: 'Erro ao consultar publicações', details: error.message });
         }
     },
+    consultarEventosInscritos: async (req, res) => {
+        const { idUtilizador } = req.params;    
+
+        const query = `
+            SELECT evento.*, subcategoria.categoriaid,
+                (SELECT STRING_AGG(participantes_eventos.utilizadorid::text, ',')
+                FROM participantes_eventos
+                WHERE participantes_eventos.eventoid = evento.eventoid) AS participantes,
+                (SELECT COUNT(*)
+                FROM participantes_eventos
+                WHERE participantes_eventos.eventoid = evento.eventoid) AS numinscritos
+                FROM evento
+                JOIN subcategoria ON evento.subcategoriaid = subcategoria.subcategoriaid
+                inner join participantes_eventos ON participantes_eventos.eventoid = evento.eventoid 
+                and participantes_eventos.utilizadorid = :idUtilizador
+                WHERE evento.aprovado = true and evento.datainicio > CURRENT_TIMESTAMP
+        `;
+
+        try {
+            const eventos = await sequelizeConn.query(query, {
+                replacements: { idUtilizador },
+                type: Sequelize.QueryTypes.SELECT
+            });
+
+            const processedEventos = await Promise.all(eventos.map(async (evento) => {
+                if (evento.participantes) {
+                    evento.participantes = evento.participantes.split(',').map(id => parseInt(id, 10));
+                } else {
+                    evento.participantes = [];
+                }
+
+                evento.numinscritos = parseInt(evento.numinscritos, 10);
+                const ficheiros = await ficheirosController.getAllFilesByAlbum(evento.eventoid, 'EVENTO');
+                evento.imagens = ficheiros ? ficheiros.map(file => file.url) : [];
+                return evento;
+            }));
+
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: processedEventos });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Erro ao consultar os eventos' });
+        }
+    },
     
 };
 

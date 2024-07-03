@@ -80,8 +80,20 @@ const NovoFormulario = ({ open, onClose, setAlertOpen, setAlertProps }) => {
             return
         }
 
+        const token = sessionStorage.getItem('token');
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/formulario/subcat/${subcategoria.value}`, {
+            headers: {
+                Authorization: `${token}`,
+                'Content-Type': 'application/json',
+            }
+        });
+        const formulario = response.data;
+        if (formulario.length !== 0){
+            alert('Já existe um formulário para esta subcategoria!')
+            return
+        }
+
         try {
-            const token = sessionStorage.getItem('token');
             const novoForm = {
                 idRegisto: subcategoria.value,
                 tipoConfig: 'SUBCAT',

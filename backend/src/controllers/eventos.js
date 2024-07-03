@@ -805,7 +805,6 @@ const controladorEventos = {
             res.status(500).json({ error: 'Erro ao atualizar evento' });
         }
     },
-    
     consultarEventosTotal: async (req, res) => {
         try {
             const eventos = await sequelizeConn.query(

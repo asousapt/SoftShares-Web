@@ -118,6 +118,12 @@ const LoginModal = ({ open, handleClose }) => {
       sessionStorage.setItem('userid', utilizador.utilizadorid);
       sessionStorage.setItem('nome', utilizador.pnome + ' ' + utilizador.unome);
       sessionStorage.setItem('perfil', utilizador.perfil.descricao);
+      
+      if (utilizador.ultimologin === null){
+        sessionStorage.setItem('primeirologin', "true");
+      }else{
+        sessionStorage.setItem('primeirologin', "false");
+      }
 
       if (utilizador.imagem === undefined) {
         sessionStorage.setItem('image', '');

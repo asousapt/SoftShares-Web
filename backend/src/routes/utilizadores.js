@@ -9,6 +9,7 @@ router.post('/add', authenticate, utilizadorControlador.adicionar);
 // ROUTES PUT
 router.put('/update/:idUtilizador', authenticate, utilizadorControlador.atualizar);
 router.put('/update/mobile/:idUtilizador', authenticate, utilizadorControlador.atualizarMobile);
+router.put('/alterarPass/:idUtilizador', authenticate, utilizadorControlador.atualizarPass);
 
 // ROUTES DELETE
 router.delete('/delete/:idUtilizador', authenticate, utilizadorControlador.remover);

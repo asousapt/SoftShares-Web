@@ -58,7 +58,7 @@ export default function StatsDenuncias() {
             <Header caption='Painel de Controlo' />
             <div className="data-container">
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <h2 style={{ marginBottom: '20px', textAlign: 'center' }}>Estatísticas Gerais</h2>
+                    <h2 style={{ marginBottom: '20px', textAlign: 'center' }}></h2>
                     <div style={{ height: '69vh', width: '99%', overflowY: 'auto', paddingBottom: '40px', border: 'none', boxShadow: 'none' }}>
                         <div style={{ marginBottom: '20px' }}>
                             <div style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>

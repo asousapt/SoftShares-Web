@@ -5,11 +5,19 @@ import Logout from '@mui/icons-material/Logout';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { useNavigate } from 'react-router-dom';
 import { Avatar } from '@mui/material';
+import Confirm from '../components/alerts/confirm';
 
 export default function Perfil({ anchorEl, open, handleClose }) {
     const navigate = useNavigate();
     const [userName, setUserName] = useState('');
     const [userImage, setUserImage] = useState('');
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+
+    const handleLogOut = () => {
+        handleClose()
+        navigate('/'); 
+        sessionStorage.clear();
+    }
 
     useEffect(() => {
         const name = sessionStorage.getItem('nome');
@@ -31,7 +39,6 @@ export default function Perfil({ anchorEl, open, handleClose }) {
             id="account-menu"
             open={open}
             onClose={handleClose}
-            onClick={handleClose}
             PaperProps={{
                 elevation: 0,
                 sx: {
@@ -79,12 +86,14 @@ export default function Perfil({ anchorEl, open, handleClose }) {
                 {userImage === '' && (<Avatar>{userName.charAt(0)}</Avatar>)}
                     {userName}
             </MenuItem>
-            <MenuItem onClick={() => {navigate('/'); sessionStorage.clear();}} style={{backgroundColor: '#1765E0'}}>
+            <MenuItem onClick={() => setIsConfirmOpen(true)} style={{backgroundColor: '#1765E0'}}>
                 <ListItemIcon>
                     <Logout fontSize="small" sx={{ color: 'white' }} />
                 </ListItemIcon>
                 Desconectar
             </MenuItem>
+            <Confirm caption={'Tem a certeza que pretende sair?'} onClose={() => setIsConfirmOpen(false)} open={isConfirmOpen} onConfirm={handleLogOut} />
         </Menu>
+        
     );
 }

@@ -16,6 +16,7 @@ const controladorPontosInteresse = {
             idiomaid,
             cidadeid,
             utilizadorcriou,
+            poloid,
             imagens,
             formRespostas
         } = req.body;
@@ -30,7 +31,8 @@ const controladorPontosInteresse = {
                 longitude: longitude,
                 idiomaid: idiomaid,
                 cidadeid: cidadeid,
-                utilizadorcriou: utilizadorcriou
+                utilizadorcriou: utilizadorcriou,
+                poloid: poloid
             });
 
             await models.itemcomentario.create({
@@ -110,6 +112,7 @@ const controladorPontosInteresse = {
             idiomaid,
             cidadeid,
             utilizadorid,
+            poloid,
             imagens,
             formRespostas
         } = req.body;
@@ -123,7 +126,8 @@ const controladorPontosInteresse = {
                 latitude: latitude,
                 longitude: longitude,
                 idiomaid: idiomaid,
-                cidadeid: cidadeid
+                cidadeid: cidadeid,
+                poloid: poloid
             }, {
                 where: {
                     pontointeresseid: idPontoInteresse

@@ -67,6 +67,14 @@ module.exports = function(sequelize, DataTypes) {
         key: 'cidadeid'
       }
     },
+    poloid: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'polo',
+        key: 'poloid'
+      }
+    },
     datacriacao: {
       type: DataTypes.DATE,
       allowNull: false,

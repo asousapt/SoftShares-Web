@@ -13,6 +13,8 @@ router.post('/inscricao', authenticate, eventoControlador.inscricaoEvento);
 //ROUTES PUT
 router.put('/update/:idEvento', authenticate, eventoControlador.atualizarEvento);
 
+router.put('/update/mobile/:idEvento', authenticate, eventoControlador.atualizarEventoMobile);
+
 router.put('/cancelar/:idEvento', authenticate, eventoControlador.cancelarEvento);
 
 router.put('/aprovar/:idEvento', authenticate, eventoControlador.aprovarEvento);

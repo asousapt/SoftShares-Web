@@ -8,6 +8,7 @@ const evento = require('../models/evento');
 const utilizador = require('../models/utilizador');
 const respostaformulario = require('../models/respostaformulario');
 const itemrespostaformulario = require('../models/itemrespostaformulario');;
+const controladorFormularios = require('./formularios');
 
 const controladorEventos = {
     adicionarEvento: async (req, res) => {
@@ -645,8 +646,162 @@ const controladorEventos = {
             res.status(500).json({ error: 'Erro ao consultar o evento' });
         }
     },
+    atualizarEventoMobile: async (req, res) => {
+        const { idEvento } = req.params;
+        const {
+            titulo,
+            descricao,
+            dataInicio,
+            dataFim,
+            dataLimInscricao,
+            nmrMaxParticipantes,
+            localizacao,
+            latitude,
+            longitude,
+            cidadeID,
+            subcategoriaId,
+            poloId,
+            utilizadorid,
+            imagens, 
+            formInsc,
+            formQualidade
+        } = req.body;
     
+        try {
+            await models.evento.update({
+                titulo: titulo,
+                descricao: descricao,
+                datainicio: dataInicio,
+                datafim: dataFim,
+                dataliminscricao: dataLimInscricao,
+                nmrmaxparticipantes: nmrMaxParticipantes,
+                localizacao: localizacao,
+                latitude: latitude,
+                longitude: longitude,
+                cidadeid: cidadeID,
+                subcategoriaid: subcategoriaId,
+                poloid: poloId
+            }, {
+                where: {
+                    eventoid: idEvento
+                }
+            });
     
+            await ficheirosController.removerTodosFicheirosAlbum(idEvento, 'EVENTO');
+            await ficheirosController.adicionar(idEvento, 'EVENTO', imagens, utilizadorid);
+    
+            if (formInsc !== null) {
+                if (formInsc.formularioid !== 0) {
+                    const versaoInsc = await models.formularioversao.create({
+                        formularioid: formInsc.formularioid,
+                        descricao: "Formulario Inscrição Evento " + idEvento,
+                    });
+
+                    await Promise.all(formInsc.perguntas.map(async pergunta => {
+                        await models.formulariodetalhes.create({
+                            formularioversaoid: versaoInsc.formularioversaoid,
+                            pergunta: pergunta.text,
+                            tipodados: pergunta.type,
+                            obrigatorio: pergunta.required,
+                            minimo: pergunta.minValue,
+                            maximo: pergunta.maxValue,
+                            tamanho: pergunta.tamanho,
+                            ordem: pergunta.order,
+                            respostaspossiveis: pergunta.options.join(", ")
+                        });
+                    }));
+                } else {
+                    const cfgFormulario = await models.itemcfgformulario.create({
+                        registoid: idEvento,
+                        tipo: 'EVENTO'
+                    });
+    
+                    const formulario = await models.formulario.create({
+                        itemcfgformularioid: cfgFormulario.itemcfgformularioid,
+                        tipoformulario: "INSCR"
+                    });
+    
+                    const versaoInsc = await models.formularioversao.create({
+                        formularioid: formulario.formularioid,
+                        descricao: "Formulario Inscrição Evento " + idEvento,
+                    });
+    
+                    await Promise.all(formInsc.perguntas.map(async pergunta => {
+                        await models.formulariodetalhes.create({
+                            formularioversaoid: versaoInsc.formularioversaoid,
+                            pergunta: pergunta.text,
+                            tipodados: pergunta.type,
+                            obrigatorio: pergunta.required,
+                            minimo: pergunta.minValue,
+                            maximo: pergunta.maxValue,
+                            tamanho: pergunta.tamanho,
+                            ordem: pergunta.order,
+                            respostaspossiveis: pergunta.options.join(", ")
+                        });
+                    }));
+                }
+            }
+    
+            if (formQualidade !== null) {
+                if (formQualidade.formularioid !== 0) {
+                    const versaoQualidade = await models.formularioversao.create({
+                        formularioid: formQualidade.formularioid,
+                        descricao: "Formulario Qualidade Evento " + idEvento,
+                    });
+        
+                    await Promise.all(formQualidade.perguntas.map(async pergunta => {
+                        
+                        await models.formulariodetalhes.create({
+                            formularioversaoid: versaoQualidade.formularioversaoid,
+                            pergunta: pergunta.text,
+                            tipodados: pergunta.type,
+                            obrigatorio: pergunta.required,
+                            minimo: pergunta.minValue,
+                            maximo: pergunta.maxValue,
+                            tamanho: pergunta.tamanho,
+                            ordem: pergunta.order,
+                            respostaspossiveis: pergunta.options.join(", ")
+                        });
+                    }));
+                } else {
+                    const cfgFormulario = await models.itemcfgformulario.create({
+                        registoid: idEvento,
+                        tipo: 'EVENTO'
+                    });
+                    console.log(cfgFormulario.itemcfgformularioid);
+                    const formulario = await models.formulario.create({
+                        itemcfgformularioid: cfgFormulario.itemcfgformularioid,
+                        tipoformulario: "QUALIDADE"
+                    });
+    
+                    const versaoQualidade = await models.formularioversao.create({
+                        formularioid: formulario.formularioid,
+                        descricao: "Formulario Qualidade Evento " + idEvento,
+                    });
+    
+                    await Promise.all(formQualidade.perguntas.map(async pergunta => {
+                        
+                        await models.formulariodetalhes.create({
+                            formularioversaoid: versaoQualidade.formularioversaoid,
+                            pergunta: pergunta.text,
+                            tipodados: pergunta.type,
+                            obrigatorio: pergunta.required,
+                            minimo: pergunta.minValue,
+                            maximo: pergunta.maxValue,
+                            tamanho: pergunta.tamanho,
+                            ordem: pergunta.order,
+                            respostaspossiveis: pergunta.options.join(", ")
+                        });
+                    }));
+                }
+            }
+    
+            res.status(200).json({ message: 'Evento atualizado com sucesso' });
+        } catch (error) {
+            console.error(error);   
+            res.status(500).json({ error: 'Erro ao atualizar evento' });
+        }
+    }
 };
 
 module.exports = controladorEventos;

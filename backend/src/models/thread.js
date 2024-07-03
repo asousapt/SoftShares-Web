@@ -53,6 +53,14 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
+    },
+    poloid: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'polo',
+        key: 'poloid'
+      }
     }
   }, {
     sequelize,

@@ -3,10 +3,11 @@ const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
 const ficheirosController = require('./ficheiros');
+const polo = require('../models/polo');
 
 const controladorThread = {
     adicionar: async (req, res) => {
-        const { subcategoriaid, utilizadorid, titulo, mensagem, idiomaid, imagens } = req.body;
+        const { subcategoriaid, utilizadorid, titulo, mensagem, idiomaid, imagens, poloid } = req.body;
 
         try {
             const thread = await models.thread.create({
@@ -14,6 +15,7 @@ const controladorThread = {
                 utilizadorid: utilizadorid,
                 titulo: titulo,
                 mensagem: mensagem,
+                poloid: poloid,
                 idiomaid: idiomaid
             });
 
@@ -42,7 +44,7 @@ const controladorThread = {
 
     atualizar: async (req, res) => {
         const { id } = req.params;
-        const { subcategoriaid, titulo, mensagem, inactivo, imagens, utilizadorid } = req.body;
+        const { subcategoriaid, titulo, mensagem, inactivo, imagens, utilizadorid, poloid } = req.body;
 
         try {
             const thread = await models.thread.findByPk(id);
@@ -53,6 +55,7 @@ const controladorThread = {
             await models.thread.update({
                 titulo: titulo,
                 mensagem: mensagem,
+                poloid: poloid,
                 subcategoriaid: subcategoriaid,
                 inactivo: inactivo
             }, {

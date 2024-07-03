@@ -273,10 +273,9 @@ const controladorPontosInteresse = {
                 GROUP BY
                     p.pontointeresseid, u.utilizadorid
                 `,
-
                 { type: QueryTypes.SELECT }
             );
-            
+
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: pontosInteresse });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar os pontos de interesse', details: error.message });
@@ -303,9 +302,15 @@ const controladorPontosInteresse = {
                 GROUP BY
                     p.pontointeresseid, u.utilizadorid
                 `,
-
                 { type: QueryTypes.SELECT }
             );
+
+            await Promise.all(pontosInteresse.map(async (poi) => {
+                const ficheiros = await ficheirosController.getAllFilesByAlbum(poi.pontointeresseid, 'POI');
+                const imagens = ficheiros ? ficheiros.map(file => file.url) : [];
+    
+                poi.imagem = imagens[0] || '';
+            }));
             
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: pontosInteresse });
         } catch (error) {

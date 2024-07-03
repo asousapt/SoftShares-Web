@@ -25,7 +25,7 @@ const controladorUtilizadores = {
             imagem,
             administrador_poloid
         } = req.body;
-        
+
         try {
             const user = await models.utilizador.create({
                 poloid,
@@ -41,7 +41,7 @@ const controladorUtilizadores = {
                 sobre,
                 inactivo
             });
-            
+
             await models.destinatario.create({
                 itemdestinatario: user.utilizadorid,
                 tipo: 'UT'
@@ -106,11 +106,11 @@ const controladorUtilizadores = {
 
             ficheirosController.removerTodosFicheirosAlbum(idUtilizador, 'UTIL');
             ficheirosController.adicionar(idUtilizador, 'UTIL', imagem, idUtilizador);
-            
+
             const existeAdminPolo = await models.administrador_polo.findOne({
                 where: { utilizadorid: idUtilizador }
             });
-    
+
             if (administrador_poloid) {
                 if (existeAdminPolo) {
                     await models.administrador_polo.update({
@@ -152,7 +152,7 @@ const controladorUtilizadores = {
             imagem,
             preferencias,
         } = req.body;
-    
+
         try {
             // Cria dinamicamente um objeto com os campos a atualizar
             const updateData = {};
@@ -164,28 +164,28 @@ const controladorUtilizadores = {
             if (departamentoid !== undefined) updateData.departamentoid = departamentoid;
             if (funcaoid !== undefined) updateData.funcaoid = funcaoid;
             if (sobre !== undefined) updateData.sobre = sobre;
-    
+
             // Actualiza a tabela utilizadorcom os campos fornecidos
             await models.utilizador.update(updateData, {
                 where: {
                     utilizadorid: idUtilizador
                 }
             });
-    
+
             // atualiza a imagem do utilizador
             if (imagem) {
-                const imageArray =  JSON.parse(imagem);
+                const imageArray = JSON.parse(imagem);
                 ficheirosController.removerTodosFicheirosAlbum(idUtilizador, 'UTIL');
                 ficheirosController.adicionar(idUtilizador, 'UTIL', imageArray, idUtilizador);
             }
-    
+
             // atualiza as preferencias do utilizador
             if (preferencias) {
                 //remove as subcategorias favoritas anteriores
                 await models.subcategoria_fav_util.destroy({
                     where: { utilizadorid: idUtilizador }
                 });
-    
+
                 // adiciona as novas subcategorias favoritas
                 for (const subcategoriaid of preferencias) {
                     await models.subcategoria_fav_util.create({
@@ -195,13 +195,13 @@ const controladorUtilizadores = {
                 }
             }
 
-    
-            res.status(200).json({message: 'Utilizador atualizado com sucesso', data: idUtilizador});
+
+            res.status(200).json({ message: 'Utilizador atualizado com sucesso', data: idUtilizador });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao atualizar utilizador', details: error.message });
         }
     },
-    
+
     remover: async (req, res) => {
         const { idUtilizador } = req.params;
 
@@ -269,7 +269,7 @@ const controladorUtilizadores = {
 
     consultarPorIDMobile: async (req, res) => {
         const { idUtilizador } = req.params;
-    
+
         try {
             const utilizador = await models.utilizador.findByPk(idUtilizador, {
                 attributes: ['utilizadorid', 'pnome', 'unome', 'email', 'sobre', 'poloid', 'departamentoid', 'funcaoid', 'idiomaid'],
@@ -277,17 +277,17 @@ const controladorUtilizadores = {
                     {
                         model: models.subcategoria_fav_util,
                         as: 'subcategoria_fav_utils',
-                        attributes: ['subcategoriaid']  
+                        attributes: ['subcategoriaid']
                     }
                 ]
             });
-    
+
             if (!utilizador) {
                 return res.status(404).json({ error: 'Utilizador não encontrado' });
             }
-    
+
             // Faz o mapp das subcategorias favoritas para um array de ids
-            const preferencias = utilizador.subcategoria_fav_utils.map(sub => sub.subcategoriaid    );
+            const preferencias = utilizador.subcategoria_fav_utils.map(sub => sub.subcategoriaid);
 
             const ficheiros = await ficheirosController.getAllFilesByAlbum(utilizador.utilizadorid, 'UTIL');
             const fotoUrl = ficheiros[0] ? ficheiros[0].url : '';
@@ -295,19 +295,19 @@ const controladorUtilizadores = {
             utilizador.dataValues.fotoUrl = fotoUrl;
             // adiciona o objecto da imagem completo ao objeto utilizador
             utilizador.dataValues.imagem = ficheiros[0];
-    
+
             // adiciona as preferencias ao objeto utilizador
             utilizador.dataValues.preferencias = preferencias;
-    
+
             // remove a propriedade subcategoria_fav_utils do objeto utilizador original
             delete utilizador.dataValues.subcategoria_fav_utils;
-    
+
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: utilizador });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar utilizador', details: error.message });
         }
     },
-    
+
     consultarPorEmail: async (req, res) => {
         const { email } = req.params;
 
@@ -331,7 +331,7 @@ const controladorUtilizadores = {
             if (!utilizador) {
                 return res.status(404).json({ error: 'Utilizador não encontrado' });
             }
-            
+
             const ficheiros = await ficheirosController.getAllFilesByAlbum(utilizador.utilizadorid, 'UTIL');
             utilizador.dataValues.imagem = ficheiros[0];
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: utilizador });
@@ -389,6 +389,100 @@ const controladorUtilizadores = {
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: totalPorPolo });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar utilizadores por polo', details: error.message });
+        }
+    },
+
+    consultarUsersDen: async (req, res) => {
+        try {
+            const utilizadores = await sequelizeConn.query(
+                `SELECT
+                    (u.pnome || ' ' || u.unome) AS nome,
+                    COUNT(d.denunciaid) AS denuncias
+                FROM 
+                    utilizador u
+                LEFT JOIN
+                    denuncia d ON u.utilizadorid = d.utilizadorcriou
+                GROUP BY
+                    u.utilizadorid
+                HAVING
+                    COUNT(d.denunciaid) > 0
+                ORDER BY
+                    denuncias DESC LIMIT 10
+                `,
+                { type: QueryTypes.SELECT }
+            );
+
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: utilizadores });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
+        }
+    },
+
+    consultarUsersComent: async (req, res) => {
+        try {
+            const utilizadores = await sequelizeConn.query(
+                `SELECT
+                    u.utilizadorid,
+                    (u.pnome || ' ' || u.unome) AS nome,
+                    COUNT(c.comentarioid) AS comentarios
+                FROM 
+                    utilizador u
+                LEFT JOIN
+                    comentario c ON u.utilizadorid = c.utilizadorid
+                GROUP BY
+                    u.utilizadorid
+                HAVING
+                    COUNT(c.comentarioid) > 0
+                ORDER BY
+                    comentarios DESC LIMIT 10
+                `,
+                { type: QueryTypes.SELECT }
+            );
+
+            await Promise.all(utilizadores.map(async (utilizador) => {
+                const ficheiros = await ficheirosController.getAllFilesByAlbum(utilizador.utilizadorid, 'UTIL');
+                const imagens = ficheiros ? ficheiros.map(file => file.url) : [];
+    
+                utilizador.image = imagens[0];
+            }));
+
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: utilizadores });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
+        }
+    },
+
+    consultarUsersPublicacoes: async (req, res) => {
+        try {
+            const utilizadores = await sequelizeConn.query(
+                `SELECT
+                    u.utilizadorid,
+                    (u.pnome || ' ' || u.unome) AS nome,
+                    COUNT(t.threadid) AS threads
+                FROM 
+                    utilizador u
+                LEFT JOIN
+                    thread t ON u.utilizadorid = t.utilizadorid
+                GROUP BY
+                    u.utilizadorid
+                HAVING
+                    COUNT(t.threadid) > 0
+                ORDER BY
+                    threads DESC LIMIT 10
+                `,
+                { type: QueryTypes.SELECT }
+            );
+
+            await Promise.all(utilizadores.map(async (utilizador) => {
+                const ficheiros = await ficheirosController.getAllFilesByAlbum(utilizador.utilizadorid, 'UTIL');
+                const imagens = ficheiros ? ficheiros.map(file => file.url) : [];
+    
+                utilizador.image = imagens[0];
+            }));
+
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: utilizadores });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
         }
     },
 

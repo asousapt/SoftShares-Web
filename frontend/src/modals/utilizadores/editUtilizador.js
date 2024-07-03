@@ -5,8 +5,6 @@ import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import BasicTextField from '../../components/textFields/basic';
 import ComboBox from '../../components/combobox/comboboxBasic';
-import Autocomplete from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
 import SubmitButton from '../../components/buttons/submitButton';
 import CancelButton from '../../components/buttons/cancelButton';
 import InputImage from '../../components/image/imageInput';

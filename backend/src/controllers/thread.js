@@ -297,9 +297,32 @@ const controladorThread = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar threads', details: error.message });
         }
-    }
-    
+    },
 
+    consultarPublicacoesPorMes: async (req, res) => {
+        try {
+            const publicacoesPorMes = await sequelizeConn.query(
+                `SELECT
+                    EXTRACT(MONTH FROM datacriacao) AS mes,
+                    COUNT(threadid) AS threads
+                FROM
+                    thread
+                WHERE
+                    EXTRACT(YEAR FROM datacriacao) = EXTRACT(YEAR FROM CURRENT_DATE)
+                GROUP BY
+                    EXTRACT(MONTH FROM datacriacao)
+                ORDER BY
+                    mes ASC`,
+                { type: QueryTypes.SELECT }
+            );
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: publicacoesPorMes });
+        } catch (error) {
+            console.error('Erro ao consultar publicações por mês:', error.message);
+            res.status(500).json({ error: 'Erro ao consultar publicações', details: error.message });
+        }
+    },
+    
 };
 
 module.exports = controladorThread;

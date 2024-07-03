@@ -4,6 +4,7 @@ import './page.css';
 /* COMPONENTES */
 import Header from '../components/header/header';
 import ChartPie from '../components/charts/chartpie';
+import ListUsers from '../components/charts/listaUsersDen';
 /* FIM COMPONENTES */
 import NovoEvento from '../modals/eventos/novoEvento';
 import { Grid } from '@mui/material';
@@ -58,16 +59,12 @@ export default function StatsDenuncias() {
                 <h2 style={{ marginBottom: '20px', textAlign: 'center'}} >Estatísticas Denúncias</h2>
                     <div style={{ height: '65vh', width: '99%', overflowY: 'auto', paddingBottom: '40px', border: 'none', boxShadow: 'none' }}>
                         <Grid container spacing={1} wrap="wrap">
-                            <Grid item xs={12} md={4} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
+                            <Grid item xs={12} md={7} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
+                                <ListUsers />    
+                            </Grid>
+
+                            <Grid item xs={12} md={3} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
                                 <ChartPie style={{ maxWidth: '100%' }} chartData={data1} total={total1} label='Denúnicas Polo' />
-                            </Grid>
-
-                            <Grid item xs={12} md={4} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
-                                <ChartPie style={{ maxWidth: '100%' }} chartData={[]} total={0} label='Denúnicas Users' />
-                            </Grid>
-
-                            <Grid item xs={12} md={4} style={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
-                                <ChartPie style={{ maxWidth: '100%' }} chartData={[]} total={0} label='Denúnicas ???' />
                             </Grid>
                         </Grid>
                     </div>

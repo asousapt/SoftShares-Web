@@ -45,6 +45,7 @@ const controladorEventos = {
                 utilizadorcriou: utilizadorCriou,
                 subcategoriaid: subcategoriaId,
                 poloid: poloId,
+                aprovado: null
             });
 
             await models.objecto.create({
@@ -53,7 +54,7 @@ const controladorEventos = {
             });
 
             ficheirosController.adicionar(evento.eventoid, 'EVENTO', imagens, utilizadorCriou);
-             
+            
             if (Array.isArray(formInsc) && formInsc.length > 0) {
                 const cfgFormulario = await models.itemcfgformulario.create({
                     registoid: evento.eventoid,
@@ -152,7 +153,8 @@ const controladorEventos = {
             subcategoriaId,
             poloId,
             utilizadorid,
-            imagens
+            imagens,
+            cancelado
         } = req.body;
 
         try {
@@ -168,7 +170,8 @@ const controladorEventos = {
                 longitude: longitude,
                 cidadeid: cidadeID,
                 subcategoriaid: subcategoriaId,
-                poloid: poloId
+                poloid: poloId,
+                cancelado: cancelado
             }, {
                 where: {
                     eventoid: idEvento

@@ -85,7 +85,7 @@ module.exports = function(sequelize, DataTypes) {
     aprovado: {
       type: DataTypes.BOOLEAN,
       allowNull: true,
-      defaultValue: false
+      defaultValue: null
     },
     dataaprovacao: {
       type: DataTypes.DATE,

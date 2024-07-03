@@ -36,7 +36,6 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
     const [opcoesFiltroSubcat, setOpcoesSubcat] = useState([]);
     const [error, setError] = useState(null);
     const [images, setImages] = useState([]);
-    const [isPoloDisabled, setIsPoloDisabled] = useState(false);
 
     //ERRORS
     const [titleError, setTitleError] = useState(false);
@@ -111,15 +110,6 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
         fetchPolos();
         fetchDistritos();
         fetchCategorias();
-        const perfil = sessionStorage.getItem('perfil');
-        if (perfil === 'Admin'){
-            setIsPoloDisabled(true);
-            const poloid = sessionStorage.getItem('poloid');
-            const descpolo = sessionStorage.getItem('descpolo');
-            setPolo({value: poloid, label: descpolo});
-        } else {
-            setIsPoloDisabled(false);
-        }
     }, [open]);
 
     const fetchCidades = async (distritoId) => {
@@ -439,7 +429,7 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
                                             value={polo}
                                             onChange={(event, newValue) => { setPolo(newValue); }}
                                             fullWidth={true} 
-                                            disabled={isPoloDisabled}
+                                            disabled={false}
                                         />
                                     </div>
                                 </div>

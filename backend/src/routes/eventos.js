@@ -33,7 +33,7 @@ router.get('/filtro', authenticate, eventoControlador.consultarTodosComFiltro);
 
 router.get('/incricto/:idUtilizador', authenticate, eventoControlador.consultarEventosInscritos);
 
-router.get('/participantes/ :idEvento', authenticate, eventoControlador.getparticipantes);
+router.get('/participantes/:idEvento', authenticate, eventoControlador.getparticipantes);
 
 router.get('/porAprovar', authenticate, eventoControlador.consultarPorAprovar);
 

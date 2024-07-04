@@ -313,7 +313,7 @@ const controladorPontosInteresse = {
                 const ficheiros = await ficheirosController.getAllFilesByAlbum(poi.pontointeresseid, 'POI');
                 const imagens = ficheiros ? ficheiros.map(file => file.url) : [];
     
-                poi.imagem = imagens[0] || '';
+                poi.imagem = imagens || '';
             }));
             
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: pontosInteresse });

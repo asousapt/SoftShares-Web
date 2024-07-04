@@ -865,6 +865,40 @@ const controladorEventos = {
             res.status(500).json({ error: 'Erro ao consultar os eventos' });
         }
     },
+    getparticipantes: async (req, res) => {
+        const { idEvento } = req.params;
+        try {
+            const query = `
+            SELECT 
+                ut.utilizadorid, 
+                ut.pnome, 
+                ut.unome, 
+                ut.email, 
+                ut.poloid 
+            FROM participantes_eventos pe
+            INNER JOIN utilizador ut ON ut.utilizadorid = pe.utilizadorid 
+            WHERE pe.eventoid = :idEvento `;
+    
+            const participantes = await sequelizeConn.query(query, {
+                replacements: { idEvento },
+                type: Sequelize.QueryTypes.SELECT
+            });
+    
+            const participantesWithFotos = await Promise.all(
+                participantes.map(async participante => {
+                    const ficheiros = await ficheirosController.getAllFilesByAlbum(participante.utilizadorid, 'UTIL');
+                    const fotoUrl = ficheiros[0] ? ficheiros[0].url : '';
+                    participante.fotoUrl = fotoUrl;
+                    return participante;
+                })
+            );
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: participantesWithFotos });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar os participantes' });
+        }
+    }
+    
     
 };
 

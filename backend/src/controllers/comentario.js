@@ -269,6 +269,7 @@ const comentarioController = {
                         commentMap[comment.comentarioid] = {
                             comentarioid: comment.comentarioid,
                             comentario: comment.comentario,
+                            datacriacao: comment.comentario_datacriacao,
                             tipo: comment.tipo,
                             utilizadorid: comment.utilizadorid,
                             utilizador_nome: comment.utilizador_nome,
@@ -281,6 +282,7 @@ const comentarioController = {
                             commentMap[comment.resposta_comentarioid] = {
                                 comentarioid: comment.resposta_comentarioid,
                                 comentario: comment.resposta_comentario,
+                                datacriacao: comment.resposta_datacriacao,
                                 tipo: 'REPLY',
                                 utilizadorid: comment.resposta_utilizadorid,
                                 utilizador_nome: comment.resposta_utilizador_nome,

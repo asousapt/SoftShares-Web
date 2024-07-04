@@ -13,6 +13,8 @@ router.post('/inscricao', authenticate, eventoControlador.inscricaoEvento);
 //ROUTES PUT
 router.put('/update/:idEvento', authenticate, eventoControlador.atualizarEvento);
 
+router.put('/update/mobile/:idEvento', authenticate, eventoControlador.atualizarEventoMobile);
+
 router.put('/cancelar/:idEvento', authenticate, eventoControlador.cancelarEvento);
 
 router.put('/aprovar/:idEvento', authenticate, eventoControlador.aprovarEvento);
@@ -28,6 +30,10 @@ router.delete('/utilizador/delete/:idEvento/:idUser', authenticate, eventoContro
 router.get('/', authenticate, eventoControlador.consultarTodos);
 
 router.get('/filtro', authenticate, eventoControlador.consultarTodosComFiltro);
+
+router.get('/incricto/:idUtilizador', authenticate, eventoControlador.consultarEventosInscritos);
+
+router.get('/participantes/ :idEvento', authenticate, eventoControlador.getparticipantes);
 
 router.get('/porAprovar', authenticate, eventoControlador.consultarPorAprovar);
 

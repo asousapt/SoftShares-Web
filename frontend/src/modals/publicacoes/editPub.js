@@ -23,7 +23,6 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
     const [subcategoria, setSubcategoria] = useState(null);
     const [inativo, setInativo] = useState(null);
     const [poloOptions, setPoloOptions] = useState([]);
-    const [polo, setPolo] = useState(null);
     const [error, setError] = useState(null);
     const [images, setImages] = useState([]);
 

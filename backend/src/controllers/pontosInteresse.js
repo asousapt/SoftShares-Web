@@ -16,6 +16,7 @@ const controladorPontosInteresse = {
             idiomaid,
             cidadeid,
             utilizadorcriou,
+            poloid,
             imagens,
             formRespostas
         } = req.body;
@@ -30,7 +31,8 @@ const controladorPontosInteresse = {
                 longitude: longitude,
                 idiomaid: idiomaid,
                 cidadeid: cidadeid,
-                utilizadorcriou: utilizadorcriou
+                utilizadorcriou: utilizadorcriou,
+                poloid: poloid
             });
 
             await models.itemcomentario.create({
@@ -110,6 +112,7 @@ const controladorPontosInteresse = {
             idiomaid,
             cidadeid,
             utilizadorid,
+            poloid,
             imagens,
             formRespostas
         } = req.body;
@@ -123,7 +126,8 @@ const controladorPontosInteresse = {
                 latitude: latitude,
                 longitude: longitude,
                 idiomaid: idiomaid,
-                cidadeid: cidadeid
+                cidadeid: cidadeid,
+                poloid: poloid
             }, {
                 where: {
                     pontointeresseid: idPontoInteresse
@@ -309,7 +313,7 @@ const controladorPontosInteresse = {
                 const ficheiros = await ficheirosController.getAllFilesByAlbum(poi.pontointeresseid, 'POI');
                 const imagens = ficheiros ? ficheiros.map(file => file.url) : [];
     
-                poi.imagem = imagens[0] || '';
+                poi.imagem = imagens || [];
             }));
             
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: pontosInteresse });

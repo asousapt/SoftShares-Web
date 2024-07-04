@@ -8,6 +8,7 @@ const evento = require('../models/evento');
 const utilizador = require('../models/utilizador');
 const respostaformulario = require('../models/respostaformulario');
 const itemrespostaformulario = require('../models/itemrespostaformulario');;
+const controladorFormularios = require('./formularios');
 
 const controladorEventos = {
     adicionarEvento: async (req, res) => {
@@ -648,7 +649,162 @@ const controladorEventos = {
             res.status(500).json({ error: 'Erro ao consultar o evento' });
         }
     },
+    atualizarEventoMobile: async (req, res) => {
+        const { idEvento } = req.params;
+        const {
+            titulo,
+            descricao,
+            dataInicio,
+            dataFim,
+            dataLimInscricao,
+            nmrMaxParticipantes,
+            localizacao,
+            latitude,
+            longitude,
+            cidadeID,
+            subcategoriaId,
+            poloId,
+            utilizadorid,
+            imagens, 
+            formInsc,
+            formQualidade
+        } = req.body;
     
+        try {
+            await models.evento.update({
+                titulo: titulo,
+                descricao: descricao,
+                datainicio: dataInicio,
+                datafim: dataFim,
+                dataliminscricao: dataLimInscricao,
+                nmrmaxparticipantes: nmrMaxParticipantes,
+                localizacao: localizacao,
+                latitude: latitude,
+                longitude: longitude,
+                cidadeid: cidadeID,
+                subcategoriaid: subcategoriaId,
+                poloid: poloId
+            }, {
+                where: {
+                    eventoid: idEvento
+                }
+            });
+    
+            await ficheirosController.removerTodosFicheirosAlbum(idEvento, 'EVENTO');
+            await ficheirosController.adicionar(idEvento, 'EVENTO', imagens, utilizadorid);
+    
+            if (formInsc !== null) {
+                if (formInsc.formularioid !== 0) {
+                    const versaoInsc = await models.formularioversao.create({
+                        formularioid: formInsc.formularioid,
+                        descricao: "Formulario Inscrição Evento " + idEvento,
+                    });
+
+                    await Promise.all(formInsc.perguntas.map(async pergunta => {
+                        await models.formulariodetalhes.create({
+                            formularioversaoid: versaoInsc.formularioversaoid,
+                            pergunta: pergunta.text,
+                            tipodados: pergunta.type,
+                            obrigatorio: pergunta.required,
+                            minimo: pergunta.minValue,
+                            maximo: pergunta.maxValue,
+                            tamanho: pergunta.tamanho,
+                            ordem: pergunta.order,
+                            respostaspossiveis: pergunta.options.join(", ")
+                        });
+                    }));
+                } else {
+                    const cfgFormulario = await models.itemcfgformulario.create({
+                        registoid: idEvento,
+                        tipo: 'EVENTO'
+                    });
+    
+                    const formulario = await models.formulario.create({
+                        itemcfgformularioid: cfgFormulario.itemcfgformularioid,
+                        tipoformulario: "INSCR"
+                    });
+    
+                    const versaoInsc = await models.formularioversao.create({
+                        formularioid: formulario.formularioid,
+                        descricao: "Formulario Inscrição Evento " + idEvento,
+                    });
+    
+                    await Promise.all(formInsc.perguntas.map(async pergunta => {
+                        await models.formulariodetalhes.create({
+                            formularioversaoid: versaoInsc.formularioversaoid,
+                            pergunta: pergunta.text,
+                            tipodados: pergunta.type,
+                            obrigatorio: pergunta.required,
+                            minimo: pergunta.minValue,
+                            maximo: pergunta.maxValue,
+                            tamanho: pergunta.tamanho,
+                            ordem: pergunta.order,
+                            respostaspossiveis: pergunta.options.join(", ")
+                        });
+                    }));
+                }
+            }
+    
+            if (formQualidade !== null) {
+                if (formQualidade.formularioid !== 0) {
+                    const versaoQualidade = await models.formularioversao.create({
+                        formularioid: formQualidade.formularioid,
+                        descricao: "Formulario Qualidade Evento " + idEvento,
+                    });
+        
+                    await Promise.all(formQualidade.perguntas.map(async pergunta => {
+                        
+                        await models.formulariodetalhes.create({
+                            formularioversaoid: versaoQualidade.formularioversaoid,
+                            pergunta: pergunta.text,
+                            tipodados: pergunta.type,
+                            obrigatorio: pergunta.required,
+                            minimo: pergunta.minValue,
+                            maximo: pergunta.maxValue,
+                            tamanho: pergunta.tamanho,
+                            ordem: pergunta.order,
+                            respostaspossiveis: pergunta.options.join(", ")
+                        });
+                    }));
+                } else {
+                    const cfgFormulario = await models.itemcfgformulario.create({
+                        registoid: idEvento,
+                        tipo: 'EVENTO'
+                    });
+                    console.log(cfgFormulario.itemcfgformularioid);
+                    const formulario = await models.formulario.create({
+                        itemcfgformularioid: cfgFormulario.itemcfgformularioid,
+                        tipoformulario: "QUALIDADE"
+                    });
+    
+                    const versaoQualidade = await models.formularioversao.create({
+                        formularioid: formulario.formularioid,
+                        descricao: "Formulario Qualidade Evento " + idEvento,
+                    });
+    
+                    await Promise.all(formQualidade.perguntas.map(async pergunta => {
+                        
+                        await models.formulariodetalhes.create({
+                            formularioversaoid: versaoQualidade.formularioversaoid,
+                            pergunta: pergunta.text,
+                            tipodados: pergunta.type,
+                            obrigatorio: pergunta.required,
+                            minimo: pergunta.minValue,
+                            maximo: pergunta.maxValue,
+                            tamanho: pergunta.tamanho,
+                            ordem: pergunta.order,
+                            respostaspossiveis: pergunta.options.join(", ")
+                        });
+                    }));
+                }
+            }
+    
+            res.status(200).json({ message: 'Evento atualizado com sucesso' });
+        } catch (error) {
+            console.error(error);   
+            res.status(500).json({ error: 'Erro ao atualizar evento' });
+        }
+    },
     consultarEventosTotal: async (req, res) => {
         try {
             const eventos = await sequelizeConn.query(
@@ -666,6 +822,83 @@ const controladorEventos = {
             res.status(500).json({ error: 'Erro ao consultar publicações', details: error.message });
         }
     },
+    consultarEventosInscritos: async (req, res) => {
+        const { idUtilizador } = req.params;    
+
+        const query = `
+            SELECT evento.*, subcategoria.categoriaid,
+                (SELECT STRING_AGG(participantes_eventos.utilizadorid::text, ',')
+                FROM participantes_eventos
+                WHERE participantes_eventos.eventoid = evento.eventoid) AS participantes,
+                (SELECT COUNT(*)
+                FROM participantes_eventos
+                WHERE participantes_eventos.eventoid = evento.eventoid) AS numinscritos
+                FROM evento
+                JOIN subcategoria ON evento.subcategoriaid = subcategoria.subcategoriaid
+                inner join participantes_eventos ON participantes_eventos.eventoid = evento.eventoid 
+                and participantes_eventos.utilizadorid = :idUtilizador
+                WHERE evento.aprovado = true and evento.datainicio > CURRENT_TIMESTAMP
+        `;
+
+        try {
+            const eventos = await sequelizeConn.query(query, {
+                replacements: { idUtilizador },
+                type: Sequelize.QueryTypes.SELECT
+            });
+
+            const processedEventos = await Promise.all(eventos.map(async (evento) => {
+                if (evento.participantes) {
+                    evento.participantes = evento.participantes.split(',').map(id => parseInt(id, 10));
+                } else {
+                    evento.participantes = [];
+                }
+
+                evento.numinscritos = parseInt(evento.numinscritos, 10);
+                const ficheiros = await ficheirosController.getAllFilesByAlbum(evento.eventoid, 'EVENTO');
+                evento.imagens = ficheiros ? ficheiros.map(file => file.url) : [];
+                return evento;
+            }));
+
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: processedEventos });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Erro ao consultar os eventos' });
+        }
+    },
+    getparticipantes: async (req, res) => {
+        const { idEvento } = req.params;
+        try {
+            const query = `
+            SELECT 
+                ut.utilizadorid, 
+                ut.pnome, 
+                ut.unome, 
+                ut.email, 
+                ut.poloid 
+            FROM participantes_eventos pe
+            INNER JOIN utilizador ut ON ut.utilizadorid = pe.utilizadorid 
+            WHERE pe.eventoid = :idEvento `;
+    
+            const participantes = await sequelizeConn.query(query, {
+                replacements: { idEvento },
+                type: Sequelize.QueryTypes.SELECT
+            });
+    
+            const participantesWithFotos = await Promise.all(
+                participantes.map(async participante => {
+                    const ficheiros = await ficheirosController.getAllFilesByAlbum(participante.utilizadorid, 'UTIL');
+                    const fotoUrl = ficheiros[0] ? ficheiros[0].url : '';
+                    participante.fotoUrl = fotoUrl;
+                    return participante;
+                })
+            );
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: participantesWithFotos });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar os participantes' });
+        }
+    }
+    
     
 };
 

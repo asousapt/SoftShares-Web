@@ -23,6 +23,8 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     const [opcoesFiltroCat, setOpcoesCat] = useState([]);
     const [subcategoria, setSubcategoria] = useState(null);
     const [opcoesFiltroSubcat, setOpcoesSubcat] = useState([]);
+    const [poloOptions, setPoloOptions] = useState([]);
+    const [polo, setPolo] = useState(null);
     const [error, setError] = useState(null);
     const [images, setImages] = useState([]);
     const [questions , setQuestions] = useState([]);
@@ -41,6 +43,7 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     const [distritoError, setDistritoError] = useState(false);
     const [categoriaError, setCategoriaError] = useState(false);
     const [subcategoriaError, setSubcategoriaError] = useState(false);
+    const [poloError, setPoloError] = useState(false);
 
     const validateForm = () => {
         let errors = {};
@@ -71,6 +74,10 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
 
         if (!subcategoria) {
             errors.subcategoriaError = true;
+        }
+
+        if (!polo) {
+            errors.poloError = true;
         }
 
         return errors;
@@ -112,6 +119,25 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
             }
         };
 
+        const fetchPolos = async () => {
+            try {
+                const token = sessionStorage.getItem('token');
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/polo`, {
+                    headers: { Authorization: `${token}` }
+                });
+                const polosData = response.data.data;
+                const polosOptions = polosData.map(polo => ({
+                    value: polo.poloid,
+                    label: polo.descricao
+                }));
+    
+                setPoloOptions(polosOptions);
+            } catch (error) {
+                console.error('Erro ao buscar polos:', error);
+            }
+        };
+
+        fetchPolos();
         fetchDistritos();
         fetchCategorias();
     }, []);
@@ -179,6 +205,7 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         setDistritoError(errors.distritoError || false);
         setCategoriaError(errors.categoriaError || false);
         setSubcategoriaError(errors.subcategoriaError || false);
+        setPoloError(errors.poloError || false);
 
         setQuestions(prevQuestions => prevQuestions.map(q => ({ ...q, error: '' })));
 
@@ -226,10 +253,13 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 idiomaid: 1,
                 cidadeid: cidade ? cidade.value : '',
                 utilizadorcriou: userid,
+                poloid: polo ? polo.value : '',
                 subcategoriaid: subcategoria ? subcategoria.value : '',
                 imagens: imagesRtn,
                 formRespostas: data
             };
+
+            console.log('novoEvento', novoEvento);
             console.log(novoEvento);
             await axios.post(`${process.env.REACT_APP_API_URL}/pontoInteresse/add`, novoEvento, {
                 headers: {
@@ -297,6 +327,7 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         setDistrito(null);
         setCategoria(null);
         setSubcategoria(null);
+        setPolo(null);
         setImages([]);
         setQuestions([]);
     };
@@ -310,6 +341,7 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         setDistritoError(false);
         setCategoriaError(false);
         setSubcategoriaError(false);
+        setPoloError(false);
         setImages([]);
         onClose();
     };
@@ -371,9 +403,18 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                         </div>
                         <div style={{ marginBottom: 20 }}></div>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-                            <div style={{ width: '100%' }}>
+                            <div style={{ width: '74.4%' }}>
                                 <BasicTextField caption='Descrição' valor={description} onchange={(e) => setDescription(e.target.value)} fullwidth={true} type="text" error={descriptionError}
                                 helperText={descriptionError ? "Introduza uma descrição válida" : ""} />
+                            </div>
+                            <div style={{ width: '25%' }}>
+                                <Autocomplete options={poloOptions} getOptionLabel={(option) => option.label} renderInput={(params) => (
+                                    <TextField {...params} label="Polo" variant="outlined" type="text" error={poloError} helperText={poloError ? "Escolha um Polo" : ""} />
+                                )}
+                                    value={polo}
+                                    onChange={(event, newValue) => { setPolo(newValue); }}
+                                    fullWidth={true}
+                                />
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>

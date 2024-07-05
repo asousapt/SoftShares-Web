@@ -8,7 +8,7 @@ import QuestionTypes from './QuestionTypes';
 import Question from './Question';
 
 const FormBuilder = forwardRef((props, ref) => {
-  const { initialQuestions } = props;
+  const { initialQuestions, disabled = false } = props;
   const [questions, setQuestions] = useState([]);
 
   useEffect(() => {
@@ -105,10 +105,10 @@ const FormBuilder = forwardRef((props, ref) => {
       <div>
         {questions.map((q) => (
           <Paper key={q.id} style={{ padding: '10px', margin: 5, marginBottom: '20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px', gap: 10, marginTop: 10 }}>
+            {disabled === false && (<div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px', gap: 10, marginTop: 10 }}>
               <QuestionTypes onChange={handleTypeChange} idPergunta={q.id} valor={q.type} />
               <DeleteButton onclick={() => handleRemoveQuestion(q.id)} caption='Remover Pergunta'/>
-            </div>
+            </div>)}
             
             <Question
               question={q}
@@ -117,14 +117,15 @@ const FormBuilder = forwardRef((props, ref) => {
               addOption={addOption}
               removeOption={removeOption}
               handleRequiredChange={handleRequiredChange}
+              disabled={disabled}
             />
           </Paper>
         ))}
       </div>
 
-      <Button variant="contained" color="primary" onClick={addQuestion}>
+      {disabled === false && (<Button variant="contained" color="primary" onClick={addQuestion}>
         Adicionar uma pergunta
-      </Button>
+      </Button>)}
     </div>
   );
 });

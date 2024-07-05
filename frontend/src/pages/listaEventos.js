@@ -116,11 +116,11 @@ export default function ListaEventos() {
             const sortedEvent = eventos.sort((a, b) => a.eventoid - b.eventoid);
 
             const determinarEstado = (evento) => {
-                if (evento.aprovado === null || evento.aprovado === undefined){
-                    return 'Por Aprovar';
-                } else if (evento.cancelado){
+                if (evento.cancelado){
                     return 'Cancelado';
-                }
+                } else if ((evento.aprovado === null || evento.aprovado === undefined) && evento.cancelado === false ){
+                    return 'Por Aprovar';
+                }  
                 return evento.aprovado ? 'Aprovado' : 'Rejeitado';
             };
 

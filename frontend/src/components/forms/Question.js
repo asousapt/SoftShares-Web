@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const Question = ({ question, handleTextChange, handleOptionChange, addOption, removeOption, handleRequiredChange }) => {
+const Question = ({ question, handleTextChange, handleOptionChange, addOption, removeOption, handleRequiredChange, disabled }) => {
   const renderOptions = () => {
     return question.options.map((opt, idx) => (
       <div key={idx} style={{ display: 'flex', alignItems: 'center' }}>
@@ -26,10 +26,11 @@ const Question = ({ question, handleTextChange, handleOptionChange, addOption, r
           variant="outlined"
           size="small"
           style={{ marginRight: '10px', flex: 1 }}
+          disabled={disabled}
         />
-        <IconButton onClick={() => removeOption(question.id, idx)}>
+        {disabled === false && (<IconButton onClick={() => removeOption(question.id, idx)}>
           <DeleteIcon />
-        </IconButton>
+        </IconButton>)}
       </div>
     ));
   };
@@ -44,6 +45,7 @@ const Question = ({ question, handleTextChange, handleOptionChange, addOption, r
             onChange={(e) => handleTextChange(question.id, 'text', e.target.value)}
             variant="outlined"
             fullWidth
+            disabled={disabled}
           />
         );
       case 'LOGICO':
@@ -54,6 +56,7 @@ const Question = ({ question, handleTextChange, handleOptionChange, addOption, r
             onChange={(e) => handleTextChange(question.id, 'text', e.target.value)}
             variant="outlined"
             fullWidth
+            disabled={disabled}
           />
         );
       case 'ESCOLHA_MULTIPLA':
@@ -67,11 +70,12 @@ const Question = ({ question, handleTextChange, handleOptionChange, addOption, r
               fullWidth
               placeholder="Texto da pergunta"
               style={{ marginBottom: '10px' }}
+              disabled={disabled}
             />
             {renderOptions()}
-            <Button variant="contained" onClick={() => addOption(question.id)} style={{marginTop: 5, marginRight: 20}}>
+            {disabled === false && (<Button variant="contained" onClick={() => addOption(question.id)} style={{marginTop: 5, marginRight: 20}}>
               Adicionar opção
-            </Button>
+            </Button>)}
           </>
         );
       case 'NUMERICO':
@@ -84,6 +88,7 @@ const Question = ({ question, handleTextChange, handleOptionChange, addOption, r
               fullWidth
               placeholder="Texto da pergunta"
               style={{ marginBottom: '10px' }}
+              disabled={disabled}
             />
             <TextField
               label="Valor mínimo"
@@ -92,6 +97,7 @@ const Question = ({ question, handleTextChange, handleOptionChange, addOption, r
               onChange={(e) => handleTextChange(question.id, 'minValue', e.target.value)}
               variant="outlined"
               style={{ marginRight: '10px', width: '48%' }}
+              disabled={disabled}
             />
             <TextField
               label="Valor máximo"
@@ -100,6 +106,7 @@ const Question = ({ question, handleTextChange, handleOptionChange, addOption, r
               onChange={(e) => handleTextChange(question.id, 'maxValue', e.target.value)}
               variant="outlined"
               style={{ width: '48%' }}
+              disabled={disabled}
             />
           </>
         );
@@ -117,6 +124,7 @@ const Question = ({ question, handleTextChange, handleOptionChange, addOption, r
             checked={question.required}
             onChange={() => handleRequiredChange(question.id)}
             color="primary"
+            disabled={disabled}
           />
         }
         label="Obrigatório"

@@ -4,6 +4,7 @@ const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
 const { generateToken } = require('../tokenUtils');
 const ficheirosController = require('./ficheiros');
+const emailController = require('./email');
 
 const controladorUtilizadores = {
     adicionar: async (req, res) => {
@@ -58,6 +59,8 @@ const controladorUtilizadores = {
             }
 
             ficheirosController.adicionar(user.utilizadorid, 'UTIL', imagem, user.utilizadorid);
+
+            emailController.sendEmail(email,'Registado no Softshares', `Foi registado com sucesso no plataforma SoftShares, comece a usar já! \n Dados: \n \t email: ${email} \n \t pass ${passwd}`);
 
             res.status(201).json({ message: 'Utilizador adicionado com sucesso' });
         } catch (error) {

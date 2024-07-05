@@ -20,6 +20,7 @@ const opcoesFiltroEstado = [
     { value: 'Por Aprovar', label: 'Por Aprovar' },
     { value: 'Aprovados', label: 'Apenas Aprovados' },
     { value: 'Rejeitados', label: 'Apenas Rejeitados' },
+    { value: 'Cancelados', label: 'Apenas Cancelados' },
 ];
 
 export default function ListaEventos() {
@@ -52,10 +53,10 @@ export default function ListaEventos() {
         const now = new Date();
 
         setSelectedEventoId(row.id);
-        if (dataHora <= now || row.row.estado !== 'Por Aprovar') {
-            setVerModalOpen(true);
-        } else {
+        if (dataHora >= now || row.row.estado === 'Cancelado') {
             setEditModalOpen(true);
+        } else {
+            setVerModalOpen(true);
         }
     }
 
@@ -95,6 +96,8 @@ export default function ListaEventos() {
                 estado = false;
             } else if (filtroEstado === 'Por Aprovar') {
                 estado = "NULL";
+            } else if (filtroEstado === 'Cancelados') {
+                estado = "Cancelados";
             }
 
             const response = await axios.get(`${process.env.REACT_APP_API_URL}/evento/filtro`, {
@@ -112,9 +115,13 @@ export default function ListaEventos() {
 
             const sortedEvent = eventos.sort((a, b) => a.eventoid - b.eventoid);
 
-            const determinarEstado = (aprovado) => {
-                if (aprovado === null || aprovado === undefined) return 'Por Aprovar';
-                return aprovado ? 'Aprovado' : 'Rejeitado';
+            const determinarEstado = (evento) => {
+                if (evento.aprovado === null || evento.aprovado === undefined){
+                    return 'Por Aprovar';
+                } else if (evento.cancelado){
+                    return 'Cancelado';
+                }
+                return evento.aprovado ? 'Aprovado' : 'Rejeitado';
             };
 
             const eventosTable = sortedEvent.map((evento) => {
@@ -127,7 +134,7 @@ export default function ListaEventos() {
                     dataHora: new Date(evento.datainicio),
                     localizacao: evento.localizacao,
                     subcategoria: evento.valorpt,
-                    estado: determinarEstado(evento.aprovado),
+                    estado: determinarEstado(evento),
                     status: evento.aprovado
                 };
             });

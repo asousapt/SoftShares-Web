@@ -457,9 +457,11 @@ const controladorEventos = {
             const replacements = { descricao: `%${descricao}%` };
     
             if (estado === "NULL") {
-                whereClause += ' AND e.aprovado IS NULL';
+                whereClause += ' AND e.cancelado = false AND e.aprovado IS NULL';
+            } else if(estado === 'Cancelados') {
+                whereClause += ' AND e.cancelado = true';
             } else if (estado !== undefined) {
-                whereClause += ' AND e.aprovado = :estado';
+                whereClause += ' AND e.cancelado = false AND e.aprovado = :estado';
                 replacements.estado = estado;
             }
     

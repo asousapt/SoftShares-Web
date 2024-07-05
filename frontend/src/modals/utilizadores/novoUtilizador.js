@@ -34,6 +34,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     const [imageSize, setImageSize] = useState(0);
     const [isPoloAdmidDisabled, setIsPoloAdmidDisabled] = useState(true);
     const [isPoloDisabled, setIsPoloDisabled] = useState(false);
+    const [isPerfilDisabled, setIsPerfilDisabled] = useState(false);
 
     //ERRORS
     const [emailError, setEmailError] = useState(false);
@@ -130,11 +131,19 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         const perfilsess = sessionStorage.getItem('perfil');
         if (perfilsess === 'Admin') {
             setIsPoloDisabled(true);
+
+            const selectedPerfil = perfil.find(p => p.label === 'User');
+            if (selectedPerfil){
+                setPerfilid(selectedPerfil.value);
+            }
+            setIsPerfilDisabled(true);
+
             const poloid = sessionStorage.getItem('poloid');
             const descpolo = sessionStorage.getItem('descpolo');
             setPoloid({ value: poloid, label: descpolo });
         } else {
             setIsPoloDisabled(false);
+            setIsPerfilDisabled(false);
         }
     }, [open]);
 
@@ -410,7 +419,7 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <div style={{ width: "50%" }}>
                                         <ComboBox caption='Perfil' options={perfil} value={perfilid} handleChange={handlePerfilChange} error={perfilError}
-                                            helperText={perfilError ? "Selecione um perfil válido" : ""} />
+                                            helperText={perfilError ? "Selecione um perfil válido" : ""} disabled={isPerfilDisabled}/>
                                     </div>
                                     <div style={{ width: "50%" }}>
                                         <ComboBox caption='Polo a Administrar' options={polos} value={poloadmid} handleChange={(e) => { setPoloAdmid(e.target.value); setPoloAdmError(false); }} error={poloAdmError}

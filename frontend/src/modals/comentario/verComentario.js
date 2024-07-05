@@ -9,8 +9,7 @@ const ReportCommentModal = ({ open, onClose, commentId }) => {
     const [poiData, setPoiData] = useState(null);
     const [reportedComment, setReportedComment] = useState(null);
     const [titulo, setTitle] = useState('');
-    const [localizacao, setLocalizacao] = useState('');
-    const [descricao, setDescription] = useState('');
+    const [tipo, setTipo] = useState('');
 
     useEffect(() => {
         if (open) {
@@ -21,7 +20,7 @@ const ReportCommentModal = ({ open, onClose, commentId }) => {
                         headers: { Authorization: `${token}` }
                     });
                     const coments = response.data.data;
-                    
+                    console.log(coments);
 
                     if (response.data) {
                         const transformedData = transformCommentsData(coments, commentId);
@@ -29,8 +28,6 @@ const ReportCommentModal = ({ open, onClose, commentId }) => {
                         setPoiData(transformedData.poi);
                         setReportedComment(transformedData.reportedComment);
                         setTitle(transformedData.poi.titulo);
-                        setLocalizacao(transformedData.poi.localizacao);
-                        setDescription(transformedData.poi.descricao);
                     }
                 } catch (error) {
                     console.error('Error fetching comments data:', error);
@@ -102,19 +99,14 @@ const ReportCommentModal = ({ open, onClose, commentId }) => {
                     <div style={{ marginBottom: 15 }}>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                             <div style={{ width: '50%' }}>
-                                <BasicTextField caption='Titulo' valor={titulo} onchange={(e) => setTitle(e.target.value)} fullwidth={true} disabled={true} />
+                                <BasicTextField caption='Tipo' valor={tipo} onchange={(e) => setTipo(e.target.value)} fullwidth={true} disabled={true} />
                             </div>
                             <div style={{ width: '49.4%' }}>
-                                <BasicTextField caption='Localização' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} disabled={true} />
+                                <BasicTextField caption='Titulo' valor={titulo} onchange={(e) => setTitle(e.target.value)} fullwidth={true} disabled={true} />
                             </div>
                         </div>
                     </div>
                     <div style={{ marginBottom: 20 }}></div>
-                    <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-                        <div style={{ width: '100%' }}>
-                            <BasicTextField caption='Descrição' valor={descricao} onchange={(e) => setDescription(e.target.value)} fullwidth={true} disabled={true} />
-                        </div>
-                    </div>
                     <h3>Comentários:</h3>
                     <CommentsList commentsData={[reportedComment]} />
                     <div style={{ display: 'flex', justifyContent: 'center' }}>

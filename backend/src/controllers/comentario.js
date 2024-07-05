@@ -126,6 +126,7 @@ const comentarioController = {
                             comentarioid: comment.comentarioid,
                             comentario: comment.comentario,
                             tipo: comment.tipo,
+                            datacriacao: comment.datacriacao,
                             utilizadorid: comment.utilizadorid,
                             utilizador_nome: comment.utilizador_nome,
                             respostas: []
@@ -138,6 +139,7 @@ const comentarioController = {
                                 comentarioid: comment.resposta_comentarioid,
                                 comentario: comment.resposta_comentario,
                                 tipo: 'REPLY',
+                                datacriacao: comment.datacriacao,
                                 utilizadorid: comment.resposta_utilizadorid,
                                 utilizador_nome: comment.resposta_utilizador_nome,
                                 respostas: []
@@ -160,6 +162,7 @@ const comentarioController = {
                         titulo: row.poi_titulo,
                         descricao: row.poi_descricao,
                         aprovado: row.poi_aprovado,
+                        datacriacao: row.poi_datacriacao,
                         dataaprovacao: row.poi_dataaprovacao,
                         utilizadoraprova: row.poi_utilizadoraprova,
                         localizacao: row.poi_localizacao,
@@ -180,6 +183,7 @@ const comentarioController = {
                         comentarioid: row.comentarioid,
                         comentario: row.comentario,
                         tipo: row.tipo,
+                        datacriacao: row.comentario_datacriacao,
                         utilizadorid: row.utilizadorid,
                         utilizador_nome: row.comentario_utilizador_nome,
                         parent_comentarioid: row.parent_comentarioid,

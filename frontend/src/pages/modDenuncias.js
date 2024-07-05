@@ -64,7 +64,8 @@ export default function ModDen() {
                     motivo: denuncia.texto,
                     dataHora: new Date(denuncia.datacriacao),
                     denunciadopor: denuncia.utilizadorcriou,
-                    comentarioId: denuncia.comentarioid
+                    comentarioId: denuncia.comentarioid,
+                    tipo: denuncia.tipo
                 };
             });
 
@@ -81,8 +82,6 @@ export default function ModDen() {
             const aprovacao = {
                 utilizadormodera: userid
             };
-
-            console.log('Aprovar registo:', id);
 
             await axios.put(`${process.env.REACT_APP_API_URL}/denuncia/aprovar/${id}`, aprovacao, {
                 headers: {

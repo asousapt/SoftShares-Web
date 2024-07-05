@@ -20,14 +20,22 @@ const ReportCommentModal = ({ open, onClose, commentId }) => {
                         headers: { Authorization: `${token}` }
                     });
                     const coments = response.data.data;
-                    console.log(coments);
-
+                    
                     if (response.data) {
                         const transformedData = transformCommentsData(coments, commentId);
-
+                        
                         setPoiData(transformedData.poi);
                         setReportedComment(transformedData.reportedComment);
                         setTitle(transformedData.poi.titulo);
+                        if (transformedData.poi.tipo === 'POI')
+                        {
+                            setTipo('Ponto de Interesse');
+                        }
+                        else if (transformedData.poi.tipo === 'THREAD')
+                        {
+                            setTipo('Publicação');
+                        }
+                        
                     }
                 } catch (error) {
                     console.error('Error fetching comments data:', error);
@@ -49,9 +57,7 @@ const ReportCommentModal = ({ open, onClose, commentId }) => {
                 if (result) {
                     poi = {
                         titulo: p.titulo,
-                        descricao: p.descricao,
-                        utilizadorcriou: p.utilizador_nome,
-                        localizacao: p.localizacao
+                        tipo: p.tipo
                     };
                     reportedComment = result;
                 }

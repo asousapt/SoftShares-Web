@@ -66,6 +66,11 @@ export default function ListaPontosInt() {
     const fetchData = async () => {
         try {
             const token = sessionStorage.getItem('token');
+            let poloid = sessionStorage.getItem('poloid');
+            
+            if (!poloid) {
+                poloid = '';
+            }
 
             let estado = undefined;
             if (filtroEstado === 'Aprovados') {
@@ -76,7 +81,6 @@ export default function ListaPontosInt() {
                 estado = "NULL";
             }
 
-            console.log(estado);
             const response = await axios.get(`${process.env.REACT_APP_API_URL}/pontoInteresse/filtro`, {
                 headers: {
                     Authorization: `${token}`
@@ -84,7 +88,8 @@ export default function ListaPontosInt() {
                 params: {
                     estado: estado,
                     categoria: filtroCategoria,
-                    descricao: filtroText
+                    descricao: filtroText,
+                    poloid: poloid
                 }
             });
             const pontosInt = response.data.data;

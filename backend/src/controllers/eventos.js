@@ -99,7 +99,7 @@ const controladorEventos = {
 
                 const versao = await models.formularioversao.create({
                     formularioid: formulario.formularioid,
-                    descricao: "Formulario Inscrição Evento " + evento.titulo,
+                    descricao: "Questionário de Qualidade Evento " + evento.titulo,
                 });
 
                 await Promise.all(formQualidade.map(async pergunta => {
@@ -155,7 +155,9 @@ const controladorEventos = {
             poloId,
             utilizadorid,
             imagens,
-            cancelado
+            cancelado,
+            formInsc,
+            formQualidade
         } = req.body;
 
         try {
@@ -182,9 +184,102 @@ const controladorEventos = {
             await ficheirosController.removerTodosFicheirosAlbum(idEvento, 'EVENTO');
             ficheirosController.adicionar(idEvento, 'EVENTO', imagens, utilizadorid);
 
+            if (Array.isArray(formInsc) && formInsc.length > 0) {
+                let cfgFormulario = await models.itemcfgformulario.findOne({
+                    where: {
+                        registoid: idEvento,
+                        tipo: 'EVENTO'
+                    }
+                });
+                if(!cfgFormulario){
+                    cfgFormulario = await models.itemcfgformulario.create({
+                        registoid: idEvento,
+                        tipo: 'EVENTO'
+                    });
+                }
+
+                let formulario = await models.formulario.findOne({
+                    where: {
+                        itemcfgformularioid: cfgFormulario.itemcfgformularioid,
+                        tipoformulario: "INSCR"
+                    }
+                });
+                if(!formulario){
+                    formulario = await models.formulario.create({
+                        itemcfgformularioid: cfgFormulario.itemcfgformularioid,
+                        tipoformulario: "INSCR"
+                    });
+                }
+
+                const versao = await models.formularioversao.create({
+                    formularioid: formulario.formularioid,
+                    descricao: "Formulario Inscrição Evento " + titulo,
+                });
+
+                await Promise.all(formInsc.map(async pergunta => {
+                    await models.formulariodetalhes.create({
+                        formularioversaoid: versao.formularioversaoid,
+                        pergunta: pergunta.text,
+                        tipodados: pergunta.type,
+                        obrigatorio: pergunta.required,
+                        minimo: pergunta.minValue,
+                        maximo: pergunta.maxValue,
+                        ordem: pergunta.order,
+                        respostaspossiveis: pergunta.options.join(", ")
+                    });
+                }));
+            }
+
+            if (Array.isArray(formQualidade) && formQualidade.length > 0) {
+                let cfgFormulario = await models.itemcfgformulario.findOne({
+                    where: {
+                        registoid: idEvento,
+                        tipo: 'EVENTO'
+                    }
+                });
+                if(!cfgFormulario){
+                    cfgFormulario = await models.itemcfgformulario.create({
+                        registoid: idEvento,
+                        tipo: 'EVENTO'
+                    });
+                }
+
+                let formulario = await models.formulario.findOne({
+                    where: {
+                        itemcfgformularioid: cfgFormulario.itemcfgformularioid,
+                        tipoformulario: "QUALIDADE"
+                    }
+                });
+                if(!formulario){
+                    formulario = await models.formulario.create({
+                        itemcfgformularioid: cfgFormulario.itemcfgformularioid,
+                        tipoformulario: "QUALIDADE"
+                    });
+                }
+
+                const versao = await models.formularioversao.create({
+                    formularioid: formulario.formularioid,
+                    descricao: "Questionário de Qualidade Evento " + titulo,
+                });
+
+                await Promise.all(formQualidade.map(async pergunta => {
+                    await models.formulariodetalhes.create({
+                        formularioversaoid: versao.formularioversaoid,
+                        pergunta: pergunta.text,
+                        tipodados: pergunta.type,
+                        obrigatorio: pergunta.required,
+                        minimo: pergunta.minValue,
+                        maximo: pergunta.maxValue,
+                        ordem: pergunta.order,
+                        respostaspossiveis: pergunta.options.join(", ")
+                    });
+                }));
+            }
+
             res.status(200).json({ message: 'Evento atualizado com sucesso' });
         } catch (error) {
-            res.status(500).json({ error: 'Erro ao atualizar evento' });
+            console.log(error.message);
+            res.status(500).json({ error: 'Erro ao atualizar evento', error: error });
         }
     },
 
@@ -295,9 +390,83 @@ const controladorEventos = {
             const ficheiros = await ficheirosController.getAllFilesByAlbum(idEvento, 'EVENTO');
             evento.dataValues.imagens = ficheiros;
 
+            const formInscricao = await sequelizeConn.query(
+                `SELECT 
+                    fd.*
+                FROM 
+                    FormularioDetalhes fd 
+                WHERE 
+                    formularioversaoid = (
+                        SELECT 
+                            MAX(formularioversaoid) 
+                        FROM 
+                            formularioversao 
+                        WHERE 
+                            formularioid = (
+                                SELECT 
+                                    formularioid
+                                FROM 
+                                    formulario
+                                WHERE
+                                    tipoformulario = 'INSCR'
+                                    AND itemcfgformularioid IN (
+                                        SELECT
+                                            itemcfgformularioid
+                                        FROM
+                                            itemcfgformulario
+                                        WHERE
+                                            registoid = ${idEvento}
+                                            AND tipo = 'EVENTO'
+                                        )
+                                )
+                        )
+                `,
+                {
+                    type: QueryTypes.SELECT
+                }
+            );
+            evento.dataValues.formInscricao = formInscricao || [];
+
+            const formQualidade = await sequelizeConn.query(
+                `SELECT 
+                    fd.*
+                FROM 
+                    FormularioDetalhes fd 
+                WHERE 
+                    formularioversaoid = (
+                        SELECT 
+                            MAX(formularioversaoid) 
+                        FROM 
+                            formularioversao 
+                        WHERE 
+                            formularioid = (
+                                SELECT 
+                                    formularioid
+                                FROM 
+                                    formulario
+                                WHERE
+                                    tipoformulario = 'QUALIDADE'
+                                    AND itemcfgformularioid IN (
+                                        SELECT
+                                            itemcfgformularioid
+                                        FROM
+                                            itemcfgformulario
+                                        WHERE
+                                            registoid = ${idEvento}
+                                            AND tipo = 'EVENTO'
+                                        )
+                                )
+                        )
+                `,
+                {
+                    type: QueryTypes.SELECT
+                }
+            );
+            evento.dataValues.formQualidade = formQualidade || [];
+
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: evento });
         } catch (error) {
-            res.status(500).json({ error: 'Erro ao consultar o evento' });
+            res.status(500).json({ error: 'Erro ao consultar o evento', error: error });
         }
     },
 

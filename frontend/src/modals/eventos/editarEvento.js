@@ -1,16 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Modal from '@mui/material/Modal';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 import BasicTextField from '../../components/textFields/basic';
 import DataHora from '../../components/textFields/dataHora';
 import SubmitButton from '../../components/buttons/submitButton';
 import ComboBox from '../../components/combobox/comboboxBasic';
 import CancelButton from '../../components/buttons/cancelButton';
-import Autocomplete from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
 import ImageTable from '../../components/tables/imageTable';
-import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
+import FormBuilder from '../../components/forms/FormBuilder';
 
 const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps  }) => {
     //VARS
@@ -35,6 +40,8 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
     const [subcategoria, setSubcategoria] = useState(null);
     const [images, setImages] = useState([]);
     const [cancelado, setCancelado] = useState(null);
+    const [initialQuestionsI , setInitialQuestionsI] = useState(null);
+    const [initialQuestionsQ , setInitialQuestionsQ] = useState(null);
 
     //ERRORS
     const [titleError, setTitleError] = useState(false);
@@ -49,6 +56,9 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
     const [dataHoraFimError, setDataHoraFimError] = useState(false);
     const [dataLimInscricaoError, setDataLimInscricaoError] = useState(false);
     const [numParticipantesError, setNumParticipantesError] = useState(false);
+
+    const refFormInscricao = useRef();
+    const refFormQualidade = useRef();
 
     const getBase64FromUrl = async (url) => {
         const response = await fetch(url);
@@ -242,6 +252,28 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
                 })
             );
             setImages(transformedImages);
+
+            setInitialQuestionsI(userData.formInscricao.map(detail => ({
+                id: detail.formulariodetalhesid,
+                type: detail.tipodados,
+                text: detail.pergunta,
+                options: detail.respostaspossiveis ? detail.respostaspossiveis.split(', ') : [],
+                required: detail.obrigatorio,
+                order: detail.ordem,
+                minValue: detail.minimo,
+                maxValue: detail.maximo
+            })));
+
+            setInitialQuestionsQ(userData.formQualidade.map(detail => ({
+                id: detail.formulariodetalhesid,
+                type: detail.tipodados,
+                text: detail.pergunta,
+                options: detail.respostaspossiveis ? detail.respostaspossiveis.split(', ') : [],
+                required: detail.obrigatorio,
+                order: detail.ordem,
+                minValue: detail.minimo,
+                maxValue: detail.maximo
+            })));
         } catch (error) {
             console.error('Erro ao buscar dados do evento:', error);
         }
@@ -283,7 +315,7 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
         }
         if (!dataInicio) {
             errors.dataHoraInicioError = true;
-        } else {
+        } else if (!cancelado) {
             const startDate = new Date(dataInicio);
             const currentDate = new Date();
             if (startDate <= currentDate) {
@@ -292,7 +324,7 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
         }
         if (!dataFim) {
             errors.dataHoraFimError = true;
-        } else {
+        } else if (!cancelado){
             const endDate = new Date(dataFim);
             const currentDate = new Date();
             const startDate = new Date(dataInicio);
@@ -304,7 +336,7 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
         } 
         if (!dataLimInscricao) {
             errors.dataLimInscricaoError = true;
-        } else {
+        } else if (!cancelado){
             const deadlineDate = new Date(dataLimInscricao);
             const currentDate = new Date();
             const startDate = new Date(dataInicio);
@@ -339,6 +371,24 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
         if (Object.keys(errors).length > 0) {
             return;
         }
+        alert('1');
+        const formInsc = JSON.parse(refFormInscricao.current.generateJSON());
+        const formQdd = JSON.parse(refFormQualidade.current.generateJSON());
+
+        for (let question of formInsc) {
+            if (!question.text.trim()) {
+                alert('Preencha o texto de todas as perguntas do formulario de inscrição!');
+                return;
+            }
+        }
+
+        for (let question of formQdd) {
+            if (!question.text.trim()) {
+                alert('Preencha o texto de todas as perguntas do questionário de qualidade!');
+                return;
+            }
+        }
+        alert('2');
 
         try {
             const imagesRtn = images.map(image => ({
@@ -364,8 +414,11 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
                 poloId,
                 utilizadorid: userid,
                 imagens: imagesRtn,
-                cancelado: cancelado
+                cancelado: cancelado,
+                formInsc: formInsc,
+                formQualidade: formQdd
             };
+            console.log(eventoEditado);
             await axios.put(`${process.env.REACT_APP_API_URL}/evento/update/${eventData}`, eventoEditado, {
                 headers: {
                     Authorization: `${token}`,
@@ -453,89 +506,112 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px', overflow: 'auto' }}>
                 <h2 style={{ marginTop: 0, color: 'white' }}>Editar Evento</h2>
                 <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 20, borderRadius: 12 }}>
-                    <div style={{ marginBottom: 15 }}>
-                        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-                            <div style={{ width: '40%' }}>
-                                <BasicTextField caption='Titulo' valor={titulo} onchange={(e) => setTitle(e.target.value)} fullwidth={true} type="text" error={titleError}
-                            helperText={titleError ? "Introduza um título válido" : ""} allowOnlyLetters={true}/>
+                <Accordion defaultExpanded>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />} id="panel1-header">
+                            Detalhes Principais
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <div style={{ marginBottom: 15 }}>
+                                <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                                    <div style={{ width: '40%' }}>
+                                        <BasicTextField caption='Titulo' valor={titulo} onchange={(e) => setTitle(e.target.value)} fullwidth={true} type="text" error={titleError}
+                                    helperText={titleError ? "Introduza um título válido" : ""} allowOnlyLetters={true}/>
+                                    </div>
+                                    <div style={{ width: '33.9%' }}>
+                                        <BasicTextField caption='Localização' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} type="text" error={localizacaoError}
+                                    helperText={localizacaoError ? "Introduza uma localização válida" : ""} />
+                                    </div>
+                                    <div style={{ width: '25%' }}>
+                                        <BasicTextField caption='Nº Participantes Máximo' type='number' valor={nmrMaxParticipantes} onchange={(e) => setNumParticipantes(e.target.value)} fullwidth={true} error={numParticipantesError}
+                                    helperText={numParticipantesError ? "Introduza um nº válido" : ""} />
+                                    </div>
+                                </div>
+                                <div style={{ marginBottom: 20 }}></div>
+                                <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                                    <div style={{ width: '74.5%' }}>
+                                        <BasicTextField caption='Descrição' valor={descricao} onchange={(e) => setDescription(e.target.value)} fullwidth={true} type="text" error={descError}
+                                    helperText={descError ? "Introduza uma descrição válida" : ""} />
+                                    </div>
+                                    <div style={{ width: '24.9%' }}>
+                                        <ComboBox caption='Polo' options={polos} value={poloId} handleChange={(e) => { setPolo(e.target.value); setPoloError(false); }} error={poloError}
+                                            disabled={false} helperText={poloError ? "Selecione um polo" : ""} />
+                                    </div>
+                                </div>
+                                <div style={{ marginBottom: 20 }}></div>
+                                <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                                    <div style={{ width: '25%' }}>
+                                        <Autocomplete options={distritos} getOptionLabel={(option) => option.label} renderInput={(params) => (
+                                                <TextField {...params} label="Distrito" variant="outlined" type="text" error={distritoError} helperText={distritoError ? "Escolha um distrito" : ""} /> )}
+                                            value={distrito}
+                                            onChange={handleDistritoChange}
+                                            fullWidth={true} />
+                                    </div>
+                                    <div style={{ width: '23.4%' }}>
+                                        <Autocomplete options={cidades} getOptionLabel={(option) => option.label} renderInput={(params) => (
+                                            <TextField {...params} label="Cidade" variant="outlined" error={cidadeError} helperText={cidadeError ? "Escolha uma cidade" : ""} />)}
+                                            value={cidadeID}
+                                            onChange={(event, newValue) => { setCidade(newValue); setCidadeError(false); }}
+                                            fullWidth={true} />
+                                    </div>
+                                    <div style={{ width: '25%' }}>
+                                        <Autocomplete options={opcoesCat} getOptionLabel={(option) => option.label} renderInput={(params) => (
+                                                <TextField {...params} label="Categoria" variant="outlined" type="text" error={categoriaError} helperText={categoriaError ? "Escolha uma categoria" : ""} /> )}
+                                            value={categoria}
+                                            onChange={handleCategoriaChange}
+                                            fullWidth={true} />
+                                    </div>
+                                    <div style={{ width: '25%' }}>
+                                        <Autocomplete options={opcoesSubcat} getOptionLabel={(option) => option.label} renderInput={(params) => (
+                                            <TextField {...params} label="Subcategoria" variant="outlined" error={subcategoriaError} helperText={subcategoriaError ? "Escolha uma subcategoria" : ""} />)}
+                                            value={subcategoria}
+                                            onChange={(event, newValue) => { setSubcategoria(newValue); }}
+                                            fullWidth={true} />
+                                    </div>
+                                </div>
+                                <div style={{ marginBottom: 20 }}></div>
+                                <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', alignItems: 'center' }}>
+                                    <div style={{ width: '25%' }}>
+                                        <DataHora caption="Data e Hora Início" value={dataInicio} onChange={(newValue) => setDataHoraInicio(newValue)} fullwidth={true} error={dataHoraInicioError}
+                                    helperText={dataHoraInicioError ? "Introduza uma data e hora válida" : ""} />
+                                    </div>
+                                    <div style={{ width: '23.5%' }}>
+                                        <DataHora caption="Data e Hora Fim" value={dataFim} onChange={(newValue) => setDataHoraFim(newValue)} fullwidth={true} error={dataHoraFimError}
+                                    helperText={dataHoraFimError ? "Introduza uma data e hora válida" : ""} />
+                                    </div>
+                                    <div style={{ width: '25%' }}>
+                                        <DataHora caption="Data Limite de Inscrição" value={dataLimInscricao} onChange={(newValue) => setDataLimInscricao(newValue)} fullwidth={true} error={dataLimInscricaoError}
+                                    helperText={dataLimInscricaoError ? "Introduza uma data e hora válida" : ""} />
+                                    </div>
+                                    <div style={{ width: '15%' }}>
+                                        <FormControlLabel
+                                            control={<Switch checked={cancelado} onChange={(e) => setCancelado(e.target.checked)} />}
+                                            label="Cancelado"
+                                        />
+                                    </div>
+                                </div>
+                                <div style={{marginTop: 20}}>
+                                    <ImageTable images={images} onAddImage={handleImage} onDelete={resetImage}/>
+                                </div>
                             </div>
-                            <div style={{ width: '33.9%' }}>
-                                <BasicTextField caption='Localização' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} type="text" error={localizacaoError}
-                            helperText={localizacaoError ? "Introduza uma localização válida" : ""} />
-                            </div>
-                            <div style={{ width: '25%' }}>
-                                <BasicTextField caption='Nº Participantes Máximo' type='number' valor={nmrMaxParticipantes} onchange={(e) => setNumParticipantes(e.target.value)} fullwidth={true} error={numParticipantesError}
-                            helperText={numParticipantesError ? "Introduza um nº válido" : ""} />
-                            </div>
-                        </div>
-                        <div style={{ marginBottom: 20 }}></div>
-                        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-                            <div style={{ width: '74.5%' }}>
-                                <BasicTextField caption='Descrição' valor={descricao} onchange={(e) => setDescription(e.target.value)} fullwidth={true} type="text" error={descError}
-                            helperText={descError ? "Introduza uma descrição válida" : ""} />
-                            </div>
-                            <div style={{ width: '24.9%' }}>
-                                <ComboBox caption='Polo' options={polos} value={poloId} handleChange={(e) => { setPolo(e.target.value); setPoloError(false); }} error={poloError}
-                                    disabled={false} helperText={poloError ? "Selecione um polo" : ""} />
-                            </div>
-                        </div>
-                        <div style={{ marginBottom: 20 }}></div>
-                        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-                            <div style={{ width: '25%' }}>
-                                <Autocomplete options={distritos} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                        <TextField {...params} label="Distrito" variant="outlined" type="text" error={distritoError} helperText={distritoError ? "Escolha um distrito" : ""} /> )}
-                                    value={distrito}
-                                    onChange={handleDistritoChange}
-                                    fullWidth={true} />
-                            </div>
-                            <div style={{ width: '23.4%' }}>
-                                <Autocomplete options={cidades} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                    <TextField {...params} label="Cidade" variant="outlined" error={cidadeError} helperText={cidadeError ? "Escolha uma cidade" : ""} />)}
-                                    value={cidadeID}
-                                    onChange={(event, newValue) => { setCidade(newValue); setCidadeError(false); }}
-                                    fullWidth={true} />
-                            </div>
-                            <div style={{ width: '25%' }}>
-                                <Autocomplete options={opcoesCat} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                        <TextField {...params} label="Categoria" variant="outlined" type="text" error={categoriaError} helperText={categoriaError ? "Escolha uma categoria" : ""} /> )}
-                                    value={categoria}
-                                    onChange={handleCategoriaChange}
-                                    fullWidth={true} />
-                            </div>
-                            <div style={{ width: '25%' }}>
-                                <Autocomplete options={opcoesSubcat} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                    <TextField {...params} label="Subcategoria" variant="outlined" error={subcategoriaError} helperText={subcategoriaError ? "Escolha uma subcategoria" : ""} />)}
-                                    value={subcategoria}
-                                    onChange={(event, newValue) => { setSubcategoria(newValue); }}
-                                    fullWidth={true} />
-                            </div>
-                        </div>
-                        <div style={{ marginBottom: 20 }}></div>
-                        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', alignItems: 'center' }}>
-                            <div style={{ width: '25%' }}>
-                                <DataHora caption="Data e Hora Início" value={dataInicio} onChange={(newValue) => setDataHoraInicio(newValue)} fullwidth={true} error={dataHoraInicioError}
-                            helperText={dataHoraInicioError ? "Introduza uma data e hora válida" : ""} />
-                            </div>
-                            <div style={{ width: '23.5%' }}>
-                                <DataHora caption="Data e Hora Fim" value={dataFim} onChange={(newValue) => setDataHoraFim(newValue)} fullwidth={true} error={dataHoraFimError}
-                            helperText={dataHoraFimError ? "Introduza uma data e hora válida" : ""} />
-                            </div>
-                            <div style={{ width: '25%' }}>
-                                <DataHora caption="Data Limite de Inscrição" value={dataLimInscricao} onChange={(newValue) => setDataLimInscricao(newValue)} fullwidth={true} error={dataLimInscricaoError}
-                            helperText={dataLimInscricaoError ? "Introduza uma data e hora válida" : ""} />
-                            </div>
-                            <div style={{ width: '15%' }}>
-                                <FormControlLabel
-                                    control={<Switch checked={cancelado} onChange={(e) => setCancelado(e.target.checked)} />}
-                                    label="Cancelado"
-                                />
-                            </div>
-                        </div>
-                        <div style={{marginTop: 20}}>
-                            <ImageTable images={images} onAddImage={handleImage} onDelete={resetImage}/>
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
+                        </AccordionDetails>
+                    </Accordion>
+                    <Accordion>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />} id="panel2-header">
+                            Formulário de Inscrição
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <FormBuilder ref={refFormInscricao} initialQuestions={initialQuestionsI}/>
+                        </AccordionDetails>
+                    </Accordion>
+                    <Accordion>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />} id="panel3-header">
+                            Questionário de Qualidade
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <FormBuilder ref={refFormQualidade} initialQuestions={initialQuestionsQ}/>
+                        </AccordionDetails>
+                    </Accordion>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: 10 }}>
                         <CancelButton onclick={handleCancel} caption='Cancelar' />
                         <SubmitButton onclick={handleEditEvent} caption='Guardar' />
                     </div>

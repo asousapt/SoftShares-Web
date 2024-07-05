@@ -11,6 +11,7 @@ import FormAnswerer from '../../components/forms/FormAnswerer';
 import ComboBox from '../../components/combobox/comboboxBasic';
 
 const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps }) => {
+    console.log(eventData);
     //VARS
     //FIELDS
     const [poloid, setPoloid] = useState('');

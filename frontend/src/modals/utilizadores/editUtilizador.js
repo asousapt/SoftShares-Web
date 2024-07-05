@@ -32,6 +32,7 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
     const [imageSize, setImageSize] = useState(0);
     const [isPoloAdmidDisabled, setIsPoloAdmidDisabled] = useState(true);
     const [isPoloDisabled, setIsPoloDisabled] = useState(false);
+    const [isPerfilDisabled, setIsPerfilDisabled] = useState(false);
 
     //ERRORS
     const [emailError, setEmailError] = useState(false);
@@ -175,6 +176,11 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
                 setPoloAdmid('');
                 setIsPoloAdmidDisabled(true);
             }
+            const perfilsess = sessionStorage.getItem('perfil');
+            if (perfilsess === 'Admin') {
+                setIsPoloAdmidDisabled(true);
+            } 
+
             if (userData.imagem === undefined){
                 setImageName('');
                 setImageSize(0);
@@ -205,12 +211,16 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
 
         const perfilsess = sessionStorage.getItem('perfil');
         if (perfilsess === 'Admin') {
+            setIsPerfilDisabled(true);
             setIsPoloDisabled(true);
+            setIsPoloAdmidDisabled(true);
             const poloid = sessionStorage.getItem('poloid');
             const descpolo = sessionStorage.getItem('descpolo');
             setPoloid({ value: poloid, label: descpolo });
         } else {
             setIsPoloDisabled(false);
+            setIsPerfilDisabled(false);
+            setIsPoloAdmidDisabled(false);
         }
     }, [open, userId]);
 
@@ -403,7 +413,7 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
                                 <div style={{ display: 'flex', marginTop: 20, gap: 10 }}>
                                     <div style={{ width: "50%" }}>
                                         <ComboBox caption='Perfil' options={perfil} value={perfilid} handleChange={handlePerfilChange} error={perfilError}
-                                            helperText={perfilError ? "Selecione um perfil válido" : ""} />
+                                            helperText={perfilError ? "Selecione um perfil válido" : ""} disabled={isPerfilDisabled}/>
                                     </div>
                                     <div style={{ width: "50%" }}>
                                         <ComboBox caption='Polo a Administrar' options={polos} value={poloadmid} handleChange={(e) => { setPoloAdmid(e.target.value); setPoloAdmError(false); }} error={poloAdmError}

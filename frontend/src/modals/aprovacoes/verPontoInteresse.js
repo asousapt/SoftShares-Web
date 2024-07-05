@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import Modal from '@mui/material/Modal';
 import BasicTextField from '../../components/textFields/basic';
 import CancelButton from '../../components/buttons/cancelButton';
@@ -6,7 +7,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import ImageTable from '../../components/tables/imageTable';
 import ComboBox from '../../components/combobox/comboboxBasic';
-import axios from 'axios';
+import FormAnswerer from '../../components/forms/FormAnswerer';
 
 const EditPontoIntModal = ({ open, onClose, registoId}) => {
     const [poloid, setPoloid] = useState('');
@@ -24,6 +25,13 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
     const [categoria, setCategoria] = useState(null);
     const [opcoesSubcat, setOpcoesSubcat] = useState([]);
     const [subcategoria, setSubcategoria] = useState(null);
+    const [questions , setQuestions] = useState([]);
+
+    const componentRef = useRef();
+
+    const executeFunction = () => {
+        componentRef.current.generateJSON();
+    };
 
     const getBase64FromUrl = async (url) => {
         const response = await fetch(url);
@@ -214,6 +222,25 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
                 })
             );
             setImages(transformedImages);
+            
+            setQuestions(userData.formdata.map(detail => {
+                const responseArray = detail.resposta ? detail.resposta.split(',').map(res => res.trim()) : [];
+            
+                return {
+                    id: detail.id,
+                    type: detail.tipodados,
+                    label: detail.pergunta,
+                    text: detail.resposta,
+                    options: detail.respostaspossiveis ? detail.respostaspossiveis.split(', ').map(option => ({
+                                opcao: option.trim(),
+                                selected: responseArray.includes(option.trim())
+                            })) : [{}],
+                    required: detail.obrigatorio,
+                    minValue: detail.minimo,
+                    maxValue: detail.maximo,
+                    error: ''
+                };
+            }));
         } catch (error) {
             console.error('Erro ao receber dados do Ponto de Interesse:', error);
         }
@@ -296,7 +323,9 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
                                 />
                             </div>
                         </div>
-                        <div style={{ marginBottom: 20 }}></div>
+                        <FormAnswerer ref={componentRef} initialQuestions={questions} disabled={true} />
+
+                        <div style={{ marginTop: 10 }}></div>
                         <ImageTable images={images} onAddImage={() => {}} onDelete={() => {}} canModify={false} />
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>

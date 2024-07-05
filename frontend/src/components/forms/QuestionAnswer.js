@@ -5,7 +5,7 @@ import {
     Checkbox,
 } from '@mui/material';
 
-const QuestionAnswerer = ({ question, handleTextChange, handleOptionChange }) => {
+const QuestionAnswerer = ({ question, handleTextChange, handleOptionChange, disabled }) => {
     const [selectedOption, setSelectedOption] = useState(-1); 
     
     useEffect(() => {
@@ -27,12 +27,14 @@ const QuestionAnswerer = ({ question, handleTextChange, handleOptionChange }) =>
                     <Radio
                         checked={selectedOption === idx}
                         onChange={() => handleRadioChange(idx)}
+                        disabled={disabled}
                     />
                 )}
                 {question.type === 'SELECAO' && (
                     <Checkbox
                         checked={opt.selected}
                         onChange={(e) => handleOptionChange(question.id, idx, e.target.checked)}
+                        disabled={disabled}
                     />
                 )}
                 <TextField
@@ -55,12 +57,13 @@ const QuestionAnswerer = ({ question, handleTextChange, handleOptionChange }) =>
                         onChange={(e) => handleTextChange(question.id, 'text', e.target.value)}
                         variant="outlined"
                         fullWidth
+                        disabled={disabled}
                     />
                 );
             case 'LOGICO':
                 return (
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <Checkbox checked={question.text} onChange={(e) => handleTextChange(question.id, 'text', e.target.checked)} />
+                        <Checkbox checked={question.text} onChange={(e) => handleTextChange(question.id, 'text', e.target.checked)} disabled={disabled}/>
                         <TextField
                             value={question.label}
                             variant="outlined"
@@ -85,6 +88,7 @@ const QuestionAnswerer = ({ question, handleTextChange, handleOptionChange }) =>
                         variant="outlined"
                         fullWidth
                         type='number'
+                        disabled={disabled}
                     />
                 );
             default:

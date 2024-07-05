@@ -3,7 +3,7 @@ import { Paper, Typography } from '@mui/material';
 import QuestionAnswerer from './QuestionAnswer';
 
 const FormAnswerer = forwardRef((props, ref) => {
-    const { initialQuestions } = props;
+    const { initialQuestions, disabled = false } = props;
     const [questions, setQuestions] = useState([]);
     console.log(initialQuestions);
 
@@ -117,6 +117,7 @@ const FormAnswerer = forwardRef((props, ref) => {
                         question={q}
                         handleTextChange={handleTextChange}
                         handleOptionChange={handleOptionChange}
+                        disabled={disabled}
                     />
                     {q.error && <Typography color="error">{q.error}</Typography>}
                 </Paper>

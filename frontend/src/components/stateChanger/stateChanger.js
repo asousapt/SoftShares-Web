@@ -29,6 +29,11 @@ export default function State({ status }) {
             textColor = 'white';
             text = 'Por Aprovar';
             break;
+        case 'Cancelado':
+            backgroundColor = '#202021';
+            textColor = '#e3e3e3';
+            text = 'Cancelado';
+            break;
         default:
             backgroundColor = '#EEF1F4';
             textColor = '#1765E0';

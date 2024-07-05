@@ -371,7 +371,6 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
         if (Object.keys(errors).length > 0) {
             return;
         }
-        alert('1');
         const formInsc = JSON.parse(refFormInscricao.current.generateJSON());
         const formQdd = JSON.parse(refFormQualidade.current.generateJSON());
 
@@ -388,7 +387,6 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
                 return;
             }
         }
-        alert('2');
 
         try {
             const imagesRtn = images.map(image => ({

@@ -13,6 +13,7 @@ import StateChanger from '../components/stateChanger/stateChanger';
 /* FIM COMPONENTES */
 import NovoPontoInt from '../modals/pontosInteresse/novoPontoInt';
 import EditPontoInt from '../modals/pontosInteresse/editPontoInt';
+import Map from '../modals/maps/maps';
 
 const opcoesFiltro = [
     { value: 'Todos', label: 'Todos' },
@@ -23,6 +24,7 @@ const opcoesFiltro = [
 
 export default function ListaPontosInt() {
     const [isNewModalOpen, setNewModalOpen] = useState(false);
+    const [isNewModalOpen1, setNewModalOpen1] = useState(false);
     const [filtroText, setFiltroText] = useState('');
     const [filtroEstado, setFiltroEstado] = useState('Todos');
     const [opcoesFiltroSubcat, setOpcoesSubcat] = useState([]);
@@ -163,6 +165,7 @@ export default function ListaPontosInt() {
             <div className="data-container">
                 <div style={{marginBottom:'20px', paddingTop: '20px'}}>
                     <AddButton caption='Adicionar' onclick={() => setNewModalOpen(true)} />
+                    <AddButton caption='teste' onclick={() => setNewModalOpen1(true)} />
                     <Search onchange={(e) => setFiltroText(e.target.value)} />
                     <ComboFilter options={opcoesFiltro} value={filtroEstado} handleChange={(e) => setFiltroEstado(e.target.value)} />
                     <ComboFilter options={opcoesFiltroSubcat} value={filtroCategoria} handleChange={(event) => setFiltroCategoria(event.target.value)} />
@@ -172,6 +175,7 @@ export default function ListaPontosInt() {
                 </div>
             </div>
             <NovoPontoInt open={isNewModalOpen} onClose={() => setNewModalOpen(false)} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
+            <Map open={isNewModalOpen1} onClose={() => setNewModalOpen1(false)} />
             {isEditModalOpen && (<EditPontoInt open={isEditModalOpen} onClose={() => setEditModalOpen(false)} eventData={selectedPontoIntId} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps}/>)}
             <Alert open={alertOpen} setOpen={setAlertOpen} title={alertProps.title} label={alertProps.label} severity={alertProps.severity} />
         </div>

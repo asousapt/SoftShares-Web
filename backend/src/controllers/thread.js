@@ -218,11 +218,15 @@ const controladorThread = {
     },
 
     consultarTodosComFiltro: async (req, res) => {
-        const { categoria, descricao } = req.query;
+        const { categoria, descricao, poloid } = req.query;
         try {
             let whereClause = '';
             if (categoria > 0){
                 whereClause += ` AND t.subcategoriaid IN (SELECT subcategoriaid FROM subcategoria WHERE categoriaid = ${categoria}) `;
+            }
+
+            if (poloid) {
+                whereClause += ` AND t.poloid = ${poloid}`;
             }
 
             const threads = await sequelizeConn.query(
@@ -247,6 +251,7 @@ const controladorThread = {
                 { type: QueryTypes.SELECT }
             );
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: threads });
+
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
         }

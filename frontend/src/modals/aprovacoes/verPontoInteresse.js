@@ -5,9 +5,11 @@ import CancelButton from '../../components/buttons/cancelButton';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import ImageTable from '../../components/tables/imageTable';
+import ComboBox from '../../components/combobox/comboboxBasic';
 import axios from 'axios';
 
 const EditPontoIntModal = ({ open, onClose, registoId}) => {
+    const [poloid, setPoloid] = useState('');
     const [titulo, setTitle] = useState('');
     const [localizacao, setLocalizacao] = useState('');
     const [descricao, setDescription] = useState('');
@@ -15,6 +17,7 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
     const [cidades, setCidades] = useState([]);
     const [distrito, setDistrito] = useState(null);
     const [distritos, setDistritos] = useState([]);
+    const [poloOptions, setPoloOptions] = useState([]);
     const [error, setError] = useState(null);
     const [images, setImages] = useState([]);
     const [opcoesCat, setOpcoesCat] = useState([]);
@@ -34,6 +37,24 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
             reader.onerror = reject;
             reader.readAsDataURL(blob);
         });
+    };
+
+    const fetchPolos = async () => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/polo`, {
+                headers: { Authorization: `${token}` }
+            });
+            const polosData = response.data.data;
+            const polosOptions = polosData.map(polo => ({
+                value: polo.poloid,
+                label: polo.descricao
+            }));
+
+            setPoloOptions(polosOptions);
+        } catch (error) {
+            console.error('Erro ao buscar polos:', error);
+        }
     };
 
     const fetchCategorias = async () => {
@@ -161,6 +182,7 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
             setTitle(userData.titulo);
             setLocalizacao(userData.localizacao);
             setDescription(userData.descricao);
+            setPoloid(userData.poloid);
 
             const distrito = await fetchDistritoByCidadeId(userData.cidadeid);
             setDistrito(distrito);
@@ -198,6 +220,7 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
     };
 
     useEffect(() => {
+        fetchPolos();
         fetchDistritos();
         fetchCategorias();
         fetchEventData();
@@ -219,8 +242,11 @@ const EditPontoIntModal = ({ open, onClose, registoId}) => {
                         </div>
                         <div style={{ marginBottom: 20 }}></div>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-                        <div style={{ width: '100%' }}>
+                            <div style={{ width: '74.4%' }}>
                                 <BasicTextField caption='Descrição' valor={descricao} onchange={(e) => setDescription(e.target.value)} fullwidth={true} disabled={true}/>
+                            </div>
+                            <div style={{ width: "25%" }}>
+                                <ComboBox caption='Polo' options={poloOptions} value={poloid} handleChange={(e) => { setPoloid(e.target.value)}} disabled={true}/>
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>

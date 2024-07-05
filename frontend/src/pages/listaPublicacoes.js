@@ -60,13 +60,20 @@ export default function ListaPublicacoes() {
     const fetchData = async () => {
         try {
             const token = sessionStorage.getItem('token');
+            let poloid = sessionStorage.getItem('poloid');
+            
+            if (!poloid) {
+                poloid = '';
+            }
+
             const response = await axios.get(`${process.env.REACT_APP_API_URL}/thread/filtro`, {
                 headers: {
                     Authorization: `${token}`
                 },
                 params: {
                     categoria: filtroCategoria,
-                    descricao: filtroText
+                    descricao: filtroText,
+                    poloid: poloid
                 }
             });
             const threads = response.data.data;

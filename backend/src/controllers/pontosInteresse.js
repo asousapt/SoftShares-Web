@@ -406,21 +406,27 @@ const controladorPontosInteresse = {
     },
 
     consultarPorAprovar: async (req, res) => {
-        const { descricao} = req.query;
+        const { descricao, poloid } = req.query;
 
         try {
+            let whereClause = {
+                aprovado: null,
+                titulo: {
+                    [Op.like]: `%${descricao}%`
+                }
+            };
+
+            if (poloid) {
+                whereClause.poloid = poloid;
+            }
+
             const pontosInteresse = await models.pontointeresse.findAll({
                 include: {
                     model: models.utilizador,
                     as: 'utilizadorcriou_utilizador',
                     attributes: ['pnome', 'unome']
                 },
-                where:{
-                    aprovado: null,
-                    titulo: {
-                        [Op.like]: `%${descricao}%`
-                    }
-                }
+                where: whereClause
             });
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: pontosInteresse });
         } catch (error) {
@@ -448,7 +454,7 @@ const controladorPontosInteresse = {
     },
 
     consultarTodosComFiltro: async (req, res) => {
-        const { estado, categoria, descricao } = req.query;
+        const { estado, categoria, descricao, poloid } = req.query;
 
         try {
             let whereClause = '';
@@ -460,6 +466,10 @@ const controladorPontosInteresse = {
 
             if (categoria > 0){
                 whereClause += ` AND p.subcategoriaid IN (SELECT subcategoriaid FROM subcategoria WHERE categoriaid = ${categoria}) `;
+            }
+
+            if (poloid) {
+                whereClause += ` AND p.poloid = ${poloid}`;
             }
 
             const pontosInteresse = await sequelizeConn.query(

@@ -60,7 +60,8 @@ export default function ModAprov() {
                     Authorization: `${token}`
                 },
                 params: {
-                    descricao: filtroText
+                    descricao: filtroText,
+                    poloid: poloid
                 }
             });
             const pontosinteresse = responsePontosInteresse.data.data;

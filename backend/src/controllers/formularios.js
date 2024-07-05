@@ -446,6 +446,81 @@ const controladorFormularios = {
             res.status(500).json({ error: 'Erro ao consultar o form' });
         }
     },
+    obtemRespostasFormulariosMobile: async (req, res) => {
+        const { idRegisto, tabela, idUtilizador, idFormulario } = req.params;
+    
+        const query = `
+            SELECT 
+                rd.respostadetalheid AS "respostaId",
+                rd.resposta AS "resposta",
+                rd.formulariodetalhesid AS "formulariodetalhesid"
+            FROM respostadetalhe rd
+            INNER JOIN respostaformulario rf ON rd.respostaformularioid = rf.respostaformularioid AND rf.utilizadorid = :idUtilizador
+            INNER JOIN itemrespostaformulario irf ON irf.itemrespostaformularioid = rf.itemrespostaformularioid
+            AND irf.entidade = :tabela AND irf.registoid = :idRegisto
+            INNER JOIN formulariodetalhes fd ON fd.formulariodetalhesid = rd.formulariodetalhesid
+            INNER JOIN formularioversao fv ON fv.formularioversaoid = fd.formularioversaoid AND fv.formularioid = :idFormulario
+        `;
+    
+        const query2 = `
+            SELECT 
+                fd.formulariodetalhesid AS "detalheId", 
+                fd.pergunta AS "pergunta", 
+                fd.tipodados AS "tipoDados", 
+                fd.obrigatorio AS "obrigatorio", 
+                fd.minimo AS "min", 
+                fd.maximo AS "max", 
+                fd.tamanho AS "tamanho", 
+                fd.respostasPossiveis AS "valoresPossiveis", 
+                fd.ordem AS "ordem"
+            FROM formulariodetalhes fd
+            WHERE fd.formulariodetalhesid IN (:formulariodetalhesids)
+        `;
+    
+        try {
+            const respostas = await sequelizeConn.query(query, {
+                replacements: { idRegisto, tabela, idUtilizador, idFormulario },
+                type: Sequelize.QueryTypes.SELECT
+            });
+    
+            if (!respostas.length) {
+                return res.status(200).json({ message: 'Consulta realizada com sucesso', data: [] });
+            }
+    
+            const formulariodetalhesids = respostas.map(resp => resp.formulariodetalhesid);
+    
+            const perguntas = await sequelizeConn.query(query2, {
+                replacements: { formulariodetalhesids },
+                type: Sequelize.QueryTypes.SELECT
+            });
+    
+            const processedPerguntas = perguntas.map(pergunta => {
+                if (pergunta.valoresPossiveis) {
+                    pergunta.valoresPossiveis = pergunta.valoresPossiveis
+                        .split(',')
+                        .map(val => val.trim())
+                        .filter(val => val);
+                } else {
+                    pergunta.valoresPossiveis = [];
+                }
+                return pergunta;
+            });
+    
+            const formData = respostas.map(resposta => ({
+                respostaId: resposta.respostaId,
+                resposta: resposta.resposta,
+                perguntaId: resposta.formulariodetalhesid,
+                pergunta: processedPerguntas.find(p => p.detalheId === resposta.formulariodetalhesid)
+            }));
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: formData });
+    
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar as respostas' });
+        }
+    }
+    
+    
 }
 
 module.exports = controladorFormularios;

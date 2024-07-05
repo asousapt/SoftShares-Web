@@ -701,7 +701,7 @@ const controladorEventos = {
     
         // Define the SQL queries
         const query = `
-            SELECT 
+            SELECT DISTINCT
                 fm.formularioid AS "formId", 
                 fv.descricao AS "titulo",
                 fm.tipoformulario AS "tipoFormulario"

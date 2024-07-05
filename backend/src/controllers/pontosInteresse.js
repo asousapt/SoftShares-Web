@@ -428,6 +428,7 @@ const controladorPontosInteresse = {
                 },
                 where: whereClause
             });
+            
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: pontosInteresse });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar os pontos de interesse', details: error.message });

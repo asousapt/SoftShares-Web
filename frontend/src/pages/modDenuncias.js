@@ -6,7 +6,6 @@ import DataTable from '../components/tables/dataTable';
 import DetailButton from '../components/buttons/detailButton';
 import AprovButton from '../components/buttons/aproveButton';
 import RejButton from '../components/buttons/rejectButton';
-import AddButton from '../components/buttons/addButton';
 import Header from '../components/header/header';
 import Search from '../components/textFields/search';
 /* FIM COMPONENTES */
@@ -40,6 +39,11 @@ export default function ModDen() {
     const fetchData = async () => {
         try {
             const token = sessionStorage.getItem('token');
+            let poloid = sessionStorage.getItem('poloid');
+
+            if (!poloid) {
+                poloid = '';
+            }
 
             const response = await axios.get(`${process.env.REACT_APP_API_URL}/denuncia/filtro`, {
                 headers: {
@@ -47,6 +51,7 @@ export default function ModDen() {
                 },
                 params: {
                     descricao: filtroText,
+                    poloid: poloid
                 }
             });
             const denuncias = response.data.data;
@@ -58,8 +63,9 @@ export default function ModDen() {
                     id: denuncia.denunciaid,
                     motivo: denuncia.texto,
                     dataHora: new Date(denuncia.datacriacao),
-                    denunciadopor: denuncia.utilizadorcriou_utilizador.pnome + ' ' + denuncia.utilizadorcriou_utilizador.unome,
-                    comentarioId: denuncia.comentarioid
+                    denunciadopor: denuncia.utilizadorcriou,
+                    comentarioId: denuncia.comentarioid,
+                    tipo: denuncia.tipo
                 };
             });
 
@@ -76,8 +82,6 @@ export default function ModDen() {
             const aprovacao = {
                 utilizadormodera: userid
             };
-
-            console.log('Aprovar registo:', id);
 
             await axios.put(`${process.env.REACT_APP_API_URL}/denuncia/aprovar/${id}`, aprovacao, {
                 headers: {

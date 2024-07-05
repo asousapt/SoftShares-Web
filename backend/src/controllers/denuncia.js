@@ -161,28 +161,43 @@ const denunciaController = {
     },
 
     consultarTudoComFiltro: async (req, res) => {
-        const { descricao } = req.query;
+        const { descricao, poloid } = req.query;
+
         try {
-            const denuncias = await models.denuncia.findAll({
-                where: {
-                    texto: {
-                        [Op.like]: `%${descricao}%`
-                    },
-                    utilizadormodera: {
-                        [Op.is]: null
-                    },
-                    datatratamento: {
-                        [Op.is]: null
-                    }
-                },
-                include: [
-                    {
-                        model: models.utilizador,
-                        as: 'utilizadorcriou_utilizador',
-                        attributes: ['pnome', 'unome']
-                    }
-                ]
-            });
+            let whereClause = '';
+
+            whereClause += ` AND d.utilizadormodera IS NULL`;
+            whereClause += ` AND d.datatratamento IS NULL`;
+
+            if (poloid) {
+                whereClause += ` AND (p.poloid= ${poloid} OR t.poloid = ${poloid}) `;
+            }
+
+            const denuncias = await sequelizeConn.query(
+                `SELECT 
+                        d.*, 
+                        CONCAT(u.pnome, ' ' , u.unome) AS utilizadorcriou,
+                        ic.*,
+                        CASE WHEN p.poloid IS NULL THEN t.poloid ELSE p.poloid END AS poloid
+                    FROM 
+                        denuncia d
+                    LEFT JOIN 
+                        utilizador u ON d.utilizadorcriou = u.utilizadorid
+                    LEFT JOIN
+                        comentario c ON d.comentarioid = c.comentarioid
+                    LEFT JOIN
+                        itemcomentario ic ON c.itemcomentarioid = ic.itemcomentarioid
+                    LEFT JOIN
+                        pontointeresse p ON ic.registoid = p.pontointeresseid AND ic.tipo = 'POI'
+                    LEFT JOIN
+                        thread t ON ic.registoid = t.threadid AND ic.tipo = 'THREAD'
+                    WHERE
+                        d.texto LIKE '%${descricao}%'
+                    ${whereClause}
+                        `,
+                { type: QueryTypes.SELECT }
+            );
+
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: denuncias });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar denúncias', details: error.message });

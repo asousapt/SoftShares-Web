@@ -209,21 +209,8 @@ const comentarioController = {
         try {
             const comentarios = await sequelizeConn.query(
                 `SELECT
-                    p.pontointeresseid AS pontointeresseid,
-                    p.titulo AS poi_titulo,
-                    p.descricao AS poi_descricao,
-                    p.aprovado AS poi_aprovado,
-                    p.dataaprovacao AS poi_dataaprovacao,
-                    p.utilizadoraprova AS poi_utilizadoraprova,
-                    p.localizacao AS poi_localizacao,
-                    p.latitude AS poi_latitude,
-                    p.longitude AS poi_longitude,
-                    p.idiomaid AS poi_idiomaid,
-                    p.cidadeid AS poi_cidadeid,
-                    p.datacriacao AS poi_datacriacao,
-                    p.dataalteracao AS poi_dataalteracao,
-                    p.utilizadorcriou AS poi_utilizadorcriou,
-                    CONCAT(u1.pnome, ' ', u1.unome) AS poi_utilizador_nome,
+                    case when ic.tipo = 'POI' then p.pontointeresseid else t.threadid end as id,
+                    case when ic.tipo = 'POI' then p.titulo else t.titulo end as titulo,
                     c1.comentarioid AS comentarioid,
                     c1.itemcomentarioid AS itemcomentarioid,
                     c1.utilizadorid AS utilizadorid,
@@ -240,11 +227,11 @@ const comentarioController = {
                     c2.utilizadorid AS resposta_utilizadorid,
                     CONCAT(u3.pnome, ' ', u3.unome) AS resposta_utilizador_nome
                 FROM 
-                    pontointeresse p
+                    itemcomentario ic
                 LEFT JOIN
-                    utilizador u1 ON p.utilizadorcriou = u1.utilizadorid
+                    pontointeresse p ON p.pontointeresseid = ic.registoid AND ic.tipo = 'POI'
                 LEFT JOIN
-                    itemcomentario ic ON p.pontointeresseid = ic.registoid AND ic.tipo = 'POI'
+                    thread t ON t.threadid = ic.registoid AND ic.tipo = 'THREAD'
                 LEFT JOIN
                     comentario c1 ON ic.itemcomentarioid = c1.itemcomentarioid
                 LEFT JOIN
@@ -259,7 +246,6 @@ const comentarioController = {
                 { type: Sequelize.QueryTypes.SELECT }
             );
     
-            // Helper function to build the nested comments structure
             const buildNestedComments = (comments) => {
                 const commentMap = {};
                 const responseSet = new Set();
@@ -300,23 +286,11 @@ const comentarioController = {
             const poiMap = {};
     
             comentarios.forEach(row => {
-                if (!poiMap[row.pontointeresseid]) {
-                    poiMap[row.pontointeresseid] = {
-                        pontointeresseid: row.pontointeresseid,
-                        titulo: row.poi_titulo,
-                        descricao: row.poi_descricao,
-                        aprovado: row.poi_aprovado,
-                        dataaprovacao: row.poi_dataaprovacao,
-                        utilizadoraprova: row.poi_utilizadoraprova,
-                        localizacao: row.poi_localizacao,
-                        latitude: row.poi_latitude,
-                        longitude: row.poi_longitude,
-                        idiomaid: row.poi_idiomaid,
-                        cidadeid: row.poi_cidadeid,
-                        datacriacao: row.poi_datacriacao,
-                        dataalteracao: row.poi_dataalteracao,
-                        utilizadorcriou: row.poi_utilizadorcriou,
-                        utilizador_nome: row.poi_utilizador_nome,
+                if (!poiMap[row.id]) {
+                    poiMap[row.id] = {
+                        id: row.id,
+                        titulo: row.titulo,
+                        tipo: row.tipo,
                         comentarios: []
                     };
                 }
@@ -335,7 +309,7 @@ const comentarioController = {
                         resposta_utilizador_nome: row.resposta_utilizador_nome
                     };
     
-                    poiMap[row.pontointeresseid].comentarios.push(comment);
+                    poiMap[row.id].comentarios.push(comment);
                 }
             });
     

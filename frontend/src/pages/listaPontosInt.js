@@ -175,7 +175,7 @@ export default function ListaPontosInt() {
             </div>
             <NovoPontoInt open={isNewModalOpen} onClose={() => setNewModalOpen(false)} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps}/>
             {isEditModalOpen && <EditPontoInt open={isEditModalOpen} onClose={() => setEditModalOpen(false)} eventData={selectedPontoIntId} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps}/>}
-            <Alert open={alertOpen} onClose={() => setAlertOpen(false)} {...alertProps} />
+            <Alert open={alertOpen} setOpen={setAlertOpen} title={alertProps.title} label={alertProps.label} severity={alertProps.severity} />
         </div>
     );
 }

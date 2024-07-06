@@ -173,8 +173,8 @@ export default function ListaPontosInt() {
                     <DataTable rows={tableRows || []} columns={tableColumns}/>
                 </div>
             </div>
-            <NovoPontoInt open={isNewModalOpen} onClose={() => setNewModalOpen(false)} />
-            {isEditModalOpen && <EditPontoInt open={isEditModalOpen} onClose={() => setEditModalOpen(false)} eventData={selectedPontoIntId} />}
+            <NovoPontoInt open={isNewModalOpen} onClose={() => setNewModalOpen(false)} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps}/>
+            {isEditModalOpen && <EditPontoInt open={isEditModalOpen} onClose={() => setEditModalOpen(false)} eventData={selectedPontoIntId} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps}/>}
             <Alert open={alertOpen} onClose={() => setAlertOpen(false)} {...alertProps} />
         </div>
     );

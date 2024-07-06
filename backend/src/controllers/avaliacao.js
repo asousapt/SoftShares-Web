@@ -35,17 +35,29 @@ const avaliacaoController = {
     },
 
     atualizar: async (req, res) => {
-        const { idAvaliacao } = req.params;
-        const { itemavaliacaoid, utilizadorid, avaliacao } = req.body;
+        const { tipo, idRegisto } = req.params;
+        const { utilizadorid, avaliacao } = req.body;
 
         try {
+            let itemAvaliacao = await models.itemavaliacao.findOne({
+                where: {
+                    itemorigid: idRegisto,
+                    tipoentidade: tipo
+                }
+            });
+            if (!itemAvaliacao) {
+                itemAvaliacao = await models.itemavaliacao.create({
+                    itemorigid: idRegisto,
+                    tipoentidade: tipo
+                });
+            }
+
             await models.avaliacao.update({
-                itemavaliacaoid: itemavaliacaoid,
-                utilizadorid: utilizadorid,
                 avaliacao: avaliacao
             }, {
                 where: {
-                    avaliacaoid: idAvaliacao
+                    itemavaliacaoid:  itemAvaliacao.itemavaliacaoid,
+                    utilizadorid: utilizadorid,
                 }
             });
 

@@ -53,37 +53,43 @@ const controladorCidades = {
         }
     },
 
+    
+
     getCidadeAPI: async (req, res) => {
         const { lat, lon } = req.params;
-    
-        // Define the extrairCidade function inside getCidadeAPI
-        function extrairCidade(concelho) {
-            // Exemplo básico: assume que a cidade é o primeiro nome antes de ", "
-            const index = concelho.indexOf(', ');
-            if (index !== -1) {
-                return concelho.substring(0, index);
-            } else {
-                return concelho; // Se não houver vírgula, retorna o concelho inteiro
-            }
-        }
-    
+        
+        const normalizeName = (name) => {
+            // Remove "District", "Distrito de", e espaços extras
+            return name.replace(/District|Distrito de/gi, '').trim();
+        };
+
         try {
-            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=AIzaSyDoHMPXsQ8JvnFfccIVO5zWjSlVp2PA09g`);
+            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&language=pt&key=AIzaSyDoHMPXsQ8JvnFfccIVO5zWjSlVp2PA09g`);
             
             const results = response.data.results;
             if (results && results.length > 0) {
                 const addressComponents = results[0].address_components;
     
-                const concelhoComponent = addressComponents.find(component => 
+                const distritoComponent = addressComponents.find(component => 
+                    component.types.includes('administrative_area_level_1')
+                );
+    
+                const cidadeComponent = addressComponents.find(component => 
                     component.types.includes('administrative_area_level_2')
                 );
-                
-                if (concelhoComponent) {
-                    const concelho = concelhoComponent.long_name;
-                    const cidade = extrairCidade(concelho);
-                    res.json({ cidade });
+    
+                const concelhoComponent = addressComponents.find(component => 
+                    component.types.includes('administrative_area_level_3')
+                );
+    
+                if (distritoComponent && cidadeComponent && concelhoComponent) {
+                    const distrito = normalizeName(distritoComponent.long_name);
+                    const cidade = normalizeName(cidadeComponent.long_name);
+                    const concelho = normalizeName(concelhoComponent.long_name);
+    
+                    res.json({ distrito, cidade, concelho });
                 } else {
-                    res.status(404).json({ error: 'Concelho não encontrado na resposta da GeoAPI' });
+                    res.status(404).json({ error: 'Informações necessárias não encontradas na resposta da GeoAPI' });
                 }
             } else {
                 res.status(404).json({ error: 'Nenhum resultado encontrado para as coordenadas fornecidas' });
@@ -93,7 +99,7 @@ const controladorCidades = {
             res.status(500).json({ error: 'Falha ao obter dados da GeoAPI' });
         }
     },
-    
+
 };
 
 module.exports = controladorCidades;

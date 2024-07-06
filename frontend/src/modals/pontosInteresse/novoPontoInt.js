@@ -22,8 +22,8 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     const [localizacao, setLocalizacao] = useState('');
     const [description, setDescription] = useState('');
     const [cidade, setCidade] = useState(null);
-    const [cidadeprov, setCidadeProv] = useState([]);
     const [cidades, setCidades] = useState([]);
+    const [cidadeData, setCidadeData] = useState(null);
     const [distrito, setDistrito] = useState(null);
     const [distritos, setDistritos] = useState([]);
     const [categoria, setCategoria] = useState(null);
@@ -35,11 +35,11 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     const [error, setError] = useState(null);
     const [images, setImages] = useState([]);
     const [questions, setQuestions] = useState([]);
+    const [loadingCidades, setLoadingCidades] = useState(false);
 
     const componentRef = useRef();
 
     const updateLatLng = (lat, lng) => {
-        console.log('updateLatLng', lat, lng);
         setLat(lat);
         setLng(lng);
     };
@@ -96,10 +96,16 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         return errors;
     };
 
-    useEffect (() => {
-        console.log('useEffect', lat, lng);
-    },
-    [lat, lng]);
+    useEffect(() => {
+        if (lat && lng) fetchCidadeAPI(lat, lng);
+    }, [lat, lng]);
+
+    useEffect(() => {
+        if (!loadingCidades && cidades.length > 0 && cidadeData) {
+            const cidade = cidades.find(c => c.label === cidadeData.cidade);
+            if (cidade) setCidade(cidade);
+        }
+    }, [loadingCidades, cidades, cidadeData]);
 
     const fetchCidadeAPI = async (lat, long) => {
         console.log('fetchCidadeAPI', lat, long);
@@ -110,9 +116,19 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
             });
             const cidadeData = response.data;
 
-            console.log('cidadeData', cidadeData);
+            console.log('distrito', cidadeData.distrito);
+            console.log('cidade', cidadeData.cidade);
+            console.log('concelho', cidadeData.concelho);
 
-            setCidadeProv(cidadeData);
+            const distrito = distritos.find(d => d.label === cidadeData.distrito);
+            if (distrito) {
+                setDistrito(distrito);
+                setLoadingCidades(true);
+                await fetchCidades(distrito.value);
+                setLoadingCidades(false);
+                setCidadeData(cidadeData);
+            }
+
             return cidadeData;
         } catch (error) {
             console.error('Erro ao buscar cidade:', error);
@@ -178,7 +194,6 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         fetchCategorias();
     }, []);
 
-
     const fetchCidades = async (distritoId) => {
         try {
             const token = sessionStorage.getItem('token');
@@ -186,12 +201,14 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 headers: { Authorization: `${token}` }
             });
             const cidadesData = response.data.data;
+
             const cidadesOptions = cidadesData.map(cidade => ({
                 value: cidade.cidadeid,
                 label: cidade.nome
             }));
 
             setCidades(cidadesOptions);
+
         } catch (error) {
             console.error('Erro ao buscar cidades:', error);
         }

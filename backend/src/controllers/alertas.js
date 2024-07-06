@@ -160,7 +160,25 @@ const controladorAlertas = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar os alertas', details: error.message });
         }
+    }, 
+    consultarAlertasPoloidiomaMobile: async (req, res) => {
+        const {idPolo, idiomaid} = req.params;
+        try {
+            console.log(idPolo);
+            console.log(idiomaid);
+            const alertas = await models.alerta.findAll({
+                where: {
+                    poloid: idPolo,
+                    idiomaid: idiomaid, 
+                    inactivo: false
+                }
+            });
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: alertas });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar os alertas vvvv', details: error.message });
+        }
     }
+    
 };
 
 module.exports = controladorAlertas;

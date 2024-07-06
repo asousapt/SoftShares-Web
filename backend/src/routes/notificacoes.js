@@ -14,5 +14,6 @@ router.delete('/:id', authenticate, controladorNotificacoes.remover);
 
 //ROUTES GET
 router.get('/utilizador/:idUser', authenticate, controladorNotificacoes.consultarPorUtilizador);
+router.get('/utilizador/:idUser/naolidas', authenticate, controladorNotificacoes.consultarPorUtilizadorActivas);
 
 module.exports = router;

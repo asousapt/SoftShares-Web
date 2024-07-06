@@ -9,7 +9,8 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import FormAnswerer from '../../components/forms/FormAnswerer';
 import Map from '../../modals/maps/maps';
-import AddButton from '../../components/buttons/addButton';
+import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
+import IconButton from '@mui/material/IconButton';
 
 const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     //VARS
@@ -19,7 +20,6 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     const [lat, setLat] = useState('');
     const [lng, setLng] = useState('');
     const [local, setLocal] = useState('');
-    const [localizacao, setLocalizacao] = useState('');
     const [description, setDescription] = useState('');
     const [cidade, setCidade] = useState(null);
     const [cidades, setCidades] = useState([]);
@@ -127,6 +127,7 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 await fetchCidades(distrito.value);
                 setLoadingCidades(false);
                 setCidadeData(cidadeData);
+                setLocal(cidadeData.concelho);
             }
 
             return cidadeData;
@@ -460,12 +461,14 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                                 <BasicTextField caption='Titulo' valor={title} onchange={(e) => setTitle(e.target.value)} fullwidth={true} type="text" error={titleError}
                                     helperText={titleError ? "Introduza um título válido" : ""} allowOnlyLetters={true} />
                             </div>
-                            <div style={{ width: '23.9%' }}>
+                            <div style={{ width: '43.9%' }}>
                                 <BasicTextField caption='Local' valor={local} onchange={(e) => setLocal(e.target.value)} fullwidth={true} type="text" error={localError}
                                     helperText={localError ? "Introduza um local válido" : ""} />
                             </div>
-                            <div style={{ width: '25%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                <AddButton caption="Localização" onclick={handleAddClick} />
+                            <div style={{ width: '5%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                <IconButton aria-label="Example" onClick={handleAddClick}>
+                                    <AddLocationAltIcon fontSize="large" sx={{ color: '#1D5AA1' }}/>
+                                </IconButton>
                                 <Map open={isNewModalOpen1} onClose={handleClose1} onSave={(coords) => updateLatLng(coords.lat, coords.lng)} />
                             </div>
                         </div>

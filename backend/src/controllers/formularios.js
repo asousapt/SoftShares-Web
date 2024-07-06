@@ -1,7 +1,9 @@
 const { Sequelize, Op, QueryTypes } = require('sequelize');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
+const utilizador = require('../models/utilizador');
 const models = initModels(sequelizeConn);
+const ficheirosController = require('./ficheiros');
 
 const controladorFormularios = {
     adicionar: async (req, res) => {
@@ -518,9 +520,104 @@ const controladorFormularios = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar as respostas' });
         }
+    }, 
+    obtemRespostasTodosMobile: async (req, res) => {
+        const { idRegisto, tabela, idFormulario } = req.params;
+    
+        const query = `
+            SELECT 
+                rd.respostadetalheid AS "respostaId",
+                rd.resposta AS "resposta",
+                rd.formulariodetalhesid AS "formulariodetalhesid", 
+                rf.utilizadorid AS "utilizadorId"
+            FROM respostadetalhe rd
+            INNER JOIN respostaformulario rf ON rd.respostaformularioid = rf.respostaformularioid
+            INNER JOIN itemrespostaformulario irf ON irf.itemrespostaformularioid = rf.itemrespostaformularioid
+                AND irf.entidade = :tabela AND irf.registoid = :idRegisto
+            INNER JOIN formulariodetalhes fd ON fd.formulariodetalhesid = rd.formulariodetalhesid
+            INNER JOIN formularioversao fv ON fv.formularioversaoid = fd.formularioversaoid AND fv.formularioid = :idFormulario
+        `;
+    
+        const query2 = `
+            SELECT 
+                fd.formulariodetalhesid AS "detalheId", 
+                fd.pergunta AS "pergunta", 
+                fd.tipodados AS "tipoDados", 
+                fd.obrigatorio AS "obrigatorio", 
+                fd.minimo AS "min", 
+                fd.maximo AS "max", 
+                fd.tamanho AS "tamanho", 
+                fd.respostasPossiveis AS "valoresPossiveis", 
+                fd.ordem AS "ordem"
+            FROM formulariodetalhes fd
+            WHERE fd.formulariodetalhesid IN (:formulariodetalhesids)
+        `;
+    
+        try {
+            const respostas = await sequelizeConn.query(query, {
+                replacements: { idRegisto, tabela, idFormulario },
+                type: Sequelize.QueryTypes.SELECT
+            });
+    
+            if (!respostas.length) {
+                return res.status(200).json({ message: 'Consulta realizada com sucesso', data: [] });
+            }
+    
+            const formulariodetalhesids = respostas.map(resp => resp.formulariodetalhesid);
+    
+            const perguntas = await sequelizeConn.query(query2, {
+                replacements: { formulariodetalhesids },
+                type: Sequelize.QueryTypes.SELECT
+            });
+    
+            const processedPerguntas = perguntas.map(pergunta => {
+                if (pergunta.valoresPossiveis) {
+                    pergunta.valoresPossiveis = pergunta.valoresPossiveis
+                        .split(',')
+                        .map(val => val.trim())
+                        .filter(val => val);
+                } else {
+                    pergunta.valoresPossiveis = [];
+                }
+                return pergunta;
+            });
+    
+            const respostasDetails = await Promise.all(respostas.map(async (resposta) => { 
+                try {
+                    const utilizador = await models.utilizador.findByPk(resposta.utilizadorId, {
+                        attributes: ['utilizadorid', 'pnome', 'unome', 'email', 'poloid'],
+                    });
+    
+                    if (utilizador) {
+                        const ficheiros = await ficheirosController.getAllFilesByAlbum(utilizador.utilizadorid, 'UTIL');
+                        const fotoUrl = ficheiros[0] ? ficheiros[0].url : '';
+                        utilizador.dataValues.fotoUrl = fotoUrl;
+                    }
+    
+                    return { resposta, utilizador: utilizador || null };
+                } catch (error) {
+                    console.error('Error fetching utilizador details:', error);
+                    return { resposta, utilizador: null };
+                }
+            }));
+    
+            const formData = respostasDetails.map(respostaDetail => ({
+                respostaId: respostaDetail.resposta.respostaId,
+                resposta: respostaDetail.resposta.resposta,
+                perguntaId: respostaDetail.resposta.formulariodetalhesid,
+                pergunta: processedPerguntas.find(p => p.detalheId === respostaDetail.resposta.formulariodetalhesid),
+                utilizador: respostaDetail.utilizador
+            }));
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: formData });
+    
+        } catch (error) {
+            console.error('Error in obtemRespostasTodosMobile:', error);
+            res.status(500).json({ error: 'Erro ao consultar as respostas', details: error.message });
+        }
     }
     
-    
+ 
 }
 
 module.exports = controladorFormularios;

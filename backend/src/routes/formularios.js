@@ -18,6 +18,7 @@ router.get('/versao/:formularioVersaoid/:idRegisto/:tabela/respostas/consultar/:
 router.get('/:id/:tabela', authenticate, controladorFormularios.consultarPerguntas);
 router.get('/:idForm', authenticate, controladorFormularios.consultarGenericoPorIDVersaoMaisRecente);
 router.get('/:idFormulario/tabela/:tabela/utilizador/:idUtilizador/registo/:idRegisto', authenticate, controladorFormularios.obtemRespostasFormulariosMobile);
+router.get('/:idFormulario/tabela/:tabela/registo/:idRegisto', authenticate, controladorFormularios.obtemRespostasTodosMobile);
 
 
 

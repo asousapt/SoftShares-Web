@@ -102,23 +102,18 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
 
     useEffect(() => {
         if (!loadingCidades && cidades.length > 0 && cidadeData) {
-            const cidade = cidades.find(c => c.label === cidadeData.cidade);
+            const cidade = cidades.find(c => c.label.toLowerCase() === cidadeData.cidade.toLowerCase());
             if (cidade) setCidade(cidade);
         }
     }, [loadingCidades, cidades, cidadeData]);
 
     const fetchCidadeAPI = async (lat, long) => {
-        console.log('fetchCidadeAPI', lat, long);
         try {
             const token = sessionStorage.getItem('token');
             const response = await axios.get(`${process.env.REACT_APP_API_URL}/cidades/cidade/${lat}/${long}`, {
                 headers: { Authorization: `${token}` }
             });
             const cidadeData = response.data;
-
-            console.log('distrito', cidadeData.distrito);
-            console.log('cidade', cidadeData.cidade);
-            console.log('concelho', cidadeData.concelho);
 
             const distrito = distritos.find(d => d.label === cidadeData.distrito);
             if (distrito) {
@@ -348,7 +343,6 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
 
                 reader.onload = async () => {
                     const imageData = reader.result;
-                    console.log('reader', reader);
                     const fileData = imageData;
                     const image = {
                         src: fileData,

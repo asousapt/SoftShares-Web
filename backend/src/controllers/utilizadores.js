@@ -1,4 +1,4 @@
-const { Sequelize, QueryTypes, json } = require('sequelize');
+const { Sequelize, QueryTypes, json, where } = require('sequelize');
 const crypto = require('crypto');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
@@ -585,7 +585,35 @@ const controladorUtilizadores = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
         }
+    }, 
+    listaUsersSimplificado: async (req, res) => {
+        try {
+            const utilizadores = await models.utilizador.findAll({
+                attributes: ['utilizadorid', 'pnome', 'unome', 'email', 'poloid' ], 
+                where: {
+                    inactivo: false
+                }
+            });
+    
+             
+            const utilizadoresFotos = await Promise.all(
+                utilizadores.map(async utilizador => {
+                    const ficheiros = await ficheirosController.getAllFilesByAlbum(utilizador.utilizadorid, 'UTIL');
+                    const fotoUrl = ficheiros[0] ? ficheiros[0].url : '';
+                    
+                    return {
+                        ...utilizador.toJSON(),  
+                        fotoUrl
+                    };
+                })
+            );
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: utilizadoresFotos });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
+        }
     }
+    
 };
 
 module.exports = controladorUtilizadores;

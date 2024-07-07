@@ -5,11 +5,12 @@ const models = initModels(sequelizeConn);
 
 const controladorGrupo = {
     adicionar: async (req, res) => {
-        const { descricao, publico, subcategoriaid, utilizadorcriou } = req.body;
+        const { nome, descricao, publico, subcategoriaid, utilizadorcriou } = req.body;
 
         try {
             const grupo = await models.grupo.create({
                 descricao: descricao,
+                nome: nome,
                 publico: publico,
                 subcategoriaid: subcategoriaid,
                 utilizadorcriou: utilizadorcriou
@@ -33,7 +34,7 @@ const controladorGrupo = {
 
     atualizar: async (req, res) => {
         const { id } = req.params;
-        const { descricao, publico, subcategoriaid, utilizadorcriou } = req.body;
+        const { nome, descricao, publico, subcategoriaid, utilizadorcriou } = req.body;
 
         try {
             const grupo = await models.grupo.findByPk(id);
@@ -43,6 +44,7 @@ const controladorGrupo = {
 
             await models.grupo.update({
                 descricao: descricao,
+                nome: nome,
                 publico: publico,
                 subcategoriaid: subcategoriaid,
                 utilizadorcriou: utilizadorcriou

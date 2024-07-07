@@ -33,12 +33,10 @@ const FormAnswerer = forwardRef((props, ref) => {
             if (q.id === id) {
                 let updatedOptions;
                 if (q.type === 'ESCOLHA_MULTIPLA') {
-                    updatedOptions = q.options.map((opt, idx) => {
-                        if (idx === optionIndex) {
-                            return isChecked ? { ...opt, selected: true } : { ...opt, selected: false };
-                        }
-                        return { ...opt };
-                    });
+                    updatedOptions = q.options.map((opt, idx) => ({
+                        ...opt,
+                        selected: idx === optionIndex ? isChecked : false
+                    }));
                 } else if (q.type === 'SELECAO') {
                     updatedOptions = q.options.map((opt, idx) => ({
                         ...opt,
@@ -72,6 +70,7 @@ const FormAnswerer = forwardRef((props, ref) => {
                     }
                 }
                 if (question.type === 'ESCOLHA_MULTIPLA' && question.required === true) {
+                    console.log('teste',question.options);
                     const selectedOptions = question.options.filter(opt => opt.selected);
                     if (selectedOptions.length !== 1) {
                         isValid = false;

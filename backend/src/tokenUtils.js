@@ -10,7 +10,7 @@ const generateToken = (user) => {
         email: user.email
     };
 
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: '10h' });
 };
 
 const verifyToken = (token) => {

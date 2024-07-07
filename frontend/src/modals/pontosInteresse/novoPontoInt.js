@@ -8,15 +8,22 @@ import ImageTable from '../../components/tables/imageTable';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import FormAnswerer from '../../components/forms/FormAnswerer';
+import Map from '../../modals/maps/maps';
+import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
+import IconButton from '@mui/material/IconButton';
 
 const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     //VARS
     //FIELDS
+    const [isNewModalOpen1, setNewModalOpen1] = useState(false);
     const [title, setTitle] = useState('');
-    const [localizacao, setLocalizacao] = useState('');
+    const [lat, setLat] = useState('');
+    const [lng, setLng] = useState('');
+    const [local, setLocal] = useState('');
     const [description, setDescription] = useState('');
     const [cidade, setCidade] = useState(null);
     const [cidades, setCidades] = useState([]);
+    const [cidadeData, setCidadeData] = useState(null);
     const [distrito, setDistrito] = useState(null);
     const [distritos, setDistritos] = useState([]);
     const [categoria, setCategoria] = useState(null);
@@ -27,9 +34,15 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     const [polo, setPolo] = useState(null);
     const [error, setError] = useState(null);
     const [images, setImages] = useState([]);
-    const [questions , setQuestions] = useState([]);
-    
+    const [questions, setQuestions] = useState([]);
+    const [loadingCidades, setLoadingCidades] = useState(false);
+
     const componentRef = useRef();
+
+    const updateLatLng = (lat, lng) => {
+        setLat(lat);
+        setLng(lng);
+    };
 
     const executeFunction = () => {
         componentRef.current.generateJSON();
@@ -37,7 +50,7 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
 
     //ERRORS
     const [titleError, setTittleError] = useState(false);
-    const [localizacaoError, setLocalizacaoError] = useState(false);
+    const [localError, setLocalError] = useState(false);
     const [descriptionError, setDescriptionError] = useState(false);
     const [cidadeError, setCidadeError] = useState(false);
     const [distritoError, setDistritoError] = useState(false);
@@ -52,8 +65,8 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
             errors.titleError = true;
         }
 
-        if (!localizacao) {
-            errors.localizacaoError = true;
+        if (!local) {
+            errors.localError = true;
         }
 
         if (!description) {
@@ -81,6 +94,41 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         }
 
         return errors;
+    };
+
+    useEffect(() => {
+        if (lat && lng) fetchCidadeAPI(lat, lng);
+    }, [lat, lng]);
+
+    useEffect(() => {
+        if (!loadingCidades && cidades.length > 0 && cidadeData) {
+            const cidade = cidades.find(c => c.label.toLowerCase() === cidadeData.cidade.toLowerCase());
+            if (cidade) setCidade(cidade);
+        }
+    }, [loadingCidades, cidades, cidadeData]);
+
+    const fetchCidadeAPI = async (lat, long) => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/cidades/cidade/${lat}/${long}`, {
+                headers: { Authorization: `${token}` }
+            });
+            const cidadeData = response.data;
+
+            const distrito = distritos.find(d => d.label === cidadeData.distrito);
+            if (distrito) {
+                setDistrito(distrito);
+                setLoadingCidades(true);
+                await fetchCidades(distrito.value);
+                setLoadingCidades(false);
+                setCidadeData(cidadeData);
+                setLocal(cidadeData.concelho);
+            }
+
+            return cidadeData;
+        } catch (error) {
+            console.error('Erro ao buscar cidade:', error);
+        }
     };
 
     useEffect(() => {
@@ -130,7 +178,7 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                     value: polo.poloid,
                     label: polo.descricao
                 }));
-    
+
                 setPoloOptions(polosOptions);
             } catch (error) {
                 console.error('Erro ao buscar polos:', error);
@@ -149,12 +197,14 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 headers: { Authorization: `${token}` }
             });
             const cidadesData = response.data.data;
+
             const cidadesOptions = cidadesData.map(cidade => ({
                 value: cidade.cidadeid,
                 label: cidade.nome
             }));
 
             setCidades(cidadesOptions);
+
         } catch (error) {
             console.error('Erro ao buscar cidades:', error);
         }
@@ -199,7 +249,7 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         const errors = validateForm();
 
         setTittleError(errors.titleError || false);
-        setLocalizacaoError(errors.localizacaoError || false);
+        setLocalError(errors.localError || false);
         setDescriptionError(errors.descriptionError || false);
         setCidadeError(errors.cidadeError || false);
         setDistritoError(errors.distritoError || false);
@@ -219,7 +269,7 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 return updatedQuestions;
             });
         }
-        
+
         if (formErrors && Array.isArray(formErrors)) {
             setQuestions(prevQuestions => {
                 const updatedQuestions = prevQuestions.map(q => {
@@ -247,9 +297,9 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
             const novoEvento = {
                 titulo: title,
                 descricao: description,
-                localizacao: localizacao,
-                latitude: 0,
-                longitude: 0,
+                localizacao: local,
+                latitude: lat,
+                longitude: lng,
                 idiomaid: 1,
                 cidadeid: cidade ? cidade.value : '',
                 utilizadorcriou: userid,
@@ -259,8 +309,6 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 formRespostas: data
             };
 
-            console.log('novoEvento', novoEvento);
-            console.log(novoEvento);
             await axios.post(`${process.env.REACT_APP_API_URL}/pontoInteresse/add`, novoEvento, {
                 headers: {
                     Authorization: `${token}`,
@@ -282,20 +330,19 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         try {
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
-            fileInput.accept = 'image/*'; 
-    
+            fileInput.accept = 'image/*';
+
             fileInput.addEventListener('change', async (event) => {
                 const file = event.target.files[0];
-                if (!file) return; 
+                if (!file) return;
                 const fileName = file.name;
                 const fileSize = file.size;
-                
+
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
-        
+
                 reader.onload = async () => {
                     const imageData = reader.result;
-                    console.log('reader',reader);
                     const fileData = imageData;
                     const image = {
                         src: fileData,
@@ -321,7 +368,7 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
 
     const resetForm = () => {
         setTitle('');
-        setLocalizacao('');
+        setLocal('');
         setDescription('');
         setCidade(null);
         setDistrito(null);
@@ -335,7 +382,7 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     const handleCancel = () => {
         resetForm();
         setTittleError(false);
-        setLocalizacaoError(false);
+        setLocalError(false);
         setDescriptionError(false);
         setCidadeError(false);
         setDistritoError(false);
@@ -346,9 +393,13 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
         onClose();
     };
 
+    const openMapModal = () => {
+        setNewModalOpen1(true);
+    };
+
     const getForm = async (idSubcat) => {
         try {
-            if (idSubcat){
+            if (idSubcat) {
                 const token = sessionStorage.getItem('token');
                 const response = await axios.get(`${process.env.REACT_APP_API_URL}/formulario/subcat/${idSubcat}`, {
                     headers: {
@@ -363,8 +414,8 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                     label: detail.pergunta,
                     text: '',
                     options: detail.respostaspossiveis
-                            ? detail.respostaspossiveis.split(', ').map(option => ({ opcao: option.trim(), selected: false }))
-                            : [{}], 
+                        ? detail.respostaspossiveis.split(', ').map(option => ({ opcao: option.trim(), selected: false }))
+                        : [{}],
                     required: detail.obrigatorio,
                     minValue: detail.minimo,
                     maxValue: detail.maximo,
@@ -377,13 +428,21 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     }
 
     const handleSubcatChange = (event, newValue) => {
-        setSubcategoria(newValue); 
+        setSubcategoria(newValue);
         setQuestions([]);
-        if (newValue){
-            getForm(newValue.value); 
+        if (newValue) {
+            getForm(newValue.value);
         }
-        setSubcategoriaError(false); 
+        setSubcategoriaError(false);
     }
+
+    const handleAddClick = () => {
+        setNewModalOpen1(true);
+    };
+
+    const handleClose1 = () => {
+        setNewModalOpen1(false);
+    };
 
     return (
         <Modal open={open} onClose={handleCancel}>
@@ -394,18 +453,24 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                             <div style={{ width: '50%' }}>
                                 <BasicTextField caption='Titulo' valor={title} onchange={(e) => setTitle(e.target.value)} fullwidth={true} type="text" error={titleError}
-                                helperText={titleError ? "Introduza um título válido" : ""} allowOnlyLetters={true}/>
+                                    helperText={titleError ? "Introduza um título válido" : ""} allowOnlyLetters={true} />
                             </div>
-                            <div style={{ width: '49.4%' }}>
-                                <BasicTextField caption='Localização' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} type="text" error={localizacaoError}
-                                helperText={localizacaoError ? "Introduza uma localização válida" : ""} />
+                            <div style={{ width: '43.9%' }}>
+                                <BasicTextField caption='Local' valor={local} onchange={(e) => setLocal(e.target.value)} fullwidth={true} type="text" error={localError}
+                                    helperText={localError ? "Introduza um local válido" : ""} />
+                            </div>
+                            <div style={{ width: '5%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                <IconButton aria-label="Example" onClick={handleAddClick}>
+                                    <AddLocationAltIcon fontSize="large" sx={{ color: '#1D5AA1' }}/>
+                                </IconButton>
+                                <Map open={isNewModalOpen1} onClose={handleClose1} onSave={(coords) => updateLatLng(coords.lat, coords.lng)} />
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                             <div style={{ width: '74.4%' }}>
                                 <BasicTextField caption='Descrição' valor={description} onchange={(e) => setDescription(e.target.value)} fullwidth={true} type="text" error={descriptionError}
-                                helperText={descriptionError ? "Introduza uma descrição válida" : ""} />
+                                    helperText={descriptionError ? "Introduza uma descrição válida" : ""} />
                             </div>
                             <div style={{ width: '25%' }}>
                                 <Autocomplete options={poloOptions} getOptionLabel={(option) => option.label} renderInput={(params) => (
@@ -421,7 +486,7 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                             <div style={{ width: '25%' }}>
                                 <Autocomplete options={distritos} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                    <TextField {...params} label="Distrito" variant="outlined" type="text" error={distritoError} helperText={distritoError ? "Escolha um distrito" : ""} /> )}
+                                    <TextField {...params} label="Distrito" variant="outlined" type="text" error={distritoError} helperText={distritoError ? "Escolha um distrito" : ""} />)}
                                     value={distrito}
                                     onChange={handleDistritoChange}
                                     fullWidth={true} />
@@ -435,7 +500,7 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                             </div>
                             <div style={{ width: '25%' }}>
                                 <Autocomplete options={opcoesFiltroCat} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                    <TextField {...params} label="Categoria" variant="outlined" type="text" error={categoriaError} helperText={categoriaError ? "Escolha uma categoria" : ""} /> )}
+                                    <TextField {...params} label="Categoria" variant="outlined" type="text" error={categoriaError} helperText={categoriaError ? "Escolha uma categoria" : ""} />)}
                                     value={categoria}
                                     onChange={handleCategoriaChange}
                                     fullWidth={true} />
@@ -449,12 +514,11 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                             </div>
                         </div>
                         <FormAnswerer ref={componentRef} initialQuestions={questions} onFormSubmit={handleAddPontInt} />
-
-                        <ImageTable images={images} styleProp={{ paddingTop: 10 }} onAddImage={handleImage} onDelete={resetImage}/>
+                        <ImageTable images={images} styleProp={{ paddingTop: 10 }} onAddImage={handleImage} onDelete={resetImage} />
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
                         <CancelButton onclick={handleCancel} caption='Cancelar' />
-                        <SubmitButton onclick={executeFunction} caption='Guardar' /> 
+                        <SubmitButton onclick={executeFunction} caption='Guardar' />
                     </div>
                 </div>
             </div>

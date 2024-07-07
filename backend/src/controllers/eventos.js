@@ -701,7 +701,7 @@ const controladorEventos = {
     
         // Define the SQL queries
         const query = `
-            SELECT 
+            SELECT DISTINCT
                 fm.formularioid AS "formId", 
                 fv.descricao AS "titulo",
                 fm.tipoformulario AS "tipoFormulario"
@@ -1068,8 +1068,36 @@ const controladorEventos = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar os participantes' });
         }
-    }
+    }, 
+    respostaQualidadeFinal: async (req, res) => {
+        try {
+            const { idEvento, idUser, respostas } = req.body;
     
+            if (respostas.length > 0) {
+                const itemRespostaFormulario = await models.itemrespostaformulario.create({
+                    registoid: idEvento,
+                    entidade: 'EVENTO'
+                });
+    
+                const respostaFormulario = await models.respostaformulario.create({
+                    itemrespostaformularioid: itemRespostaFormulario.itemrespostaformularioid,
+                    utilizadorid: idUser
+                });
+    
+                await Promise.all(respostas.map(async resposta => {
+                    await models.respostadetalhe.create({
+                        respostaformularioid: respostaFormulario.respostaformularioid,
+                        formulariodetalhesid: resposta.formulariodetalhesid,
+                        resposta: resposta.resposta
+                    });
+                }));
+            }
+
+            res.status(201).json({ message: 'Resposta ao questionário de qualidade realizada com sucesso', data: true });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao responder ao form de qualidade' });
+        }
+    },     
     
 };
 

@@ -23,8 +23,8 @@ const controladorNotificacoes = {
         const { id } = req.params;
 
         try{
-            await models.mensagem.notificacao.update({
-                lida: true
+            await models.notificacao.update({
+                vista: true
             }, {
                 where: {
                     notificacaoid: id
@@ -64,6 +64,22 @@ const controladorNotificacoes = {
             });
             
             res.status(200).json(notificacoes);
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar mensagens', details: error.message });
+        }
+    }, 
+    consultarPorUtilizadorActivas: async (req, res) => {
+        const { idUser } = req.params;
+
+        try {
+            const notificacoes = await models.notificacao.findAll({
+                where: {
+                    utilizadorid: idUser,
+                    vista: false
+                }
+            });
+            
+            res.status(200).json({mensagem: "Mensagens não lidas", data: notificacoes});
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar mensagens', details: error.message });
         }

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './page.css';
-/* COMPONENTES */
 import DataTable from '../components/tables/dataTable';
 import EditButton from '../components/buttons/editButton';
 import Header from '../components/header/header';
@@ -10,7 +9,6 @@ import Search from '../components/textFields/search';
 import ComboFilter from '../components/combobox/comboFilter';
 import Alert from '../components/alerts/alert';
 import StateChanger from '../components/stateChanger/stateChanger';
-/* FIM COMPONENTES */
 import NovoPontoInt from '../modals/pontosInteresse/novoPontoInt';
 import EditPontoInt from '../modals/pontosInteresse/editPontoInt';
 
@@ -47,21 +45,25 @@ export default function ListaPontosInt() {
     const fetchCategorias = async () => {
         const token = sessionStorage.getItem('token');
 
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/categoria`, {
-            headers: {
-                Authorization: `${token}`
-            }
-        });
-        const categorias = response.data;
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/categoria`, {
+                headers: {
+                    Authorization: `${token}`
+                }
+            });
+            const categorias = response.data;
 
-        setOpcoesSubcat([
-            { value: 0, label: 'Sem Filtro' }, 
-            ...categorias.map((cat) => ({
-                value: cat.categoriaid,
-                label: cat.valorpt
-            }))
-        ]);
-    }
+            setOpcoesSubcat([
+                { value: 0, label: 'Sem Filtro' }, 
+                ...categorias.map((cat) => ({
+                    value: cat.categoriaid,
+                    label: cat.valorpt
+                }))
+            ]);
+        } catch (error) {
+            console.error('Erro ao buscar categorias:', error);
+        }
+    };
 
     const fetchData = async () => {
         try {
@@ -157,7 +159,7 @@ export default function ListaPontosInt() {
         return <div>Error: {error.message}</div>;
     }
 
-    return(
+    return (
         <div className="page-container">
             <Header caption='Pontos de Interesse' />
             <div className="data-container">
@@ -171,9 +173,9 @@ export default function ListaPontosInt() {
                     <DataTable rows={tableRows || []} columns={tableColumns}/>
                 </div>
             </div>
-            <NovoPontoInt open={isNewModalOpen} onClose={() => setNewModalOpen(false)} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps} />
-            {isEditModalOpen && (<EditPontoInt open={isEditModalOpen} onClose={() => setEditModalOpen(false)} eventData={selectedPontoIntId} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps}/>)}
+            <NovoPontoInt open={isNewModalOpen} onClose={() => setNewModalOpen(false)} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps}/>
+            {isEditModalOpen && <EditPontoInt open={isEditModalOpen} onClose={() => setEditModalOpen(false)} eventData={selectedPontoIntId} setAlertOpen={setAlertOpen} setAlertProps={setAlertProps}/>}
             <Alert open={alertOpen} setOpen={setAlertOpen} title={alertProps.title} label={alertProps.label} severity={alertProps.severity} />
         </div>
-    )
+    );
 }

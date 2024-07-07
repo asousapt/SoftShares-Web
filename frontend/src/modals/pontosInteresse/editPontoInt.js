@@ -9,26 +9,38 @@ import TextField from '@mui/material/TextField';
 import ImageTable from '../../components/tables/imageTable';
 import FormAnswerer from '../../components/forms/FormAnswerer';
 import ComboBox from '../../components/combobox/comboboxBasic';
+import Map from '../../modals/maps/maps';
+import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
+import IconButton from '@mui/material/IconButton';
 
 const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps }) => {
     //VARS
     //FIELDS
+    const [isNewModalOpen1, setNewModalOpen1] = useState(false);
     const [poloid, setPoloid] = useState('');
+    const [lat, setLat] = useState('');
+    const [lng, setLng] = useState('');
+    const [loadingCidades, setLoadingCidades] = useState(false);
     const [titulo, setTitle] = useState('');
     const [localizacao, setLocalizacao] = useState('');
     const [descricao, setDescription] = useState('');
     const [cidadeID, setCidade] = useState(null);
     const [cidades, setCidades] = useState([]);
+    const [cidadeData, setCidadeData] = useState(null);
     const [distrito, setDistrito] = useState(null);
     const [distritos, setDistritos] = useState([]);
     const [poloOptions, setPoloOptions] = useState([]);
-    const [error, setError] = useState(null);
     const [images, setImages] = useState([]);
     const [categoria, setCategoria] = useState(null);
     const [subcategoria, setSubcategoria] = useState(null);
     const [questions , setQuestions] = useState([]);
 
     const componentRef = useRef();
+
+    const updateLatLng = (lat, lng) => {
+        setLat(lat);
+        setLng(lng);
+    };
 
     const executeFunction = () => {
         componentRef.current.generateJSON();
@@ -166,6 +178,41 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
         }
     };
 
+    useEffect(() => {
+        if (lat && lng) fetchCidadeAPI(lat, lng);
+    }, [lat, lng]);
+
+    useEffect(() => {
+        if (!loadingCidades && cidades.length > 0 && cidadeData) {
+            const cidade = cidades.find(c => c.label.toLowerCase() === cidadeData.cidade.toLowerCase());
+            if (cidade) setCidade(cidade);
+        }
+    }, [loadingCidades, cidades, cidadeData]);
+
+    const fetchCidadeAPI = async (lat, long) => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/cidades/cidade/${lat}/${long}`, {
+                headers: { Authorization: `${token}` }
+            });
+            const cidadeData = response.data;
+
+            const distrito = distritos.find(d => d.label === cidadeData.distrito);
+            if (distrito) {
+                setDistrito(distrito);
+                setLoadingCidades(true);
+                await fetchCidades(distrito.value);
+                setLoadingCidades(false);
+                setCidadeData(cidadeData);
+                setLocalizacao(cidadeData.concelho);
+            }
+
+            return cidadeData;
+        } catch (error) {
+            console.error('Erro ao buscar cidade:', error);
+        }
+    };
+    
     const fetchEventData = async () => {
         try {
             const token = sessionStorage.getItem('token');
@@ -178,10 +225,10 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
             setLocalizacao(userData.localizacao);
             setDescription(userData.descricao);
             setPoloid(userData.poloid);
+            setLat(userData.latitude);
+            setLng(userData.longitude);
 
-            const distrito = await fetchDistritoByCidadeId(userData.cidadeid);
-            setDistrito(distrito);
-            fetchCidades(distrito.value, userData.cidadeid);
+            fetchCidadeAPI(userData.latitude, userData.longitude);
 
             const subcatResponse = await axios.get(`${process.env.REACT_APP_API_URL}/subcategoria/${userData.subcategoriaid}`, {
                 headers: { Authorization: `${token}` }
@@ -289,8 +336,8 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
                 titulo: titulo,
                 descricao: descricao,
                 localizacao: localizacao,
-                latitude: 0,
-                longitude: 0,
+                latitude: lat,
+                longitude: lng,
                 cidadeid: cidadeID.value,
                 subcategoriaid: subcategoria.value,
                 imagens: imagesRtn,
@@ -366,6 +413,14 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
         });
     }
 
+    const handleAddClick = () => {
+        setNewModalOpen1(true);
+    };
+
+    const handleClose1 = () => {
+        setNewModalOpen1(false);
+    };
+
     return (
         <Modal open={open} onClose={handleCancel}>
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px', overflow: 'auto' }}>
@@ -377,9 +432,15 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
                                 <BasicTextField caption='Titulo' valor={titulo} onchange={(e) => setTitle(e.target.value)} fullwidth={true} type="text" error={titleError}
                                     helperText={titleError ? "Introduza um título válido" : ""} allowOnlyLetters={true}/>
                             </div>
-                            <div style={{ width: '49.4%' }}>
-                                <BasicTextField caption='Localização' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} type="text" error={localizacaoError}
-                                    helperText={localizacaoError ? "Introduza uma localização válida" : ""} />
+                            <div style={{ width: '43.9%' }}>
+                                <BasicTextField caption='Local' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} type="text" error={localizacaoError}
+                                    helperText={localizacaoError ? "Introduza um local válido" : ""} />
+                            </div>
+                            <div style={{ width: '5%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                <IconButton aria-label="Example" onClick={handleAddClick}>
+                                    <AddLocationAltIcon fontSize="large" sx={{ color: '#1D5AA1' }}/>
+                                </IconButton>
+                                <Map open={isNewModalOpen1} onClose={handleClose1} onSave={(coords) => updateLatLng(coords.lat, coords.lng)} />
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>

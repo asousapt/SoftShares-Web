@@ -8,7 +8,7 @@ router.post('/add', authenticate, avaliacaoController.adicionar);
 router.post('/add/itemavaliacao', authenticate, avaliacaoController.adicionarItemAvaliacao);
 
 // Rotas PUT
-router.put('/update/:idAvaliacao', authenticate, avaliacaoController.atualizar);
+router.put('/update/:tipo/:idRegisto', authenticate, avaliacaoController.atualizar);
 router.put('/update/itemavaliacao/:id', authenticate, avaliacaoController.atualizarItemAvaliacao);
 
 // Rotas DELETE

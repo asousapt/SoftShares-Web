@@ -51,6 +51,7 @@ const mensagemRoutes = require('./routes/mensagens');
 const notificacoesRoutes = require('./routes/notificacoes');
 const cidadesRoutes = require('./routes/cidades');
 const idiomaRoutes = require('./routes/idioma');
+const suporteRoutes = require('./routes/suporte');
 
 // Use route files
 app.use('/evento', eventosRoutes);
@@ -76,6 +77,7 @@ app.use('/mensagens', mensagemRoutes);
 app.use('/notificacao', notificacoesRoutes);
 app.use('/cidades', cidadesRoutes);
 app.use('/idioma', idiomaRoutes);
+app.use('/suporte', suporteRoutes);
 
 // Start server
 const PORT = process.env.PORT || 8000;

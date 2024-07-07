@@ -5,6 +5,7 @@ const { authenticate } = require('../tokenUtils');
 
 //ROUTES POST
 router.post('/add', authenticate, pontosInteresseControlador.adicionar);
+router.post('/addMobile', authenticate, pontosInteresseControlador.adicionarMobile);
 
 //ROUTES PUT
 router.put('/update/:idPontoInteresse', authenticate, pontosInteresseControlador.atualizar);

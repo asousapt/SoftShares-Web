@@ -47,7 +47,7 @@ const MapModal = ({ open, onClose, onSave, lat, lng, title }) => {
                     <APIProvider apiKey={process.env.REACT_APP_GOOGLE_KEY}>
                         <VisMap
                             style={{ width: '100%', height: '100%' }}
-                            defaultCenter={mapCenter}
+                            defaultCenter={mapCenter || { lat: 38.722689, lng: -9.139303 }}
                             defaultZoom={12}
                             gestureHandling={'greedy'}
                             disableDefaultUI={true}

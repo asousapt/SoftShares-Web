@@ -26,7 +26,7 @@ export default function ModAprov() {
     const [alertProps, setAlertProps] = useState({ title: '', label: '', severity: '' });
 
     const tableColumns = [
-        { field: 'id', headerName: 'ID', width: 100, headerAlign: 'left', disableColumnMenu: true },
+        { field: 'idReg', headerName: 'ID', width: 100, headerAlign: 'left', disableColumnMenu: true },
         { field: 'tipo', headerName: 'Tipo', flex: 1, headerAlign: 'left', disableColumnMenu: true },
         { field: 'titulo', headerName: 'Título', flex: 2, headerAlign: 'left', disableColumnMenu: true },
         { field: 'criadoPor', headerName: 'Criado Por', flex: 1, headerAlign: 'left', disableColumnMenu: true },
@@ -71,15 +71,15 @@ export default function ModAprov() {
 
             const linhatemp = [
                 ...sortedPint.map((ponto) => ({
-                    key: 'PDI' + ponto.pontointeresseid,
-                    id: ponto.pontointeresseid,
+                    id: 'PDI' + ponto.pontointeresseid,
+                    idReg: ponto.pontointeresseid,
                     tipo: 'Ponto de Interesse',
                     titulo: ponto.titulo,
                     criadoPor: ponto.utilizadorcriou_utilizador.pnome + ' ' + ponto.utilizadorcriou_utilizador.unome
                 })),
                 ...sortedEvent.map((evento) => ({
-                    key: 'evento' + evento.eventoid,
-                    id: evento.eventoid,
+                    id: 'evento' + evento.eventoid,
+                    idReg: evento.eventoid,
                     tipo: 'Evento',
                     titulo: evento.titulo,
                     criadoPor: evento.utilizadorcriou_utilizador.pnome + ' ' + evento.utilizadorcriou_utilizador.unome

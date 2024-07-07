@@ -155,7 +155,7 @@ export default function ModAprov() {
     };
 
     const handleOpenModal = (row) => {
-        setSelectedRegisto({ id: row.id, tipo: row.tipo });
+        setSelectedRegisto({ id: row.idReg, tipo: row.tipo });
         if (row.tipo === 'Evento') {
             setIsModalOpen1(true);
         } else if (row.tipo === 'Ponto de Interesse') {
@@ -164,12 +164,12 @@ export default function ModAprov() {
     };
 
     const handleOpenConfirmarAprov = (row) => {
-        setSelectedRegisto({ id: row.id, tipo: row.tipo });
+        setSelectedRegisto({ id: row.idReg, tipo: row.tipo });
         setIsModalOpen3(true);
     };
 
     const handleOpenRejeitarAprov = (row) => {
-        setSelectedRegisto({ id: row.id, tipo: row.tipo });
+        setSelectedRegisto({ id: row.idReg, tipo: row.tipo });
         setIsModalOpen4(true);
     };
     

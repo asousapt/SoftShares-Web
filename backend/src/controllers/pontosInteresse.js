@@ -91,7 +91,6 @@ const controladorPontosInteresse = {
                     }
                 }));
             }
-h
             ficheirosController.adicionar(pontointeresse.pontointeresseid, 'POI', imagens, utilizadorcriou);
 
             res.status(201).json({ message: 'Ponto de interesse adicionado com sucesso' });

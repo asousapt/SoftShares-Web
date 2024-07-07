@@ -7,6 +7,10 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
+    nome: {
+      type: DataTypes.STRING(80),
+      allowNull: false
+    },
     descricao: {
       type: DataTypes.STRING(160),
       allowNull: false

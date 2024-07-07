@@ -1,4 +1,5 @@
 const { Sequelize, QueryTypes, json } = require('sequelize');
+const crypto = require('crypto');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
@@ -570,6 +571,21 @@ const controladorUtilizadores = {
             res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
         }
     },
+
+    recuperarPassword: async (req, res) => {
+        const { id } = req.params;
+        try {
+            const utilizador = await models.utilizador.findByPk(id);
+
+            const codigo = crypto.randomInt(100000, 1000000).toString();
+
+            emailController.sendEmail(utilizador.email,'Recuperar a Password', `Codigo para recuperar a password: \n \t ${codigo}`);
+
+            res.status(200).json({codigo: codigo});
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
+        }
+    }
 };
 
 module.exports = controladorUtilizadores;

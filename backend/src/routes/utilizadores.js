@@ -24,6 +24,7 @@ router.get('/utilizadoresthreads', authenticate, utilizadorControlador.consultar
 router.get('/email/:email', utilizadorControlador.consultarPorEmail);
 router.get('/:idUtilizador', authenticate, utilizadorControlador.consultarPorID);
 router.get('/mobile/:idUtilizador', authenticate, utilizadorControlador.consultarPorIDMobile);
+router.get('/recuperar/:id', authenticate, utilizadorControlador.recuperarPassword);
 router.get('/token/:id', utilizadorControlador.novoToken);
 
 module.exports = router;

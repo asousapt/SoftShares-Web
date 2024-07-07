@@ -81,7 +81,8 @@ const controladorEventos = {
                         minimo: pergunta.minValue,
                         maximo: pergunta.maxValue,
                         ordem: pergunta.order,
-                        respostaspossiveis: pergunta.options.join(", ")
+                        respostaspossiveis: pergunta.options.join(", "), 
+                        tamanho: pergunta.size || 60
                     });
                 }));
             }
@@ -111,7 +112,8 @@ const controladorEventos = {
                         minimo: pergunta.minValue,
                         maximo: pergunta.maxValue,
                         ordem: pergunta.order,
-                        respostaspossiveis: pergunta.options.join(", ")
+                        respostaspossiveis: pergunta.options.join(", "), 
+                        tamanho: pergunta.size || 60
                     });
                 }));
             }
@@ -225,7 +227,8 @@ const controladorEventos = {
                         minimo: pergunta.minValue,
                         maximo: pergunta.maxValue,
                         ordem: pergunta.order,
-                        respostaspossiveis: pergunta.options.join(", ")
+                        respostaspossiveis: pergunta.options.join(", "), 
+                        tamanho: pergunta.size || 60
                     });
                 }));
             }
@@ -880,7 +883,8 @@ const controladorEventos = {
                             maximo: pergunta.maxValue,
                             tamanho: pergunta.tamanho,
                             ordem: pergunta.order,
-                            respostaspossiveis: pergunta.options.join(", ")
+                            respostaspossiveis: pergunta.options.join(", "), 
+                            tamanho: pergunta.size || 60
                         });
                     }));
                 } else {
@@ -909,7 +913,8 @@ const controladorEventos = {
                             maximo: pergunta.maxValue,
                             tamanho: pergunta.tamanho,
                             ordem: pergunta.order,
-                            respostaspossiveis: pergunta.options.join(", ")
+                            respostaspossiveis: pergunta.options.join(", "), 
+                            tamanho: pergunta.size || 60
                         });
                     }));
                 }
@@ -933,7 +938,8 @@ const controladorEventos = {
                             maximo: pergunta.maxValue,
                             tamanho: pergunta.tamanho,
                             ordem: pergunta.order,
-                            respostaspossiveis: pergunta.options.join(", ")
+                            respostaspossiveis: pergunta.options.join(", "), 
+                            tamanho: pergunta.size || 60
                         });
                     }));
                 } else {
@@ -962,7 +968,8 @@ const controladorEventos = {
                             maximo: pergunta.maxValue,
                             tamanho: pergunta.tamanho,
                             ordem: pergunta.order,
-                            respostaspossiveis: pergunta.options.join(", ")
+                            respostaspossiveis: pergunta.options.join(", "), 
+                            tamanho: pergunta.size || 60
                         });
                     }));
                 }

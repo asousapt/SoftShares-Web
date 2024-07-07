@@ -161,7 +161,7 @@ h
                 await Promise.all(formRespostas.map(async resposta => {
                         await models.respostadetalhe.create({
                             respostaformularioid: respostaFormulario.respostaformularioid,
-                            formulariodetalhesid: resposta.id,
+                            formulariodetalhesid: resposta.formulariodetalhesid,
                             resposta: resposta.resposta
                         });
                 }));

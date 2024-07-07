@@ -122,7 +122,10 @@ const AddPontoIntModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 await fetchCidades(distrito.value);
                 setLoadingCidades(false);
                 setCidadeData(cidadeData);
-                setLocal(cidadeData.concelho);
+                if (!local)
+                {
+                    setLocal(cidadeData.concelho);
+                }
             }
 
             return cidadeData;

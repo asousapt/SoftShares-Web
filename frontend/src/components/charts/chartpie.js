@@ -90,7 +90,7 @@ export default function ChartPie({ chartData, total, label }) {
         >
           <PieCenterLabel>
             {label.split('\n').map((line, index) => (
-              <tspan key={index} x={chartSize.width / 2.7} dy={index === 0 ? -10 : "1.2em"}>{line}</tspan>
+              <tspan key={index} x={chartSize.width / 2.7} dy={index === 0 ? -15 : "1.2em"}>{line}</tspan>
             ))}
           </PieCenterLabel>
           <SecondLineText x={chartSize.width / 2.8} y={chartSize.height / 1.8}>

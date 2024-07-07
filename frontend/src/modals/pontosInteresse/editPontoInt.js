@@ -204,7 +204,6 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
                 await fetchCidades(distrito.value);
                 setLoadingCidades(false);
                 setCidadeData(cidadeData);
-                setLocalizacao(cidadeData.concelho);
             }
 
             return cidadeData;
@@ -222,11 +221,11 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
             const userData = response.data.data;
 
             setTitle(userData.titulo);
-            setLocalizacao(userData.localizacao);
             setDescription(userData.descricao);
             setPoloid(userData.poloid);
             setLat(userData.latitude);
             setLng(userData.longitude);
+            setLocalizacao(userData.localizacao);
 
             fetchCidadeAPI(userData.latitude, userData.longitude);
 

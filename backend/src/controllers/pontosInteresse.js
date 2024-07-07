@@ -308,7 +308,7 @@ const controladorPontosInteresse = {
                 WHERE
                     p.aprovado = true
                 GROUP BY
-                    p.pontointeresseid, u.utilizadorid
+                    p.pontointeresseid, u.utilizadorid, s.categoriaid
                 `,
                 { type: QueryTypes.SELECT }
             );

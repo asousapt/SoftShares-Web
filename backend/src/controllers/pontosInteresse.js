@@ -392,6 +392,48 @@ const controladorPontosInteresse = {
                 const imagens = ficheiros ? ficheiros.map(file => file.url) : [];
     
                 poi.imagem = imagens || [];
+
+                const formulario = await sequelizeConn.query(
+                    `SELECT 
+                        rd.respostadetalheid AS id,
+                        rd.resposta, 
+                        fd.formulariodetalhesid,
+                        fd.pergunta
+                    FROM 
+                        respostadetalhe rd
+                    INNER JOIN
+                        formulariodetalhes fd on fd.formulariodetalhesid = rd.formulariodetalhesid
+                    WHERE
+                        rd.respostaformularioid IN (
+                            SELECT respostaformularioid
+                            FROM respostaformulario
+                            WHERE itemrespostaformularioid IN (
+                                SELECT itemrespostaformularioid
+                                FROM itemrespostaformulario
+                                WHERE 
+                                    registoid = ${poi.pontointeresseid}
+                                    AND entidade = 'POI'
+                            )
+                        )
+                    ORDER BY
+                        fd.ordem asc
+                    `
+                );
+                const form = formulario[0].reduce((acc, curr) => {
+                    const existing = acc.find(item => item.formulariodetalhesid === curr.formulariodetalhesid);
+                    
+                    if (existing) {
+                        existing.resposta = existing.resposta ? existing.resposta + ', ' + curr.resposta : curr.resposta;
+                    } else {
+                        acc.push({ 
+                            pergunta: curr.pergunta, 
+                            resposta: curr.resposta 
+                        });
+                    }
+                    return acc;
+                }, []);
+                
+                poi.formRespostas = form || [];
             }));
             
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: pontosInteresse });

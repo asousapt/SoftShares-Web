@@ -19,6 +19,7 @@ router.get('/:id/:tabela', authenticate, controladorFormularios.consultarPergunt
 router.get('/:idForm', authenticate, controladorFormularios.consultarGenericoPorIDVersaoMaisRecente);
 router.get('/:idFormulario/tabela/:tabela/utilizador/:idUtilizador/registo/:idRegisto', authenticate, controladorFormularios.obtemRespostasFormulariosMobile);
 router.get('/:idFormulario/tabela/:tabela/registo/:idRegisto', authenticate, controladorFormularios.obtemRespostasTodosMobile);
+router.get('/respondeu/:idFormulario/tabela/:tabela/registo/:idRegisto/utilizador/:idUtilizador', authenticate, controladorFormularios.utilizadorRespondeuFormulario);
 
 
 

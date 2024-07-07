@@ -615,8 +615,35 @@ const controladorFormularios = {
             console.error('Error in obtemRespostasTodosMobile:', error);
             res.status(500).json({ error: 'Erro ao consultar as respostas', details: error.message });
         }
+    }, 
+    utilizadorRespondeuFormulario: async (req, res) => {
+        const { idRegisto, tabela, idUtilizador, idFormulario } = req.params;
+
+        const query = `
+            SELECT 
+                count(*) as "Respondeu"
+            FROM respostadetalhe rd
+            INNER JOIN respostaformulario rf ON rd.respostaformularioid = rf.respostaformularioid and rf.utilizadorid = :idUtilizador
+            INNER JOIN itemrespostaformulario irf ON irf.itemrespostaformularioid = rf.itemrespostaformularioid
+                AND irf.entidade = :tabela AND irf.registoid = :idRegisto
+            INNER JOIN formulariodetalhes fd ON fd.formulariodetalhesid = rd.formulariodetalhesid
+            INNER JOIN formularioversao fv ON fv.formularioversaoid = fd.formularioversaoid AND fv.formularioid = :idFormulario
+        `;
+
+        try {
+            const result = await sequelizeConn.query(query, {
+                replacements: { idRegisto, tabela, idUtilizador, idFormulario },
+                type: Sequelize.QueryTypes.SELECT
+            });
+
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: result[0].Respondeu > 0});
+        }
+        catch (error) {
+            console.error('Error in utilizadorRespondeuFormulario:', error);
+            res.status(500).json({ error: 'Erro ao consultar se o utilizador respondeu ao formulario', details: error.message });
+        
+        }
     }
-    
  
 }
 

@@ -10,6 +10,8 @@ router.post('/utilizador/add', authenticate, eventoControlador.adicionarParticip
 
 router.post('/inscricao', authenticate, eventoControlador.inscricaoEvento);
 
+router.post('/formQualidade', authenticate, eventoControlador.respostaQualidadeFinal);
+
 //ROUTES PUT
 router.put('/update/:idEvento', authenticate, eventoControlador.atualizarEvento);
 

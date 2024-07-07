@@ -2,10 +2,11 @@ const { Sequelize, QueryTypes } = require('sequelize');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
+const ficheirosController = require('./ficheiros');
 
 const controladorGrupo = {
     adicionar: async (req, res) => {
-        const { nome, descricao, publico, subcategoriaid, utilizadorcriou } = req.body;
+        const { nome, descricao, publico, subcategoriaid, utilizadorcriou, imagem, users } = req.body;
 
         try {
             const grupo = await models.grupo.create({
@@ -25,6 +26,15 @@ const controladorGrupo = {
                 registoid: grupo.grupoid,
                 entidade: 'GRUPO'
             });
+            
+            ficheirosController.adicionar(grupo.grupoid, 'GRUPO', imagem, utilizadorcriou);
+
+            await Promise.all(users.map(async user => {
+                await models.utilizador_grupo.create({
+                    grupoid: grupo.grupoid,
+                    utilizadorid: user.id
+                });
+            }));
 
             res.status(201).json({ message: 'Grupo adicionado com sucesso'});
         } catch (error) {
@@ -34,7 +44,7 @@ const controladorGrupo = {
 
     atualizar: async (req, res) => {
         const { id } = req.params;
-        const { nome, descricao, publico, subcategoriaid, utilizadorcriou } = req.body;
+        const { nome, descricao, publico, imagem, users } = req.body;
 
         try {
             const grupo = await models.grupo.findByPk(id);
@@ -42,17 +52,32 @@ const controladorGrupo = {
                 return res.status(404).json({ error: 'Grupo não encontrado' });
             }
 
-            await models.grupo.update({
+            const grupoUpdated = await models.grupo.update({
                 descricao: descricao,
                 nome: nome,
                 publico: publico,
-                subcategoriaid: subcategoriaid,
-                utilizadorcriou: utilizadorcriou
+                subcategoriaid: subcategoriaid
             }, {
                 where: {
                     grupoid: id
                 }
             });
+
+            await models.utilizador_grupo.destroy({
+                where: {
+                    grupoid: id
+                }
+            });
+
+            await Promise.all(users.map(async user => {
+                await models.utilizador_grupo.create({
+                    grupoid: id,
+                    utilizadorid: user.id
+                });
+            }));
+
+            ficheirosController.removerTodosFicheirosAlbum(id, 'GRUPO');
+            ficheirosController.adicionar(id, 'GRUPO', imagem, grupoUpdated.utilizadorcriou);
 
             res.status(200).json({ message: 'Grupo atualizado com sucesso' });
         } catch (error) {

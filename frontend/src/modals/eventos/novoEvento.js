@@ -334,7 +334,6 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
         
                 reader.onload = async () => {
                     const imageData = reader.result;
-                    console.log('reader',reader);
                     const fileData = imageData;
                     const image = {
                         src: fileData,

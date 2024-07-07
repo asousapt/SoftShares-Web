@@ -84,9 +84,6 @@ const controladorDepartamentos = {
         const { idDepartamento } = req.params;
         const { descricaoPT, descricaoEN, descricaoES, inactivo } = req.body;
 
-        console.log('ID do Departamento:', idDepartamento);
-        console.log('Dados recebidos para atualização:', { descricaoPT, descricaoEN, descricaoES, inactivo });
-
         try {
             const idiomaPT = await models.idioma.findOne({ where: { icone: 'pt' } });
             const idiomaEN = await models.idioma.findOne({ where: { icone: 'en' } });
@@ -104,7 +101,6 @@ const controladorDepartamentos = {
             }
 
             await departamento.update({ inactivo });
-            console.log('Departamento atualizado:', departamento);
 
             const chave = await models.chave.findOne({
                 where: {

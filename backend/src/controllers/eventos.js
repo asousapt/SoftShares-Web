@@ -619,7 +619,6 @@ const controladorEventos = {
 
     consultarTodosComFiltro: async (req, res) => {
         const { estado, categoria, descricao, poloid } = req.query;
-        console.log(estado);
     
         try {
             let whereClause = 'WHERE e.titulo LIKE :descricao';
@@ -942,7 +941,6 @@ const controladorEventos = {
                         registoid: idEvento,
                         tipo: 'EVENTO'
                     });
-                    console.log(cfgFormulario.itemcfgformularioid);
                     const formulario = await models.formulario.create({
                         itemcfgformularioid: cfgFormulario.itemcfgformularioid,
                         tipoformulario: "QUALIDADE"

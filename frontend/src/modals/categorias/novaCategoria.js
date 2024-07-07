@@ -58,7 +58,7 @@ const NovaCategoria = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                     'Content-Type': 'application/json',
                 }
             });
-            console.log('Categoria Adicionada');
+            
             onClose();
             setAlertProps({ title: 'Sucesso', label: `Categoria criada com sucesso.`, severity: 'success' });
             setAlertOpen(true);

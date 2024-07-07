@@ -309,15 +309,12 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
                 administrador_poloid: isPoloAdmidDisabled ? null : poloadmid
             };
 
-            console.log('updatedUser', updatedUser);
-
             await axios.put(`${process.env.REACT_APP_API_URL}/utilizadores/update/${userId}`, updatedUser, {
                 headers: {
                     'Authorization': `${token}`,
                     'Content-Type': 'application/json'
                 },
             });
-            console.log('Utilizador atualizado com sucesso');
             onClose();
             setAlertProps({ title: 'Sucesso', label: `O utilizador ${pnome} ${unome} foi atualizado com sucesso.`, severity: 'success' });
             setAlertOpen(true);
@@ -349,7 +346,6 @@ const EditUserModal = ({ open, onClose, userId, setAlertOpen, setAlertProps }) =
 
                 reader.onload = async () => {
                     const imageData = reader.result;
-                    console.log('reader', reader);
                     setImage(imageData);
                 };
             });

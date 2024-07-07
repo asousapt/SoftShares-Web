@@ -23,10 +23,6 @@ export default function Header({caption}){
         }
     }, []);
 
-    useEffect(() => {
-        console.log('isPassModalOpen',isPassModalOpen)
-    }, [isPassModalOpen])
-
     return(
     <div className="header">
         <h1 className="title">{caption}</h1>

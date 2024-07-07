@@ -6,7 +6,6 @@ const ficheirosController = require('./ficheiros');
 
 const controladorPontosInteresse = {
     adicionar: async (req, res) => {
-        console.log(req.body);
         const {
             subcategoriaid,
             titulo,
@@ -101,7 +100,6 @@ const controladorPontosInteresse = {
     },
 
     adicionarMobile: async (req, res) => {
-        console.log(req.body);
         const {
             subcategoriaid,
             titulo,

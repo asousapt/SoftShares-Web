@@ -1,12 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from '@mui/material/Modal';
 import { APIProvider, Map as VisMap, Marker, InfoWindow } from '@vis.gl/react-google-maps';
 import SubmitButton from '../../components/buttons/submitButton';
 import CancelButton from '../../components/buttons/cancelButton';
 
-const MapModal = ({ open, onClose, onSave }) => {
+const MapModal = ({ open, onClose, onSave, lat, lng, title }) => {
     const [markerPosition, setMarkerPosition] = useState(null);
     const [infoWindowOpen, setInfoWindowOpen] = useState(false);
+    const [mapCenter, setMapCenter] = useState(null);
+
+    useEffect(() => {
+        if (lat && lng) {
+            const position = { lat: parseFloat(lat), lng: parseFloat(lng) };
+            setMarkerPosition(position);
+            setMapCenter(position);
+            setInfoWindowOpen(true);
+        }
+    }, [lat, lng]);
 
     const handleMapClick = (event) => {
         if (event.detail && event.detail.latLng) {
@@ -25,7 +35,7 @@ const MapModal = ({ open, onClose, onSave }) => {
 
     const handleSave = () => {
         if (markerPosition) {
-            onSave(markerPosition);
+            onSave({ ...markerPosition, title });
         }
         onClose();
     };
@@ -37,7 +47,7 @@ const MapModal = ({ open, onClose, onSave }) => {
                     <APIProvider apiKey={process.env.REACT_APP_GOOGLE_KEY}>
                         <VisMap
                             style={{ width: '100%', height: '100%' }}
-                            defaultCenter={{ lat: 40.655414, lng: -7.913218 }}
+                            defaultCenter={mapCenter}
                             defaultZoom={12}
                             gestureHandling={'greedy'}
                             disableDefaultUI={true}
@@ -48,8 +58,8 @@ const MapModal = ({ open, onClose, onSave }) => {
                                     <Marker position={markerPosition} />
                                     {infoWindowOpen && (
                                         <InfoWindow position={markerPosition} onCloseClick={handleInfoWindowClose}>
-                                            <div>
-                                                <h4>Novo Ponto de Interesse</h4>
+                                            <div style={{ width: 'auto', height: 'auto' }}> 
+                                                <h4>{title || 'Novo Ponto de Interesse'}</h4>
                                                 <p>Lat: {markerPosition.lat.toFixed(6)}</p>
                                                 <p>Long: {markerPosition.lng.toFixed(6)}</p>
                                             </div>

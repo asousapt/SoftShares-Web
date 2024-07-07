@@ -439,7 +439,7 @@ const EditPontoIntModal = ({ open, onClose, eventData, setAlertOpen, setAlertPro
                                 <IconButton aria-label="Example" onClick={handleAddClick}>
                                     <AddLocationAltIcon fontSize="large" sx={{ color: '#1D5AA1' }}/>
                                 </IconButton>
-                                <Map open={isNewModalOpen1} onClose={handleClose1} onSave={(coords) => updateLatLng(coords.lat, coords.lng)} />
+                                <Map open={isNewModalOpen1} onClose={handleClose1} onSave={(coords) => updateLatLng(coords.lat, coords.lng)} lat={lat} lng={lng} title={titulo}/>
                             </div>
                         </div>
                         <div style={{ marginBottom: 20 }}></div>

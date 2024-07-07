@@ -91,6 +91,81 @@ const controladorPontosInteresse = {
                     }
                 }));
             }
+h
+            ficheirosController.adicionar(pontointeresse.pontointeresseid, 'POI', imagens, utilizadorcriou);
+
+            res.status(201).json({ message: 'Ponto de interesse adicionado com sucesso' });
+        } catch (error) {
+            console.error('Erro ao adicionar ponto de interesse', error);
+            res.status(500).json({ error: 'Erro ao adicionar ponto de interesse', details: error.message });
+        }
+    },
+
+    adicionarMobile: async (req, res) => {
+        console.log(req.body);
+        const {
+            subcategoriaid,
+            titulo,
+            descricao,
+            localizacao,
+            latitude,
+            longitude,
+            idiomaid,
+            cidadeid,
+            utilizadorcriou,
+            poloid,
+            imagens,
+            formRespostas
+        } = req.body;
+
+        try {
+            const pontointeresse = await models.pontointeresse.create({
+                subcategoriaid: subcategoriaid,
+                titulo: titulo,
+                descricao: descricao,
+                localizacao: localizacao,
+                latitude: latitude,
+                longitude: longitude,
+                idiomaid: idiomaid,
+                cidadeid: cidadeid,
+                utilizadorcriou: utilizadorcriou,
+                poloid: poloid
+            });
+
+            await models.itemcomentario.create({
+                registoid: pontointeresse.pontointeresseid,
+                tipo: 'POI'
+            });
+
+            await models.itemavaliacao.create({
+                itemorigid: pontointeresse.pontointeresseid,
+                tipoentidade: 'POI'
+            });
+
+            await models.objecto.create({
+                registoid: pontointeresse.pontointeresseid,
+                entidade: 'POI'
+            });
+
+            if (formRespostas && formRespostas !== '') {
+                const itemResposta = await models.itemrespostaformulario.create({
+                    registoid: pontointeresse.pontointeresseid,
+                    entidade: 'POI'
+                });
+
+                const respostaFormulario = await models.respostaformulario.create({
+                    itemrespostaformularioid: itemResposta.itemrespostaformularioid,
+                    utilizadorid: utilizadorcriou
+                });
+
+                await Promise.all(formRespostas.map(async resposta => {
+                        await models.respostadetalhe.create({
+                            respostaformularioid: respostaFormulario.respostaformularioid,
+                            formulariodetalhesid: resposta.id,
+                            resposta: resposta.resposta
+                        });
+                }));
+            }
 
             ficheirosController.adicionar(pontointeresse.pontointeresseid, 'POI', imagens, utilizadorcriou);
 

@@ -59,7 +59,7 @@ const MapModal = ({ open, onClose, onSave, lat, lng, title }) => {
                                     {infoWindowOpen && (
                                         <InfoWindow position={markerPosition} onCloseClick={handleInfoWindowClose}>
                                             <div style={{ width: 'auto', height: 'auto' }}> 
-                                                <h4>{title || 'Novo Ponto de Interesse'}</h4>
+                                                <h4>{title || 'Nova Localização'}</h4>
                                                 <p>Lat: {markerPosition.lat.toFixed(6)}</p>
                                                 <p>Long: {markerPosition.lng.toFixed(6)}</p>
                                             </div>

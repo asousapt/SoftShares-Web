@@ -13,13 +13,19 @@ import ImageTable from '../../components/tables/imageTable';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import FormBuilder from '../../components/forms/FormBuilder';
+import Map from '../../modals/maps/maps';
+import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
+import IconButton from '@mui/material/IconButton';
 
-const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
+const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
     //VARS
     //FIELDS
+    const [isNewModalOpen1, setNewModalOpen1] = useState(false);
     const [title, setTitle] = useState('');
     const [localizacao, setLocalizacao] = useState('');
     const [description, setDescription] = useState('');
+    const [lat, setLat] = useState('');
+    const [lng, setLng] = useState('');
     const [numParticipantes, setNumParticipantes] = useState('');
     const [dataHoraInicio, setDataHoraInicio] = useState('');
     const [dataHoraFim, setDataHoraFim] = useState('');
@@ -36,6 +42,8 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
     const [opcoesFiltroSubcat, setOpcoesSubcat] = useState([]);
     const [error, setError] = useState(null);
     const [images, setImages] = useState([]);
+    const [loadingCidades, setLoadingCidades] = useState(false);
+    const [cidadeData, setCidadeData] = useState(null);
 
     //ERRORS
     const [titleError, setTitleError] = useState(false);
@@ -53,6 +61,48 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
 
     const refFormInscricao = useRef();
     const refFormQualidade = useRef();
+
+    const updateLatLng = (lat, lng) => {
+        setLat(lat);
+        setLng(lng);
+    };
+
+    useEffect(() => {
+        if (lat && lng) fetchCidadeAPI(lat, lng);
+    }, [lat, lng]);
+
+    useEffect(() => {
+        if (!loadingCidades && cidades.length > 0 && cidadeData) {
+            const cidade = cidades.find(c => c.label.toLowerCase() === cidadeData.cidade.toLowerCase());
+            if (cidade) setCidade(cidade);
+        }
+    }, [loadingCidades, cidades, cidadeData]);
+
+    const fetchCidadeAPI = async (lat, long) => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/cidades/cidade/${lat}/${long}`, {
+                headers: { Authorization: `${token}` }
+            });
+            const cidadeData = response.data;
+
+            const distrito = distritos.find(d => d.label === cidadeData.distrito);
+            if (distrito) {
+                setDistrito(distrito);
+                setLoadingCidades(true);
+                await fetchCidades(distrito.value);
+                setLoadingCidades(false);
+                setCidadeData(cidadeData);
+                if (!localizacao) {
+                    setLocalizacao(cidadeData.concelho);
+                }
+            }
+
+            return cidadeData;
+        } catch (error) {
+            console.error('Erro ao buscar cidade:', error);
+        }
+    };
 
     useEffect(() => {
         const fetchDistritos = async () => {
@@ -197,7 +247,7 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
             const startDate = new Date(dataHoraInicio);
             const currentDate = new Date();
             if (startDate <= currentDate) {
-                errors.dataHoraInicioError = true; 
+                errors.dataHoraInicioError = true;
                 alert('Data de Início não pode ser igual à atual.');
             }
         }
@@ -210,7 +260,7 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
             if (endDate <= currentDate) {
                 errors.dataHoraFimError = true;
                 alert('Data de Fim não pode ser igual à atual.');
-            }else if (endDate < startDate) {
+            } else if (endDate < startDate) {
                 errors.dataHoraFimError = true;
                 alert('Data de Fim não pode ser anterior à de início.');
             }
@@ -222,9 +272,9 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
             const currentDate = new Date();
             const startDate = new Date(dataHoraInicio);
             if (deadlineDate <= currentDate) {
-                errors.dataLimInscricaoError = true; 
+                errors.dataLimInscricaoError = true;
                 alert('Data de Inscrição não pode ser igual à atual.');
-            }else if (deadlineDate > startDate) {
+            } else if (deadlineDate > startDate) {
                 errors.dataHoraFimError = true;
                 alert('Data de Inscrição não pode ser superior à de Início.');
             }
@@ -289,8 +339,8 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
                 dataLimInscricao: dataLimInscricao,
                 nmrMaxParticipantes: numParticipantes,
                 localizacao: localizacao,
-                latitude: 0,
-                longitude: 0,
+                latitude: lat,
+                longitude: lng,
                 cidadeID: cidade ? cidade.value : '',
                 utilizadorCriou: userid,
                 subcategoriaId: subcategoria ? subcategoria.value : '',
@@ -299,7 +349,7 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
                 formInsc: formInsc,
                 formQualidade: formQdd
             };
-            
+
             await axios.post(`${process.env.REACT_APP_API_URL}/evento/add`, novoEvento, {
                 headers: {
                     Authorization: `${token}`,
@@ -321,17 +371,17 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
         try {
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
-            fileInput.accept = 'image/*'; 
-    
+            fileInput.accept = 'image/*';
+
             fileInput.addEventListener('change', async (event) => {
                 const file = event.target.files[0];
-                if (!file) return; 
+                if (!file) return;
                 const fileName = file.name;
                 const fileSize = file.size;
-                
+
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
-        
+
                 reader.onload = async () => {
                     const imageData = reader.result;
                     const fileData = imageData;
@@ -390,6 +440,14 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
         onClose();
     };
 
+    const handleAddClick = () => {
+        setNewModalOpen1(true);
+    };
+
+    const handleClose1 = () => {
+        setNewModalOpen1(false);
+    };
+
     return (
         <Modal open={open} onClose={handleCancel}>
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px', overflow: 'auto' }}>
@@ -404,30 +462,36 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
                                 <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                                     <div style={{ width: '40%' }}>
                                         <BasicTextField caption='Titulo' valor={title} onchange={(e) => setTitle(e.target.value)} fullwidth={true} type="text" error={titleError}
-                                    helperText={titleError ? "Introduza um título válido" : ""} allowOnlyLetters={true} />
-                                    </div>
-                                    <div style={{ width: '33.9%' }}>
-                                        <BasicTextField caption='Localização' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} type="text" error={localizacaoError}
-                                    helperText={localizacaoError ? "Introduza uma localização válida" : ""} />
+                                            helperText={titleError ? "Introduza um título válido" : ""} allowOnlyLetters={true} />
                                     </div>
                                     <div style={{ width: '25%' }}>
                                         <BasicTextField caption='Nº Participantes Máximo' type='number' valor={numParticipantes} onchange={(e) => setNumParticipantes(e.target.value)} fullwidth={true} error={numParticipantesError}
-                                    helperText={numParticipantesError ? "Introduza um nº válido" : ""} />
+                                            helperText={numParticipantesError ? "Introduza um nº válido" : ""} />
+                                    </div>
+                                    <div style={{ width: '28.4%' }}>
+                                        <BasicTextField caption='Localização' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} type="text" error={localizacaoError}
+                                            helperText={localizacaoError ? "Introduza uma localização válida" : ""} />
+                                    </div>
+                                    <div style={{ width: '5%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                        <IconButton aria-label="Example" onClick={handleAddClick}>
+                                            <AddLocationAltIcon fontSize="large" sx={{ color: '#1D5AA1' }} />
+                                        </IconButton>
+                                        <Map open={isNewModalOpen1} onClose={handleClose1} onSave={(coords) => updateLatLng(coords.lat, coords.lng)} />
                                     </div>
                                 </div>
                                 <div style={{ marginBottom: 20 }}></div>
                                 <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                                     <div style={{ width: '74.5%' }}>
                                         <BasicTextField caption='Descrição' valor={description} onchange={(e) => setDescription(e.target.value)} fullwidth={true} type="text" error={descError}
-                                    helperText={descError ? "Introduza uma descrição válida" : ""} />
+                                            helperText={descError ? "Introduza uma descrição válida" : ""} />
                                     </div>
                                     <div style={{ width: '24.9%' }}>
                                         <Autocomplete options={polos} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                                <TextField {...params} label="Polo" variant="outlined" type="text" error={poloError} helperText={poloError ? "Escolha um Polo" : ""} /> 
-                                            )}
+                                            <TextField {...params} label="Polo" variant="outlined" type="text" error={poloError} helperText={poloError ? "Escolha um Polo" : ""} />
+                                        )}
                                             value={polo}
                                             onChange={(event, newValue) => { setPolo(newValue); }}
-                                            fullWidth={true} 
+                                            fullWidth={true}
                                             disabled={false}
                                         />
                                     </div>
@@ -436,22 +500,22 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
                                 <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                                     <div style={{ width: '32.9%' }}>
                                         <DataHora caption="Data e Hora Início" value={dataHoraInicio} onChange={(newValue) => setDataHoraInicio(newValue)} fullwidth={true} error={dataHoraInicioError}
-                                    helperText={dataHoraInicioError ? "Introduza uma data e hora válida" : ""} />
+                                            helperText={dataHoraInicioError ? "Introduza uma data e hora válida" : ""} />
                                     </div>
                                     <div style={{ width: '33%' }}>
                                         <DataHora caption="Data e Hora Fim" value={dataHoraFim} onChange={(newValue) => setDataHoraFim(newValue)} fullwidth={true} error={dataHoraFimError}
-                                    helperText={dataHoraFimError ? "Introduza uma data e hora válida" : ""} />
+                                            helperText={dataHoraFimError ? "Introduza uma data e hora válida" : ""} />
                                     </div>
                                     <div style={{ width: '33%' }}>
                                         <DataHora caption="Data Limite de Inscrição" value={dataLimInscricao} onChange={(newValue) => setDataLimInscricao(newValue)} fullwidth={true} error={dataLimInscricaoError}
-                                    helperText={dataLimInscricaoError ? "Introduza uma data e hora válida" : ""} />
+                                            helperText={dataLimInscricaoError ? "Introduza uma data e hora válida" : ""} />
                                     </div>
                                 </div>
                                 <div style={{ marginBottom: 20 }}></div>
                                 <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                                     <div style={{ width: '25%' }}>
                                         <Autocomplete options={distritos} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                                <TextField {...params} label="Distrito" variant="outlined" type="text" error={distritoError} helperText={distritoError ? "Escolha um distrito" : ""} /> )}
+                                            <TextField {...params} label="Distrito" variant="outlined" type="text" error={distritoError} helperText={distritoError ? "Escolha um distrito" : ""} />)}
                                             value={distrito}
                                             onChange={handleDistritoChange}
                                             fullWidth={true} />
@@ -465,7 +529,7 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
                                     </div>
                                     <div style={{ width: '25%' }}>
                                         <Autocomplete options={opcoesFiltroCat} getOptionLabel={(option) => option.label} renderInput={(params) => (
-                                                <TextField {...params} label="Categoria" variant="outlined" type="text" error={categoriaError} helperText={categoriaError ? "Escolha uma categoria" : ""} /> )}
+                                            <TextField {...params} label="Categoria" variant="outlined" type="text" error={categoriaError} helperText={categoriaError ? "Escolha uma categoria" : ""} />)}
                                             value={categoria}
                                             onChange={handleCategoriaChange}
                                             fullWidth={true} />
@@ -478,8 +542,8 @@ const AddEventModal = ({ open, onClose, setAlertOpen, setAlertProps  }) => {
                                             fullWidth={true} />
                                     </div>
                                 </div>
-                                <div style={{marginTop: 20}}>
-                                    <ImageTable images={images} onAddImage={handleImage} onDelete={resetImage}/>
+                                <div style={{ marginTop: 20 }}>
+                                    <ImageTable images={images} onAddImage={handleImage} onDelete={resetImage} />
                                 </div>
                             </div>
                         </AccordionDetails>

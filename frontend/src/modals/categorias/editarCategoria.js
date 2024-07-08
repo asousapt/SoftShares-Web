@@ -92,7 +92,7 @@ const EditarCategoria = ({ open, onClose, categoriaId, setAlertOpen, setAlertPro
                 }
             });
 
-            console.log('Categoria Atualizada');
+            
             onClose();
             setAlertProps({ title: 'Sucesso', label: `Categoria ${descricao} editado com sucesso.`, severity: 'success' });
                 setAlertOpen(true);

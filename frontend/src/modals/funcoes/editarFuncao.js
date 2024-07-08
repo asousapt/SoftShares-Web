@@ -32,8 +32,6 @@ const EditFuncao = ({ open, onClose, funcaoId, setAlertOpen, setAlertProps  }) =
                     });
                     const funcao = response.data;
 
-                    console.log('Dados recebidos:', funcao);
-
                     if (funcao) {
                         setDescricaoPT(funcao.valorpt || '');
                         setDescricaoEN(funcao.valoren || '');
@@ -94,7 +92,6 @@ const EditFuncao = ({ open, onClose, funcaoId, setAlertOpen, setAlertProps  }) =
             });
     
             if (response.status === 200) {
-                console.log('Função atualizada com sucesso');
                 onClose();
                 setAlertProps({ title: 'Sucesso', label: `Função ${descricaoPT} editada com sucesso.`, severity: 'success' });
                 setAlertOpen(true);

@@ -4,8 +4,6 @@ import CancelButton from '../../components/buttons/cancelButton';
 import SubmitButton from '../../components/buttons/submitButton';
 
 const ConfirmarAprov = ({ open, onClose, onConfirm, dados }) => {
-    console.log(dados);
-
     const mudarRegisto = async () => {
         onConfirm(dados.id);
         onClose();

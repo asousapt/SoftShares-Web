@@ -45,7 +45,6 @@ const ChangePasswordModal = ({ open, onClose, userId, setAlertOpen, setAlertProp
                     'Content-Type': 'application/json'
                 },
             });
-            console.log('Palavra-passe atualizada com sucesso!');
             onClose();
             setAlertProps({ title: 'Success', label: 'Palavra-passe atualizada com sucesso.', severity: 'success' });
             setAlertOpen(true);

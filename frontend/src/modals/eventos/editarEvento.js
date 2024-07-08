@@ -212,7 +212,7 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
                 headers: { Authorization: `${token}` }
             });
             const userData = response.data.data;
-            console.log(userData);
+            
 
             setTitle(userData.titulo);
             setLocalizacao(userData.localizacao);
@@ -416,7 +416,7 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
                 formInsc: formInsc,
                 formQualidade: formQdd
             };
-            console.log(eventoEditado);
+            
             await axios.put(`${process.env.REACT_APP_API_URL}/evento/update/${eventData}`, eventoEditado, {
                 headers: {
                     Authorization: `${token}`,
@@ -466,7 +466,6 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
             fileInput.addEventListener('change', async (event) => {
                 const file = event.target.files[0];
                 if (!file) return; 
-                console.log(file);
                 const fileName = file.name;
                 const fileSize = file.size;
                 
@@ -475,7 +474,6 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
         
                 reader.onload = async () => {
                     const imageData = reader.result;
-                    console.log('reader',reader);
                     const fileData = imageData;
                     const image = {
                         src: fileData,

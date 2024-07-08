@@ -294,7 +294,6 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                     'Content-Type': 'application/json'
                 },
             });
-            console.log('Utilizador Adicionado com sucesso');
             setAlertProps({ title: 'Sucesso', label: `O utilizador ${pnome} ${unome} foi criado com sucesso.`, severity: 'success' });
             setAlertOpen(true);
             resetForm();
@@ -330,7 +329,6 @@ const AddUserModal = ({ open, onClose, setAlertOpen, setAlertProps }) => {
 
                 reader.onload = async () => {
                     const imageData = reader.result;
-                    console.log('reader', reader);
                     setImage(imageData);
                 };
             });

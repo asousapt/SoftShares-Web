@@ -30,7 +30,6 @@ const controladorAlertas = {
     atualizarAlerta: async (req, res) => {
         const { idAlerta } = req.params;
         const { texto, poloID, inactivo } = req.body;
-        console.log(inactivo);
         try {
             await models.alerta.update({
                 texto: texto,
@@ -50,7 +49,6 @@ const controladorAlertas = {
 
     consultarAlerta: async (req, res) => {
         const { idAlerta } = req.params;
-        console.log(idAlerta);
 
         try {
             const alerta = await models.alerta.findOne({
@@ -164,8 +162,6 @@ const controladorAlertas = {
     consultarAlertasPoloidiomaMobile: async (req, res) => {
         const {idPolo, idiomaid} = req.params;
         try {
-            console.log(idPolo);
-            console.log(idiomaid);
             const alertas = await models.alerta.findAll({
                 where: {
                     poloid: idPolo,

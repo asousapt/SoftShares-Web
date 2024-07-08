@@ -3,6 +3,7 @@ const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
 const ficheirosController = require('./ficheiros');
+const sequelize = require('../bdConexao');
 
 const controladorGrupo = {
     adicionar: async (req, res) => {
@@ -36,7 +37,7 @@ const controladorGrupo = {
                 });
             }));
 
-            res.status(201).json({ message: 'Grupo adicionado com sucesso'});
+            res.status(201).json({ message: 'Grupo adicionado com sucesso', data: true});
         } catch (error) {
             res.status(500).json({ error: 'Erro ao adicionar grupo', details: error.message });
         }
@@ -149,6 +150,44 @@ const controladorGrupo = {
             res.status(200).json({ message: 'Consulta realizada com sucesso', data: grupos });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar grupos por utilizador', details: error.message });
+        }
+    }, 
+    listarTodosOsGruposPublicos: async (req, res) => {
+        const { utilizadorid } = req.params;
+        try {
+            const query = `
+            select 
+                gr.grupoid, 
+                gr.nome,
+                gr.descricao,
+                gr.subcategoriaid, 
+                sub.categoriaid
+            from grupo gr
+            inner join subcategoria sub on sub.subcategoriaid = gr.subcategoriaid
+            where gr.publico = true and gr.grupoid not in (
+            select utilizador_grupo.grupoid from utilizador_grupo 
+            where utilizador_grupo.utilizadorid = :utilizadorid)
+            `
+
+            const grupos = await sequelize.query(query, {  
+                replacements: { utilizadorid },
+                type: QueryTypes.SELECT });
+
+            const gruposFotos = await Promise.all(
+                grupos.map(async grupo => {
+                    const ficheiros = await ficheirosController.getAllFilesByAlbum(grupo.grupoid, 'GRUPO');
+                    const fotoUrl = ficheiros[0] ? ficheiros[0].url : '';
+                    
+                    return {
+                        ...grupo,  
+                        fotoUrl
+                    };
+                })
+            );
+
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: gruposFotos });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao listar todos os grupos públicos', details: error.message });
         }
     }
 };

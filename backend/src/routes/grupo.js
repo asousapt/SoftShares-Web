@@ -13,6 +13,7 @@ router.put('/update/:id', authenticate, grupoControlador.atualizar);
 router.delete('/delete/:id', authenticate, grupoControlador.remover);
 
 //ROUTES GET
+router.get('/publicos/:utilizadorid', authenticate, grupoControlador.listarTodosOsGruposPublicos);
 router.get('/subcategoria/:subcategoriaid', authenticate, grupoControlador.consultarPorSubcategoria);
 router.get('/utilizador/:utilizadorid', authenticate, grupoControlador.consultarPorUtilizador);
 

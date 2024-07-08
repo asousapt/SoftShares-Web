@@ -43,6 +43,10 @@ router.get('/totaleventos', authenticate, eventoControlador.consultarEventosTota
 
 router.get('/:idPolo/data/range/:data1/:data2/utilizador/:idUtilizador', authenticate, eventoControlador.consultarEventosEntreDatas);
 
+router.get('/:idPolo/data/range/:data1/:data2/utilizador/:idUtilizador/categoria/:categoriaId', authenticate, eventoControlador.consultarEventosEntreDataeCat);
+
+router.get('/:idPolo/data/range/:data1/:data2/utilizador/:idUtilizador/filtro/:filtro', authenticate, eventoControlador.consultarEventosEntreDataeFiltro);
+
 router.get('/utilizador/lista/:idEvento', authenticate, eventoControlador.consultarUtilizadoresEvento);
 
 router.get('/utilizador/:idUser', authenticate, eventoControlador.consultarEventoInscritos);

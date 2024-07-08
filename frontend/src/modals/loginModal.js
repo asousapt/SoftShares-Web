@@ -113,7 +113,7 @@ const LoginModal = ({ open, handleClose }) => {
         alert('Sem acesso a backoffice!');
         return;
       }
-      console.log(utilizador);
+      
 
       sessionStorage.setItem('userid', utilizador.utilizadorid);
       sessionStorage.setItem('nome', utilizador.pnome + ' ' + utilizador.unome);

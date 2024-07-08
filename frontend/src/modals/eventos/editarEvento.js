@@ -16,19 +16,27 @@ import ComboBox from '../../components/combobox/comboboxBasic';
 import CancelButton from '../../components/buttons/cancelButton';
 import ImageTable from '../../components/tables/imageTable';
 import FormBuilder from '../../components/forms/FormBuilder';
+import Map from '../../modals/maps/maps';
+import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
+import IconButton from '@mui/material/IconButton';
 
 const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps  }) => {
     //VARS
     //FIELDS
+    const [isNewModalOpen1, setNewModalOpen1] = useState(false);
     const [titulo, setTitle] = useState('');
     const [localizacao, setLocalizacao] = useState('');
     const [descricao, setDescription] = useState('');
+    const [lat, setLat] = useState('');
+    const [lng, setLng] = useState('');
+    const [loadingCidades, setLoadingCidades] = useState(false);
     const [nmrMaxParticipantes, setNumParticipantes] = useState('');
     const [dataInicio, setDataHoraInicio] = useState('');
     const [dataFim, setDataHoraFim] = useState('');
     const [dataLimInscricao, setDataLimInscricao] = useState('');
     const [cidadeID, setCidade] = useState(null);
     const [cidades, setCidades] = useState([]);
+    const [cidadeData, setCidadeData] = useState(null);
     const [distrito, setDistrito] = useState(null);
     const [distritos, setDistritos] = useState([]);
     const [poloId, setPolo] = useState('');
@@ -59,6 +67,11 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
 
     const refFormInscricao = useRef();
     const refFormQualidade = useRef();
+
+    const updateLatLng = (lat, lng) => {
+        setLat(lat);
+        setLng(lng);
+    };
 
     const getBase64FromUrl = async (url) => {
         const response = await fetch(url);
@@ -205,6 +218,40 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
         }
     };
 
+    useEffect(() => {
+        if (lat && lng) fetchCidadeAPI(lat, lng);
+    }, [lat, lng]);
+
+    useEffect(() => {
+        if (!loadingCidades && cidades.length > 0 && cidadeData) {
+            const cidade = cidades.find(c => c.label.toLowerCase() === cidadeData.cidade.toLowerCase());
+            if (cidade) setCidade(cidade);
+        }
+    }, [loadingCidades, cidades, cidadeData]);
+
+    const fetchCidadeAPI = async (lat, long) => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/cidades/cidade/${lat}/${long}`, {
+                headers: { Authorization: `${token}` }
+            });
+            const cidadeData = response.data;
+
+            const distrito = distritos.find(d => d.label === cidadeData.distrito);
+            if (distrito) {
+                setDistrito(distrito);
+                setLoadingCidades(true);
+                await fetchCidades(distrito.value);
+                setLoadingCidades(false);
+                setCidadeData(cidadeData);
+            }
+
+            return cidadeData;
+        } catch (error) {
+            console.error('Erro ao buscar cidade:', error);
+        }
+    };
+    
     const fetchEventData = async () => {
         try {
             const token = sessionStorage.getItem('token');
@@ -223,10 +270,10 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
             setDataLimInscricao(dataFormatada(userData.dataliminscricao));
             setPolo(userData.poloid);
             setCancelado(userData.cancelado)
+            setLat(userData.latitude);
+            setLng(userData.longitude);
 
-            const distrito = await fetchDistritoByCidadeId(userData.cidadeid);
-            setDistrito(distrito);
-            fetchCidades(distrito.value, userData.cidadeid);
+            fetchCidadeAPI(userData.latitude, userData.longitude);
             
             const catResponse = await axios.get(`${process.env.REACT_APP_API_URL}/categoria/${userData.subcategoria.categoriaid}`, {
                 headers: { Authorization: `${token}` }
@@ -405,8 +452,8 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
                 dataLimInscricao,
                 nmrMaxParticipantes,
                 localizacao,
-                latitude: 0,
-                longitude: 0,
+                latitude: lat,
+                longitude: lng,
                 cidadeID: cidadeID.value,
                 subcategoriaId: subcategoria.value,
                 poloId,
@@ -416,7 +463,7 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
                 formInsc: formInsc,
                 formQualidade: formQdd
             };
-            console.log(eventoEditado);
+            
             await axios.put(`${process.env.REACT_APP_API_URL}/evento/update/${eventData}`, eventoEditado, {
                 headers: {
                     Authorization: `${token}`,
@@ -466,7 +513,6 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
             fileInput.addEventListener('change', async (event) => {
                 const file = event.target.files[0];
                 if (!file) return; 
-                console.log(file);
                 const fileName = file.name;
                 const fileSize = file.size;
                 
@@ -475,7 +521,6 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
         
                 reader.onload = async () => {
                     const imageData = reader.result;
-                    console.log('reader',reader);
                     const fileData = imageData;
                     const image = {
                         src: fileData,
@@ -499,6 +544,14 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
         });
     }
 
+    const handleAddClick = () => {
+        setNewModalOpen1(true);
+    };
+
+    const handleClose1 = () => {
+        setNewModalOpen1(false);
+    };
+
     return (
         <Modal open={open} onClose={handleCancel}>
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px', overflow: 'auto' }}>
@@ -515,13 +568,19 @@ const EditEventModal = ({ open, onClose, eventData, setAlertOpen, setAlertProps 
                                         <BasicTextField caption='Titulo' valor={titulo} onchange={(e) => setTitle(e.target.value)} fullwidth={true} type="text" error={titleError}
                                     helperText={titleError ? "Introduza um título válido" : ""} allowOnlyLetters={true}/>
                                     </div>
-                                    <div style={{ width: '33.9%' }}>
-                                        <BasicTextField caption='Localização' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} type="text" error={localizacaoError}
-                                    helperText={localizacaoError ? "Introduza uma localização válida" : ""} />
-                                    </div>
                                     <div style={{ width: '25%' }}>
                                         <BasicTextField caption='Nº Participantes Máximo' type='number' valor={nmrMaxParticipantes} onchange={(e) => setNumParticipantes(e.target.value)} fullwidth={true} error={numParticipantesError}
                                     helperText={numParticipantesError ? "Introduza um nº válido" : ""} />
+                                    </div>
+                                    <div style={{ width: '28.4%' }}>
+                                        <BasicTextField caption='Localização' valor={localizacao} onchange={(e) => setLocalizacao(e.target.value)} fullwidth={true} type="text" error={localizacaoError}
+                                    helperText={localizacaoError ? "Introduza uma localização válida" : ""} />
+                                    </div>
+                                    <div style={{ width: '5%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                        <IconButton aria-label="Example" onClick={handleAddClick}>
+                                            <AddLocationAltIcon fontSize="large" sx={{ color: '#1D5AA1' }} />
+                                        </IconButton>
+                                        <Map open={isNewModalOpen1} onClose={handleClose1} onSave={(coords) => updateLatLng(coords.lat, coords.lng)} lat={lat} lng={lng} title={titulo}/>
                                     </div>
                                 </div>
                                 <div style={{ marginBottom: 20 }}></div>

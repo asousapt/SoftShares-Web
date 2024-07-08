@@ -191,7 +191,6 @@ const controladorCategorias = {
     
     consultarPorID: async (req, res) => {
         const { idCat } = req.params;
-        console.log('teste:', idCat);
         try {
             const categoria = await sequelizeConn.query(
                 `SELECT 
@@ -340,8 +339,6 @@ const controladorCategorias = {
                 ${whereClause}
             `;
 
-            console.log(query);
-    
             const categorias = await sequelizeConn.query(query, {
                 type: QueryTypes.SELECT,
                 replacements,

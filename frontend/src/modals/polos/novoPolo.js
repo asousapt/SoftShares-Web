@@ -168,7 +168,6 @@ const NovoPolo = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                     'Content-Type': 'application/json',
                 }
             });
-            console.log('Evento Adicionado');
             onClose();
             setAlertProps({ title: 'Sucesso', label: `Polo criado com sucesso.`, severity: 'success' });
             setAlertOpen(true);
@@ -197,7 +196,6 @@ const NovoPolo = ({ open, onClose, setAlertOpen, setAlertProps }) => {
 
                 reader.onload = async () => {
                     const imageData = reader.result;
-                    console.log('reader', reader);
                     setImage(imageData);
                 };
             });

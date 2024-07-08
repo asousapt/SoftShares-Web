@@ -149,7 +149,6 @@ const AddPublicacao = ({ open, onClose, setAlertOpen, setAlertProps }) => {
                 idiomaid: 1,
                 imagens: imagesRtn
             };
-            console.log(novaPublicacao);
             await axios.post(`${process.env.REACT_APP_API_URL}/thread/add`, novaPublicacao, {
                 headers: {
                     Authorization: `${token}`,

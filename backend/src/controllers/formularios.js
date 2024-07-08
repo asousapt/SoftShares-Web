@@ -372,7 +372,6 @@ const controladorFormularios = {
                 replacements: { idSubcat },
                 type: Sequelize.QueryTypes.SELECT
             });
-            console.log(formularios);
     
             // verifica se o evento tem um formulario associado
             const formularioid = formularios.length > 0 ? formularios[0].formularioid : 0;

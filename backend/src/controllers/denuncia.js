@@ -81,7 +81,6 @@ const denunciaController = {
     rejeitar: async (req, res) => {
         const { idDenuncia } = req.params;
         const { utilizadormodera, comentarioid } = req.body;
-        console.log('iddenunca, idcomentario', idDenuncia, comentarioid);
 
         try {
             await models.denuncia.update({

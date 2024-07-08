@@ -260,7 +260,6 @@ const EditarPolo = ({ open, onClose, poloId, setAlertOpen, setAlertProps }) => {
 
                 reader.onload = async () => {
                     const imageData = reader.result;
-                    console.log('reader', reader);
                     setImage(imageData);
                 };
             });

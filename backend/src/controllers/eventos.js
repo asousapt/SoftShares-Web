@@ -622,7 +622,6 @@ const controladorEventos = {
 
     consultarTodosComFiltro: async (req, res) => {
         const { estado, categoria, descricao, poloid } = req.query;
-        console.log(estado);
     
         try {
             let whereClause = 'WHERE e.titulo LIKE :descricao';
@@ -948,7 +947,6 @@ const controladorEventos = {
                         registoid: idEvento,
                         tipo: 'EVENTO'
                     });
-                    console.log(cfgFormulario.itemcfgformularioid);
                     const formulario = await models.formulario.create({
                         itemcfgformularioid: cfgFormulario.itemcfgformularioid,
                         tipoformulario: "QUALIDADE"
@@ -1104,7 +1102,126 @@ const controladorEventos = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao responder ao form de qualidade' });
         }
-    },     
+    },
+    consultarEventosEntreDataeCat: async (req, res) => {
+        const { idPolo, data1, data2, idUtilizador, categoriaId } = req.params;    
+
+        const query = `
+            SELECT evento.*, subcategoria.categoriaid,
+                (SELECT STRING_AGG(participantes_eventos.utilizadorid::text, ',')
+                FROM participantes_eventos
+                WHERE participantes_eventos.eventoid = evento.eventoid) AS participantes,
+                (SELECT COUNT(*)
+                FROM participantes_eventos
+                WHERE participantes_eventos.eventoid = evento.eventoid) AS numinscritos
+        FROM evento
+        JOIN subcategoria ON evento.subcategoriaid = subcategoria.subcategoriaid
+        and subcategoria.categoriaid = :categoriaId
+        WHERE evento.aprovado = true and evento.datainicio BETWEEN :data1 AND :data2
+        AND evento.cidadeid IN (SELECT cidadeid FROM polo WHERE poloid = :idPolo)
+        union 
+        SELECT evento.*, subcategoria.categoriaid,
+                (SELECT STRING_AGG(participantes_eventos.utilizadorid::text, ',')
+                FROM participantes_eventos
+                WHERE participantes_eventos.eventoid = evento.eventoid) AS participantes,
+                (SELECT COUNT(*)
+                FROM participantes_eventos
+                WHERE participantes_eventos.eventoid = evento.eventoid) AS numinscritos
+        FROM evento
+        JOIN subcategoria ON evento.subcategoriaid = subcategoria.subcategoriaid 
+        and subcategoria.categoriaid = :categoriaId
+        WHERE evento.utilizadorcriou = :idUtilizador and evento.aprovado = false 
+        and evento.dataaprovacao is null and evento.datainicio BETWEEN :data1 AND :data2
+        AND evento.cidadeid IN (SELECT cidadeid FROM polo WHERE poloid = :idPolo)
+        `;
+
+        try {
+            const eventos = await sequelizeConn.query(query, {
+                replacements: { idPolo, data1, data2, idUtilizador, categoriaId },
+                type: Sequelize.QueryTypes.SELECT
+            });
+
+            const processedEventos = await Promise.all(eventos.map(async (evento) => {
+                if (evento.participantes) {
+                    evento.participantes = evento.participantes.split(',').map(id => parseInt(id, 10));
+                } else {
+                    evento.participantes = [];
+                }
+
+                evento.numinscritos = parseInt(evento.numinscritos, 10);
+                const ficheiros = await ficheirosController.getAllFilesByAlbum(evento.eventoid, 'EVENTO');
+                evento.imagens = ficheiros ? ficheiros.map(file => file.url) : [];
+                return evento;
+            }));
+
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: processedEventos });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Erro ao consultar os eventos' });
+        }
+    }, 
+    consultarEventosEntreDataeFiltro: async (req, res) => {
+        const { idPolo, data1, data2, idUtilizador, filtro } = req.params;
+        
+        // faz decode do filtro
+        const decodedFiltro = decodeURIComponent(filtro);
+        console.log("Filtro: ", decodedFiltro);
+    
+        const query = `
+            SELECT evento.*, subcategoria.categoriaid,
+                (SELECT STRING_AGG(participantes_eventos.utilizadorid::text, ',')
+                FROM participantes_eventos
+                WHERE participantes_eventos.eventoid = evento.eventoid) AS participantes,
+                (SELECT COUNT(*)
+                FROM participantes_eventos
+                WHERE participantes_eventos.eventoid = evento.eventoid) AS numinscritos
+            FROM evento
+            JOIN subcategoria ON evento.subcategoriaid = subcategoria.subcategoriaid
+            WHERE evento.aprovado = true and evento.datainicio BETWEEN :data1 AND :data2
+            AND evento.cidadeid IN (SELECT cidadeid FROM polo WHERE poloid = :idPolo) 
+            and LOWER(evento.titulo) LIKE :filtro
+            union 
+            SELECT evento.*, subcategoria.categoriaid,
+                (SELECT STRING_AGG(participantes_eventos.utilizadorid::text, ',')
+                FROM participantes_eventos
+                WHERE participantes_eventos.eventoid = evento.eventoid) AS participantes,
+                (SELECT COUNT(*)
+                FROM participantes_eventos
+                WHERE participantes_eventos.eventoid = evento.eventoid) AS numinscritos
+            FROM evento
+            JOIN subcategoria ON evento.subcategoriaid = subcategoria.subcategoriaid
+            WHERE evento.utilizadorcriou = :idUtilizador and evento.aprovado = false 
+            and evento.dataaprovacao is null and evento.datainicio BETWEEN :data1 AND :data2
+            AND evento.cidadeid IN (SELECT cidadeid FROM polo WHERE poloid = :idPolo) 
+            and LOWER(evento.titulo) LIKE :filtro
+        `;
+    
+        try {
+            const eventos = await sequelizeConn.query(query, {
+                replacements: { idPolo, data1, data2, idUtilizador, filtro: `%${decodedFiltro}%` },
+                type: Sequelize.QueryTypes.SELECT
+            });
+    
+            const processedEventos = await Promise.all(eventos.map(async (evento) => {
+                if (evento.participantes) {
+                    evento.participantes = evento.participantes.split(',').map(id => parseInt(id, 10));
+                } else {
+                    evento.participantes = [];
+                }
+    
+                evento.numinscritos = parseInt(evento.numinscritos, 10);
+                const ficheiros = await ficheirosController.getAllFilesByAlbum(evento.eventoid, 'EVENTO');
+                evento.imagens = ficheiros ? ficheiros.map(file => file.url) : [];
+                return evento;
+            }));
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: processedEventos });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Erro ao consultar os eventos' });
+        }
+    }
+     
     
 };
 

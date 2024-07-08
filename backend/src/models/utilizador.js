@@ -78,6 +78,14 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       defaultValue: false
     },
+    tokenfacebook: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    tokengoogle: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
     datainactivacao: {
       type: DataTypes.DATE,
       allowNull: true

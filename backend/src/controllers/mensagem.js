@@ -5,7 +5,7 @@ const models = initModels(sequelizeConn);
 
 const controladorMensagem = {
     adicionar: async (req, res) => {
-        const { idRemetente, idDestinatario, tipoDestinatario, mensagem} = req.body;
+        const { idRemetente, idDestinatario, tipoDestinatario, mensagem, imagens} = req.body;
 
         try{
             const destinatario = await models.destinatario.findOne({
@@ -26,28 +26,11 @@ const controladorMensagem = {
                 entidade: 'MENSAGEM'
             });
             
+            ficheirosController.adicionar(mensagemRtn.mensagemid, 'MENSAGEM', imagens, idRemetente);
+            
             res.status(201).json({ message: 'Mensagem adicionada com sucesso' });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao adicionar mensagem', details: error.message });
-        }
-    },
-
-    atualizar: async (req, res) => {
-        const { id } = req.params;
-        const { mensagem } = req.body;
-
-        try {
-            await models.mensagem.update({
-                mensagem: mensagem
-            }, {
-                where: {
-                    mensagemid: id
-                }
-            });
-
-            res.status(200).json({ message: 'Mensagem atualizada com sucesso' });
-        } catch (error) {
-            res.status(500).json({ error: 'Erro ao atualizar mensagem', details: error.message });
         }
     },
 

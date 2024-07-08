@@ -7,7 +7,6 @@ const { authenticate } = require('../tokenUtils');
 router.post('/', authenticate, controladorMensagens.adicionar);
 
 //ROUTES PUT
-router.put('/:id', authenticate, controladorMensagens.atualizar);
 
 //ROUTES DELETE
 router.delete('/:id', authenticate, controladorMensagens.remover);

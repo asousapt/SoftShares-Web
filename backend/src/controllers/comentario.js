@@ -62,7 +62,7 @@ const comentarioController = {
                     const poi = await models.pontointeresse.findByPk(idRegisto);
                     const user = await models.utilizador.findByPk(poi.utilizadorcriou);
 
-                    await models.mensagem.notificacao.create({
+                    await models.notificacao.create({
                         utilizadorid: poi.utilizadorcriou,
                         notificacao: `${user.pnome} ${user.unome} comentou no ponto de interesse '${poi.titulo}'`,
                         tipo: 'POI',
@@ -72,7 +72,7 @@ const comentarioController = {
                     const thread = await models.thread.findByPk(idRegisto);
                     const user = await models.utilizador.findByPk(thread.utilizadorid);
 
-                    await models.mensagem.notificacao.create({
+                    await models.notificacao.create({
                         utilizadorid: thread.utilizadorid,
                         notificacao: `${user.pnome} ${user.unome} comentou na sua publicação '${thread.titulo}'`,
                         tipo: 'THREAD',
@@ -82,7 +82,7 @@ const comentarioController = {
                     const evento = await models.evento.findByPk(idRegisto);
                     const user = await models.utilizador.findByPk(evento.utilizadorcriou);
 
-                    await models.mensagem.notificacao.create({
+                    await models.notificacao.create({
                         utilizadorid: evento.utilizadorcriou,
                         notificacao: `${user.pnome} ${user.unome} comentou no seu evento '${evento.titulo}'`,
                         tipo: 'EVENTO',

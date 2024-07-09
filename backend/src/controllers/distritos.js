@@ -12,8 +12,6 @@ const controladorDistritos = {
           if (count < 1){
             const response = await axios.get('https://json.geoapi.pt/distritos/municipios');
             const distritos = response.data;
-            console.log('distritos');
-            console.log(distritos[0].distrito);
 
             for (let index in distritos) {
               const distrito = await models.distrito.create({

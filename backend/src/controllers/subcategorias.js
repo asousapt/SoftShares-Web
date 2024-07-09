@@ -93,7 +93,6 @@ const controladorSubcategorias = {
 
     adicionar: async (req, res) => {
         const { categoriaID, descricaoPT, descricaoEN, descricaoES } = req.body;
-        console.log('Incoming request body:', req.body);
     
         try {
             const idiomaPT = await models.idioma.findOne({ where: { icone: 'pt' } });

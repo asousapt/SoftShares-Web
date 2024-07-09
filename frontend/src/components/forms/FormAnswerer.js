@@ -5,7 +5,6 @@ import QuestionAnswerer from './QuestionAnswer';
 const FormAnswerer = forwardRef((props, ref) => {
     const { initialQuestions, disabled = false } = props;
     const [questions, setQuestions] = useState([]);
-    console.log(initialQuestions);
 
     useEffect(() => {
         if (initialQuestions && initialQuestions.length >= 0) {
@@ -70,7 +69,6 @@ const FormAnswerer = forwardRef((props, ref) => {
                     }
                 }
                 if (question.type === 'ESCOLHA_MULTIPLA' && question.required === true) {
-                    console.log('teste',question.options);
                     const selectedOptions = question.options.filter(opt => opt.selected);
                     if (selectedOptions.length !== 1) {
                         isValid = false;

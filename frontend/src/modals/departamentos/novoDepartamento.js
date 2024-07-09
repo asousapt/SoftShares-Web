@@ -60,7 +60,7 @@ const NovoDepartamento = ({ open, onClose, setAlertOpen, setAlertProps }) => {
             });
 
             if (response.status === 201) {
-                console.log('Departamento adicionado com sucesso');
+                
                 onClose();
                 setAlertProps({ title: 'Sucesso', label: `Departamento criado com sucesso.`, severity: 'success' });
                 setAlertOpen(true);

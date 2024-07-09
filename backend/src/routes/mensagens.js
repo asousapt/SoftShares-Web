@@ -7,13 +7,14 @@ const { authenticate } = require('../tokenUtils');
 router.post('/', authenticate, controladorMensagens.adicionar);
 
 //ROUTES PUT
-router.put('/:id', authenticate, controladorMensagens.atualizar);
 
 //ROUTES DELETE
 router.delete('/:id', authenticate, controladorMensagens.remover);
 
 //ROUTES GET
 router.get('/all/:idDestinatario/:tipoDestinatario', authenticate, controladorMensagens.consultarTudo);
+router.get('/lista/:idUtilizador', authenticate, controladorMensagens.obterListaMensagensMain);
+router.get('/lista/util/:idConversa', authenticate, controladorMensagens.buscarConversacaoEntreUtils);
 
 
 module.exports = router;

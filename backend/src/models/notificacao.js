@@ -33,6 +33,14 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
+    },
+    tipo: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+    },
+    idregisto: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
     }
   }, {
     sequelize,

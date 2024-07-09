@@ -34,7 +34,8 @@ const controladorFormularios = {
                     minimo: pergunta.minValue,
                     maximo: pergunta.maxValue,
                     ordem: pergunta.order,
-                    respostaspossiveis: pergunta.options.join(", ")
+                    respostaspossiveis: pergunta.options.join(", "), 
+                    tamanho: pergunta.size || 60
                 });
             }));
 
@@ -63,7 +64,8 @@ const controladorFormularios = {
                     minimo: pergunta.minValue,
                     maximo: pergunta.maxValue,
                     ordem: pergunta.order,
-                    respostaspossiveis: pergunta.options.join(", ")
+                    respostaspossiveis: pergunta.options.join(", "), 
+                    tamanho: pergunta.size || 60
                 });
             }));
             res.status(201).json({ message: 'Formulario adicionado com sucesso' });
@@ -370,7 +372,6 @@ const controladorFormularios = {
                 replacements: { idSubcat },
                 type: Sequelize.QueryTypes.SELECT
             });
-            console.log(formularios);
     
             // verifica se o evento tem um formulario associado
             const formularioid = formularios.length > 0 ? formularios[0].formularioid : 0;
@@ -526,9 +527,9 @@ const controladorFormularios = {
     
         const query = `
             SELECT 
-                rd.respostadetalheid AS "respostaId",
-                rd.resposta AS "resposta",
                 rd.formulariodetalhesid AS "formulariodetalhesid", 
+                STRING_AGG(rd.resposta, ', ') AS "resposta",
+                MIN(rd.respostadetalheid) AS "respostaId",
                 rf.utilizadorid AS "utilizadorId"
             FROM respostadetalhe rd
             INNER JOIN respostaformulario rf ON rd.respostaformularioid = rf.respostaformularioid
@@ -536,6 +537,7 @@ const controladorFormularios = {
                 AND irf.entidade = :tabela AND irf.registoid = :idRegisto
             INNER JOIN formulariodetalhes fd ON fd.formulariodetalhesid = rd.formulariodetalhesid
             INNER JOIN formularioversao fv ON fv.formularioversaoid = fd.formularioversaoid AND fv.formularioid = :idFormulario
+            GROUP BY rd.formulariodetalhesid, rf.utilizadorid
         `;
     
         const query2 = `

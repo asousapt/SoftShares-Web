@@ -13,6 +13,23 @@ import * as FaIcons from "react-icons/fa";
 import * as AiIcons from "react-icons/ai";
 import * as IoIcons from "react-icons/io";
 import * as MdIcons from "react-icons/md";
+import { CiViewList } from "react-icons/ci";
+import { AiOutlineException } from "react-icons/ai";
+import { BsCalendar2Event } from "react-icons/bs";
+import { AiOutlineWarning } from "react-icons/ai";
+import { AiOutlineRise } from "react-icons/ai";
+import { AiOutlineCheckSquare } from "react-icons/ai";
+import { IoSettingsOutline } from "react-icons/io5";
+import { RiListCheck3 } from "react-icons/ri";
+import { GrGroup } from "react-icons/gr";
+import { LuBuilding2 } from "react-icons/lu";
+import { IoDocumentTextOutline } from "react-icons/io5";
+import { IoBriefcaseOutline } from "react-icons/io5";
+import { BiCategory } from "react-icons/bi";
+import { MdOutlineCategory } from "react-icons/md";
+import { FiAlertCircle } from "react-icons/fi";
+import { RiChatThreadLine } from "react-icons/ri";
+import { HiOutlineLocationMarker } from "react-icons/hi";
 
 const Sidebar = () => {
     const location = useLocation();
@@ -64,42 +81,42 @@ const Sidebar = () => {
             title: 'Estatísticas', 
             icon: FaIcons.FaChartBar, 
             subItems: [
-                { title: 'Gerais', link: '/estatisticas/utilizadores', icon: IoIcons.IoIosPaper },
-                { title: 'Denuncias', link: '/estatisticas/denuncias', icon: IoIcons.IoIosPaper }
+                { title: 'Gerais', link: '/estatisticas/utilizadores', icon: AiOutlineRise},
+                { title: 'Denuncias', link: '/estatisticas/denuncias', icon: AiOutlineException }
             ],
         },
         { 
             title: 'Listagem', 
-            icon: FaIcons.FaClipboardList, 
+            icon: CiViewList, 
             subItems: [
-                { title: 'Eventos', link: '/lista/eventos', icon: IoIcons.IoIosPaper },
-                { title: 'Pontos de Interesse', link: '/lista/pontosinteresse', icon: IoIcons.IoIosPaper },
-                { title: 'Publicações', link: '/lista/publicacoes', icon: IoIcons.IoIosPaper },
+                { title: 'Eventos', link: '/lista/eventos', icon: BsCalendar2Event },
+                { title: 'Pontos de Interesse', link: '/lista/pontosinteresse', icon: HiOutlineLocationMarker },
+                { title: 'Publicações', link: '/lista/publicacoes', icon: RiChatThreadLine },
             ],
         },
         { 
             title: 'Moderação', 
-            icon: FaIcons.FaClipboardList, 
+            icon: RiListCheck3, 
             subItems: [
-                { title: 'Aprovações', link: '/moderacao/aprovacoes', icon: IoIcons.IoIosPaper },
-                { title: 'Denúncias', link: '/moderacao/denuncias', icon: IoIcons.IoIosPaper },
+                { title: 'Aprovações', link: '/moderacao/aprovacoes', icon: AiOutlineCheckSquare },
+                { title: 'Denúncias', link: '/moderacao/denuncias', icon: AiOutlineWarning},
             ],
         },
         { 
             title: 'Configuração', 
-            icon: FaIcons.FaClipboardList, 
+            icon: IoSettingsOutline, 
             subItems: userProfile === 'Admin' ? [
                 { title: 'Utilizadores', link: '/config/utilizadores', icon: MdIcons.MdOutlineManageAccounts },
                 { title: 'Alertas', link: '/config/alertas', icon: IoIcons.IoIosPaper },
             ] : [
-                { title: 'Polos', link: '/config/polos', icon: IoIcons.IoIosPaper },
-                { title: 'Formulários', link: '/config/forms', icon: IoIcons.IoIosPaper },
+                { title: 'Polos', link: '/config/polos', icon: LuBuilding2 },
+                { title: 'Formulários', link: '/config/forms', icon: IoDocumentTextOutline },
                 { title: 'Utilizadores', link: '/config/utilizadores', icon: MdIcons.MdOutlineManageAccounts },
-                { title: 'Departamentos', link: '/config/departamentos', icon: MdIcons.MdOutlineManageAccounts },
-                { title: 'Funções', link: '/config/funcoes', icon: IoIcons.IoIosPaper },
-                { title: 'Categorias', link: '/config/categorias', icon: IoIcons.IoIosPaper },
-                { title: 'Subcategorias', link: '/config/subcategorias', icon: IoIcons.IoIosPaper },
-                { title: 'Alertas', link: '/config/alertas', icon: IoIcons.IoIosPaper },
+                { title: 'Departamentos', link: '/config/departamentos', icon: GrGroup },
+                { title: 'Funções', link: '/config/funcoes', icon: IoBriefcaseOutline },
+                { title: 'Categorias', link: '/config/categorias', icon: BiCategory },
+                { title: 'Subcategorias', link: '/config/subcategorias', icon: MdOutlineCategory },
+                { title: 'Alertas', link: '/config/alertas', icon: FiAlertCircle },
             ],
         },
     ];

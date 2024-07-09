@@ -60,7 +60,6 @@ const NovaFuncao = ({ open, onClose, setAlertOpen, setAlertProps }) => {
             });
 
             if (response.status === 201) {
-                console.log('Função adicionada com sucesso');
                 onClose();
                 setAlertProps({ title: 'Sucesso', label: `Função criada com sucesso.`, severity: 'success' });
                 setAlertOpen(true);

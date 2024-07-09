@@ -5,6 +5,7 @@ const { authenticate } = require('../tokenUtils');
 
 // ROUTES POST
 router.post('/add', authenticate, utilizadorControlador.adicionar);
+router.post('/add/mobile', authenticate, utilizadorControlador.adicionarMobile);
 
 // ROUTES PUT
 router.put('/update/:idUtilizador', authenticate, utilizadorControlador.atualizar);

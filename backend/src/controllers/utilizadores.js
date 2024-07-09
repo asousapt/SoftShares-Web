@@ -592,6 +592,8 @@ const controladorUtilizadores = {
                 }
             );
 
+            await sequelizeConn.query('CALL notificar_questionarios()')
+
             res
                 .status(200)
                 .json({
@@ -881,6 +883,8 @@ const controladorUtilizadores = {
                     },
                 }
             );
+
+            await sequelizeConn.query('CALL notificar_questionarios()')
 
             res.status(200).json(token);
         } catch (error) {

@@ -273,7 +273,7 @@ const controladorPontosInteresse = {
         const { idPontoInteresse } = req.params;
         const { userAprovacao } = req.body;
         try {
-            await models.pontointeresse.update({
+            const poi = await models.pontointeresse.update({
                 aprovado: true,
                 dataaprovacao: Sequelize.literal('CURRENT_TIMESTAMP'),
                 utilizadoraprova: userAprovacao
@@ -281,6 +281,13 @@ const controladorPontosInteresse = {
                 where: {
                     pontointeresseid: idPontoInteresse
                 }
+            });
+
+            await models.notificacao.create({
+                utilizadorid: poi.utilizadorcriou,
+                notificacao: `O ponto de interesse '${poi.titulo}' foi aprovado!`,
+                tipo: 'POI',
+                idregisto: idPontoInteresse
             });
 
             res.status(200).json({ message: 'Ponto de interesse aprovado com sucesso' });
@@ -293,7 +300,7 @@ const controladorPontosInteresse = {
         const { idPontoInteresse } = req.params;
         const { userAprovacao } = req.body;
         try {
-            await models.pontointeresse.update({
+            const poi = await models.pontointeresse.update({
                 aprovado: false,
                 dataaprovacao: Sequelize.literal('CURRENT_TIMESTAMP'),
                 utilizadoraprova: userAprovacao
@@ -301,6 +308,13 @@ const controladorPontosInteresse = {
                 where: {
                     pontointeresseid: idPontoInteresse
                 }
+            });
+
+            await models.notificacao.create({
+                utilizadorid: poi.utilizadorcriou,
+                notificacao: `O ponto de interesse '${poi.titulo}' foi rejeitado!`,
+                tipo: 'POI',
+                idregisto: idPontoInteresse
             });
 
             res.status(200).json({ message: 'Ponto de interesse rejeitado com sucesso' });

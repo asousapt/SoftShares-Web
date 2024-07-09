@@ -33,6 +33,62 @@ const comentarioController = {
                     respostaid: comment.comentarioid,
                     comentariopaiid: comentarioPai
                 })
+
+                const parent = await models.comentario.findByPk(comentarioPai);
+                const user = await models.utilizador.findByPk(parent.utilizadorid);
+
+                let msg = ''
+                if (tipo === 'POI'){
+                    const poi = await models.pontointeresse.findByPk(idRegisto);
+                    msg = `${user.pnome} ${user.unome} respondeu ao seu comentario no ponto de interesse '${poi.titulo}'`
+                } else if (tipo === 'THREAD'){
+                    const thread = await models.thread.findByPk(idRegisto);
+                    msg = `${user.pnome} ${user.unome} respondeu ao seu comentario na publicação '${thread.titulo}'`
+                } else if (tipo === 'EVENTO'){
+                    const evento = await models.evento.findByPk(idRegisto);
+                    msg = `${user.pnome} ${user.unome} respondeu ao seu comentario no evento '${evento.titulo}'`
+                }
+
+                await models.mensagem.notificacao.create({
+                    utilizadorid: parent.utilizadorid,
+                    notificacao: msg,
+                    tipo: tipo,
+                    idregisto: idRegisto
+                });
+            }
+
+            if(!comentarioPai || comentarioPai < 1){
+                if (tipo === 'POI'){
+                    const poi = await models.pontointeresse.findByPk(idRegisto);
+                    const user = await models.utilizador.findByPk(poi.utilizadorcriou);
+
+                    await models.notificacao.create({
+                        utilizadorid: poi.utilizadorcriou,
+                        notificacao: `${user.pnome} ${user.unome} comentou no ponto de interesse '${poi.titulo}'`,
+                        tipo: 'POI',
+                        idregisto: idRegisto
+                    });
+                } else if (tipo === 'THREAD'){
+                    const thread = await models.thread.findByPk(idRegisto);
+                    const user = await models.utilizador.findByPk(thread.utilizadorid);
+
+                    await models.notificacao.create({
+                        utilizadorid: thread.utilizadorid,
+                        notificacao: `${user.pnome} ${user.unome} comentou na sua publicação '${thread.titulo}'`,
+                        tipo: 'THREAD',
+                        idregisto: idRegisto
+                    });
+                } else if (tipo === 'EVENTO'){
+                    const evento = await models.evento.findByPk(idRegisto);
+                    const user = await models.utilizador.findByPk(evento.utilizadorcriou);
+
+                    await models.notificacao.create({
+                        utilizadorid: evento.utilizadorcriou,
+                        notificacao: `${user.pnome} ${user.unome} comentou no seu evento '${evento.titulo}'`,
+                        tipo: 'EVENTO',
+                        idregisto: idRegisto
+                    });
+                }
             }
 
             res.status(201).json({ message: 'Comentário adicionado com sucesso' });

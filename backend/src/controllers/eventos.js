@@ -328,7 +328,7 @@ const controladorEventos = {
         const { userAprovacao } = req.body;
 
         try {
-            await models.evento.update({
+            const evento = await models.evento.update({
                 aprovado: true,
                 utilizadoraprovou: userAprovacao,
                 dataaprovacao: Sequelize.literal('CURRENT_TIMESTAMP')
@@ -337,6 +337,14 @@ const controladorEventos = {
                     eventoid: idEvento
                 }
             });
+
+            await models.notificacao.create({
+                utilizadorid: evento.utilizadorcriou,
+                notificacao: `O evento '${evento.titulo}' foi aprovado!`,
+                tipo: 'EVENTO',
+                idregisto: idEvento
+            });
+
             res.status(200).json({ message: 'Evento aprovado com sucesso' });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao aprovar o evento' });
@@ -347,7 +355,7 @@ const controladorEventos = {
         const { idEvento } = req.params;
         const { userAprovacao } = req.body;
         try {
-            await models.evento.update({
+            const evento = await models.evento.update({
                 aprovado: false,
                 utilizadoraprovou: userAprovacao,
                 dataaprovacao: Sequelize.literal('CURRENT_TIMESTAMP')
@@ -356,6 +364,14 @@ const controladorEventos = {
                     eventoid: idEvento
                 }
             });
+
+            await models.notificacao.create({
+                utilizadorid: evento.utilizadorcriou,
+                notificacao: `O evento '${evento.titulo}' foi rejeitado!`,
+                tipo: 'EVENTO',
+                idregisto: idEvento
+            });
+
             res.status(200).json({ message: 'Evento rejeitado com sucesso' });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao rejeitado o evento' });

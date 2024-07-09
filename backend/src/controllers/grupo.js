@@ -37,6 +37,24 @@ const controladorGrupo = {
                 });
             }));
 
+            const destinatario = await models.destinatario.findOne({
+                where: {
+                    itemdestinatario: utilizadorcriou,
+                    tipo: 'UT'
+                }
+            });
+
+            const mensagemRtn = await models.mensagem.create({
+                destinatarioid: destinatario.destinatarioid,
+                mensagem: "Grupo foi criado!",
+                remententeid: idRemetente
+            });
+
+            await models.objecto.create({
+                registoid: mensagemRtn.mensagemid,
+                entidade: 'MENSAGEM'
+            });
+
             res.status(201).json({ message: 'Grupo adicionado com sucesso', data: true});
         } catch (error) {
             res.status(500).json({ error: 'Erro ao adicionar grupo', details: error.message });

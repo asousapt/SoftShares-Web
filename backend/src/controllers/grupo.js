@@ -207,7 +207,95 @@ const controladorGrupo = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao listar todos os grupos públicos', details: error.message });
         }
+    }, 
+    juntarAoGrupo: async (req, res) => {
+        const { grupoid, utilizadorid } = req.body;
+
+        try {
+            const grupo = await models.grupo.findByPk(grupoid);
+            if (!grupo) {
+                return res.status(404).json({ error: 'Grupo não encontrado' });
+            }
+
+            await models.utilizador_grupo.create({
+                grupoid: grupoid,
+                utilizadorid: utilizadorid
+            });
+
+            res.status(201).json({ message: 'Utilizador juntou-se ao grupo com sucesso'});
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao juntar utilizador ao grupo', details: error.message });
+        }
+    }, 
+    obterDadosGrupo: async (req, res) => { 
+        const { grupoid } = req.params;
+        try {
+            const query = `
+            select 
+                gr.grupoid, 
+                gr.nome,
+                gr.descricao,
+                gr.subcategoriaid, 
+                sub.categoriaid
+            from grupo gr
+            inner join subcategoria sub on sub.subcategoriaid = gr.subcategoriaid
+            where gr.grupoid = :grupoid
+            `;
+    
+            const grupo = await sequelize.query(query, {  
+                replacements: { grupoid },
+                type: QueryTypes.SELECT
+            });
+    
+            // Assuming you have a 'utilizador' model
+            const utilizadorQuery = `
+            select 
+                ug.utilizadorid,
+                u.pnome,
+                u.unome,
+                u.poloid,
+                u.email
+            from utilizador_grupo ug
+            inner join utilizador u on u.utilizadorid = ug.utilizadorid
+            where ug.grupoid = :grupoid
+            `;
+    
+            const utilizadores = await sequelize.query(utilizadorQuery, {
+                replacements: { grupoid },
+                type: QueryTypes.SELECT
+            });
+    
+            const utilizadoresComFotos = await Promise.all(
+                utilizadores.map(async utilizador => {
+                    const ficheiros = await ficheirosController.getAllFilesByAlbum(utilizador.utilizadorid, 'UTIL');
+                    const fotoUrl = ficheiros[0] ? ficheiros[0].url : '';
+    
+                    return {
+                        ...utilizador,
+                        fotoUrl
+                    };
+                })
+            );
+    
+            const gruposFotos = await Promise.all(
+                grupo.map(async grupo => {
+                    const ficheiros = await ficheirosController.getAllFilesByAlbum(grupo.grupoid, 'GRUPO');
+                    const fotoUrl1 = ficheiros[0] ? ficheiros[0].url : '';
+    
+                    return {
+                        ...grupo,
+                        fotoUrl1,
+                        utilizadores: utilizadoresComFotos
+                    };
+                })
+            );
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: gruposFotos });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao listar todos os grupos públicos', details: error.message });
+        }
     }
+    
 };
 
 module.exports = controladorGrupo;

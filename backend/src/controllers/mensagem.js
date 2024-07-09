@@ -279,10 +279,56 @@ const controladorMensagem = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar mensagens', details: error.message });
         }
-    },  // Função auxiliar para obter detalhes de um utilizador
-     
+    },
+    buscarConversacaoEntreGrupo: async (req, res) => {
+        const { idConversa } = req.params;
     
+        const query = `
+            SELECT 
+                msg.mensagemid, 
+                msg.destinatarioid, 
+                dest.tipo, 
+                dest.itemdestinatario, 
+                msg.remetenteid, 
+                msg.mensagem, 
+                msg.datacriacao
+            FROM 
+                mensagem msg
+            INNER JOIN 
+                destinatario dest 
+                ON msg.destinatarioid = dest.destinatarioid
+                AND dest.destinatarioid = (
+                    SELECT destinatarioid FROM mensagem WHERE mensagemid = :idConversa
+                ) 
+            ORDER BY 
+                msg.datacriacao ASC;
+        `;
     
+        try {
+          
+            const mensagens = await sequelizeConn.query(query, {
+                replacements: { idConversa },
+                type: Sequelize.QueryTypes.SELECT
+            });
+
+            const destinatarioGrupo = await models.grupo.findOne({
+                attributes: ['grupoid', 'nome', 'descricao'],
+                where: {
+                    grupoid: mensagens[0].itemdestinatario
+                }
+            });
+    
+             
+            const mensagensComDetalhes = await Promise.all(mensagens.map(async (mensagem) => {
+                const remetente = await getUserDetails(mensagem.remetenteid);
+                return { ...mensagem, remetente, destinatarioGrupo };
+            }));
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: mensagensComDetalhes });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar mensagens', details: error.message });
+        }
+    }    
 
 }
 

@@ -14,7 +14,7 @@ router.delete('/:id', authenticate, controladorMensagens.remover);
 //ROUTES GET
 router.get('/all/:idDestinatario/:tipoDestinatario', authenticate, controladorMensagens.consultarTudo);
 router.get('/lista/:idUtilizador', authenticate, controladorMensagens.obterListaMensagensMain);
+router.get('/lista/grupo/:idConversa', authenticate, controladorMensagens.buscarConversacaoEntreGrupo);
 router.get('/lista/util/:idConversa', authenticate, controladorMensagens.buscarConversacaoEntreUtils);
-
 
 module.exports = router;

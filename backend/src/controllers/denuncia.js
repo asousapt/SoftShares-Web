@@ -83,7 +83,7 @@ const denunciaController = {
         const { utilizadormodera, comentarioid } = req.body;
 
         try {
-            await models.denuncia.update({
+            const denuncia = await models.denuncia.update({
                 utilizadormodera: utilizadormodera,
                 datatratamento: Sequelize.literal('CURRENT_TIMESTAMP')
             }, {
@@ -92,13 +92,44 @@ const denunciaController = {
                 }
             });
 
-            await models.comentario.update({
+            const comment = await models.comentario.update({
                 removido: true
             }, {
                 where: {
                     comentarioid: comentarioid
                 }
             });
+
+            const cfgcomment = await models.itemcomentario.findByPk(comment.itemcomentarioid)
+
+            if (cfgcomment.tipo === 'POI'){
+                const poi = await models.pontointeresse.findByPk(comment.registoid);
+
+                await models.notificacao.create({
+                    utilizadorid: poi.utilizadorcriou,
+                    notificacao: `O seu comentario do ponto de interesse '${poi.titulo}' foi removido. Motivo: ${denuncia.texto}`,
+                    tipo: cfgcomment.tipo,
+                    idregisto: comment.registoid
+                });
+            } else if (cfgcomment.tipo === 'THREAD'){
+                const thread = await models.thread.findByPk(comment.registoid);
+
+                await models.notificacao.create({
+                    utilizadorid: thread.utilizadorid,
+                    notificacao: `O seu comentario da publicação '${poi.titulo}' foi removido. Motivo: ${denuncia.texto}`,
+                    tipo: cfgcomment.tipo,
+                    idregisto: comment.registoid
+                });
+            } else if (cfgcomment.tipo === 'EVENTO'){
+                const evento = await models.evento.findByPk(comment.registoid);
+
+                await models.notificacao.create({
+                    utilizadorid: evento.utilizadorcriou,
+                    notificacao: `O seu comentario do evento '${poi.titulo}' foi removido. Motivo: ${denuncia.texto}`,
+                    tipo: cfgcomment.tipo,
+                    idregisto: comment.registoid
+                });
+            }
 
             res.status(200).json({ message: 'Comentario denunciado atualizado para removido com sucesso' });
         } catch (error) {

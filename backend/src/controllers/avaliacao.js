@@ -221,6 +221,35 @@ const avaliacaoController = {
             res.status(500).json({ error: 'Erro ao consultar utilizador', details: error.message });
         }
     },
+
+    consultarPorComentarioUtilizador: async (req, res) => {
+        const { idComentario, idUser } = req.params;
+
+        try {
+            const itemAvaliacao = await models.itemavaliacao.findOne({
+                where: {
+                    itemorigid: idComentario,
+                    tipoentidade: 'COMENTARIO'
+                }
+            });
+
+            if (!itemAvaliacao){
+                return res.status(200).json({ message: 'Consulta realizada com sucesso', data: 0 });
+            }
+
+            const avaliacao = await models.avaliacao.findOne({
+                where: {
+                    itemavaliacaoid: itemAvaliacao.itemavaliacaoid,
+                    utilizadorid: idUser
+                },
+                order: [['datacriacao', 'DESC']]
+            });
+
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: avaliacao || 0 });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar utilizador', details: error.message });
+        }
+    },
 };
 
 module.exports = avaliacaoController;

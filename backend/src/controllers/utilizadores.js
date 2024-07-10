@@ -97,6 +97,7 @@ const controladorUtilizadores = {
             inactivo,
             imagem,
             administrador_poloid,
+            tipo
         } = req.body;
 
         try {

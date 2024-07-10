@@ -113,16 +113,18 @@ const controladorUtilizadores = {
                 tokengoogle = token;
             }
 
+            const salt = chavesalt || 'default_salt_value';
+
             const user = await models.utilizador.create({
                 poloid,
                 perfilid,
                 pnome,
                 unome,
                 email,
-                pass,
+                passwd: pass,
                 tokenfacebook: tokenfb,
                 tokengoogle: tokengoogle,
-                chavesalt,
+                chavesalt: salt,
                 idiomaid,
                 departamentoid,
                 funcaoid,

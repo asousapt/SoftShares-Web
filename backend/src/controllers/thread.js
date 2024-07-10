@@ -36,6 +36,25 @@ const controladorThread = {
             
             ficheirosController.adicionar(thread.threadid, 'THREAD', imagens, utilizadorid);
 
+            await sequelizeConn.query(
+                `INSERT INTO NOTIFICACAO (UTILIZADORID, NOTIFICACAO, TIPO, idregisto)
+                SELECT 
+                    sfav.utilizadorid,
+                    CONCAT('Publicação ', '${titulo}', ' foi criada!'),
+                    'POI',
+                    ${thread.threadid}
+                FROM 
+                    subcategoria_fav_util sfav
+                INNER JOIN
+                    utilizador u ON sfav.utilizadorid = u.utilizadorid
+                WHERE
+                    sfav.subcategoriaid = ${thread.subcategoriaid}
+                    AND u.poloid = ${thread.poloid}
+                    AND u.inactivo = false
+                    AND u.utilizadorid <> ${thread.utilizadorid}
+                `
+            );
+
             res.status(201).json({ message: 'Thread adicionada com sucesso', data: thread });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao adicionar thread', details: error.message });

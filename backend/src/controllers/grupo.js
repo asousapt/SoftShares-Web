@@ -40,7 +40,7 @@ const controladorGrupo = {
             const mensagemRtn = await models.mensagem.create({
                 destinatarioid: destinatario.destinatarioid,
                 mensagem: "Grupo foi criado!",
-                remententeid: utilizadorcriou
+                remetenteid: utilizadorcriou
             });
 
             await models.objecto.create({

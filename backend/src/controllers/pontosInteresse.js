@@ -273,7 +273,7 @@ const controladorPontosInteresse = {
         const { idPontoInteresse } = req.params;
         const { userAprovacao } = req.body;
         try {
-            const poi = await models.pontointeresse.update({
+            await models.pontointeresse.update({
                 aprovado: true,
                 dataaprovacao: Sequelize.literal('CURRENT_TIMESTAMP'),
                 utilizadoraprova: userAprovacao
@@ -283,12 +283,33 @@ const controladorPontosInteresse = {
                 }
             });
 
+            const poi = await models.pontointeresse.findByPk(idPontoInteresse);
+
             await models.notificacao.create({
                 utilizadorid: poi.utilizadorcriou,
                 notificacao: `O ponto de interesse '${poi.titulo}' foi aprovado!`,
                 tipo: 'POI',
                 idregisto: idPontoInteresse
             });
+
+            await sequelizeConn.query(
+                `INSERT INTO NOTIFICACAO (UTILIZADORID, NOTIFICACAO, TIPO, idregisto)
+                SELECT 
+                    sfav.utilizadorid,
+                    CONCAT('Ponto de interesse ', '${poi.titulo}', ' foi criado!'),
+                    'POI',
+                    ${idPontoInteresse}
+                FROM 
+                    subcategoria_fav_util sfav
+                INNER JOIN
+                    utilizador u ON sfav.utilizadorid = u.utilizadorid
+                WHERE
+                    sfav.subcategoriaid = ${poi.subcategoriaid}
+                    AND u.poloid = ${poi.poloid}
+                    AND u.inactivo = false
+                    AND u.utilizadorid <> ${poi.utilizadorcriou}
+                `
+            );
 
             res.status(200).json({ message: 'Ponto de interesse aprovado com sucesso' });
         } catch (error) {

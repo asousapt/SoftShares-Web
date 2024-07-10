@@ -20,7 +20,7 @@ const controladorMensagem = {
             const mensagemRtn = await models.mensagem.create({
                 destinatarioid: destinatario.destinatarioid,
                 mensagem: mensagem,
-                remententeid: idRemetente
+                remetenteid: idRemetente
             });
 
             await models.objecto.create({

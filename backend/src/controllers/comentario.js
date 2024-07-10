@@ -269,8 +269,8 @@ const comentarioController = {
         try {
             const comentarios = await sequelizeConn.query(
                 `SELECT
-                    case when ic.tipo = 'POI' then p.pontointeresseid else t.threadid end as id,
-                    case when ic.tipo = 'POI' then p.titulo else t.titulo end as titulo,
+                    case when ic.tipo = 'POI' then p.pontointeresseid when ic.tipo = 'EVENTO' then e.eventoid else t.threadid end as id,
+                    case when ic.tipo = 'POI' then p.titulo when ic.tipo = 'EVENTO' then e.titulo else t.titulo end as titulo,
                     c1.comentarioid AS comentarioid,
                     c1.itemcomentarioid AS itemcomentarioid,
                     c1.utilizadorid AS utilizadorid,
@@ -292,6 +292,8 @@ const comentarioController = {
                     pontointeresse p ON p.pontointeresseid = ic.registoid AND ic.tipo = 'POI'
                 LEFT JOIN
                     thread t ON t.threadid = ic.registoid AND ic.tipo = 'THREAD'
+                LEFT JOIN
+                    evento e ON e.eventoid = ic.registoid AND ic.tipo = 'EVENTO'
                 LEFT JOIN
                     comentario c1 ON ic.itemcomentarioid = c1.itemcomentarioid
                 LEFT JOIN

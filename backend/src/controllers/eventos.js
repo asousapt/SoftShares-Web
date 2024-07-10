@@ -3,12 +3,6 @@ const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
 const ficheirosController = require('./ficheiros');
-const subcategoria = require('../models/subcategoria');
-const evento = require('../models/evento');
-const utilizador = require('../models/utilizador');
-const respostaformulario = require('../models/respostaformulario');
-const itemrespostaformulario = require('../models/itemrespostaformulario');;
-const controladorFormularios = require('./formularios');
 
 const controladorEventos = {
     adicionarEvento: async (req, res) => {
@@ -132,6 +126,27 @@ const controladorEventos = {
                 utilizadorid: idUser,
                 eventoid: idEvento,
                 convidadosadic: numConvidados
+            });
+
+            const evento_grupo = await models.evento_grupo.findOne({
+                where: {
+                    eventoid: idEvento
+                }
+            });
+
+            await models.utilizador_grupo.create({
+                grupoid: evento_grupo.grupoid,
+                utilizadorid: idUser
+            });
+
+            const user = models.utilizador.findByPk(idUser);
+            const evento = models.evento.findByPk(idEvento);
+
+            await models.notificacao.create({
+                utilizadorid: evento.utilizadorcriou,
+                notificacao: `${user.pnome} ${user.unome} inscreveu-se no seu evento '${evento.titulo}'!`,
+                tipo: 'EVENTO',
+                idregisto: idEvento
             });
 
             res.status(201).json({ message: 'Evento adicionado com sucesso' });
@@ -316,6 +331,19 @@ const controladorEventos = {
                     utilizadorid: idUser
                 }
             });
+            
+            const evento_grupo = await models.evento_grupo.findOne({
+                where: {
+                    eventoid: idEvento
+                }
+            });
+
+            await models.utilizador_grupo.destroy({
+                where: {
+                    grupoid: evento_grupo.grupoid,
+                    utilizadorid: idUser
+                }
+            });
 
             res.status(200).json({ message: 'Evento atualizado com sucesso' });
         } catch (error) {
@@ -328,7 +356,7 @@ const controladorEventos = {
         const { userAprovacao } = req.body;
 
         try {
-            const evento = await models.evento.update({
+            await models.evento.update({
                 aprovado: true,
                 utilizadoraprovou: userAprovacao,
                 dataaprovacao: Sequelize.literal('CURRENT_TIMESTAMP')
@@ -338,6 +366,47 @@ const controladorEventos = {
                 }
             });
 
+            const evento = await models.evento.findByPk(idEvento);
+
+            const grupo = await models.grupo.create({
+                descricao: `Grupo do evento ${evento.titulo}`,
+                nome: `Grupo do evento ${evento.titulo}`,
+                publico: false,
+                subcategoriaid: evento.subcategoriaid,
+                utilizadorcriou: evento.utilizadorcriou
+            });
+
+            const destinatario = await models.destinatario.create({
+                itemdestinatario: grupo.grupoid,
+                tipo: 'GR'
+            });
+
+            await models.objecto.create({
+                registoid: grupo.grupoid,
+                entidade: 'GRUPO'
+            });
+
+            await models.utilizador_grupo.create({
+                grupoid: grupo.grupoid,
+                utilizadorid: evento.utilizadorcriou
+            });
+
+            const mensagemRtn = await models.mensagem.create({
+                destinatarioid: destinatario.destinatarioid,
+                mensagem: "Grupo foi criado!",
+                remetenteid: evento.utilizadorcriou
+            });
+
+            await models.objecto.create({
+                registoid: mensagemRtn.mensagemid,
+                entidade: 'MENSAGEM'
+            });
+
+            await models.evento_grupo.create({
+                grupoid: grupo.grupoid,
+                eventoid: idEvento
+            });
+
             await models.notificacao.create({
                 utilizadorid: evento.utilizadorcriou,
                 notificacao: `O evento '${evento.titulo}' foi aprovado!`,
@@ -345,9 +414,28 @@ const controladorEventos = {
                 idregisto: idEvento
             });
 
+            await sequelizeConn.query(
+                `INSERT INTO NOTIFICACAO (UTILIZADORID, NOTIFICACAO, TIPO, idregisto)
+                SELECT 
+                    sfav.utilizadorid,
+                    CONCAT('Evento ', '${evento.titulo}', ' foi criado!'),
+                    'EVENTO',
+                    ${evento.eventoid}
+                FROM 
+                    subcategoria_fav_util sfav
+                INNER JOIN
+                    utilizador u ON sfav.utilizadorid = u.utilizadorid
+                WHERE
+                    sfav.subcategoriaid = ${evento.subcategoriaid}
+                    AND u.poloid = ${evento.poloid}
+                    AND u.inactivo = false
+                    AND u.utilizadorid <> ${evento.utilizadorcriou}
+                `
+            );
+
             res.status(200).json({ message: 'Evento aprovado com sucesso' });
         } catch (error) {
-            res.status(500).json({ error: 'Erro ao aprovar o evento' });
+            res.status(500).json({ error: 'Erro ao aprovar o evento', description: error});
         }
     },
 

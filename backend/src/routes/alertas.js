@@ -19,5 +19,6 @@ router.get('/filtro', authenticate, alertaControlador.consultarTudoComFiltros);
 router.get('/polo/:idPolo/idioma/:idiomaid', authenticate, alertaControlador.consultarAlertasPoloidiomaMobile)
 router.get('/polo/:idPolo', authenticate, alertaControlador.consultarAlertaPorPolo);
 router.get('/:idAlerta', authenticate, alertaControlador.consultarAlerta);
+router.get('/ola', alertaControlador.ola);
 
 module.exports = router;

@@ -21,6 +21,6 @@ router.get('/item/:itemAvaliacaoId', authenticate, avaliacaoController.consultar
 router.get('/tipoentidade', authenticate, avaliacaoController.consultarTodosItemAvalicao);
 router.get('/tipoentidade/:tipoentidade', authenticate, avaliacaoController.consultarItemAvaliacao);
 router.get('/poi/:idPonto/utilizador/:idUser', authenticate, avaliacaoController.consultarPorPOIeUtilizador);
-router.get('/comentario/:idComentario/utilizador/:idUser', authenticate, avaliacaoController.consultarPorComentarioUtilizador);
+router.get('/comentario/:idComentario/utilizador/:idUser', authenticate, avaliacaoController.consultarPorComentarioUtilizadorcoment);
 
 module.exports = router;

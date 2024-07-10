@@ -27,13 +27,12 @@ const ReportCommentModal = ({ open, onClose, commentId }) => {
                         setPoiData(transformedData.poi);
                         setReportedComment(transformedData.reportedComment);
                         setTitle(transformedData.poi.titulo);
-                        if (transformedData.poi.tipo === 'POI')
-                        {
+                        if (transformedData.poi.tipo === 'POI') {
                             setTipo('Ponto de Interesse');
-                        }
-                        else if (transformedData.poi.tipo === 'THREAD')
-                        {
+                        } else if (transformedData.poi.tipo === 'THREAD') {
                             setTipo('Publicação');
+                        } else if (transformedData.poi.tipo === 'EVENTO') {
+                            setTipo('Evento');
                         }
                         
                     }

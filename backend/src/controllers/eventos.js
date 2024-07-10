@@ -145,6 +145,16 @@ const controladorEventos = {
                 utilizadorid: idUser
             });
 
+            const user = models.utilizador.findByPk(idUser);
+            const evento = models.evento.findByPk(idEvento);
+
+            await models.notificacao.create({
+                utilizadorid: evento.utilizadorcriou,
+                notificacao: `${user.pnome} ${user.unome} inscreveu-se no seu evento '${evento.titulo}'!`,
+                tipo: 'EVENTO',
+                idregisto: idEvento
+            });
+
             res.status(201).json({ message: 'Evento adicionado com sucesso' });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao adicionar evento', error });

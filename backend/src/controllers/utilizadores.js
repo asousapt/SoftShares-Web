@@ -95,7 +95,6 @@ const controladorUtilizadores = {
             funcaoid,
             sobre,
             inactivo,
-            imagem,
             administrador_poloid,
             tipo
         } = req.body;
@@ -149,13 +148,6 @@ const controladorUtilizadores = {
                     poloid: administrador_poloid,
                 });
             }
-
-            ficheirosController.adicionar(
-                user.utilizadorid,
-                "UTIL",
-                imagem,
-                user.utilizadorid
-            );
 
             emailController.sendEmail(
                 email,

@@ -30,7 +30,7 @@ const controladorMensagem = {
             
             ficheirosController.adicionar(mensagemRtn.mensagemid, 'MENSAGEM', imagens, idRemetente);
             
-            res.status(201).json({ message: 'Mensagem adicionada com sucesso' });
+            res.status(201).json({ message: 'Mensagem adicionada com sucesso', data: true });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao adicionar mensagem', details: error.message });
         }

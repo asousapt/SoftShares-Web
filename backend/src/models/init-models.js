@@ -14,6 +14,7 @@ var _departamento = require("./departamento");
 var _destinatario = require("./destinatario");
 var _distrito = require("./distrito");
 var _evento = require("./evento");
+var _evento_grupo = require("./evento_grupo");
 var _ficheiro = require("./ficheiro");
 var _formulario = require("./formulario");
 var _formulariodetalhes = require("./formulariodetalhes");
@@ -58,6 +59,7 @@ function initModels(sequelize) {
   var destinatario = _destinatario(sequelize, DataTypes);
   var distrito = _distrito(sequelize, DataTypes);
   var evento = _evento(sequelize, DataTypes);
+  var evento_grupo = _evento_grupo(sequelize, DataTypes);
   var ficheiro = _ficheiro(sequelize, DataTypes);
   var formulario = _formulario(sequelize, DataTypes);
   var formulariodetalhes = _formulariodetalhes(sequelize, DataTypes);
@@ -204,6 +206,10 @@ function initModels(sequelize) {
   comentario.hasMany(comentarioresposta, { as: "comentariorepostas", foreignKey: "respostaid" });
   evento.belongsTo(subcategoria, { as: "subcategoria", foreignKey: "subcategoriaid" });
   subcategoria.hasMany(evento, { as: "eventos", foreignKey: "subcategoriaid" });
+  evento.belongsTo(evento_grupo, { as: "evento", foreignKey: "eventoid" });
+  grupo.belongsTo(evento_grupo, { as: "grupo", foreignKey: "grupoid" });
+  evento_grupo.hasMany(evento, { as: "eventos", foreignKey: "eventoid" });
+  evento_grupo.hasMany(grupo, { as: "grupos", foreignKey: "grupoid" });
 
   return {
     administrador_polo,
@@ -221,6 +227,7 @@ function initModels(sequelize) {
     destinatario,
     distrito,
     evento,
+    evento_grupo,
     ficheiro,
     formulario,
     formulariodetalhes,

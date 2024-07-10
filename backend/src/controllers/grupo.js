@@ -18,7 +18,7 @@ const controladorGrupo = {
                 utilizadorcriou: utilizadorcriou
             });
 
-            await models.destinatario.create({
+            const destinatario = await models.destinatario.create({
                 itemdestinatario: grupo.grupoid,
                 tipo: 'GR'
             });
@@ -37,17 +37,10 @@ const controladorGrupo = {
                 });
             }));
 
-            const destinatario = await models.destinatario.findOne({
-                where: {
-                    itemdestinatario: utilizadorcriou,
-                    tipo: 'UT'
-                }
-            });
-
             const mensagemRtn = await models.mensagem.create({
                 destinatarioid: destinatario.destinatarioid,
                 mensagem: "Grupo foi criado!",
-                remententeid: idRemetente
+                remententeid: utilizadorcriou
             });
 
             await models.objecto.create({

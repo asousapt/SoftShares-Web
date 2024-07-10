@@ -134,6 +134,17 @@ const controladorEventos = {
                 convidadosadic: numConvidados
             });
 
+            const evento_grupo = await models.evento_grupo.findOne({
+                where: {
+                    eventoid: idEvento
+                }
+            });
+
+            await models.utilizador_grupo.create({
+                grupoid: evento_grupo.grupoid,
+                utilizadorid: idUser
+            });
+
             res.status(201).json({ message: 'Evento adicionado com sucesso' });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao adicionar evento', error });
@@ -316,6 +327,19 @@ const controladorEventos = {
                     utilizadorid: idUser
                 }
             });
+            
+            const evento_grupo = await models.evento_grupo.findOne({
+                where: {
+                    eventoid: idEvento
+                }
+            });
+
+            await models.utilizador_grupo.destroy({
+                where: {
+                    grupoid: evento_grupo.grupoid,
+                    utilizadorid: idUser
+                }
+            });
 
             res.status(200).json({ message: 'Evento atualizado com sucesso' });
         } catch (error) {
@@ -336,6 +360,45 @@ const controladorEventos = {
                 where: {
                     eventoid: idEvento
                 }
+            });
+
+            const grupo = await models.grupo.create({
+                descricao: `Grupo do evento ${titulo}`,
+                nome: nome,
+                publico: false,
+                subcategoriaid: evento.subcategoriaid,
+                utilizadorcriou: evento.utilizadorcriou
+            });
+
+            const destinatario = await models.destinatario.create({
+                itemdestinatario: grupo.grupoid,
+                tipo: 'GR'
+            });
+
+            await models.objecto.create({
+                registoid: grupo.grupoid,
+                entidade: 'GRUPO'
+            });
+
+            await models.utilizador_grupo.create({
+                grupoid: grupo.grupoid,
+                utilizadorid: evento.utilizadorcriou
+            });
+
+            const mensagemRtn = await models.mensagem.create({
+                destinatarioid: destinatario.destinatarioid,
+                mensagem: "Grupo foi criado!",
+                remententeid: evento.utilizadorcriou
+            });
+
+            await models.objecto.create({
+                registoid: mensagemRtn.mensagemid,
+                entidade: 'MENSAGEM'
+            });
+
+            await models.evento_grupo.create({
+                grupoid: grupo.grupoid,
+                eventoid: idEvento
             });
 
             await models.notificacao.create({

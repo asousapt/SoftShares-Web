@@ -119,7 +119,7 @@ const controladorUtilizadores = {
                 pnome,
                 unome,
                 email,
-                passwd,
+                pass,
                 tokenfacebook: tokenfb,
                 tokengoogle: tokengoogle,
                 chavesalt,
@@ -128,6 +128,7 @@ const controladorUtilizadores = {
                 funcaoid,
                 sobre,
                 inactivo,
+                tipo
             });
 
             await models.destinatario.create({
@@ -162,6 +163,7 @@ const controladorUtilizadores = {
 
             res.status(201).json({ message: "Utilizador adicionado com sucesso", data: user });
         } catch (error) {
+            console.error('Error adding user:', error);
             res
                 .status(500)
                 .json({ error: "Erro ao adicionar utilizador", details: error });

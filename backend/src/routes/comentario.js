@@ -21,6 +21,5 @@ router.get('/itemcomentario/:idItemComentario', authenticate, comentarioControll
 router.get('/item/:idComentario', authenticate, comentarioController.consultarComentario);
 router.get('/itemcomentario', authenticate, comentarioController.consultarTudoItemComentario);
 router.get('/tabela/:tipo/registo/:id', authenticate, comentarioController.consultarComBaseNoItemcomentario);
-router.get('/ola', comentarioController.ola);
 
 module.exports = router;

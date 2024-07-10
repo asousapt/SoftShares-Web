@@ -473,6 +473,10 @@ const comentarioController = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar itens de comentário por registro', details: error.message });
         }
+    },
+
+    ola:(req, res) => {
+        res.status(200).json({Message: "Olá Joel a nossa aplicação está online"});
     }
 };
 

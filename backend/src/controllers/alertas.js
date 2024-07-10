@@ -173,10 +173,6 @@ const controladorAlertas = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar os alertas vvvv', details: error.message });
         }
-    },
-
-    ola:(req, res) => {
-        res.status(200).json({Message: "Olá Joel a nossa aplicação está online"});
     }
     
 };

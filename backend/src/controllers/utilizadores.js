@@ -99,6 +99,8 @@ const controladorUtilizadores = {
             tipo
         } = req.body;
 
+        console.log("Request Body:", req.body);
+
         try {
 
             let pass = '';

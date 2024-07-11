@@ -101,7 +101,7 @@ const controladorUtilizadores = {
 
         try {
 
-            let pass= '';
+            let pass = '';
             let tokenfb = null;
             let tokengoogle = null;
             if (tipo === 'normal') {
@@ -129,7 +129,7 @@ const controladorUtilizadores = {
                 funcaoid,
                 sobre,
                 inactivo,
-                tipo
+                ultimologin: Sequelize.literal("CURRENT_TIMESTAMP"),
             });
 
             await models.destinatario.create({

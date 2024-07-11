@@ -89,7 +89,6 @@ const AboutUs = () => {
                 <Grid container spacing={4} justifyContent="center" wrap="nowrap">
                     <Grid item xs={12} sm={6} md={4}>
                         <Box textAlign="center">
-                            <Avatar src="https://via.placeholder.com/150" alt="António Sousa" sx={{ width: 150, height: 150, margin: '0 auto' }} />
                             <Typography variant="h6" component="h3" gutterBottom>
                                 António Sousa
                             </Typography>
@@ -100,34 +99,21 @@ const AboutUs = () => {
                     </Grid>
                     <Grid item xs={12} sm={6} md={4}>
                         <Box textAlign="center">
-                            <Avatar src="https://via.placeholder.com/150" alt="Alexandre Marques" sx={{ width: 150, height: 150, margin: '0 auto' }} />
-                            <Typography variant="h6" component="h3" gutterBottom>
-                                Alexandre Marques
-                            </Typography>
-                            <Typography variant="body2" color="textSecondary">
-                                CTO
-                            </Typography>
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={4}>
-                        <Box textAlign="center">
-                            <Avatar src="https://via.placeholder.com/150" alt="John Smith" sx={{ width: 150, height: 150, margin: '0 auto' }} />
                             <Typography variant="h6" component="h3" gutterBottom>
                                 Diogo Fonseca
                             </Typography>
                             <Typography variant="body2" color="textSecondary">
-                                CTO
+                                Desenvolvedor Web
                             </Typography>
                         </Box>
                     </Grid>
                     <Grid item xs={12} sm={6} md={4}>
                         <Box textAlign="center">
-                            <Avatar src="https://via.placeholder.com/150" alt="John Smith" sx={{ width: 150, height: 150, margin: '0 auto' }} />
                             <Typography variant="h6" component="h3" gutterBottom>
                                 Diogo Pinto
                             </Typography>
                             <Typography variant="body2" color="textSecondary">
-                                CTO
+                                Desenvolvedor Mobile
                             </Typography>
                         </Box>
                     </Grid>

@@ -99,11 +99,15 @@ const controladorUtilizadores = {
             tipo
         } = req.body;
 
+        console.log("Request Body:", req.body);
+
         try {
 
             let pass = '';
             let tokenfb = null;
             let tokengoogle = null;
+            console.log("Executa com o tipo");
+            console.log(tipo);
             if (tipo === 'normal') {
                 pass = passwd;
             } else if (tipo === 'facebook') {

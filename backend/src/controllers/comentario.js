@@ -2,6 +2,7 @@ const { Sequelize, Op, QueryTypes } = require('sequelize');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
 const models = initModels(sequelizeConn);
+const ficheirosController = require('./ficheiros');
 
 const comentarioController = {
     adicionar: async (req, res) => {
@@ -91,7 +92,7 @@ const comentarioController = {
                 }
             }
 
-            res.status(201).json({ message: 'Comentário adicionado com sucesso' });
+            res.status(201).json({ message: 'Comentário adicionado com sucesso', data: true});
         } catch (error) {
             res.status(500).json({ error: 'Erro ao adicionar comentário', details: error.message });
         }
@@ -134,7 +135,7 @@ const comentarioController = {
 
     consultarComBaseNoItemcomentario: async (req, res) => {
         const { id, tipo } = req.params;
-
+    
         try {
             const comentarios = await sequelizeConn.query(
                 `SELECT
@@ -165,18 +166,24 @@ const comentarioController = {
                 LEFT JOIN
                     utilizador u2 ON c2.utilizadorid = u2.utilizadorid
                 WHERE
-                    ic.tipo = '${tipo}'
-                    AND ic.registoid = ${id}
+                    ic.tipo = :tipo
+                    AND ic.registoid = :id
                 `,
-                { type: Sequelize.QueryTypes.SELECT }
+                { 
+                    type: Sequelize.QueryTypes.SELECT,
+                    replacements: { tipo, id }
+                }
             );
     
             // Helper function to build the nested comments structure
-            const buildNestedComments = (comments) => {
+            const buildNestedComments = async (comments) => {
                 const commentMap = {};
                 const responseSet = new Set();
     
-                comments.forEach(comment => {
+                for (const comment of comments) {
+                    let ficheiros = await ficheirosController.getAllFilesByAlbum(comment.utilizadorid, 'UTIL');
+                    let fotoUrl = ficheiros[0] ? ficheiros[0].url : '';
+    
                     if (!commentMap[comment.comentarioid]) {
                         commentMap[comment.comentarioid] = {
                             comentarioid: comment.comentarioid,
@@ -184,86 +191,44 @@ const comentarioController = {
                             tipo: comment.tipo,
                             data: comment.data,
                             utilizadorid: comment.utilizadorid,
-                            utilizador_nome: comment.utilizador_nome,
+                            utilizador_nome: comment.comentario_utilizador_nome,
+                            fotoUrl: fotoUrl,
                             respostas: []
                         };
                     }
     
                     if (comment.resposta_comentarioid) {
+                        ficheiros = await ficheirosController.getAllFilesByAlbum(comment.resposta_utilizadorid, 'UTIL');
+                        fotoUrl = ficheiros[0] ? ficheiros[0].url : '';
+    
                         if (!commentMap[comment.resposta_comentarioid]) {
                             commentMap[comment.resposta_comentarioid] = {
                                 comentarioid: comment.resposta_comentarioid,
                                 comentario: comment.resposta_comentario,
                                 tipo: 'REPLY',
-                                data: comment.data,
+                                data: comment.resposta_datacriacao,
                                 utilizadorid: comment.resposta_utilizadorid,
                                 utilizador_nome: comment.resposta_utilizador_nome,
+                                fotoUrl: fotoUrl,
                                 respostas: []
                             };
                         }
                         commentMap[comment.comentarioid].respostas.push(commentMap[comment.resposta_comentarioid]);
                         responseSet.add(comment.resposta_comentarioid);
                     }
-                });
+                }
     
                 return Object.values(commentMap).filter(comment => !responseSet.has(comment.comentarioid));
             };
     
-            const poiMap = {};
+            const nestedComentarios = await buildNestedComments(comentarios);
     
-            comentarios.forEach(row => {
-                if (!poiMap[row.pontointeresseid]) {
-                    poiMap[row.pontointeresseid] = {
-                        pontointeresseid: row.pontointeresseid,
-                        titulo: row.poi_titulo,
-                        descricao: row.poi_descricao,
-                        aprovado: row.poi_aprovado,
-                        data: row.poi_datacriacao,
-                        dataaprovacao: row.poi_dataaprovacao,
-                        utilizadoraprova: row.poi_utilizadoraprova,
-                        localizacao: row.poi_localizacao,
-                        latitude: row.poi_latitude,
-                        longitude: row.poi_longitude,
-                        idiomaid: row.poi_idiomaid,
-                        cidadeid: row.poi_cidadeid,
-                        datacriacao: row.poi_datacriacao,
-                        dataalteracao: row.poi_dataalteracao,
-                        utilizadorcriou: row.poi_utilizadorcriou,
-                        utilizador_nome: row.poi_utilizador_nome,
-                        comentarios: []
-                    };
-                }
-    
-                if (row.comentarioid) {
-                    const comment = {
-                        comentarioid: row.comentarioid,
-                        comentario: row.comentario,
-                        tipo: row.tipo,
-                        data: row.data,
-                        utilizadorid: row.utilizadorid,
-                        utilizador_nome: row.comentario_utilizador_nome,
-                        parent_comentarioid: row.parent_comentarioid,
-                        resposta_comentarioid: row.resposta_comentarioid,
-                        resposta_comentario: row.resposta_comentario,
-                        resposta_utilizadorid: row.resposta_utilizadorid,
-                        resposta_utilizador_nome: row.resposta_utilizador_nome
-                    };
-    
-                    poiMap[row.pontointeresseid].comentarios.push(comment);
-                }
-            });
-    
-            Object.values(poiMap).forEach(poi => {
-                poi.comentarios = buildNestedComments(poi.comentarios);
-            });
-    
-            const pontosInteresse = Object.values(poiMap);
-    
-            res.status(200).json({ message: 'Consulta realizada com sucesso', data: pontosInteresse });
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: nestedComentarios });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar comentários', details: error.message });
         }
     },
+    
 
     consultarTudo: async (req, res) => {
         try {

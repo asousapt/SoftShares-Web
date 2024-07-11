@@ -6,6 +6,7 @@ const { authenticate } = require('../tokenUtils');
 // ROUTES POST
 router.post('/add', authenticate, utilizadorControlador.adicionar);
 router.post('/add/mobile', authenticate, utilizadorControlador.adicionarMobile);
+router.post('/login', utilizadorControlador.login);
 
 // ROUTES PUT
 router.put('/update/:idUtilizador', authenticate, utilizadorControlador.atualizar);
@@ -16,6 +17,7 @@ router.put('/alterarPass/:idUtilizador', authenticate, utilizadorControlador.atu
 router.delete('/delete/:idUtilizador', authenticate, utilizadorControlador.remover);
 
 // ROUTES GET
+router.get('/ola', utilizadorControlador.ola);
 router.get('/', authenticate, utilizadorControlador.consultarTodos);
 router.get('/filtro', authenticate, utilizadorControlador.consultarTodosComFiltro);
 router.get('/listas', authenticate, utilizadorControlador.listaUsersSimplificado);
@@ -28,6 +30,5 @@ router.get('/:idUtilizador', authenticate, utilizadorControlador.consultarPorID)
 router.get('/mobile/:idUtilizador', authenticate, utilizadorControlador.consultarPorIDMobile);
 router.get('/recuperar/:id', authenticate, utilizadorControlador.recuperarPassword);
 router.get('/token/:id', utilizadorControlador.novoToken);
-router.get('/login', utilizadorControlador.login);
 
 module.exports = router;

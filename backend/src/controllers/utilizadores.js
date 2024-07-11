@@ -532,14 +532,19 @@ const controladorUtilizadores = {
     },
 
     login: async (req, res) => {
-        const { email, pass, tipo, token } = req.params;
+        const { email, pass, tipo, token } = req.body;
 
         try {
+            console.log(req.body);
+            if (!email || !pass) {
+                return res.status(400).json({ error: 'Email and password are required' });
+            }
+
             let whereClause = {
                 email: email,
             };
             if (tipo == "normal") {
-                whereClause.pass = pass;
+                whereClause.passwd = pass;
             } else if (tipo == "facebook") {
                 whereClause.tokenfacebook = token;
             } else if (tipo == "google") {
@@ -583,14 +588,14 @@ const controladorUtilizadores = {
             );
             utilizador.dataValues.imagem = ficheiros[0];
             const novoToken = generateToken(utilizador);
-
+            console.log("Chega antes do atualizar");
             await models.utilizador.update(
                 {
                     ultimologin: Sequelize.literal("CURRENT_TIMESTAMP"),
                 },
                 {
                     where: {
-                        utilizadorid: utilizador.id,
+                        utilizadorid: utilizador.utilizadorid,
                     },
                 }
             );
@@ -598,7 +603,7 @@ const controladorUtilizadores = {
             await sequelizeConn.query('CALL notificar_questionarios()')
 
             res
-                .status(200)
+                .status(201)
                 .json({
                     message: "Consulta realizada com sucesso",
                     utilizador: utilizador,
@@ -609,7 +614,7 @@ const controladorUtilizadores = {
             res
                 .status(500)
                 .json({
-                    error: "Erro ao consultar utilizador",
+                    error: "Erro ao fazer login",
                     details: error.message,
                 });
         }
@@ -888,16 +893,13 @@ const controladorUtilizadores = {
                 }
             );
 
-            await sequelizeConn.query('CALL notificar_questionarios()')
+            await sequelizeConn.query('CALL notificar_questionarios()');
 
-            res.status(200).json(token);
+            const saudacao = await sequelizeConn.query(`SELECT ObterSaudacao(${id})`);
+
+            res.status(200).json({token: token, saudacao: saudacao[0][0].obtersaudacao});
         } catch (error) {
-            res
-                .status(500)
-                .json({
-                    error: "Erro ao consultar utilizadores",
-                    details: error.message,
-                });
+            res .status(500) .json({ error: "Erro ao consultar utilizadores", details: error.message, });
         }
     },
 
@@ -950,6 +952,10 @@ const controladorUtilizadores = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
         }
+    },
+
+    ola: (req, res) => {
+        res.send('Hello, World!');
     }
 
 };

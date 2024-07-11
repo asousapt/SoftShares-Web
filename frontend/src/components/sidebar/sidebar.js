@@ -133,7 +133,7 @@ const Sidebar = () => {
         <Drawer variant="permanent" sx={{ "& .MuiPaper-root": { borderRight: "none" } }}>
             <List style={{ width: '250px', backgroundColor: 'rgba(42, 67, 97, 1)', height: '100%', overflowY: 'scroll' }}>
                 <div className="regiao">{descricaoPolo || userProfile}</div>
-                <div className="bemvindo">Bem-vindo</div>
+                <div className="bemvindo">{sessionStorage.getItem('saudacao')}</div>
                 <div className="User">{userName}</div>
 
                 {menuItems.map((item, index) => (

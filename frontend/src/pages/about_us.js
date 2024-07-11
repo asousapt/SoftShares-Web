@@ -1,13 +1,11 @@
-// src/AboutUs.js
-
 import React from 'react';
 import { Container, Typography, Box, Grid, Avatar } from '@mui/material';
 
 const AboutUs = () => {
     return (
-        <Container maxWidth="md">
+        <Container maxWidth="md" sx={{ backgroundColor: 'whitesmoke', borderRadius: 12}}>
             <Box textAlign="center" my={4}>
-                <Typography variant="h2" component="h1" gutterBottom>
+                <Typography variant="h2" component="h1" gutterBottom >
                     Sobre Nós
                 </Typography>
                 <Typography variant="h5" color="textSecondary">

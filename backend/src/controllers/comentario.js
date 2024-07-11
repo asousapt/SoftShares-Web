@@ -17,11 +17,18 @@ const comentarioController = {
             });
 
             if (!itemComentario) {
-                itemComentario = await models.itemcomentario.create({
+                await models.itemcomentario.create({
                     registoid: idRegisto,
                     tipo: tipo
                 });
             }
+
+            itemComentario = await models.itemcomentario.findOne({
+                where: {
+                    registoid: idRegisto,
+                    tipo: tipo
+                }
+            });
 
             const comment = await models.comentario.create({
                 itemcomentarioid: itemComentario.itemcomentarioid,

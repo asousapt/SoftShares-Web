@@ -19,10 +19,11 @@ import StatsUtilizador from './pages/estatisticasUtilizadores';
 import StatsDenuncias from './pages/estatisticasDenuncias';
 import Forms from './pages/forms';
 import LandingPage from './pages/landingPage';
+import AboutUs from './pages/about_us';
 
 function AppContent() {
     const location = useLocation();
-    const showSidebar = location.pathname !== "/";
+    const showSidebar = location.pathname !== "/" && location.pathname !== "/about-us";
 
     return (
         <div className="app-container">
@@ -31,9 +32,10 @@ function AppContent() {
                     <Sidebar />
                 </div>
             )}
-            <div className="content-container" style={{ marginLeft: location.pathname === '/' ? 0 : '250px', marginRight: location.pathname === '/' ? 0 : '1%' }}>
+            <div className="content-container" style={{ marginLeft: (location.pathname === '/' || location.pathname === '/about-us') ? 0 : '250px', marginRight: (location.pathname === '/' || location.pathname === '/about-us') ? 0 : '1%' }}>
                 <Routes>
                     <Route path="/" element={<LandingPage />} />
+                    <Route path="/about-us" element={<AboutUs />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/estatisticas/utilizadores" element={<StatsUtilizador />} />
                     <Route path="/estatisticas/denuncias" element={<StatsDenuncias />} />

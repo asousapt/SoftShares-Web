@@ -544,7 +544,7 @@ const controladorUtilizadores = {
                 email: email,
             };
             if (tipo == "normal") {
-                whereClause.pass = pass;
+                whereClause.passwd = pass;
             } else if (tipo == "facebook") {
                 whereClause.tokenfacebook = token;
             } else if (tipo == "google") {

@@ -17,8 +17,8 @@ function getConfig(env) {
         },
         dialectOptions: {
             ssl: {
-                require: true,
-                rejectUnauthorized: true
+                require: false,
+                rejectUnauthorized: false
             }
         }
     };

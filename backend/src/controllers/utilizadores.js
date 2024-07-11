@@ -532,7 +532,7 @@ const controladorUtilizadores = {
     },
 
     login: async (req, res) => {
-        const { email, pass, tipo, token } = req.params;
+        const { email, pass, tipo, token } = req.body;
 
         try {
             let whereClause = {

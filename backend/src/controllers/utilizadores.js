@@ -953,7 +953,7 @@ const controladorUtilizadores = {
     },
 
     ola: (req, res) => {
-        res.status(200).json({message:"Ola"});
+        res.send('Hello, World!');
     }
 
 };

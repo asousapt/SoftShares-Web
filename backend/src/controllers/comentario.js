@@ -17,7 +17,7 @@ const comentarioController = {
 
             if (!itemComentario) {
                 itemComentario = await models.itemcomentario.create({
-                    registoid: registoid,
+                    registoid: idRegisto,
                     tipo: tipo
                 });
             }

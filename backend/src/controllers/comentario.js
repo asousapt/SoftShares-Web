@@ -17,7 +17,7 @@ const comentarioController = {
 
             if (!itemComentario) {
                 itemComentario = await models.itemcomentario.create({
-                    registoid: registoid,
+                    registoid: idRegisto,
                     tipo: tipo
                 });
             }
@@ -475,7 +475,7 @@ const comentarioController = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar itens de comentário por registro', details: error.message });
         }
-    }
+    },
 };
 
 module.exports = comentarioController;

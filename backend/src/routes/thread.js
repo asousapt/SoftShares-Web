@@ -21,8 +21,9 @@ router.get('/', authenticate, controladorThread.consultarTodos);
 router.get('/threadsmes', authenticate, controladorThread.consultarPublicacoesPorMes);
 router.get('/threadscat', authenticate, controladorThread.consultarPublicacoesPorCat);
 router.get('/totalpubs', authenticate, controladorThread.consultarPubsTotal);
-router.get('/mobile', authenticate, controladorThread.consultarTodosMobile);
+router.get('/mobile/:idPolo', authenticate, controladorThread.consultarTodosMobile);
 router.get('/filtro', authenticate, controladorThread.consultarTodosComFiltro);
 router.get('/:id', authenticate, controladorThread.consultarPorID);
+router.get('/:idTopico/mobile', authenticate, controladorThread.consultarTopicoPorId);
 
 module.exports = router;

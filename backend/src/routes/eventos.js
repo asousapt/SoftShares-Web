@@ -41,6 +41,8 @@ router.get('/porAprovar', authenticate, eventoControlador.consultarPorAprovar);
 
 router.get('/totaleventos', authenticate, eventoControlador.consultarEventosTotal);
 
+router.get('/:idevento/mobile', authenticate, eventoControlador.consultarEventoPorIdMob);
+
 router.get('/:idPolo/data/range/:data1/:data2/utilizador/:idUtilizador', authenticate, eventoControlador.consultarEventosEntreDatas);
 
 router.get('/:idPolo/data/range/:data1/:data2/utilizador/:idUtilizador/categoria/:categoriaId', authenticate, eventoControlador.consultarEventosEntreDataeCat);

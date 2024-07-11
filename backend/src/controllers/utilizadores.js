@@ -95,14 +95,13 @@ const controladorUtilizadores = {
             funcaoid,
             sobre,
             inactivo,
-            imagem,
             administrador_poloid,
             tipo
         } = req.body;
 
         try {
 
-            let pass= '';
+            let pass = '';
             let tokenfb = null;
             let tokengoogle = null;
             if (tipo === 'normal') {
@@ -113,21 +112,24 @@ const controladorUtilizadores = {
                 tokengoogle = token;
             }
 
+            const salt = chavesalt || 'default_salt_value';
+
             const user = await models.utilizador.create({
                 poloid,
                 perfilid,
                 pnome,
                 unome,
                 email,
-                passwd,
+                passwd: pass,
                 tokenfacebook: tokenfb,
                 tokengoogle: tokengoogle,
-                chavesalt,
+                chavesalt: salt,
                 idiomaid,
                 departamentoid,
                 funcaoid,
                 sobre,
                 inactivo,
+                ultimologin: Sequelize.literal("CURRENT_TIMESTAMP"),
             });
 
             await models.destinatario.create({
@@ -147,13 +149,6 @@ const controladorUtilizadores = {
                 });
             }
 
-            ficheirosController.adicionar(
-                user.utilizadorid,
-                "UTIL",
-                imagem,
-                user.utilizadorid
-            );
-
             emailController.sendEmail(
                 email,
                 "Registado no Softshares",
@@ -162,6 +157,7 @@ const controladorUtilizadores = {
 
             res.status(201).json({ message: "Utilizador adicionado com sucesso", data: user });
         } catch (error) {
+            console.error('Error adding user:', error);
             res
                 .status(500)
                 .json({ error: "Erro ao adicionar utilizador", details: error });
@@ -539,15 +535,20 @@ const controladorUtilizadores = {
         const { email, pass, tipo, token } = req.body;
 
         try {
+
+            if (!email || !password) {
+                return res.status(400).json({ error: 'Email and password are required' });
+            }
+
             let whereClause = {
                 email: email,
             };
             if (tipo == "normal") {
                 whereClause.pass = pass;
             } else if (tipo == "facebook") {
-                whereClause.facebookToken = token;
+                whereClause.tokenfacebook = token;
             } else if (tipo == "google") {
-                whereClause.googleToken = token;
+                whereClause.tokengoogle = token;
             }
 
             const utilizador = await models.utilizador.findOne({
@@ -575,6 +576,12 @@ const controladorUtilizadores = {
             if (!utilizador) {
                 return res.status(404).json({ error: "Utilizador não encontrado" });
             }
+
+            let primeiraVez = false;
+            if(!utilizador.ultimologin){
+                primeiraVez = true;
+            };
+
             const ficheiros = await ficheirosController.getAllFilesByAlbum(
                 utilizador.utilizadorid,
                 "UTIL"
@@ -601,12 +608,13 @@ const controladorUtilizadores = {
                     message: "Consulta realizada com sucesso",
                     utilizador: utilizador,
                     token: novoToken,
+                    primeiraVez : primeiraVez
                 });
         } catch (error) {
             res
                 .status(500)
                 .json({
-                    error: "Erro ao consultar utilizador",
+                    error: "Erro ao fazer login",
                     details: error.message,
                 });
         }
@@ -944,6 +952,10 @@ const controladorUtilizadores = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
         }
+    },
+
+    ola: (req, res) => {
+        res.send('Hello, World!');
     }
 
 };

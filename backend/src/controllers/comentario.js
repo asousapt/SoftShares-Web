@@ -162,9 +162,9 @@ const comentarioController = {
                     CONCAT(u2.pnome, ' ', u2.unome) AS resposta_utilizador_nome
                 FROM 
                     itemcomentario ic
-                LEFT JOIN
+                INNER JOIN
                     comentario c1 ON ic.itemcomentarioid = c1.itemcomentarioid
-                LEFT JOIN
+                INNER JOIN
                     utilizador u1 ON c1.utilizadorid = u1.utilizadorid
                 LEFT JOIN
                     comentarioresposta cr ON c1.comentarioid = cr.comentariopaiid

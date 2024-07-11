@@ -110,6 +110,8 @@ const controladorUtilizadores = {
                 tokenfb = token;
             } else if (tipo === 'google') {
                 tokengoogle = token;
+                console.log("Executa com o token");
+                console.log(tokengoogle);
             }
 
             const salt = chavesalt || 'default_salt_value';

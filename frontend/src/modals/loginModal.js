@@ -210,7 +210,7 @@ const LoginModal = ({ open, handleClose }) => {
             ),
           }}
         />
-        <FormControlLabel control={<Checkbox />} label="Lembrar-me" />
+        {/* <FormControlLabel control={<Checkbox />} label="Lembrar-me" />*/}
         <Button
           variant="contained"
           color="primary"

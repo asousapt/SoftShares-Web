@@ -569,6 +569,7 @@ const controladorUtilizadores = {
                     "departamentoid",
                     "funcaoid",
                     "idiomaid",
+                    "ultimologin"
                 ],
                 include: [
                     {

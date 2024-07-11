@@ -21,14 +21,14 @@ const comentarioController = {
                     registoid: idRegisto,
                     tipo: tipo
                 });
+                
+                itemComentario = await models.itemcomentario.findOne({
+                    where: {
+                        registoid: idRegisto,
+                        tipo: tipo
+                    }
+                });
             }
-
-            itemComentario = await models.itemcomentario.findOne({
-                where: {
-                    registoid: idRegisto,
-                    tipo: tipo
-                }
-            });
 
             const comment = await models.comentario.create({
                 itemcomentarioid: itemComentario.itemcomentarioid,
@@ -48,16 +48,16 @@ const comentarioController = {
                 let msg = ''
                 if (tipo === 'POI'){
                     const poi = await models.pontointeresse.findByPk(idRegisto);
-                    msg = `${user.pnome} ${user.unome} respondeu ao seu comentario no ponto de interesse '${poi.titulo}'`
+                    msg = `${user.pnome} ${user.unome} respondeu ao seu comentario no ponto de interesse ${poi.titulo}`
                 } else if (tipo === 'THREAD'){
                     const thread = await models.thread.findByPk(idRegisto);
                     msg = `${user.pnome} ${user.unome} respondeu ao seu comentario na publicação '${thread.titulo}'`
                 } else if (tipo === 'EVENTO'){
                     const evento = await models.evento.findByPk(idRegisto);
-                    msg = `${user.pnome} ${user.unome} respondeu ao seu comentario no evento '${evento.titulo}'`
+                    msg = `${user.pnome} ${user.unome} respondeu ao seu comentario no evento ${evento.titulo}`
                 }
 
-                await models.mensagem.notificacao.create({
+                await models.notificacao.create({
                     utilizadorid: parent.utilizadorid,
                     notificacao: msg,
                     tipo: tipo,
@@ -101,7 +101,7 @@ const comentarioController = {
 
             res.status(201).json({ message: 'Comentário adicionado com sucesso', data: true});
         } catch (error) {
-            res.status(500).json({ error: 'Erro ao adicionar comentário', details: error.message });
+            res.status(500).json({ error: 'Erro ao adicionar comentário', details: error });
         }
     },
 

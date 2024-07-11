@@ -535,6 +535,11 @@ const controladorUtilizadores = {
         const { email, pass, tipo, token } = req.body;
 
         try {
+
+            if (!email || !password) {
+                return res.status(400).json({ error: 'Email and password are required' });
+            }
+
             let whereClause = {
                 email: email,
             };
@@ -609,7 +614,7 @@ const controladorUtilizadores = {
             res
                 .status(500)
                 .json({
-                    error: "Erro ao consultar utilizador",
+                    error: "Erro ao fazer login",
                     details: error.message,
                 });
         }

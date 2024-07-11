@@ -603,7 +603,7 @@ const controladorUtilizadores = {
             await sequelizeConn.query('CALL notificar_questionarios()')
 
             res
-                .status(200)
+                .status(201)
                 .json({
                     message: "Consulta realizada com sucesso",
                     utilizador: utilizador,

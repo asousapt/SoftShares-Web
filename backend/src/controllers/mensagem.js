@@ -86,7 +86,7 @@ const controladorMensagem = {
     }, 
     obterListaMensagensMain: async (req, res) => {
         const { idUtilizador } = req.params;
-        
+    
         const query = `
             WITH max_messages AS (
                 SELECT 
@@ -107,6 +107,23 @@ const controladorMensagem = {
                         FROM utilizador_grupo 
                         WHERE utilizadorid = :idUtilizador
                     ))
+                GROUP BY 
+                    dest.destinatarioid, 
+                    dest.tipo, 
+                    dest.itemdestinatario
+                UNION
+                SELECT 
+                    MAX(msg.mensagemid) AS mensagemid, 
+                    dest.destinatarioid, 
+                    dest.tipo, 
+                    dest.itemdestinatario
+                FROM 
+                    destinatario dest
+                INNER JOIN 
+                    mensagem msg 
+                    ON msg.destinatarioid = dest.destinatarioid
+                WHERE  
+                    msg.remetenteid = :idUtilizador
                 GROUP BY 
                     dest.destinatarioid, 
                     dest.tipo, 
@@ -154,21 +171,17 @@ const controladorMensagem = {
                 let destinatarioGrupo = null;
                 let remetente = null;
     
-                if (mensagem.tipo === 'UT' && mensagem.itemdestinatario === idUtilizador) {
-                    destinatarioUtil = utilizadorActualWithFoto;
-                } else if (mensagem.tipo === 'UT' && mensagem.itemdestinatario !== idUtilizador) {
+                if (mensagem.tipo === 'UT' && mensagem.itemdestinatario !== idUtilizador) {
                     destinatarioUtil = await models.utilizador.findOne({
                         attributes: ['utilizadorid', 'pnome', 'unome', 'email', 'poloid'],
                         where: {
-                            utilizadorid: mensagem.remetenteid
+                            utilizadorid: mensagem.itemdestinatario
                         }
                     });
                     const ficheiros = await ficheirosController.getAllFilesByAlbum(destinatarioUtil.utilizadorid, 'UTIL');
                     const fotoUrl = ficheiros[0] ? ficheiros[0].url : '';
                     destinatarioUtil = { ...destinatarioUtil.get(), fotoUrl };
-                    destinatarioGrupo = null;
                 } else if (mensagem.tipo === 'GR') {
-                    destinatarioUtil = null;
                     destinatarioGrupo = await models.grupo.findOne({
                         attributes: ['grupoid', 'nome', 'descricao'],
                         where: {
@@ -196,8 +209,8 @@ const controladorMensagem = {
     
                 return {
                     ...mensagem,
-                    destinatarioUtil, 
-                    destinatarioGrupo,
+                    destinatarioUtil: mensagem.tipo === 'UT' ? destinatarioUtil : null,
+                    destinatarioGrupo: mensagem.tipo === 'GR' ? destinatarioGrupo : null,
                     remetente
                 };
             }));
@@ -206,7 +219,7 @@ const controladorMensagem = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar mensagens', details: error.message });
         }
-    }, 
+    },    
     buscarConversacaoEntreUtils: async (req, res) => {
         const { idConversa } = req.params;
     
@@ -328,8 +341,29 @@ const controladorMensagem = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar mensagens', details: error.message });
         }
-    }    
+    }, 
+    getUltimoMensagemId: async (req, res) => {
+        const { idUtilizador1, idUtilizador2 } = req.params;
+        
+        const query = `
+            select max(mensagemid) as mensagemId from mensagem
+                where remetenteid = :idUtilizador1 and destinatarioid = (
+	        select destinatarioid from destinatario
+            where destinatario.itemdestinatario = :idUtilizador2 and destinatario.tipo = 'UT'
+            )
+        `;
 
+        try {
+            const mensagem = await sequelizeConn.query(query, {
+                replacements: { idUtilizador1, idUtilizador2 },
+                type: Sequelize.QueryTypes.SELECT
+            });
+
+            res.status(200).json({ mensagem: "Mensagem obtida com sucesso", data: mensagem });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar mensagem', details: error.message });
+        }   
+    }
 }
 
 const getUserDetails = async (utilizadorid) => {

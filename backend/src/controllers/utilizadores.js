@@ -541,9 +541,9 @@ const controladorUtilizadores = {
             if (tipo == "normal") {
                 whereClause.pass = pass;
             } else if (tipo == "facebook") {
-                whereClause.facebookToken = token;
+                whereClause.tokenfacebook = token;
             } else if (tipo == "google") {
-                whereClause.googleToken = token;
+                whereClause.tokengoogle = token;
             }
 
             const utilizador = await models.utilizador.findOne({
@@ -571,6 +571,12 @@ const controladorUtilizadores = {
             if (!utilizador) {
                 return res.status(404).json({ error: "Utilizador não encontrado" });
             }
+
+            let primeiraVez = false;
+            if(!utilizador.ultimologin){
+                primeiraVez = true;
+            };
+
             const ficheiros = await ficheirosController.getAllFilesByAlbum(
                 utilizador.utilizadorid,
                 "UTIL"
@@ -597,6 +603,7 @@ const controladorUtilizadores = {
                     message: "Consulta realizada com sucesso",
                     utilizador: utilizador,
                     token: novoToken,
+                    primeiraVez : primeiraVez
                 });
         } catch (error) {
             res

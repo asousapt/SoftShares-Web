@@ -933,6 +933,30 @@ const controladorUtilizadores = {
                 });
         }
     },
+
+    recuperarPasswordMobile: async (req, res) => {
+        const { email } = req.params;
+        try {
+            
+            const codigo = crypto.randomInt(100000, 1000000).toString();
+
+            emailController.sendEmail(
+                email,
+                "Recuperar a Password",
+                `Codigo para recuperar a password: \n \t ${codigo}`
+            );
+
+            res.status(200).json({ codigo: codigo });
+        } catch (error) {
+            res
+                .status(500)
+                .json({
+                    error: "Erro ao consultar utilizadores",
+                    details: error.message,
+                });
+        }
+    },
+
     listaUsersSimplificado: async (req, res) => {
         try {
             const utilizadores = await models.utilizador.findAll({

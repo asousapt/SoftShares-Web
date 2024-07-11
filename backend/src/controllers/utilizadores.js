@@ -893,16 +893,13 @@ const controladorUtilizadores = {
                 }
             );
 
-            await sequelizeConn.query('CALL notificar_questionarios()')
+            await sequelizeConn.query('CALL notificar_questionarios()');
 
-            res.status(200).json(token);
+            const saudacao = await sequelizeConn.query(`SELECT ObterSaudacao(${id})`);
+
+            res.status(200).json({token: token, saudacao: saudacao[0][0].obtersaudacao});
         } catch (error) {
-            res
-                .status(500)
-                .json({
-                    error: "Erro ao consultar utilizadores",
-                    details: error.message,
-                });
+            res .status(500) .json({ error: "Erro ao consultar utilizadores", details: error.message, });
         }
     },
 

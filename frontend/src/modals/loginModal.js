@@ -148,7 +148,8 @@ const LoginModal = ({ open, handleClose }) => {
       }
 
       const tokenResponse = await axios.get(`${process.env.REACT_APP_API_URL}/utilizadores/token/${utilizador.utilizadorid}`);
-      sessionStorage.setItem('token', tokenResponse.data);
+      sessionStorage.setItem('token', tokenResponse.data.token);
+      sessionStorage.setItem('saudacao', tokenResponse.data.saudacao);
       navigate('/dashboard');
     } catch (error) {
       if (error.response && error.response.status === 404) {

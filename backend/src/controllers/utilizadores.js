@@ -588,14 +588,14 @@ const controladorUtilizadores = {
             );
             utilizador.dataValues.imagem = ficheiros[0];
             const novoToken = generateToken(utilizador);
-
+            console.log("Chega antes do atualizar");
             await models.utilizador.update(
                 {
                     ultimologin: Sequelize.literal("CURRENT_TIMESTAMP"),
                 },
                 {
                     where: {
-                        utilizadorid: utilizador.id,
+                        utilizadorid: utilizador.utilizadorid,
                     },
                 }
             );

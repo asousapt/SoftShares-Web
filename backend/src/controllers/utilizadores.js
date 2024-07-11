@@ -950,6 +950,10 @@ const controladorUtilizadores = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar utilizadores', details: error.message });
         }
+    },
+
+    ola: (req, res) => {
+        res.json({message:"Ola"});
     }
 
 };

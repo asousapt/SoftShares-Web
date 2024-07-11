@@ -276,6 +276,7 @@ const controladorThread = {
         }
     }, 
     consultarTodosMobile: async (req, res) => {
+        const { idPolo } = req.params;
         try {
             // Fetch threads with their related subcategories
             const threads = await sequelizeConn.query(
@@ -291,8 +292,13 @@ const controladorThread = {
                 FROM 
                     thread t
                 INNER JOIN
-                    subcategoria s ON t.subcategoriaid = s.subcategoriaid`,
-                { type: QueryTypes.SELECT }
+                    subcategoria s ON t.subcategoriaid = s.subcategoriaid 
+                where t.poloid = :idPolo
+                    `
+                    ,
+                { type: QueryTypes.SELECT, 
+                    replacements: { idPolo: idPolo }
+                 }
             );
     
             // Map over each thread and fetch additional details
@@ -396,6 +402,67 @@ const controladorThread = {
             res.status(500).json({ error: 'Erro ao consultar publicações', details: error.message });
         }
     },
+    consultarTopicoPorId: async (req, res) => {
+        const { idTopico } = req.params;
+        try {
+            // Fetch the specific thread with its related subcategory
+            const thread = await sequelizeConn.query(
+                `SELECT 
+                    t.threadid as "topicoId",
+                    t.subcategoriaid as "subcategoria",
+                    s.categoriaID as "categoria", 
+                    t.titulo as "titulo", 
+                    t.mensagem as "mensagem", 
+                    t.datacriacao as "dataCriacao", 
+                    t.idiomaid as "idiomaId", 
+                    t.utilizadorid as "utilizadorid"
+                FROM 
+                    thread t
+                INNER JOIN
+                    subcategoria s ON t.subcategoriaid = s.subcategoriaid 
+                WHERE 
+                    t.threadid = :idTopico
+                `,
+                { 
+                    type: QueryTypes.SELECT, 
+                    replacements: { idTopico: idTopico } 
+                }
+            );
+    
+            // Check if thread was found
+            if (thread.length === 0) {
+                return res.status(404).json({ message: 'Tópico não encontrado' });
+            }
+    
+            // Fetch utilizador data
+            const threadData = thread[0];
+            const utilizador = await models.utilizador.findByPk(threadData.utilizadorid, {
+                attributes: ['utilizadorid', 'pnome', 'unome', 'email', 'poloid'],
+            });
+    
+            if (utilizador) {
+                const ficheiros = await ficheirosController.getAllFilesByAlbum(utilizador.utilizadorid, 'UTIL');
+                const fotoUrl = ficheiros[0] ? ficheiros[0].url : '';
+                utilizador.dataValues.fotoUrl = fotoUrl;
+                utilizador.dataValues.imagem = ficheiros[0];
+            }
+    
+            // Fetch thread files
+            const threadFiles = await ficheirosController.getAllFilesByAlbum(threadData.topicoId, 'THREAD');
+            const imagens = threadFiles ? threadFiles.map(file => file.url) : [];
+    
+            const threadWithDetails = {
+                ...threadData,
+                utilizador,
+                imagens
+            };
+    
+            res.status(200).json({ message: 'Consulta realizada com sucesso', data: threadWithDetails });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar o tópico', details: error.message });
+        }
+    },
+    
 
 };
 

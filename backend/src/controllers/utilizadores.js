@@ -536,7 +536,7 @@ const controladorUtilizadores = {
 
         try {
             console.log(req.body);
-            if (!email || !password) {
+            if (!email || !pass) {
                 return res.status(400).json({ error: 'Email and password are required' });
             }
 
@@ -544,7 +544,7 @@ const controladorUtilizadores = {
                 email: email,
             };
             if (tipo == "normal") {
-                whereClause.pass = pass;
+                whereClause.passwd = pass;
             } else if (tipo == "facebook") {
                 whereClause.tokenfacebook = token;
             } else if (tipo == "google") {
@@ -588,14 +588,14 @@ const controladorUtilizadores = {
             );
             utilizador.dataValues.imagem = ficheiros[0];
             const novoToken = generateToken(utilizador);
-
+            console.log("Chega antes do atualizar");
             await models.utilizador.update(
                 {
                     ultimologin: Sequelize.literal("CURRENT_TIMESTAMP"),
                 },
                 {
                     where: {
-                        utilizadorid: utilizador.id,
+                        utilizadorid: utilizador.utilizadorid,
                     },
                 }
             );

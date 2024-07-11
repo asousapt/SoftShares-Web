@@ -542,8 +542,8 @@ const controladorUtilizadores = {
 
         try {
             console.log(req.body);
-            if (!email || !pass) {
-                return res.status(400).json({ error: 'Email and password are required' });
+            if (!email) {
+                return res.status(400).json({ error: 'Email is required' });
             }
 
             let whereClause = {

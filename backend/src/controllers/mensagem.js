@@ -30,7 +30,7 @@ const controladorMensagem = {
             
             ficheirosController.adicionar(mensagemRtn.mensagemid, 'MENSAGEM', imagens, idRemetente);
             
-            res.status(201).json({ message: 'Mensagem adicionada com sucesso' });
+            res.status(201).json({ message: 'Mensagem adicionada com sucesso', data: true });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao adicionar mensagem', details: error.message });
         }
@@ -86,7 +86,8 @@ const controladorMensagem = {
     }, 
     obterListaMensagensMain: async (req, res) => {
         const { idUtilizador } = req.params;
-        
+    
+        // Consulta SQL para obter a mensagem mais recente por conversa
         const query = `
             WITH max_messages AS (
                 SELECT 
@@ -107,6 +108,23 @@ const controladorMensagem = {
                         FROM utilizador_grupo 
                         WHERE utilizadorid = :idUtilizador
                     ))
+                GROUP BY 
+                    dest.destinatarioid, 
+                    dest.tipo, 
+                    dest.itemdestinatario
+                UNION
+                SELECT 
+                    MAX(msg.mensagemid) AS mensagemid, 
+                    dest.destinatarioid, 
+                    dest.tipo, 
+                    dest.itemdestinatario
+                FROM 
+                    destinatario dest
+                INNER JOIN 
+                    mensagem msg 
+                    ON msg.destinatarioid = dest.destinatarioid
+                WHERE  
+                    msg.remetenteid = :idUtilizador
                 GROUP BY 
                     dest.destinatarioid, 
                     dest.tipo, 
@@ -149,64 +167,93 @@ const controladorMensagem = {
             const fotoUrl = ficheiros[0] ? ficheiros[0].url : '';
             const utilizadorActualWithFoto = { ...utilizadorActual.get(), fotoUrl };
     
-            const mensagensDetalhadas = await Promise.all(mensagens.map(async (mensagem) => {
-                let destinatarioUtil = null;
-                let destinatarioGrupo = null;
-                let remetente = null;
+            // Função para criar um identificador único para cada conversa, considerando ambos os sentidos
+            const createConversationId = (user1, user2) => {
+                console.log('user1 ' + user1);
+                console.log('user2 ' + user2);
+                return user1 < user2 ? `${user1}-${user2}` : `${user2}-${user1}`;
+            };
     
-                if (mensagem.tipo === 'UT' && mensagem.itemdestinatario === idUtilizador) {
-                    destinatarioUtil = utilizadorActualWithFoto;
-                } else if (mensagem.tipo === 'UT' && mensagem.itemdestinatario !== idUtilizador) {
-                    destinatarioUtil = await models.utilizador.findOne({
-                        attributes: ['utilizadorid', 'pnome', 'unome', 'email', 'poloid'],
-                        where: {
-                            utilizadorid: mensagem.remetenteid
-                        }
-                    });
-                    const ficheiros = await ficheirosController.getAllFilesByAlbum(destinatarioUtil.utilizadorid, 'UTIL');
-                    const fotoUrl = ficheiros[0] ? ficheiros[0].url : '';
-                    destinatarioUtil = { ...destinatarioUtil.get(), fotoUrl };
-                    destinatarioGrupo = null;
-                } else if (mensagem.tipo === 'GR') {
-                    destinatarioUtil = null;
-                    destinatarioGrupo = await models.grupo.findOne({
-                        attributes: ['grupoid', 'nome', 'descricao'],
-                        where: {
-                            grupoid: mensagem.itemdestinatario
-                        }
-                    });
-                    const ficheiros = await ficheirosController.getAllFilesByAlbum(destinatarioGrupo.grupoid, 'GRUPO');
-                    const fotoUrl1 = ficheiros[0] ? ficheiros[0].url : '';
-                    destinatarioGrupo = { ...destinatarioGrupo.get(), fotoUrl1 };
-                }
+            // Filtrar mensagens para manter apenas uma mensagem por conversa, independentemente da ordem dos IDs
+            const uniqueConversations = new Map();
+            mensagens.forEach((mensagem) => {
+                const destinatarioId = mensagem.itemdestinatario;
+                const remetenteId = mensagem.remetenteid;
+                console.log('item dest ' + mensagem.itemdestinatario);
+                console.log('remetent ' + mensagem.remetenteid);
     
-                if (mensagem.remetenteid === idUtilizador) {
-                    remetente = utilizadorActualWithFoto;
+                let user1, user2;
+                if (destinatarioId === idUtilizador) {
+                    user1 = remetenteId;
+                    user2 = destinatarioId;
                 } else {
-                    remetente = await models.utilizador.findOne({
-                        attributes: ['utilizadorid', 'pnome', 'unome', 'email', 'poloid'],
-                        where: {
-                            utilizadorid: mensagem.remetenteid
-                        }
-                    });
-                    const ficheiros = await ficheirosController.getAllFilesByAlbum(remetente.utilizadorid, 'UTIL');
-                    const fotoUrl = ficheiros[0] ? ficheiros[0].url : '';
-                    remetente = { ...remetente.get(), fotoUrl };
+                    user1 = destinatarioId;
+                    user2 = remetenteId;
                 }
     
-                return {
-                    ...mensagem,
-                    destinatarioUtil, 
-                    destinatarioGrupo,
-                    remetente
-                };
-            }));
+                const conversationId = createConversationId(user1, user2);
+                console.log(uniqueConversations);
+                if (!uniqueConversations.has(conversationId)) {
+                    uniqueConversations.set(conversationId, mensagem);
+                }
+            });
+            console.log(uniqueConversations);
+            const mensagensDetalhadas = await Promise.all(
+                Array.from(uniqueConversations.values()).map(async (mensagem) => {
+                    let destinatarioUtil = null;
+                    let destinatarioGrupo = null;
+                    let remetente = null;
+    
+                    if (mensagem.tipo === 'UT' && mensagem.itemdestinatario !== idUtilizador) {
+                        destinatarioUtil = await models.utilizador.findOne({
+                            attributes: ['utilizadorid', 'pnome', 'unome', 'email', 'poloid'],
+                            where: {
+                                utilizadorid: mensagem.itemdestinatario
+                            }
+                        });
+                        const ficheiros = await ficheirosController.getAllFilesByAlbum(destinatarioUtil.utilizadorid, 'UTIL');
+                        const fotoUrl = ficheiros[0] ? ficheiros[0].url : '';
+                        destinatarioUtil = { ...destinatarioUtil.get(), fotoUrl };
+                    } else if (mensagem.tipo === 'GR') {
+                        destinatarioGrupo = await models.grupo.findOne({
+                            attributes: ['grupoid', 'nome', 'descricao'],
+                            where: {
+                                grupoid: mensagem.itemdestinatario
+                            }
+                        });
+                        const ficheiros = await ficheirosController.getAllFilesByAlbum(destinatarioGrupo.grupoid, 'GRUPO');
+                        const fotoUrl1 = ficheiros[0] ? ficheiros[0].url : '';
+                        destinatarioGrupo = { ...destinatarioGrupo.get(), fotoUrl1 };
+                    }
+    
+                    if (mensagem.remetenteid === idUtilizador) {
+                        remetente = utilizadorActualWithFoto;
+                    } else {
+                        remetente = await models.utilizador.findOne({
+                            attributes: ['utilizadorid', 'pnome', 'unome', 'email', 'poloid'],
+                            where: {
+                                utilizadorid: mensagem.remetenteid
+                            }
+                        });
+                        const ficheiros = await ficheirosController.getAllFilesByAlbum(remetente.utilizadorid, 'UTIL');
+                        const fotoUrl = ficheiros[0] ? ficheiros[0].url : '';
+                        remetente = { ...remetente.get(), fotoUrl };
+                    }
+    
+                    return {
+                        ...mensagem,
+                        destinatarioUtil: mensagem.tipo === 'UT' ? destinatarioUtil : null,
+                        destinatarioGrupo: mensagem.tipo === 'GR' ? destinatarioGrupo : null,
+                        remetente
+                    };
+                })
+            );
     
             res.status(200).json({ mensagem: "Mensagens obtidas com sucesso", data: mensagensDetalhadas });
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar mensagens', details: error.message });
         }
-    }, 
+    },
     buscarConversacaoEntreUtils: async (req, res) => {
         const { idConversa } = req.params;
     
@@ -328,8 +375,29 @@ const controladorMensagem = {
         } catch (error) {
             res.status(500).json({ error: 'Erro ao consultar mensagens', details: error.message });
         }
-    }    
+    }, 
+    getUltimoMensagemId: async (req, res) => {
+        const { idUtilizador1, idUtilizador2 } = req.params;
+        
+        const query = `
+            select max(mensagemid) as mensagemId from mensagem
+                where remetenteid = :idUtilizador1 and destinatarioid = (
+	        select destinatarioid from destinatario
+            where destinatario.itemdestinatario = :idUtilizador2 and destinatario.tipo = 'UT'
+            )
+        `;
 
+        try {
+            const mensagem = await sequelizeConn.query(query, {
+                replacements: { idUtilizador1, idUtilizador2 },
+                type: Sequelize.QueryTypes.SELECT
+            });
+
+            res.status(200).json({ mensagem: "Mensagem obtida com sucesso", data: mensagem });
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao consultar mensagem', details: error.message });
+        }   
+    }
 }
 
 const getUserDetails = async (utilizadorid) => {

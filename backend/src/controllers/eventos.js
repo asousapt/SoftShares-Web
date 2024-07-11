@@ -1324,8 +1324,53 @@ const controladorEventos = {
             console.error(error);
             res.status(500).json({ error: 'Erro ao consultar os eventos' });
         }
-    }
-     
+    }, 
+    consultarEventoPorIdMob: async (req, res) => {
+        const { idevento } = req.params;
+    
+        const query = `
+            SELECT evento.*, subcategoria.categoriaid,
+                    (SELECT STRING_AGG(participantes_eventos.utilizadorid::text, ',')
+                    FROM participantes_eventos
+                    WHERE participantes_eventos.eventoid = evento.eventoid) AS participantes,
+                    (SELECT COUNT(*)
+                    FROM participantes_eventos
+                    WHERE participantes_eventos.eventoid = evento.eventoid) AS numinscritos
+            FROM evento
+            JOIN subcategoria ON evento.subcategoriaid = subcategoria.subcategoriaid
+            WHERE evento.eventoid = :idevento
+            
+        `;
+    
+        try {
+            const eventos = await sequelizeConn.query(query, {
+                replacements: {  idevento },
+                type: Sequelize.QueryTypes.SELECT
+            });
+    
+            if (eventos.length === 0) {
+                return res.status(404).json({ message: 'Evento não encontrado' });
+            }
+    
+            const evento = eventos[0];  
+    
+            // Processar o evento como antes
+            if (evento.participantes) {
+                evento.participantes = evento.participantes.split(',').map(id => parseInt(id, 10));
+            } else {
+                evento.participantes = [];
+            }
+    
+            evento.numinscritos = parseInt(evento.numinscritos, 10);
+            const ficheiros = await ficheirosController.getAllFilesByAlbum(evento.eventoid, 'EVENTO');
+            evento.imagens = ficheiros ? ficheiros.map(file => file.url) : [];
+    
+            res.status(200).json({ message: 'Evento consultado com sucesso', data: evento });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Erro ao consultar o evento' });
+        }
+    }    
     
 };
 

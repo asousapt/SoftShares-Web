@@ -23,5 +23,6 @@ router.get('/totalpontint', authenticate, pontosInteresseControlador.consultarPo
 router.get('/subcategoria/:idSubCat', authenticate, pontosInteresseControlador.consultarPorSubcategoria);
 router.get('/porAprovar', authenticate, pontosInteresseControlador.consultarPorAprovar);
 router.get('/:idPontoInteresse', authenticate, pontosInteresseControlador.consultarPorID);
+router.get('/:idPontoInteresse/mobile', authenticate, pontosInteresseControlador.consultarPontoInteressePorId);
 
 module.exports = router;

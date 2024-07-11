@@ -16,5 +16,6 @@ router.get('/all/:idDestinatario/:tipoDestinatario', authenticate, controladorMe
 router.get('/lista/:idUtilizador', authenticate, controladorMensagens.obterListaMensagensMain);
 router.get('/lista/grupo/:idConversa', authenticate, controladorMensagens.buscarConversacaoEntreGrupo);
 router.get('/lista/util/:idConversa', authenticate, controladorMensagens.buscarConversacaoEntreUtils);
+router.get('/:idUtilizador1/util/:idUtilizador2', authenticate, controladorMensagens.getUltimoMensagemId);
 
 module.exports = router;

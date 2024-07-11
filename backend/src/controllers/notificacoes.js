@@ -8,7 +8,7 @@ const controladorNotificacoes = {
         const { idUser, notificacao } = req.body;
 
         try{
-            await models.mensagem.notificacao.create({
+            await models.notificacao.create({
                 utilizadorid: idUser,
                 notificacao: notificacao
             });

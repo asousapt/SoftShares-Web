@@ -581,6 +581,8 @@ const controladorUtilizadores = {
                 ],
             });
 
+            console.log(utilizador);
+
             if (!utilizador) {
                 return res.status(404).json({ error: "Utilizador não encontrado" });
             }

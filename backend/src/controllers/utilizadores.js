@@ -552,6 +552,7 @@ const controladorUtilizadores = {
             if (tipo == "normal") {
                 whereClause.passwd = pass;
             } else if (tipo == "facebook") {
+                console.log("Vai para aqui");
                 whereClause.tokenfacebook = token;
             } else if (tipo == "google") {
                 whereClause.tokengoogle = token;
@@ -579,6 +580,8 @@ const controladorUtilizadores = {
                     },
                 ],
             });
+
+            console.log(utilizador);
 
             if (!utilizador) {
                 return res.status(404).json({ error: "Utilizador não encontrado" });
@@ -937,7 +940,7 @@ const controladorUtilizadores = {
     recuperarPasswordMobile: async (req, res) => {
         const { email } = req.params;
         try {
-            
+
             const codigo = crypto.randomInt(100000, 1000000).toString();
 
             emailController.sendEmail(

@@ -367,7 +367,6 @@ const controladorEventos = {
             });
 
             const evento = await models.evento.findByPk(idEvento);
-
             const grupo = await models.grupo.create({
                 descricao: `Grupo do evento ${evento.titulo}`,
                 nome: `Grupo do evento ${evento.titulo}`,
@@ -442,8 +441,9 @@ const controladorEventos = {
     rejeitarEvento: async (req, res) => {
         const { idEvento } = req.params;
         const { userAprovacao } = req.body;
+
         try {
-            const evento = await models.evento.update({
+            await models.evento.update({
                 aprovado: false,
                 utilizadoraprovou: userAprovacao,
                 dataaprovacao: Sequelize.literal('CURRENT_TIMESTAMP')
@@ -452,6 +452,7 @@ const controladorEventos = {
                     eventoid: idEvento
                 }
             });
+            const evento = await models.evento.findByPk(idEvento);
 
             await models.notificacao.create({
                 utilizadorid: evento.utilizadorcriou,
@@ -462,7 +463,7 @@ const controladorEventos = {
 
             res.status(200).json({ message: 'Evento rejeitado com sucesso' });
         } catch (error) {
-            res.status(500).json({ error: 'Erro ao rejeitado o evento' });
+            res.status(500).json({ error: 'Erro ao rejeitar o evento', description: error });
         }
     },
 

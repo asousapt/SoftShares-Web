@@ -125,7 +125,7 @@ export default function ListaEventos() {
             };
 
             const eventosTable = sortedEvent.map((evento) => {
-                const totalParticipantes = evento.numinscritos + evento.numconvidados;
+                const totalParticipantes = parseInt(parseInt(evento.numinscritos) + parseInt(evento.numinscritos));
                 return {
                     key: evento.eventoid,
                     id: evento.eventoid,

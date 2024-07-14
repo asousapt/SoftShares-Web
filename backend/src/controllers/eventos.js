@@ -592,7 +592,7 @@ const controladorEventos = {
             FROM evento
             JOIN subcategoria ON evento.subcategoriaid = subcategoria.subcategoriaid
             WHERE evento.aprovado = true and evento.datainicio BETWEEN :data1 AND :data2
-            AND evento.cidadeid IN (SELECT cidadeid FROM polo WHERE poloid = :idPolo)
+            AND evento.poloid = :idPolo
             union 
 			SELECT evento.*, subcategoria.categoriaid,
                     (SELECT STRING_AGG(participantes_eventos.utilizadorid::text, ',')
@@ -605,7 +605,7 @@ const controladorEventos = {
             JOIN subcategoria ON evento.subcategoriaid = subcategoria.subcategoriaid
             WHERE evento.utilizadorcriou = :idUtilizador and evento.aprovado = false 
             and evento.dataaprovacao is null and evento.datainicio BETWEEN :data1 AND :data2
-            AND evento.cidadeid IN (SELECT cidadeid FROM polo WHERE poloid = :idPolo)
+            AND evento.poloid = :idPolo
         `;
 
         try {
@@ -1223,7 +1223,7 @@ const controladorEventos = {
         JOIN subcategoria ON evento.subcategoriaid = subcategoria.subcategoriaid
         and subcategoria.categoriaid = :categoriaId
         WHERE evento.aprovado = true and evento.datainicio BETWEEN :data1 AND :data2
-        AND evento.cidadeid IN (SELECT cidadeid FROM polo WHERE poloid = :idPolo)
+        AND evento.poloid = :idPolo
         union 
         SELECT evento.*, subcategoria.categoriaid,
                 (SELECT STRING_AGG(participantes_eventos.utilizadorid::text, ',')
@@ -1237,7 +1237,7 @@ const controladorEventos = {
         and subcategoria.categoriaid = :categoriaId
         WHERE evento.utilizadorcriou = :idUtilizador and evento.aprovado = false 
         and evento.dataaprovacao is null and evento.datainicio BETWEEN :data1 AND :data2
-        AND evento.cidadeid IN (SELECT cidadeid FROM polo WHERE poloid = :idPolo)
+        AND evento.poloid = :idPolo
         `;
 
         try {
@@ -1283,7 +1283,7 @@ const controladorEventos = {
             FROM evento
             JOIN subcategoria ON evento.subcategoriaid = subcategoria.subcategoriaid
             WHERE evento.aprovado = true and evento.datainicio BETWEEN :data1 AND :data2
-            AND evento.cidadeid IN (SELECT cidadeid FROM polo WHERE poloid = :idPolo) 
+            AND evento.poloid = :idPolo
             and LOWER(evento.titulo) LIKE :filtro
             union 
             SELECT evento.*, subcategoria.categoriaid,
@@ -1297,7 +1297,7 @@ const controladorEventos = {
             JOIN subcategoria ON evento.subcategoriaid = subcategoria.subcategoriaid
             WHERE evento.utilizadorcriou = :idUtilizador and evento.aprovado = false 
             and evento.dataaprovacao is null and evento.datainicio BETWEEN :data1 AND :data2
-            AND evento.cidadeid IN (SELECT cidadeid FROM polo WHERE poloid = :idPolo) 
+            AND evento.poloid = :idPolo 
             and LOWER(evento.titulo) LIKE :filtro
         `;
     

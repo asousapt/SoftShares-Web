@@ -395,13 +395,20 @@ const controladorPontosInteresse = {
     },
 
     consultarTudoAprovado: async (req, res) => {
+        const { poloid } = req.query
         try {
+            let whereClause = ''
+            if (poloid && poloid > 0){
+                whereClause += `AND p.poloid = ${poloid}`
+            }
+
             const pontosInteresse = await sequelizeConn.query(
                 `SELECT 
                     p.*, 
                     u.*,
                     s.categoriaID,
-                    COALESCE(ROUND(AVG(a.avaliacao), 2), 0) as avgAvaliacao
+                    COALESCE(ROUND(AVG(a.avaliacao), 2), 0) as avgAvaliacao,
+                    p.poloid as poipoloid
                 FROM 
                     pontointeresse p
                 INNER JOIN
@@ -413,7 +420,8 @@ const controladorPontosInteresse = {
                 INNER JOIN
                     subcategoria s ON p.subcategoriaid = s.subcategoriaid
                 WHERE
-                    p.aprovado = true
+                    p.aprovado = true 
+                    ${whereClause}
                 GROUP BY
                     p.pontointeresseid, u.utilizadorid, s.categoriaid
                 `,

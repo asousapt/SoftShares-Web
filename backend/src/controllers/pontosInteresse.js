@@ -321,7 +321,7 @@ const controladorPontosInteresse = {
         const { idPontoInteresse } = req.params;
         const { userAprovacao } = req.body;
         try {
-            const poi = await models.pontointeresse.update({
+            await models.pontointeresse.update({
                 aprovado: false,
                 dataaprovacao: Sequelize.literal('CURRENT_TIMESTAMP'),
                 utilizadoraprova: userAprovacao
@@ -330,6 +330,8 @@ const controladorPontosInteresse = {
                     pontointeresseid: idPontoInteresse
                 }
             });
+
+            const poi = await models.pontointeresse.findByPk(idPontoInteresse);
 
             await models.notificacao.create({
                 utilizadorid: poi.utilizadorcriou,

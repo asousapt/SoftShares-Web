@@ -275,6 +275,29 @@ const controladorUtilizadores = {
         }
     },
 
+    atualizarPassBaseEmail: async (req, res) => {
+        const { email } = req.params;
+        const { password } = req.body;
+        try {
+            await models.utilizador.update(
+                {
+                    passwd: password,
+                },
+                {
+                    where: {
+                        email: email,
+                    },
+                }
+            );
+
+            res.status(200).json({ message: "Utilizador atualizado com sucesso" });
+        } catch (e) {
+            res
+                .status(500)
+                .json({ error: "Erro ao atualizar utilizador", details: e.message });
+        }
+    },
+
     atualizarMobile: async (req, res) => {
         const { idUtilizador } = req.params;
         const {

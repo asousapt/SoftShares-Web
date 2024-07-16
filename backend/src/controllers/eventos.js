@@ -367,6 +367,13 @@ const controladorEventos = {
             });
 
             const evento = await models.evento.findByPk(idEvento);
+
+            await models.participantes_eventos.create({
+                utilizadorid: evento.utilizadorcriou,
+                eventoid: evento.eventoid,
+                convidadosadic: 0
+            })
+
             const grupo = await models.grupo.create({
                 descricao: `Grupo do evento ${evento.titulo}`,
                 nome: `Grupo do evento ${evento.titulo}`,

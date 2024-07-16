@@ -304,7 +304,7 @@ const EditPublicacao = ({ open, onClose, idPub, setAlertOpen, setAlertProps }) =
 
     return (
         <Modal open={open} onClose={handleCancel} >
-            <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px' }}>
+            <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '1000px', maxWidth: '80%', maxHeight: '80%', backgroundColor: '#1D5AA1', padding: '20px', overflow: 'auto' }}>
                 <h2 style={{ marginTop: 0, color: 'white' }}>Editar Publicação</h2>
                 <div style={{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 20, borderRadius: 12 }}>
                     <div style={{ marginBottom: 15 }}>

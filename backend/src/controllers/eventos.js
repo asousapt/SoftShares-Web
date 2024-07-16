@@ -603,7 +603,7 @@ const controladorEventos = {
                     WHERE participantes_eventos.eventoid = evento.eventoid) AS numinscritos
             FROM evento
             JOIN subcategoria ON evento.subcategoriaid = subcategoria.subcategoriaid
-            WHERE evento.utilizadorcriou = :idUtilizador and evento.aprovado = false 
+            WHERE evento.utilizadorcriou = :idUtilizador and evento.aprovado is null 
             and evento.dataaprovacao is null and evento.datainicio BETWEEN :data1 AND :data2
             AND evento.poloid = :idPolo
         `;

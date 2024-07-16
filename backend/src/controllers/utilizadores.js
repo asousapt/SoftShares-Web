@@ -936,6 +936,8 @@ const controladorUtilizadores = {
         }
     },
 
+    
+
     recuperarPassword: async (req, res) => {
         const { id } = req.params;
         try {

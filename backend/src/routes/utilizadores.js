@@ -12,7 +12,7 @@ router.post('/login', utilizadorControlador.login);
 router.put('/update/:idUtilizador', authenticate, utilizadorControlador.atualizar);
 router.put('/update/mobile/:idUtilizador', authenticate, utilizadorControlador.atualizarMobile);
 router.put('/alterarPass/:idUtilizador', authenticate, utilizadorControlador.atualizarPass);
-router.put('/alterarPass/email/:email', authenticate, utilizadorControlador.atualizarPassBaseEmail);
+router.put('/alterarPass/email/:email', utilizadorControlador.atualizarPassBaseEmail);
 
 // ROUTES DELETE
 router.delete('/delete/:idUtilizador', authenticate, utilizadorControlador.remover);

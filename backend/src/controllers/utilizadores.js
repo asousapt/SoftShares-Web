@@ -1,4 +1,4 @@
-const { Sequelize, QueryTypes, json, where } = require('sequelize');
+const { Sequelize, QueryTypes, json, where, or } = require('sequelize');
 const crypto = require('crypto');
 const initModels = require('../models/init-models');
 const sequelizeConn = require('../bdConexao');
@@ -991,7 +991,8 @@ const controladorUtilizadores = {
                 attributes: ['utilizadorid', 'pnome', 'unome', 'email', 'poloid'],
                 where: {
                     inactivo: false
-                }
+                },
+                order: [['pnome', 'ASC']]
             });
 
 
